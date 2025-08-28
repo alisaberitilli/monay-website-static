@@ -1,0 +1,195 @@
+//common table
+.common-table {
+    @include box-shadow(0, 0, 20px, rgba(color(900), .05));
+    border-radius: 3px;
+    background-color: color(50);
+    overflow: hidden;
+    .table {
+        margin-bottom: 0;
+        td,
+        th {
+            vertical-align: middle;
+            white-space: nowrap;
+            font-size: 14px;
+            color: color(250);
+            &.w_70 {
+                width: 70px;
+                max-width: 115px
+            }
+            &.w_130 {
+                width: 130px;
+            }
+        }
+        thead {
+            tr {
+                th {
+                    border: none;
+                    font-weight: normal;
+                    padding: 15px 20px;
+                    font-family: font(sm);
+                    color: color(900);
+                    &.action_dropdown {
+                        width: 110px;
+                    }
+                    .sorting {
+                        position: relative;
+                        padding-right: 20px;
+                        &:before {
+                            content: "\e91c";
+                            font-family: 'icomoon' !important;
+                            position: absolute;
+                            right: 0;
+                            top: 3px;
+                            cursor: pointer;
+                            font-size: 12px;
+                        }
+                    }
+                }
+            }
+        }
+
+        tbody {
+            tr {
+                @include transition(all 0.3s ease);
+                td {
+                    padding: 15px 20px;
+                    border-color: rgba(color(900), 0.1);
+                    @include transition (all, 0.3s);
+                    vertical-align: middle;
+                    .action_icon {
+                        color: color(150);
+                    }
+                    .pencilBtn {
+                        color: color(150);
+                        font-size: 20px;
+                        &:hover {
+                            color: color(500);
+                        }
+                    }
+                    .dropdown {
+                        width: max-content;
+                        &.action_btn {
+                            .dropdown-toggle {
+                                font-size: 38px;
+                                color: #BABBC9;
+                                text-decoration: none;
+                                display: inherit;
+                                line-height: 40px;
+                                &:after {
+                                    display: none;
+                                }
+                            }
+                        }
+                        .dropdown-menu {
+                            padding: 0;
+                            min-width: 75px;
+                            border: none;
+                            border-radius: 0;
+                            @include box-shadow(0, 0, 10px, rgba(color(900), 0.1));
+                            .dropdown-item {
+                                font-size: 13px;
+                                padding: 5px 10px;
+                                &:active,
+                                &:hover {
+                                    background-color: color(50);
+                                    color: color(500);
+                                }
+                            }
+                        }
+                    }
+                    .userImg {
+                        height: 36px;
+                        width: 36px;
+                        display: inline-block;
+                        vertical-align: middle;
+                        margin-right: 10px;
+                        img {
+                            width: 100%;
+                        }
+                    }
+                    .info{
+                        display: flex;
+                        align-items: center;
+                        .details{
+                            vertical-align: middle;
+                            span{
+                                display: block;
+                            }
+                        }
+                    }
+                    .list-status{
+                        li{
+                            display: inline-flex;
+                        align-items: center;
+                        padding-right: 5px;
+                        vertical-align: middle;
+                            i{
+                                margin-right: 5px;       
+                            }
+                        }
+                    }
+                    .userName {
+                        vertical-align: middle;
+                    }
+                    span {
+                        &[data-toggle="popover"] {
+                            cursor: pointer;
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+@media (max-width:1440px) {
+    .common-table {
+        .table {
+            thead {
+                tr {
+                    th {
+                        padding: 13px 15px;
+                    }
+                }
+            }
+            tbody {
+                tr {
+                    td {
+                        padding: 12px 15px;
+                    }
+                }
+            }
+        }
+    }
+}
+
+@include media-breakpoint-down (md) {
+    .common-table {
+        .table {
+            thead {
+                tr {
+                    th {
+                        padding: 9px 15px;
+                    }
+                }
+            }
+            tbody {
+                tr {
+                    td {
+                        padding: 9px 15px;
+                        .userImg {
+                            margin-right: 10px;
+                        }
+                        .dropdown {
+                            &.action_btn {
+                                .dropdown-toggle {
+                                    font-size: 34px;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

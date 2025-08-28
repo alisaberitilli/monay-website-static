@@ -1,0 +1,14 @@
+node_modules
+dist
+out
+*.log*
+.env
+.DS_Store
+prisma/migrations
+prisma/generated
+_server/generated
+electron.vite.config.*.mjs
+build
+lib
+scripts/test.js
+package-lock.json

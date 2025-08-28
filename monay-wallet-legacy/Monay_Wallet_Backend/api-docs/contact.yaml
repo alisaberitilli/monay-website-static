@@ -1,0 +1,35 @@
+paths:
+  /contact/sync:
+    post:
+      tags:
+        - Contact Sync
+      summary: Check existing users in the system
+      security:
+        - BearerAuth: []
+      produces:
+        - application/json
+      parameters:
+        - in: body
+          name: body
+          required: true
+          schema:
+            "$ref": "#/definitions/contact-sync"
+      responses:
+        '200':
+          description: OK  
+definitions:
+  contact-sync:
+    type: object
+    properties:
+      contacts:
+        type: array
+        required: true
+        items:
+          type: object
+          properties:
+            phoneNumberCountryCode:
+              type: string
+              required: true
+            phoneNumber:
+              type: string
+              required: true

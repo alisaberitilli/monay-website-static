@@ -1,0 +1,695 @@
+<resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
+
+    <!--    <string name="app_name">Monay</string>-->
+    <!--    Google Play credentials-->
+    <!--    email: monayusernow@gmail.com-->
+    <!--    pass: wdsa5346978018633102-->
+    <!--Common Msg-->
+    <string name="no_internet_connection_availbel">No internet connection available.</string>
+    <string name="tap_to_retry">Tap to retry</string>
+
+    <!--Application Font-->
+    <string name="font_regular">font/cerapro_regular.ttf</string>
+    <string name="font_bold">fonts/cerapro_bold.ttf</string>
+    <string name="font_semibold">fonts/cerapro_medium.ttf</string>
+    <string name="font_heading">fonts/cerapro_black.ttf</string>
+    <string name="font_light">fonts/cerapro_light.ttf</string>
+
+    <string name="font_italic">fonts/Gilroy-Bold-Italic.otf</string>
+    <!--Error msg-->
+    <string name="unauthorize_access">Your last login session is expired, please login again.</string>
+
+    <string name="session_expired">Your session has expired</string>
+    <string name="login_proceed">Log in to proceed</string>
+    <string name="https_400_error">Bad Request</string>
+    <string name="http_401_error">Unauthorized access</string>
+    <string name="http_403_error">Forbidden or denied access</string>
+    <string name="http_404_error">Resource Not Found</string>
+    <string name="http_402_error">Payment Required</string>
+    <string name="http_405_error">Method Not Allowed</string>
+    <string name="http_406_error">Not Acceptable</string>
+    <string name="http_408_error">Request Time out</string>
+    <string name="http_409_error">conflict in the request</string>
+    <string name="http_500_error">Internal Server Error</string>
+    <string name="http_501_error">Not Implemented</string>
+    <string name="http_503_error">Service Unavailable</string>
+    <string name="http_522_error">Connection Timed Out</string>
+    <string name="http_520_error">Unknown Error</string>
+    <string name="http_526_error">Invalid SSL Certificate</string>
+    <string name="http_599_error">Network connect timeout error</string>
+
+
+    <!--Log Out Dialog-->
+    <string name="logout_alert">Log Out</string>
+    <string name="want_to_logout">Are you sure you want to logout?</string>
+    <string name="stay_logged_in">Stay Logged In</string>
+    <string name="logout">Sign Out</string>
+    <string name="cancel">Cancel</string>
+    <string name="logout_">Logout</string>
+
+    <!--Popup -->
+    <string name="error_type">Error</string>
+    <string name="no_internet">Please check your connection\nand try again.</string>
+    <string name="no_notification">No Notification Yet</string>
+    <string name="LOADING">Loading...</string>
+    <string name="post">Post</string>
+
+    <!--Common Msg-->
+    <string name="oops">Alert</string>
+
+    <!--Log Out Dialog-->
+    <string name="want_to_delete">Are you sure, you want to delete your account?</string>
+
+    <!--Log Exit Dialog-->
+    <string name="exit_alert">Exit</string>
+    <string name="want_to_exit">Are you sure, you want to exit?</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
+
+    <!--Intro page-->
+    <string name="send_money_quickly">Send\nmoney\nquickly</string>
+    <string name="your_money_your_way">Your Money, Your Way</string>
+
+    <!--Sign Up-->
+    <string name="create_a_new_account">Create A New Account</string>
+    <string name="first_name">First Name</string>
+
+    <string name="last_name">Last Name</string>
+    <string name="company_name">Company Name</string>
+    <string name="company_name_">Company Name</string>
+    <string name="tax_crib_number">Tax ID</string>
+    <string name="registration_number">Chamber Of Commerce</string>
+    <string name="email">Email</string>
+    <string name="password">Password</string>
+    <string name="confirm_password">Confirm Password</string>
+    <string name="mobile_number">Mobile Number</string>
+    <string name="already_have_an_account">Already have an account?</string>
+    <string name="log_in">Login</string>
+    <string name="proceed">Proceed</string>
+    <string name="agreed_text1">Agree with our</string>
+    <string name="agreed_text2">Terms &amp; Conditions </string>
+    <string name="agreed_text3">and</string>
+    <string name="agreed_text4">Privacy Policy.</string>
+    <string name="share_text">Share</string>
+
+    <!--Login Sign Up Screen-->
+<!--    <string name="signup_as_user">Signup As Primary User</string>
+    <string name="signup_as_merchant">Signup As Merchant</string>
+    <string name="signup_as_secondary">Signup As Secondary User</string>-->
+
+    <string name="signup_as_user">Signup </string>
+    <string name="signup_as_merchant">Signup</string>
+    <string name="signup_as_secondary">Signup </string>
+    <!--Login-->
+    <string name="forgot_password">Forgot Password?</string>
+    <string name="or_text">OR</string>
+    <string name="terms_conditions_title">Terms &amp; Conditions</string>
+    <string name="privacy_policy_title">Privacy Policy</string>
+    <!--    forgot password-->
+
+    <string name="send_otp">Send OTP</string>
+    <string name="forgot_password_title">Forgot Password</string>
+    <string name="forgot_password_desc">Enter your registered Mobile No./Email,\nwe will send you a code for verification.</string>
+
+    <!--    reset password-->
+    <string name="reset_password_title">Reset Password</string>
+
+    <string name="reset_password_desc">Please create a new password and confirm password</string>
+    <string name="confirm">Confirm</string>
+
+    <!--    Bottom navigation-->
+    <string name="home_tab">Home</string>
+    <string name="transaction_tab">Transaction</string>
+    <string name="scan_tab">Scan</string>
+    <string name="profile_tab">Profile</string>
+    <string name="more_tab">More</string>
+
+    <!--    verify otp-->
+    <string name="verify_otp">Verify OTP</string>
+    <string name="verify_otp_desc">Enter the verification code we have sent you on your Mobile No.</string>
+    <string name="resend_otp">Resend OTP</string>
+    <string name="change">Change</string>
+
+    <!--    Profile Screen-->
+    <string name="edit_profile">Edit Profile</string>
+    <string name="my_wallet">My Wallet</string>
+    <string name="payment_request">Payment Requests</string>
+    <string name="my_card">My Cards</string>
+    <string name="security">Security</string>
+    <string name="name">Name</string>
+    <string name="update">Update</string>
+
+    <!--    forgot code-->
+    <string name="forgot_code_desc">Enter the code we have sent you on your Mobile No.</string>
+    <string name="forgot_code_desc_email">Enter the code we have sent you on your Email Address.</string>
+    <!--    setup-->
+    <string name="setup">Setup</string>
+    <string name="pin">Change PIN</string>
+    <string name="change_pin">Change PIN</string>
+    <string name="fingerprint">Fingerprint</string>
+    <string name="enter_pin">Enter PIN</string>
+    <string name="use_screen_lock">Use screen lock</string>
+
+    <!--    more-->
+    <string name="change_password">Change Password</string>
+    <string name="how_it_work">How It Works</string>
+    <string name="faq">FAQ</string>
+    <string name="faq_">Faq</string>
+    <string name="support">Support</string>
+    <string name="supports">Supports</string>
+    <string name="notification">Notifications</string>
+    <string name="rewards_cashback">Rewards &amp; Cashback</string>
+    <string name="logout_text">Logout</string>
+    <string name="user_policy">User Policy</string>
+
+    <!--    change password-->
+    <string name="old_password">Current Password</string>
+    <string name="new_password">New Password</string>
+
+    <!--    notification-->
+    <string name="no_data_found">No Record Found</string>
+    <string name="try_again_text">Try Again</string>
+    <string name="sync_contact_text">Sync Contact</string>
+    <!--support-->
+    <!--    <string name="try_again_text">Try Again</string>-->
+    <string name="pending_request">Pending Request</string>
+    <string name="closed_request">Closed Request</string>
+    <string name="message">Message</string>
+    <string name="send_txt">Send</string>
+
+    <!--    My Card-->
+    <string name="add_new_card">Add New Card</string>
+    <string name="add_new_card_">Add New Card</string>
+    <string name="card_holder">Card Holder</string>
+    <string name="expires">Expires</string>
+    <string name="enter_card_number">Enter Card Number</string>
+    <string name="enter_name_on_card">Enter Name On Card</string>
+    <string name="month">Month</string>
+    <string name="year">Year</string>
+    <string name="cvv">CVV</string>
+    <string name="add_card">Add Card</string>
+
+
+    <!--    notification-->
+    <string name="closed_text">Closed</string>
+
+    <!--    Home Screen-->
+    <string name="send_money">Send Money</string>
+    <string name="request_money">Request Money</string>
+    <string name="recent_transaction">Recent Transactions</string>
+    <string name="view_all">View All</string>
+    <string name="pay">Pay</string>
+    <string name="decline">Decline</string>
+    <string name="request">Request</string>
+
+    <!--    My Transaction Screen-->
+    <string name="my_transaction">My Transactions</string>
+    <string name="filter">Filter</string>
+    <string name="from_date">From Date</string>
+    <string name="to_date">To Date</string>
+    <string name="min_price">Min Price</string>
+    <string name="max_price">Max Price</string>
+    <string name="apply_filter">Apply Filter</string>
+    <string name="reset_filter">Reset Filter</string>
+
+
+    <!--    Scan Screen-->
+    <string name="enter_name_and_number">Enter Name/Mobile Number</string>
+    <string name="recent">Recent</string>
+    <string name="show_my_code">Show My Code</string>
+
+    <!--    Pay Money Screen-->
+    <string name="pay_money">Pay Money</string>
+    <string name="message_optional">Message(Optional)</string>
+    <string name="enter_message">Enter Message</string>
+    <string name="select_payment_method">Select Payment Method</string>
+    <string name="card">Card</string>
+    <string name="wallet">Wallet</string>
+    <string name="debit_card">Debit Card</string>
+    <string name="create_card">Credit Card</string>
+    <string name="available_for_payment">Available for Payment</string>
+
+
+    <!--    Rewards cash back-->
+    <string name="Rewards_and_cashback">Rewards &amp; Cashback</string>
+    <string name="Rewards_history">Rewards History</string>
+    <string name="total_rewards_received">Total Reward Received</string>
+
+    <!--Wallet-->
+    <string name="wallet_balance">Wallet Balance</string>
+    <string name="total_wallet_balance">Total Wallet Balance</string>
+    <string name="sent">Sent</string>
+    <string name="received">Received</string>
+    <string name="add_money">+Add Money</string>
+
+    <!--    add money-->
+    <string name="add_money_title">Add Money</string>
+    <string name="amount">Amount</string>
+    <string name="min_amount">Minimum Amount</string>
+    <string name="refill_amount">Refill Amount</string>
+    <string name="dollor_sign">$</string>
+    <string name="enter_amount">Enter Amount</string>
+    <string name="add_money_through">Add money through</string>
+
+    <!--    successfully add money-->
+    <string name="successfully_add_money">You have successfully added money to your wallet.</string>
+    <string name="successfully_sent_money">You have successfully sent money to</string>
+    <string name="successfully_requset_money">Your request for money has been sent successfully to</string>
+    <string name="successfully_request_withdrawal">Your withdrawal request has been sent successfully.</string>
+    <string name="go_to_home">Go To Home</string>
+
+    <!--    payment request-->
+    <string name="payment_request_title">Payment Request</string>
+    <string name="my_request_tab">My Request</string>
+    <string name="received_tab">Received</string>
+    <string name="sent_tab">Sent</string>
+    <string name="decline_tab">Declined</string>
+    <string name="my_contacts">My Contacts</string>
+    <string name="contacts">Contacts</string>
+    <string name="no_contact_found">No Contact Found</string>
+    <string name="no_contact_found_or_block_all_recored">No Contact Found\nOr all Monay Contacts are blocked</string>
+    <string name="search_contact">Search Contact</string>
+    <string name="scan_any_qr_code_to_pay">Scan any QR to pay</string>
+    <string name="not_contain_whitespace">Password should not contain whitespace.</string>
+    <string name="enter_first_name">Please enter your first name.</string>
+    <string name="fname_not_contain_whitespace">First name should not contain whitespace.</string>
+    <string name="enter_correct_name">Please enter correct name.</string>
+    <string name="enter_last_name">Please enter your last name</string>
+    <string name="lname_not_contain_whitespace">Last name should not contain whitespace.</string>
+    <string name="correct_last_name">Please enter correct last name.</string>
+    <string name="enter_phone_number">Please enter phone number</string>
+    <string name="enter_correct_number">Please enter correct phone number</string>
+    <string name="enter_email">Please enter email</string>
+    <string name="enter_correct_email">Please enter correct email</string>
+    <string name="enter_password">Please enter password</string>
+    <string name="password_length">Password should be 6-15 chars in length.</string>
+    <string name="enter_confirm_password">Please enter confirm password password</string>
+    <string name="password_should_be_same">Password and confirm password should be same</string>
+    <string name="check_terms_conditions"><![CDATA[Please check terms & conditions]]></string>
+    <string name="enter_otp">Please enter verification code.</string>
+
+    <!--    pay money-->
+
+    <string-array name="CountryCode">
+        <item>+1</item>
+        <item>+91</item>
+    </string-array>
+
+    <string-array name="TransactionType">
+        <item>Transaction Type</item>
+        <item>Transfer</item>
+        <item>Added</item>
+        <item>Withdraw</item>
+        <item>Failed</item>
+    </string-array>
+
+    <!-- SignUp validation -->
+
+    <string name="validation_first_name">Please enter your first name.</string>
+    <string name="validation_last_name">Please enter your last name.</string>
+    <string name="validation_email">Please enter email.</string>
+    <string name="validation_mobile_number">Please enter mobile number.</string>
+    <string name="valid_mobile_number">Please enter correct mobile number.</string>
+    <string name="validation_password">Please enter password.</string>
+    <string name="validation_password_new">Please enter new password.</string>
+    <!--    <string name="validation_terms_conditions">You need to agree to the Terms &amp; Conditions.</string>-->
+    <string name="validation_terms_conditions">Please agree to the application terms &amp; conditions and privacy policy before proceed.</string>
+    <string name="validation_email_valid">Please enter correct email.</string>
+    <!--    <string name="validation_password_alphanumeric">Password must be alphanumeric with atleast 6 characters and one special character.</string>-->
+    <string name="password_length_must_be_between_6_16">Password should be 6-15 character in length with atleast one upper case letter, one lower case letter, one digit and one special character.</string>
+    <!--    <string name="valid_password">Password must be at least 6 characters, alphanumeric, one uppercase and one special character.</string>-->
+    <string name="valid_confirm_password">Please enter valid confirm password.</string>
+    <string name="validation_confirm_password">Please enter confirm password.</string>
+    <string name="password_and_confirm_password_does_not_match">Password and confirm password should be same.</string>
+    <string name="password_and_current_password_match">Current password and new password should not be same.</string>
+    <!--    <string name="http_some_other_error">Some error occurred! Please try again later.</string>-->
+    <string name="http_some_other_error">Request time out, please try again.</string>
+    <string name="validation_internet_connection">Please check internet connection</string>
+
+    <string name="please_select_identification">Please select identification type.</string>
+    <string name="please_select_address_proof">Please select address proof type.</string>
+    <string name="please_select_identification_image">Please select identification document.</string>
+    <string name="please_select_identification_back_image">Please select identification back document.</string>
+    <string name="please_select_address_proof_image">Please select address proof document.</string>
+    <string name="please_select_address_proof_back_image">Please select address proof back document.</string>
+
+    <string name="paid_tab">Paid</string>
+    <string name="transactions">Transactions</string>
+
+    <string name="auto_top_up">Auto Top Up</string>
+    <string name="my_cards">My Cards</string>
+
+    <string name="my_secondary_account">My Secondary Accounts</string>
+    <string name="my_primary_account">My Primary Accounts</string>
+
+    <string name="share_and_invite">Share And Invite</string>
+    <string name="invite"><u>Invite</u></string>
+    <string name="invite_friend">Invite Friend</string>
+
+    <string name="old_validation_password">Please enter current password.</string>
+    <string name="resend_otp_successfully">Resend verification code successfully!</string>
+    <string name="enter_company_name">Please enter company name.</string>
+    <string name="enter_tax_id">Please enter Tax ID.</string>
+    <string name="enter_registration_number">Please enter chamber of commerce.</string>
+    <string name="registration_number_">Chamber Of Commerce</string>
+
+    <string name="my_transactions">My Transactions</string>
+    <string name="done">Done</string>
+
+    <string name="permission_rationale">"Contacts permissions are needed to display Contacts."</string>
+    <string name="message_permission_disabled">You have disabled the permissions permanently,
+        To enable the permissions please go to Settings -> Permissions and enable the required Permissions,
+        pressing OK you will be navigated to Settings screen</string>
+    <!-- login validation -->
+    <string name="registered_mobile_number">Please enter registered mobile number.</string>
+    <string name="registered_email_address">Please enter registered email.</string>
+    <!--    <string name="enter_correct_mobile">Please enter correct mobile number</string>-->
+    <string name="enter_correct_mobile">Mobile number should be 6-15 digits.</string>
+    <string name="val_number_invalid">Mobile number length is invalid</string>
+
+    <string name="validation_email_address">Please enter correct email address.</string>
+
+    <string name="please_enter_message">Please enter message.</string>
+
+    <string name="about">About</string>
+    <string name="terms_amp_conditions">Terms &amp; Conditions</string>
+    <string name="notification_channel_id">monay_channel_o1</string>
+    <string name="otp_verify">OTP Verify</string>
+    <string name="we_have_sent_you_a_code_on_your_registered_mobile_number">We have sent you a code on your registered mobile number.</string>
+    <string name="my_bank_accounts">My Bank Accounts</string>
+    <string name="withdrawal_request_history">Withdrawal Requests</string>
+    <!--    <string name="withdrawal_request_history">Withdrawal Request History</string>-->
+    <string name="withdraw_money">Withdraw Money</string>
+    <string name="add_new">Add New</string>
+    <string name="accounts_holder_s_name">Account Holder\'s Name</string>
+    <string name="bank_name">Bank Name</string>
+    <string name="bank_account_no">Bank Account No.</string>
+    <string name="routing_aba_number">Routing ABA Number</string>
+    <string name="swift_code">Swift Code</string>
+    <string name="save_details">Save Details</string>
+    <string name="send_request">Send Request</string>
+    <string name="enter_amount_from_wallet">Enter Amount from Wallet</string>
+
+    <string name="please_enter_card_number">Please enter card number.</string>
+    <string name="please_enter_valid_card_number">Please enter valid card number.</string>
+    <string name="please_enter_card_holder_name">Please enter card holder name.</string>
+    <string name="please_enter_valid_amount">Insufficient funds in your wallet.</string>
+    <string name="please_enter_month">Please enter month.</string>
+    <string name="please_select_expiry_date">Please select expiry date.</string>
+    <string name="please_enter_valid_month">Please enter valid month.</string>
+    <string name="please_enter_year">Please enter year.</string>
+    <string name="please_enter_proper_year">Please enter year in 4 digit</string>
+    <string name="please_enter_cvv">Please enter CVV.</string>
+    <string name="please_enter_correct_cvv">Please enter valid CVV.</string>
+    <string name="invalid_card">Invalid Card Number.</string>
+
+    <string name="please_enter_account_holder_name">Please enter account holder\'s name.</string>
+    <string name="please_enter_bank_name">Please enter bank name.</string>
+    <string name="please_enter_bank_account_number">Please enter bank account no.</string>
+    <string name="please_enter_valid_account_number">Please enter valid account no.</string>
+    <string name="please_enter_routing_number">Please enter routing ABA number.</string>
+    <string name="please_enter_valid_routing_number">Please enter valid routing ABA number.</string>
+    <string name="please_enter_swift_code">Please enter swift code.</string>
+    <string name="no_card_found">No Card Found</string>
+    <string name="please_enter_amount">Please enter the amount.</string>
+    <string name="please_enter_valid_amount_">Please enter valid amount.</string>
+
+    <string name="please_enter_ifsc_number">Please enter IFSC code.</string>
+    <!--    <string name="please_enter_valid_amount_">Amount should be greater or equal 1.</string>-->
+
+    <string name="allow_permission">Please allow permission</string>
+    <string name="allow_permission_setting">Go to Settings and Grant the permission to use feature inside the application.</string>
+    <string name="allow_permission_setting_telephone">Go to Settings and Grant the telephone permission to use feature inside the application.</string>
+    <string name="on_location_instruction">Please go to app settings and enable permissions</string>
+    <string name="dialog_alert_heading">Alert</string>
+    <string name="please_select_bank">Please select a bank.</string>
+    <string name="please_add_bank">Please add a bank.</string>
+    <string name="select_bank">Select Bank</string>
+    <string name="select_bank_account">Select Bank Account</string>
+    <string name="please_select_card_type">Please select card type.</string>
+    <string name="credit_card">Credit Card</string>
+    <string name="please_select_card">Please select card.</string>
+    <string name="please_select_wallet">Please select wallet</string>
+    <string name="transaction_id">Transaction ID</string>
+    <string name="send">Send</string>
+    <string name="verification_code">Verification Code</string>
+    <string name="please_enter_pin">Please enter new pin.</string>
+    <string name="pin_not_matched">New pin and Confirm new pin should be same.</string>
+    <string name="enter_confirm_pin">Please enter confirm new pin.</string>
+    <string name="please_enter_pin_new">Please enter pin.</string>
+    <string name="pin_not_matched_new">Pin and Confirm pin should be same.</string>
+    <string name="enter_confirm_pin_new">Please enter confirm pin.</string>
+    <string name="add_nmoney">Add\nMoney</string>
+    <string name="send_nmoney">Send\nMoney</string>
+    <string name="request_nmoney">Request\nMoney</string>
+    <string name="pin_length">Verification code should be 6 digits long.</string>
+    <string name="mobile_verification">Mobile Verification</string>
+    <string name="please_enter_your_mobile_number_to_verify_your_account">Please enter your mobile number to verify your account.</string>
+    <string name="enter_registered_mobile_number">Enter your registered Mobile No. we will send you a code.</string>
+    <string name="save">Save</string>
+    <string name="enter_forgot_pin">Enter PIN</string>
+    <string name="forgot_pin"><u>Forgot PIN?</u></string>
+    <string name="forgot_pin_"><u>Forgot PIN?</u></string>
+    <!--    <string name="forgot_pin">Forgot Pin?</string>-->
+    <string name="request_for_withdrawal">Request For Withdrawal</string>
+    <string name="transfer_through">Transfer Through</string>
+    <string name="please_enter_name">Please enter correct name</string>
+
+    <string name="select_image">Select Image</string>
+    <string name="take_photo">Take Photo</string>
+    <string name="choose_from_gallery">Choose From Gallery</string>
+    <string name="choose_image_from">Choose Image From</string>
+    <string name="cancel_image_capture">User cancelled image capture</string>
+    <string name="fail_image_capture">Sorry! Failed to capture image</string>
+    <string name="something_went_wrong">Something went wrong, Please try again.</string>
+    <string name="use_email_instead">Use Email Instead</string>
+    <string name="send_code">Send Code</string>
+    <string name="use_mobile_instead">Use Mobile Instead</string>
+    <string name="back_to_login">Back To Login</string>
+    <string name="settings_amp_support"><![CDATA[Settings & Support]]></string>
+    <string name="share_invite">Share And Invite</string>
+    <string name="settings">Settings</string>
+    <string name="my_account">My Account</string>
+    <string name="share_code">Share Code</string>
+    <string name="share_invite_link">Share Invite Link</string>
+    <string name="document">Document</string>
+    <string name="choose_from">Choose From</string>
+
+    <string name="app_lock_security">App Lock Security</string>
+    <string name="secure_transactions">Secure Transactions</string>
+    <string name="use_monay_pin">Use Monay PIN</string>
+    <string name="lock_statement">Secure access to Monay Wallet by using the same Fingerprint, Pattern and Pin you use to unlock you phone.</string>
+    <string name="enter_registered_mobile_number_verification">Enter your registered Mobile No./Email,\nwe will send you a code for verification.</string>
+    <string name="forgot_monay_pin">Forgot Monay PIN</string>
+    <string name="resend_code">Resend Code</string>
+    <string name="enter_old_pin">Please enter old pin.</string>
+    <string name="forgot_pin_txt">Forgot PIN</string>
+    <string name="verification_txt">Verification</string>
+    <string name="reset_pin">Reset PIN</string>
+    <string name="enter_new_mobile_number">Enter your new Mobile No. we will send you a code for verification.</string>
+    <string name="please_create_a_new_password">Please create a new password.</string>
+    <string name="please_wait_for_while">Please wait for a while</string>
+    <string name="confirm_new_password">Confirm new password</string>
+    <string name="saved_cards">Saved Cards</string>
+    <string name="pay_via_new_card">Add Via New Card</string>
+    <string name="create_account">Create Account</string>
+    <string name="enter_your_pin">Enter Your PIN</string>
+    <string name="confirm_your_pin">Confirm Your PIN</string>
+    <string name="pin_secure_txt">Enter 4 digit pin of your choice and secure your account</string>
+    <string name="decline_request_reason">Please enter decline request reason.</string>
+    <string name="payment_through">Payment Through</string>
+    <string name="share_receipt">Share Receipt</string>
+
+    <string name="added">Added</string>
+    <string name="transfer">Transfer</string>
+    <string name="withdrawal">Withdrawal</string>
+    <string name="user">User</string>
+    <string name="primary_user">Primary User</string>
+    <string name="secondary_user">Secondary User</string>
+    <string name="merchant">Merchant</string>
+    <string name="signup">Signup</string>
+
+    <string name="all_contacts">All Contacts</string>
+    <string name="contacts_on_monay">Contacts on Monay</string>
+    <string name="block_contacts">Block Contacts</string>
+    <string name="block_contact">Block Contact</string>
+    <string name="blocked_contacts">Blocked Contacts</string>
+    <string name="unblock">Unblock</string>
+    <string name="block">Block</string>
+    <string name="block_text"><u>Block</u></string>
+    <string name="next_txt">Next</string>
+    <string name="update_txt">Update</string>
+    <string name="change_monay_pin">Change Monay PIN</string>
+    <string name="reset_mony_pin">Reset Monay PIN</string>
+    <string name="set_monay_pin">Set Monay PIN</string>
+    <string name="change_mobile_number">Change Mobile Number</string>
+    <string name="settings_support_txt"><![CDATA[Settings & \nSupport]]></string>
+    <string name="search_name">Search Name</string>
+    <string name="there_are_no_contact">There are no contacts for this search criteria.</string>
+    <string name="clear_filter">Clear Filter</string>
+    <string name="pin_lengthtxt">Pin should be 4 digits long.</string>
+    <string name="name_on_card">Name On Card</string>
+    <string name="card_number">Card Number</string>
+    <string name="no_result_found">No result found</string>
+    <string name="you_do_not_have_any_transaction">You do not have any transaction</string>
+    <string name="verify_mobile_desc_txt">Enter the code we have sent you on your Mobile No. for verification.</string>
+    <string name="verify_email_desc_txt">Enter the code we have sent you on your registered E-mail address.</string>
+    <string name="secure_your_account_txt">Enter a new pin of your choice to secure your account.</string>
+    <string name="forget_pin">Forget PIN</string>
+    <string name="recent_payments">Recent Payments</string>
+
+    <string name="add">Add</string>
+    <string name="don_t_have_an_account">Don\'t have an account?</string>
+    <string name="how_do_you_want_to_sign_up_with_moany">How do you want to sign up with Monay</string>
+    <string name="enter_a_new_4_digit_pin_of_your_choice_to_secure_your_account">Enter a new 4 digit PIN of your choice to secure your account.</string>
+    <string name="reset_monay_pin">Reset Monay PIN</string>
+    <string name="expiry_date_mm_yy">Expiry Date (MM/YY)</string>
+    <string name="save_this_card_for_faster_payment">Save this card for faster Payment</string>
+    <string name="enter_name">Please enter name.</string>
+    <string name="back_to_security">Back To Security</string>
+    <string name="confirm_new_pin">Confirm New PIN</string>
+    <string name="enter_new_pin">Enter New PIN</string>
+    <string name="enter_old_pin_txt">Enter Old PIN</string>
+    <string name="trans_id">TXN ID:</string>
+    <string name="a_c_number">A/C Number:</string>
+    <string name="urgently_require_money_for_treatment">Urgently require money for treatment</string>
+    <string name="no_request_found">No Request Found</string>
+    <string name="your_monay_pin_has_been_set">Your Monay PIN Has Been Set</string>
+    <string name="in_future_you_can_change_it_from">In Future You Can Change It From</string>
+    <string name="add_new_bank">Add New Bank</string>
+    <string name="choose_photo">Choose Photo</string>
+    <string name="are_you_sure_you_want_to_ndecline_this_request">Are you sure you want to\nDecline this Request?</string>
+    <string name="reason_for_decline_optional">Reason for decline (Optional)</string>
+    <string name="loading">Loading</string>
+    <string name="select_card_type">Select card type</string>
+    <string name="transaction_detail">Transaction Detail</string>
+    <string name="detail">Detail</string>
+    <string name="paid_to">Paid to</string>
+    <string name="scan_my_code_to_pay">Scan My Code To Pay</string>
+    <string name="open_scanner">Open Scanner</string>
+    <string name="you_can_set_4_digit_pin_to_secure_your_transactions">You can set 4 digit PIN to secure your transactions.</string>
+    <string name="_4_digit_monay_pin_exist">4 digit Monay PIN exist</string>
+    <string name="enter_your_new_password">Enter your new password</string>
+    <string name="verify_email">Verify Email</string>
+    <string name="change_number">Change Number</string>
+    <string name="to_the_tearms_conditions"><![CDATA[You need to agree to the Terms & Conditions.]]></string>
+    <string name="kyc">KYC</string>
+    <string name="complete_your_kyc">Complete Your KYC</string>
+    <string name="_1_select_picture_identification_document">1. Select Picture Identification Document</string>
+    <string name="passport">Passport</string>
+    <string name="driver_s_license">Driver\'s License</string>
+    <string name="national_id">National ID</string>
+    <string name="_2_select_proof_of_address_obtained">2. Select Proof of Address obtained</string>
+    <string name="submit">Submit</string>
+    <string name="upload_document">Upload Documents</string>
+    <string name="support_file_pdf_jpg_jpeg_png">Support File (PDF, JPG, JPEG, PNG)</string>
+    <string name="upload_image">Upload Image</string>
+    <string name="support_file_jpg_jpeg_png">Support File (JPG, JPEG, PNG)</string>
+    <string name="delete">Delete</string>
+    <string name="confirmation">Confirmation</string>
+    <string name="thanks_for_submitting_kyc_documents_we_ll_notify_you_once_your_documents_are_verified_by_our_team">Thanks for submitting KYC documents. We\'ll notify you once your documents are verified by our team.</string>
+    <string name="okay">Okay</string>
+    <string name="kyc_pending">KYC Pending</string>
+    <string name="kyc_verified">KYC Verified</string>
+    <string name="kyc_rejected">KYC Rejected</string>
+    <string name="there_are_no_recent_contacts">There are no recent contacts.</string>
+    <string name="cant_request_money">You can\'t request money from yourself.</string>
+    <string name="cant_send_money">You can\'t send money to yourself.</string>
+    <string name="code_is_invalid">It seems as though this code is invalid. Try another one.</string>
+    <string name="please_select_valid_expiry_date">Please select valid expiry date.</string>
+    <string name="ok">Ok</string>
+    <string name="complete_kyc">Complete KYC</string>
+    <string name="limit_message">Please complete your KYC to Add/Send/Receive money more than $500 limit.</string>
+    <string name="support_category">Support Category</string>
+    <string name="change_email">Change Email</string>
+    <string name="enter_new_email">Enter your new Email we will send you a code for verification.</string>
+    <string name="secure_access_to_monay_wallet_by_using_the_touch_id_to_unlock_your_phone">Secure access to Monay wallet by using the Touch ID to unlock your phone.</string>
+    <string name="secure_access_to_monay_wallet_by_using_the_same_faceid_fingerprint_and_pin_you_use_to_unlock_your_phone">Secure access to Monay wallet by using the same Fingerprint and PIN you use to unlock your phone.</string>
+    <string name="contact_support">Contact Support</string>
+    <string name="block_message">Your account is blocked by Admin.</string>
+    <string name="decline_reason">Decline Reason</string>
+
+    <string name="unlock">Unlock</string>
+    <string name="confirm_pattern">Confirm your screen lock PIN, Pattern or Password</string>
+    <string name="setting_label"><![CDATA[Please set the screen lock Manually by navigating to : Settings>Security.]]></string>
+    <string name="unlock_success">App is Unlocked successfully.</string>
+    <string name="unlock_failed">Failed to Unlock the app.</string>
+    <string name="device_is_secure">Device is now secure.</string>
+    <string name="security_device_cancelled">Device is not secure or user cancel the request.</string>
+    <string name="authenticate_again">Authenticate Again</string>
+    <string name="your_card_is_expired">Your card is expired.</string>
+    <string name="document_uploaded">Document Uploaded</string>
+
+    <string name="zendesk_url">https://rahulutilli.zendesk.com</string>
+    <string name="zendesk_application_id">5264f4063caef2434c8956fb2b2827d0c76036e7081ad02f</string>
+    <string name="zendesk_client_id">mobile_sdk_client_f2caa526b4e0ad12fb16</string>
+    <string name="file_size">File is too big, please select a file less than 15MB.</string>
+
+    <string name="please_update_save_email">Please update/save the new email first.</string>
+    <string name="search_country_code">Search Country Code</string>
+    <string name="select_phone_code">Select Country Code</string>
+    <string name="scan_primary_user_s_qr">Scan Primary User\'s QR</string>
+    <string name="primary_user_mobile_no">Primary user mobile no.</string>
+    <string name="next">Next</string>
+
+
+    <!--Secondary user detail-->
+    <string name="enable_account">Enable Account</string>
+    <string name="remove_account">Remove Account</string>
+    <string name="set_range_amount">Set Range Amount</string>Pa
+    <string name="set_range">Set Range</string>
+
+    <string name="primary_accounts">Primary accounts</string>
+
+    <string name="no_primary_account">No Primary Account Found</string>
+    <string name="account_transactions">Account Transactions</string>
+    <string name="my_primary_accounts">My Primary Accounts</string>
+    <string name="available_balance">Available Balance</string>
+
+    <string name="please_select_primary_account">Please select any primary account</string>
+
+    <string name="status_update">Update Status Successfully</string>
+
+    <!--deep link-->
+
+    <string name="deep_link_host">monay.page.link</string>
+
+
+    <string name="deep_link_message_client">Hey! congratulations \n Your parent has send you link to become his/her secondary user</string>
+
+    <string name="share_link_for_secondary">Share link for sign up </string>
+    <string name="want_to_delete_secondary_account">Are you sure you want to delete this account?</string>
+    <string name="secondary_user_do_not_have_any_transaction">No any transaction from this account</string>
+    <string name="set_limit">Set Limit</string>
+
+    <string name="referral_code">Referral Code</string>
+
+    <string name="enough_balance_alert">You don\'t have enough balance in your wallet to make this payment. Please either Top Up your wallet or adjust your secondary user\'s usage limit</string>
+
+
+    <string name="top_up">Top Up</string>
+
+    <string name="adjust_limit">Adjust Limit</string>
+
+
+    <string name="enable_account_description">Enable access to your secondary user to use\n your wallet allotted amount.</string>
+
+    <string name="enter_minimum_amount"><font size="20">Enter Minimum Amount</font></string>
+
+    <string name="enter_refill_amount"><font size="20">Enter Refill Amount</font></string>
+
+
+    <string name="please_enter_minmum_amount">Please enter minimum amount.</string>
+
+    <string name="please_enter_refill_amount">Please enter refill amount.</string>
+    <string name="transfer_action">transfer</string>
+    <string name="ifsc_code">IFSC Code</string>
+
+    <string name="screen_auto_topup">Auto Top Up</string>
+
+    <string name="update_auto_top_up_alert">Please add card and update the minimum and refill amount first</string>
+
+
+</resources>
+
+

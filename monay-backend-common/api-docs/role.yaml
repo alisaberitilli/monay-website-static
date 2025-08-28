@@ -1,0 +1,104 @@
+paths:
+  /admin/role/permission/{roleId}:
+    get:
+      tags:
+        - Role
+      summary: Role permission detail
+      security:
+        - BearerAuth: []
+      produces:
+        - application/json
+      parameters:
+        - in: path
+          name: roleId
+          type: integer
+          required: true
+      responses:
+        '200':
+          description: OK
+  /admin/role/permission:
+    post:
+      tags:
+        - Role
+      summary: Role permission
+      security:
+        - BearerAuth: []
+      produces:
+        - application/json
+      parameters:
+        - in: body
+          name: body
+          required: true
+          schema:
+            "$ref": "#/definitions/role-permission"  
+      responses:
+        '200':
+          description: OK
+    get:
+      tags:
+        - Role
+      summary: Get roles for admin
+      security:
+        - BearerAuth: []
+      produces:
+        - application/json
+      parameters:
+        - in: query
+          name: limit
+          type: integer
+          required: true
+        - in: query
+          name: offset
+          type: integer
+          required: false
+        - in: query
+          name: sortType
+          enum:
+            - 'ASC'
+            - 'DESC'
+          type: string
+          required: false
+        - in: query
+          name: sortBy
+          enum:
+            - 'id'
+            - 'role'
+            - 'createdAt'
+            - 'updatedAt'
+          type: string
+          required: false         
+      responses:
+        '200':
+          description: OK  
+definitions:   
+  role-permission:
+    type: object
+    properties:
+      roleId:
+        type: integer
+      role:
+        type: string
+        required: true  
+      rolePermission:
+        type: array
+        items:
+          $ref: '#/definitions/rolePermissionArray'
+  rolePermissionArray:
+    type: object
+    properties:
+      moduleKey:
+        type: string
+      permission:
+        type: string
+        enum:
+          - 'active'
+          - 'inactive'
+    required:
+      - moduleKey
+      - permission
+    example: 
+      moduleKey: manage_zingler
+      permission: view   
+     
+            
+            

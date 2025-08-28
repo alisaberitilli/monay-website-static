@@ -1,0 +1,261 @@
+paths:
+  /user/payment/request:
+    post:
+        tags:
+          - Payment Request
+        summary: Payment Request
+        security:
+          - BearerAuth: []
+        produces:
+          - application/json
+        parameters:
+          - in: body
+            name: body
+            required: true
+            schema:
+              "$ref": "#/definitions/send-payment-request"
+        responses:
+          '200':
+            description: OK
+  /user/payment/request/pay:
+    post:
+        tags:
+          - Payment Request
+        summary: Pay request payment Money
+        security:
+          - BearerAuth: []
+        produces:
+          - application/json
+        parameters:
+          - in: body
+            name: body
+            required: true
+            schema:
+              "$ref": "#/definitions/pay-request-money"
+        responses:
+          '200':
+            description: OK  
+  /user/payment/request/{type}:          
+    get:
+        tags:
+          - Payment Request
+        summary: Payment Request
+        security:
+          - BearerAuth: []
+        parameters:
+          - in: path
+            name: type
+            type: string
+            enum: 
+              - 'received'
+              - 'paid'
+              - 'declined'
+            required: false
+          - in: query
+            name: limit
+            type: integer
+            required: false
+          - in: query
+            name: offset
+            type: integer
+            required: false    
+        produces:
+          - application/json
+        responses:
+          '200':
+            description: OK                            
+  /user/my-request:
+    get:
+        tags:
+          - Payment Request
+        summary: Payment Request
+        security:
+          - BearerAuth: []
+        parameters:
+          - in: query
+            name: limit
+            type: integer
+            required: false
+          - in: query
+            name: offset
+            type: integer
+            required: false    
+        produces:
+          - application/json
+        responses:
+          '200':
+            description: OK
+  /payment/request/decline:
+    put:
+        tags:
+          - Payment Request
+        summary: Decline Payment Request
+        security:
+          - BearerAuth: []
+        produces:
+          - application/json
+        parameters:
+          - in: body
+            name: body
+            required: true
+            schema:
+              "$ref": "#/definitions/decline-payment-request"
+        responses:
+          '200':
+            description: OK   
+  /admin/payment/request:
+    get:
+      tags:
+        - Payment Request
+      summary: Payment Request list api
+      security:
+          - BearerAuth: []
+      produces:
+        - application/json
+      parameters:
+        - in: query
+          name: status
+          type: string
+          enum: 
+            - 'pending'
+            - 'paid'
+            - 'declined'
+          required: false
+        - in: query
+          name: transactionId
+          type: string
+          required: false
+        - in: query
+          name: fromName
+          type: string
+          required: false
+        - in: query
+          name: toName
+          type: string
+          required: false
+        - in: query
+          name: minAmount
+          type: number
+          required: false
+        - in: query
+          name: maxAmount
+          type: number
+          required: false
+        - in: header
+          name: timezone
+          type: string
+          required: false   
+        - in: query
+          name: sortType
+          enum:
+            - 'ASC'
+            - 'DESC'
+          type: string
+          required: false
+        - in: query
+          name: sortBy
+          enum:
+            - 'id'
+            - 'transactionId'
+            - 'fromUserId'
+            - 'toUserId'
+            - 'amount'
+            - 'message'
+            - 'status'
+            - 'createdAt'
+            - 'updatedAt'
+          type: string
+          required: false
+        - in: query
+          name: fromDate
+          type: string
+          description: '2020-09-30'     
+          required: false
+        - in: query
+          name: toDate
+          type: string
+          description: '2020-09-30'     
+          required: false  
+        - in: query
+          name: limit
+          type: integer
+          required: false
+        - in: query
+          name: offset
+          type: integer
+          required: false    
+      responses:
+        '200':
+          description: OK                                          
+definitions:
+  pay-request-money:
+    type: object
+    properties:
+      requestId:
+        type: integer
+        required: true
+      toUserId:
+        type: string
+        required: true
+      amount:
+        type: string
+        required: true
+      message:
+        type: string
+        required: false
+      paymentMethod:
+        type: string
+        required: true
+      cardId:
+        type: string
+        required: false
+      cardType:
+        type: string
+        required: false
+      cardNumber:
+        type: string
+        required: false
+      nameOnCard:
+        type: string
+        required: false
+      month:
+        type: string
+        required: false
+      year:
+        type: string
+        required: false
+      cvv:
+        type: string
+        required: false
+      saveCard:
+        type: string
+        enum: 
+          - 'no'
+          - 'yes'
+        required: false
+      mpin:
+        type: string
+        required: true
+  send-payment-request:
+    type: object
+    properties:
+      toUserId:
+        type: string
+        required: true
+      amount:
+        type: string
+        required: true
+      message:
+        type: string
+        required: true
+  decline-payment-request:
+    type: object
+    properties:
+      requestId:
+        type: integer
+        required: true
+      declineReason:
+        type: string
+        required: false
+        
+     

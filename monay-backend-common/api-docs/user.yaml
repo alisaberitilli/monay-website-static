@@ -1,0 +1,839 @@
+paths:
+  /admin/user:
+    get:
+      tags:
+        - User
+      summary: User
+      security:
+        - BearerAuth: []
+      produces:
+        - application/json
+      parameters:
+        - in: query
+          name: userType
+          type: string
+          required: false
+          enum:
+            - user
+            - merchant
+        - in: query
+          name: name
+          type: string
+          required: false
+        - in: query
+          name: email
+          type: string
+          required: false
+        - in: query
+          name: status
+          type: string
+          required: false
+          enum:
+            - pending
+            - active
+            - inactive
+            - deleted
+        - in: query
+          name: isKycVerified
+          type: string
+          required: false
+          enum:
+            - 'true'
+            - 'false'
+        - in: query
+          name: limit
+          type: integer
+          required: false
+        - in: query
+          name: offset
+          type: integer
+          required: false
+        - in: query
+          name: phoneNumber
+          type: string
+          required: false  
+        - in: query
+          name: accountNumber
+          type: string
+          required: false  
+        - in: query
+          name: companyName
+          type: string
+          required: false  
+        - in: query
+          name: taxId
+          type: string
+          required: false  
+        - in: query
+          name: chamberOfCommerce
+          type: string
+          required: false  
+        - in: header
+          name: timezone
+          type: string
+          required: false   
+        - in: query
+          name: sortType
+          enum:
+            - 'ASC'
+            - 'DESC'
+          type: string
+          required: false
+        - in: query
+          name: sortBy
+          enum:
+            - 'id'
+            - 'name'
+            - 'email'
+            - 'phoneNumber'
+            - 'companyName'
+            - 'taxId'
+            - 'chamberOfCommerce'
+            - 'createdAt'
+            - 'updatedAt'
+          type: string
+          required: false
+        - in: query
+          name: fromDate
+          type: string
+          description: '2020-09-30'     
+          required: false
+        - in: query
+          name: toDate
+          type: string
+          description: '2020-09-30'     
+          required: false           
+      responses:
+        '200':
+          description: OK 
+  /admin/user-profile/{userId} :
+    get:                
+      tags:               
+        - User           
+      summary: Get user basic profile detail
+      produces:
+        - application/json
+      parameters:
+        - in: path
+          name: userId
+          type: string
+          required: true
+      security:
+        - BearerAuth: []
+      responses:          
+        200:
+          description: An object         
+  /admin/user/{userId}/change-status:
+    put:
+      tags:
+        - User
+      summary: User
+      security:
+        - BearerAuth: []
+      produces:
+        - application/json
+      parameters:
+        - in: path
+          name: userId
+          type: integer
+          required: true
+        - in: body
+          name: body
+          required: true
+          schema:
+            "$ref": "#/definitions/user-status"    
+      responses:
+        '200':
+          description: OK
+  /admin/user/{userId}/kyc-status:
+    put:
+      tags:
+        - User
+      summary: User
+      security:
+        - BearerAuth: []
+      produces:
+        - application/json
+      parameters:
+        - in: path
+          name: userId
+          type: integer
+          required: true
+        - in: body
+          name: body
+          required: true
+          schema:
+            "$ref": "#/definitions/kyc-status"    
+      responses:
+        '200':
+          description: OK     
+  /user/update-profile :
+    put:                
+      tags:               
+        - User           
+      summary: User Update Profile
+      produces:
+      - application/json
+      security:
+        - BearerAuth: []
+      parameters:         
+      - in: body          
+        name: user-update-profile     
+        description:
+        required: false
+        schema:          
+          $ref: '#/definitions/user-update-profile' 
+      responses:          
+        200:
+          description: An object
+  /user/check/phone :
+    get:                
+      tags:               
+        - User           
+      summary: Check user phone number
+      produces:
+      - application/json
+      parameters:         
+      - in: query
+        name: phoneNumberCountryCode
+        type: string
+        required: true  
+      - in: query
+        name: phoneNumber
+        type: string
+        required: true  
+      responses:          
+        200:
+          description: An object
+  /user/check/email :
+    get:                
+      tags:               
+        - User           
+      summary: Check user email
+      produces:
+      - application/json
+      parameters:         
+      - in: query
+        name: email
+        type: string
+        required: true  
+      responses:          
+        200:
+          description: An object
+  /merchant/update-profile :
+    put:                
+      tags:               
+        - User           
+      summary: Merchant Update Profile
+      produces:
+      - application/json
+      security:
+        - BearerAuth: []
+      parameters:         
+      - in: body          
+        name: merchant-update-profile     
+        description:
+        required: false
+        schema:          
+          $ref: '#/definitions/merchant-update-profile' 
+      responses:          
+        200:
+          description: An object
+  /user/set-pin :
+    put:                
+      tags:               
+        - User           
+      summary: Set mPin
+      produces:
+      - application/json
+      security:
+        - BearerAuth: []
+      parameters:         
+      - in: body          
+        name: user-set-pin    
+        description:
+        required: false
+        schema:          
+          $ref: '#/definitions/user-set-pin' 
+      responses:          
+        200:
+          description: An object                                   
+  /home :
+    get:                
+      tags:               
+        - User           
+      summary: User Home page api
+      produces:
+      - application/json
+      security:
+        - BearerAuth: []
+      responses:          
+        200:
+          description: An object                                   
+  /user/search :
+    get:                
+      tags:               
+        - User           
+      summary: Recent user list api
+      produces:
+      - application/json
+      parameters: 
+        - in: query
+          name: limit
+          type: integer
+          required: false
+        - in: query
+          name: offset
+          type: integer
+          required: false      
+        - in: query
+          name: name
+          type: string
+          required: false
+        - in: query
+          name: phoneNumber
+          type: string
+          required: false
+      security:
+        - BearerAuth: []
+      responses:          
+        200:
+          description: An object   
+  /user/profile/{userId} :
+    get:                
+      tags:               
+        - User           
+      summary: Get other user basic profile detail
+      produces:
+        - application/json
+      parameters:
+        - in: path
+          name: userId
+          type: string
+          required: true
+      security:
+        - BearerAuth: []
+      responses:          
+        200:
+          description: An object   
+  /user/update/phone-number:
+    post:
+      tags:
+        - User
+      summary: User change phone number
+      security:
+        - BearerAuth: []
+      produces:
+        - application/json
+      parameters:
+        - in: body
+          name: body
+          required: true
+          schema:
+            "$ref": "#/definitions/update-mobile"    
+      responses:
+        '200':
+          description: OK  
+  /user/verify/phone-number:
+    post:
+      tags:
+        - User
+      summary: "Verify otp (Default OTP:- 444444)"
+      security:
+        - BearerAuth: []
+      produces:
+        - application/json
+      parameters:
+        - in: body
+          name: change phone number verification
+          description: null
+          required: false
+          schema:
+            $ref: "#/definitions/verify-phone-number"
+      responses:
+        "200":
+          description: "An object"  
+  /user/update/email:
+    post:
+      tags:
+        - User
+      summary: User change email
+      security:
+        - BearerAuth: []
+      produces:
+        - application/json
+      parameters:
+        - in: body
+          name: body
+          required: true
+          schema:
+            "$ref": "#/definitions/update-email"    
+      responses:
+        '200':
+          description: OK  
+  /user/verify/email:
+    post:
+      tags:
+        - User
+      summary: "Verify otp (Default OTP:- 444444)"
+      security:
+        - BearerAuth: []
+      produces:
+        - application/json
+      parameters:
+        - in: body
+          name: change email verification code
+          description: null
+          required: false
+          schema:
+            $ref: "#/definitions/verify-email"
+      responses:
+        "200":
+          description: "An object"                                                  
+  /user/forgot-pin:
+    post:
+      tags:
+        - User
+      summary: "Forgot M-PIN"
+      security:
+        - BearerAuth: []
+      produces:
+        - application/json
+      parameters:
+        - in: body
+          name: Forgot M-PIN
+          description: null
+          required: false
+          schema:
+            $ref: "#/definitions/forgot-mpin"
+      responses:
+        "200":
+          description: "An object"  
+  /user/change-pin:
+    post:
+      tags:
+        - User
+      summary: "Change M-PIN"
+      security:
+        - BearerAuth: []
+      produces:
+        - application/json
+      parameters:
+        - in: body
+          name: Change M-PIN
+          description: null
+          required: false
+          schema:
+            $ref: "#/definitions/change-pin"
+      responses:
+        "200":
+          description: "An object"  
+  /user/verify-pin-otp:
+    post:
+      tags:
+        - User
+      summary: "Verify Forgot M-PIN OTP"
+      security:
+        - BearerAuth: []
+      produces:
+        - application/json
+      parameters:
+        - in: body
+          name: Verify Forgot M-PIN OTP
+          description: null
+          required: false
+          schema:
+            $ref: "#/definitions/verify-mpin-otp"
+      responses:
+        "200":
+          description: "An object"  
+  /user/verify-mpin:
+    post:
+      tags:
+        - User
+      summary: "Verify M-PIN"
+      security:
+        - BearerAuth: []
+      produces:
+        - application/json
+      parameters:
+        - in: body
+          name: Verify  M-PIN 
+          description: null
+          required: false
+          schema:
+            $ref: "#/definitions/verify-mpin"
+      responses:
+        "200":
+          description: "An object"          
+  /user/reset-pin:
+    post:
+      tags:
+        - User
+      summary: "Reset M-PIN"
+      security:
+        - BearerAuth: []
+      produces:
+        - application/json
+      parameters:
+        - in: body
+          name: Reset M-PIN
+          description: null
+          required: false
+          schema:
+            $ref: "#/definitions/reset-mpin"
+      responses:
+        "200":
+          description: "An object"  
+  /user/recent-payment-users :
+    get:                
+      tags:               
+        - User           
+      summary: Recent payment user list api
+      produces:
+      - application/json
+      parameters: 
+        - in: query
+          name: limit
+          type: integer
+          required: false
+        - in: query
+          name: offset
+          type: integer
+          required: false      
+        - in: query
+          name: name
+          type: string
+          required: false 
+      security:
+        - BearerAuth: []
+      responses:          
+        200:
+          description: An object     
+  /user/kyc:
+    post:
+      tags:
+        - User
+      summary: "User Kyc Document"
+      security:
+        - BearerAuth: []
+      produces:
+        - application/json
+      parameters:
+        - in: body
+          name: User Kyc Document
+          description: null
+          required: false
+          schema:
+            $ref: "#/definitions/user-kyc"
+      responses:
+        "200":
+          description: "An object"  
+  /user/update-firebase-token:
+    put:                
+      tags:               
+        - User           
+      summary: User Firebase Token
+      produces:
+      - application/json
+      security:
+        - BearerAuth: []
+      parameters:         
+      - in: body          
+        name: update-firebase-token     
+        description:
+        required: false
+        schema:          
+          $ref: '#/definitions/update-firebase-token' 
+      responses:          
+        200:
+          description: An object     
+  /user/wallet-limit:
+    put:                
+      tags:               
+        - User           
+      summary: Parent User refill wallet amount and minimum wallet limit
+      produces:
+      - application/json
+      security:
+        - BearerAuth: []
+      parameters:    
+      - in: body          
+        name: wallet-limit    
+        description:
+        required: false
+        schema:          
+          $ref: '#/definitions/wallet-limit' 
+      responses:          
+        200:
+          description: An object    
+  /user/auto-toup:
+    put:                
+      tags:               
+        - User           
+      summary: User Auto toup status update
+      produces:
+      - application/json
+      security:
+        - BearerAuth: []
+      parameters:    
+      - in: body          
+        name: autoToupStatus    
+        description:
+        required: false
+        schema:          
+          $ref: '#/definitions/auto-toup-status' 
+      responses:          
+        200:
+          description: An object      
+definitions:
+  user-status:
+    type: object
+    properties:
+      status:
+        type: string
+        enum:
+          - 'active'
+          - 'inactive'
+        required: true
+  kyc-status:
+    type: object
+    properties:
+      status:
+        type: string
+        enum:
+          - 'approved'
+          - 'rejected'
+        required: true
+      reason:
+        type: string
+        required: false
+  merchant-update-profile:
+    type: object
+    properties:
+      profilePicture:
+        type: string
+        required: true
+      firstName:
+        type: string
+      lastName:
+        type: string
+      phoneNumberCountryCode:
+        type: string
+      phoneNumber:
+        type: string
+      email:
+        type: string
+        required: true
+      companyName:
+        type: string  
+      taxId:
+        type: string 
+      chamberOfCommerce:
+        type: string        
+  user-update-profile:
+    type: object
+    properties:
+      profilePicture:
+        type: string
+        required: true
+      firstName:
+        type: string
+      lastName:
+        type: string
+      phoneNumberCountryCode:
+        type: string
+      phoneNumber:
+        type: string
+      email:
+        type: string
+        required: true
+  user-set-pin:
+     type: object
+     properties:
+      mpin:
+        type: string
+        required: true
+  update-mobile:
+    type: object
+    properties:
+      phoneNumberCountryCode:
+        type: string
+        enum:
+          - '+91'
+        required: true
+      phoneNumber:
+        type: string
+        required: true  
+  update-email:
+    type: object
+    properties:
+      email:
+        type: string
+        required: true  
+  forgot-mpin:
+    type: object
+    properties:
+      phoneNumberCountryCode:
+        type: string
+        enum:
+          - '+91'
+        required: true
+      username:
+        type: string
+        required: true  
+  verify-mpin-otp:
+    type: object
+    properties:
+      phoneNumberCountryCode:
+        type: string
+        enum:
+          - '+91'
+        required: true
+      username:
+        type: string
+        required: true  
+      otp:
+        type: string
+        required: true  
+  verify-mpin:
+    type: object
+    properties:
+      mpin:
+        type: string
+        required: true  
+  reset-mpin:
+    type: object
+    properties:
+      phoneNumberCountryCode:
+        type: string
+        enum:
+          - '+91'
+        required: true
+      username:
+        type: string
+        required: true  
+      otp:
+        type: string
+        required: true  
+      mpin:
+        type: string
+        required: true  
+      confirmMpin:
+        type: string
+        required: true  
+  change-pin:
+    type: object
+    properties:
+      currentMpin:
+        type: string
+        required: true  
+      mpin:
+        type: string
+        required: true  
+      confirmMpin:
+        type: string
+        required: true  
+  verify-phone-number:
+    type: object
+    properties:
+      phoneNumberCountryCode:
+        type: string
+        enum:
+          - '+91'
+        required: true
+      phoneNumber:
+        type: string
+        required: true   
+      otp:
+        type: string
+        required: true        
+  user-kyc:
+    type: object
+    properties:
+      idProofName:
+        type: string
+        required: true
+      idProofImage:
+        type: string
+        required: true
+      idProofBackImage:
+        type: string
+        required: false   
+      addressProofName:
+        type: string
+        required: true        
+      addressProofImage:
+        type: string
+        required: true    
+      addressProofBackImage:
+        type: string
+        required: false
+  verify-email:
+    type: object
+    properties:
+      email:
+        type: string
+        required: true   
+      otp:
+        type: string
+        required: true
+  update-firebase-token: 
+    type: object
+    properties:
+      firebaseToken:
+        type: string
+        required: true  
+  wallet-limit: 
+    type: object
+    properties:
+      minimumWalletAmount:
+        type: integer
+        required: true   
+      refillWalletAmount:
+        type: integer
+        required: true 
+      paymentMethod:
+        type: string
+        enum: ['card']
+        required: true
+      cardId:
+        type: string
+        required: false
+      cardType:
+        type: string
+        required: false
+      cardNumber:
+        type: string
+        required: false
+      nameOnCard:
+        type: string
+        required: false
+      month:
+        type: string
+        required: false
+      year:
+        type: string
+        required: false
+      cvv:
+        type: string
+        required: false
+      saveCard:
+        type: string
+        enum: 
+          - 'no'
+          - 'yes'
+        required: false
+      mpin:
+        type: string
+        required: true
+  auto-toup-status:
+    type: object
+    properties:
+      autoToupStatus:
+        type: string
+        enum: ['true', 'false']
+        required: true
+      
+      
+     

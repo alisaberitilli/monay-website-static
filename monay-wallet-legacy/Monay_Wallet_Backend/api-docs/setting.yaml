@@ -1,0 +1,156 @@
+paths:
+  /setting:
+    get:
+      tags:
+        - Setting
+      summary: Setting api for app
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: OK
+  /admin/setting:
+    get:
+      tags:
+        - Setting
+      summary: Get All Settings
+      security:
+        - BearerAuth: []
+      produces:
+        - application/json   
+      responses:
+        '200':
+          description: OK  
+    put:
+      tags:
+        - Setting
+      summary: UserSettings
+      security:
+        - BearerAuth: []
+      produces:
+        - application/json
+      parameters:
+        - in: body
+          name: body
+          required: true
+          schema:
+            "$ref": "#/definitions/admin-settings"    
+      responses:
+        '200':
+          description: OK   
+  /admin/country:
+    get:
+      tags:
+        - Setting
+      summary: Get All country list 
+      security:
+        - BearerAuth: []
+      produces:
+        - application/json   
+      responses:
+        '200':
+          description: OK
+  /user/country:
+    get:
+      tags:
+        - Setting
+      summary: Get All country list 
+      security:
+        - BearerAuth: []
+      produces:
+        - application/json   
+      responses:
+        '200':
+          description: OK 
+  /user/kyc-document:
+    get:
+      tags:
+        - Setting
+      summary: Get All kyc document list 
+      security:
+        - BearerAuth: []
+      produces:
+        - application/json  
+      parameters:
+        - in: query
+          name: countryCode
+          type: string
+          required: required 
+      responses:
+        '200':
+          description: OK 
+  /admin/country/setting:         
+    put:
+      tags:
+        - Setting
+      summary: User Country Settings
+      security:
+        - BearerAuth: []
+      produces:
+        - application/json
+      parameters:
+        - in: body
+          name: body
+          required: true
+          schema:
+            "$ref": "#/definitions/admin-country-settings"    
+      responses:
+        '200':
+          description: OK   
+definitions:
+  admin-settings:
+    type: object
+    properties:
+      twilio_account_sid:
+        type: string
+        required: false
+      twilio_auth_token:
+        type: string
+        required: false 
+      twilio_from_number:
+        type: string
+        required: false
+      smtp_email_from_name:
+        type: string
+        required: false 
+      smtp_email_from_email:
+        type: string
+        required: false
+      smtp_host:
+        type: string
+        required: false 
+      smtp_port:
+        type: string
+        required: false
+      smtp_username:
+        type: string
+        required: false 
+      smtp_password:
+        type: string
+        required: false 
+      non_kyc_user_transaction_limit:
+        type: string
+        required: false 
+      kyc_user_transaction_limit:
+        type: string
+        required: false 
+      transaction_limit_days:
+        type: string
+        required: false 
+      country_phone_code:
+        type: string
+        required: false 
+      currency_abbr:
+        type: string
+        required: false 
+  admin-country-settings:
+    type: object
+    properties:
+      country_phone_code:
+        type: string
+        required: true 
+      currency_abbr:
+        type: string
+        required: true 
+            
+            

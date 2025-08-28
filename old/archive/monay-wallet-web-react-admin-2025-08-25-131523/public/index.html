@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+  <meta name="format-detection" content="telephone=no">
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="description" content="Monay" />
+
+  <!-- Cache Control -->
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+  <meta http-equiv="Pragma" content="no-cache" />
+  <meta http-equiv="Expires" content="0" />
+  <!--
+      manifest.json provides metadata used when your web app is installed on a
+      user's mobile device or desktop. See https://developers.google.com/web/fundamentals/web-app-manifest/
+    -->
+  <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
+  <!--
+      Notice the use of %PUBLIC_URL% in the tags above.
+      It will be replaced with the URL of the `public` folder during the build.
+      Only files inside the `public` folder can be referenced from the HTML.
+
+      Unlike "/favicon.ico" or "favicon.ico", "%PUBLIC_URL%/favicon.ico" will
+      work correctly both with client-side routing and a non-root public URL.
+      Learn how to configure a non-root public URL by running `npm run build`.
+    -->
+
+  <!-- Favicon -->
+  <link rel="apple-touch-icon" sizes="180x180" href="%PUBLIC_URL%/assets/images/favicon/apple-touch-icon.png" />
+  <link rel="icon" type="image/png" sizes="32x32" href="%PUBLIC_URL%/assets/images/favicon/favicon-32x32.png" />
+  <link rel="icon" type="image/png" sizes="16x16" href="%PUBLIC_URL%/assets/images/favicon/favicon-16x16.png" />
+  <link rel="manifest" href="%PUBLIC_URL%/assets/images/favicon/site.webmanifest" />
+  <link rel="mask-icon" href="%PUBLIC_URL%/assets/images/favicon/safari-pinned-tab.svg" color="#5bbad5" />
+  <meta name="msapplication-TileColor" content="#000000" />
+  <meta name="theme-color" content="#ffffff" />
+
+  <!-- Links -->
+  <link rel="stylesheet" href="%PUBLIC_URL%/assets/css/bootstrap.min.css" type="text/css" />
+  <link rel="stylesheet" href="%PUBLIC_URL%/assets/css/jquery.fancybox.min.css" type="text/css" />
+  <link rel="stylesheet" href="%PUBLIC_URL%/assets/css/icomoon.css" type="text/css" />
+  <link rel="stylesheet" href="%PUBLIC_URL%/assets/css/loader.css" type="text/css" />
+  <title>Monay</title>
+  <script>
+
+    // https://blog.guya.net/2015/06/12/sharing-sessionstorage-between-tabs-for-secure-multi-tab-authentication/
+    // https://blog.guya.net/security/browser_session/sessionStorage.html
+
+    // Removed IE support in this demo for the sake of simplicity
+    (function () {
+
+      if (!sessionStorage.length) {
+        // Ask other tabs for session storage
+        localStorage.setItem('getSessionStorage', Date.now());
+      };
+
+      window.addEventListener('storage', function (event) {
+
+        //console.log('storage event', event);
+
+        if (event.key == 'getSessionStorage') {
+          // Some tab asked for the sessionStorage -> send it
+
+          localStorage.setItem('sessionStorage', JSON.stringify(sessionStorage));
+          localStorage.removeItem('sessionStorage');
+
+        } else if (event.key == 'sessionStorage' && !sessionStorage.length) {
+          // sessionStorage is empty -> fill it
+
+          var data = JSON.parse(event.newValue),
+            value;
+
+          for (key in data) {
+            sessionStorage.setItem(key, data[key]);
+          }
+
+          // showSessionStorage();
+        }
+      });
+
+      window.onbeforeunload = function () {
+        //sessionStorage.clear();
+      };
+
+    })();
+
+    // https://stackoverflow.com/a/15343916
+    function horizontalScroll() {
+      function scrollHorizontally(e) {
+        e = window.event || e;
+        const delta = Math.max(-1, Math.min(1, (e.wheelDelta || -e.detail)));
+        document.getElementsByClassName('common_table')[0].scrollLeft -= (delta * 40); // Multiplied by 40
+        e.preventDefault();
+      }
+
+      if (document.getElementsByClassName('common_table').length > 0) {
+        // https://stackoverflow.com/a/5038256
+        const divTable = document.getElementsByClassName('common_table')[0]
+        const hasHorizontalScrollbar = divTable.scrollWidth > divTable.clientWidth;
+        const hasVerticalScrollbar = divTable.scrollHeight > divTable.clientHeight;
+
+        if (divTable.removeEventListener) {
+          divTable.removeEventListener("mousewheel", scrollHorizontally, false);
+          divTable.removeEventListener("DOMMouseScroll", scrollHorizontally, false);
+        } else {
+          divTable.detachEvent("onmousewheel", scrollHorizontally);
+        }
+
+        if (hasHorizontalScrollbar) {
+          if (divTable.addEventListener) {
+            // IE9, Chrome, Safari, Opera
+            divTable.addEventListener("mousewheel", scrollHorizontally, false);
+            // Firefox
+            divTable.addEventListener("DOMMouseScroll", scrollHorizontally, false);
+          } else {
+            // IE 6/7/8
+            divTable.attachEvent("onmousewheel", scrollHorizontally);
+          }
+        }
+      }
+    }
+
+  </script>
+
+  <script src="https://unpkg.com/x-frame-bypass"></script>
+
+</head>
+
+<body>
+
+  <noscript>You need to enable JavaScript to run this app.</noscript>
+
+  <div id="root">
+    <div class="beforeloadApp listloader d-flex align-items-center justify-content-center vh-100">
+      <div class="beforeloadAppLoader Listpreloader">
+        <img class="d-block mb-3" src="/assets/images/logo.png" alt="logo" />
+        <div class="text-center"><span class="icon-spinner3 spinner"></span></div>
+      </div>
+    </div>
+  </div>
+  <!--
+    This HTML file is a template.
+    If you open it directly in the browser, you will see an empty page.
+
+    You can add webfonts, meta tags, or analytics to this file.
+    The build step will place the bundled scripts into the <body> tag.
+
+    To begin the development, run `npm start` or `yarn start`.
+    To create a production bundle, use `npm run build` or `yarn build`.
+  -->
+
+  <!-- Link's -->
+  <script src="%PUBLIC_URL%/assets/js/jquery.min.js"></script>
+  <script src="%PUBLIC_URL%/assets/js/popper.min.js"></script>
+  <script src="%PUBLIC_URL%/assets/js/bootstrap.min.js"></script>
+  <script src="%PUBLIC_URL%/assets/js/moment.js"></script>
+  <script src="%PUBLIC_URL%/assets/js/jquery.fancybox.min.js"></script>
+  <script src="%PUBLIC_URL%/assets/tinymce/js/tinymce/tinymce.min.js"></script>
+
+</body>
+
+</html>

@@ -1,0 +1,50 @@
+{
+  "compilerOptions": {
+    "composite": true,
+    "target": "ES2020",
+    "useDefineForClassFields": true,
+    "module": "ESNext",
+    "lib": [
+      "ES2020",
+      "DOM",
+      "DOM.Iterable"
+    ],
+    "skipLibCheck": true,
+    /* Bundler mode */
+    "moduleResolution": "bundler",
+    "allowImportingTsExtensions": false,
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "noEmit": false,
+    /* Linting */
+    "strict": true,
+    "noFallthroughCasesInSwitch": true,
+    "baseUrl": ".",
+    "paths": {
+      "#server/*": [
+        "_server/*"
+      ],
+      "#schema": [
+        "prisma/generated/schemas/index.ts"
+      ],
+      "#constants": [
+        "constants.ts"
+      ],
+      "#helpers": [
+        "helpers.ts"
+      ],
+    },
+    "outDir": "lib",
+    "typeRoots": [
+      "./node_modules/@types",
+      "./types",
+      "./env.d.ts"
+    ]
+  },
+  "include": [
+    "_server/**/*.ts",
+    "constants.ts",
+    "helpers.ts",
+    "prisma/generated/schemas/**/*.ts"
+  ],
+}

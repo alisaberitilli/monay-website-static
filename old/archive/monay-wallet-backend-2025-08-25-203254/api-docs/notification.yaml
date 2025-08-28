@@ -1,0 +1,90 @@
+paths:
+  /test-notification:
+    post:
+      tags:
+        - Notification
+      summary: Test Notification
+      security:
+        - BearerAuth: []
+      produces:
+        - application/json
+      parameters:         
+        - in: body
+          name: body
+          required: true
+          schema:
+            "$ref": "#/definitions/TestNotification"
+      responses:
+        '200':
+          description: OK
+  /user/notification:
+    get:
+      tags:
+        - Notification
+      summary: User Notification list
+      security:
+        - BearerAuth: []
+      produces:
+        - application/json
+      parameters:
+          - in: query
+            name: limit
+            type: integer
+            required: false
+          - in: query
+            name: offset
+            type: integer
+            required: false      
+      responses:
+        '200':
+          description: OK
+   
+  /admin/notification:
+    get:
+      tags:
+        - Notification
+      summary: Admin Notification list
+      security:
+        - BearerAuth: []
+      produces:
+        - application/json
+      parameters:
+          - in: query
+            name: limit
+            type: integer
+            required: false
+          - in: query
+            name: offset
+            type: integer
+            required: false      
+      responses:
+        '200':
+          description: OK
+  /notification/status:
+    put:
+      tags:
+        - Notification
+      summary: Update notification status 
+      security:
+        - BearerAuth: []
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: OK
+  
+definitions:
+  TestNotification:
+    type: object
+    properties:
+      device_id:
+        type: string
+      type:
+        type: string
+      title:
+        type: string
+      message:
+        type: string
+  
+      
+          

@@ -1,0 +1,34 @@
+{
+  "data": [
+    {
+      "name": "English (United States)",
+      "debugDescription": "",
+      "code": "en-US",
+      "countries": {
+        "create": {
+          "name": "United States",
+          "callingCode": "+1",
+          "currencyCode": "$",
+          "status": "ACTIVE",
+          "code": "USA",
+          "flag": "🇺🇸"
+        }
+      }
+    },
+    {
+      "name": "Hindi (India)",
+      "debugDescription": "",
+      "code": "hi-IN",
+      "countries": {
+        "create": {
+          "name": "India",
+          "callingCode": "+91",
+          "currencyCode": "₹",
+          "status": "ACTIVE",
+          "code": "IND",
+          "flag": "🇮🇳"
+        }
+      }
+    }
+  ]
+}

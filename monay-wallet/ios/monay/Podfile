@@ -1,0 +1,87 @@
+# SwiftUI requires iOS 13.0+
+platform :ios, '14.0'
+use_modular_headers!
+
+# Post install script to fix deployment targets
+post_install do |installer|
+  installer.pods_project.targets.each do |target|
+    target.build_configurations.each do |config|
+      config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '14.0'
+    end
+  end
+  
+  # Fix for Xcode 15+ libarclite issue
+  installer.pods_project.targets.each do |target|
+    target.build_configurations.each do |config|
+      config.build_settings['ONLY_ACTIVE_ARCH'] = 'YES'
+      config.build_settings['EXCLUDED_ARCHS[sdk=iphonesimulator*]'] = 'i386'
+    end
+  end
+end
+
+target 'Monay' do
+  # Comment the next line if you don't want to use dynamic frameworks
+  use_frameworks!
+
+  # SwiftUI-compatible Pods for Monay
+  
+  # Core SwiftUI and Combine compatible networking
+  pod 'Alamofire', '~> 5.6'  # Modern networking, Combine-compatible
+  pod 'Kingfisher', '~> 7.0'  # SwiftUI image loading
+  
+  # Modern Swift utilities
+  pod 'SwiftLint'
+  pod 'KeychainAccess'
+  
+  # JWT and Authentication
+  pod 'JWTDecode'
+  
+  # JSON Mapping (needed for legacy code)
+  pod 'ObjectMapper'
+  pod 'IQKeyboardManagerSwift'
+  pod 'RxSwift'
+  pod 'RxCocoa'
+  pod 'TTTAttributedLabel'
+  pod 'ActionSheetPicker-3.0'
+  pod 'TagListView'
+  pod 'CocoaLumberjack/Swift'
+  
+  # Firebase (SwiftUI compatible)
+  # Temporarily comment out Firebase to fix build
+  # pod 'Firebase/Analytics'
+  # pod 'Firebase/Messaging'
+  # pod 'Firebase/Crashlytics'
+  # pod 'Firebase/DynamicLinks'
+  
+  # Phone number handling
+  pod 'PhoneNumberKit', '~> 3.6'  # Updated version
+  
+  # QR Code scanning (SwiftUI compatible)
+  # pod 'CodeScanner'  # Temporarily disabled due to compatibility issues
+  
+  # Modern logging
+  pod 'OSLog'
+  
+  # SwiftUI specific utilities
+  pod 'SwiftUIX'  # Extended SwiftUI components
+  
+  # Remove UIKit-specific dependencies:
+  # - TTTAttributedLabel (replaced with SwiftUI Text)
+  # - IQKeyboardManagerSwift (not needed in SwiftUI)
+  # - TagListView (replaced with SwiftUI native)
+  # - ActionSheetPicker-3.0 (replaced with SwiftUI native)
+  # - ObjectMapper (replaced with Codable)
+  # - RxSwift/RxCocoa (replaced with Combine)
+  # - CocoaLumberjack (replaced with os_log)
+  # - ZendeskSDK (will implement SwiftUI-compatible alternative)
+  
+  target 'MonayTests' do
+    inherit! :search_paths
+    # Pods for testing
+  end
+
+  target 'MonayUITests' do
+    # Pods for testing
+  end
+    
+end

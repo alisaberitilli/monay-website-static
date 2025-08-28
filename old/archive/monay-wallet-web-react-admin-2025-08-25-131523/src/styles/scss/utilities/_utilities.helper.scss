@@ -1,0 +1,117 @@
+.btn:focus,
+.btn.active,
+input:focus,
+input:hover,
+button:focus,
+button.focus,
+button:hover,
+button:active,
+button.active,
+.selectpicker:focus,
+a:focus,
+.btn:active:focus {
+    @include no-outline();
+}
+
+a,
+.btn {
+    @include transition(all 0.3s ease 0s);
+    &:hover,
+    &:focus {
+        text-decoration: none;
+        @include no-outline();
+        -webkit-box-shadow: none;
+        box-shadow: none;
+    }
+}
+
+// font 
+.font-rg {
+    font-family: font(rg);
+}
+.font-sm {
+    font-family: font(sm);
+}
+.font-bd {
+    font-family: font(bd);
+}
+
+//colors
+.text-black {
+    color: color(900) !important;
+}
+.text-primary {
+    color: color(500) !important;
+}
+
+//links
+.linkPrimary {
+    color: color(500);
+    &:hover,
+    &:focus,
+    &:active {
+        color: darken(color(500), 5%)
+    }
+}
+
+//background colors
+.bgPrimary {
+    background-color: color(500);
+}
+
+// common Row
+.commonRow {
+    @include media-breakpoint-down(lg) {
+        margin-right: -10px;
+        margin-left: -10px;
+        >.col,
+        >[class*="col-"] {
+            padding-right: 10px;
+            padding-left: 10px
+        }
+    }
+
+    @include media-breakpoint-down(sm) {
+        margin-right: -7.5px;
+        margin-left: -7.5px;
+        >.col,
+        >[class*="col-"] {
+            padding-right: 7.5px;
+            padding-left: 7.5px
+        }
+    }
+}
+
+// alert
+.alert {
+    border-width: 0 0 0 3px;
+    border-style: solid;
+    padding: 5px 10px;
+    border-radius: 0px;
+    margin-bottom: 0px;
+    text-align: center;
+    font-size: 15px;
+    &.alert-danger {
+        color: #a94442;
+        background-color: #f2dede;
+        border-color: #A94442;
+    }
+    &.alert-success {
+        color: #3c763d;
+        background-color: #dff0d8;
+        border-color: #59935A;
+    }
+    &.alert-info {
+        color: #31708f;
+        background-color: #d9edf7;
+        border-color: #4C8BAA;
+    }
+    &.alert-warning {
+        background-color: #F6F2DD;
+        border-color: #AF9260;
+        color: #8A6D3B;
+    }
+    @include media-breakpoint-down(sm) {
+        font-size: 14px;
+    }
+}

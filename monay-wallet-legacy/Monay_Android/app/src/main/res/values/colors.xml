@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#08AAFF</color>
+
+    <color name="colorPrimaryDark">#08AAFF</color>
+    <color name="colorAccent">#08AAFF</color>
+    <color name="white">#ffffff</color>
+    <color name="pro_text_color">#547ce4</color>
+    <color name="red">#FF4619</color>
+    <color name="blue">#027BFF</color>
+    <color name="dark_black">#111111</color>
+    <color name="sky_blue">#66d8ff</color>
+    <color name="ligh_black">#7E7E7E</color>
+    <color name="transparent">#00000000</color>
+    <color name="gray">#40454E</color>
+    <color name="status_color">#E65848</color>
+    <color name="light_red">#ff6666</color>
+    <color name="articles_middle_txt">#6C6C6C</color>
+    <color name="articles_message_txt">#e1e1e1</color>
+    <color name="articles_detail_color">#414141</color>
+    <color name="gray_light">#BCBCBC</color>
+    <color name="white_gray_color">#FCF8F8</color>
+    <color name="white_tranparency">#CCffffff</color>
+    <color name="card_view_color">#F0F0F0</color>
+    <color name="white_red_mix">#F7BBA8</color>
+    <color name="carban_black">#323841</color>
+    <color name="float_transparent">#00000000</color>
+    <color name="full_transparent">#00000000</color>
+    <color name="white_red_light_mix">#FCF8F8</color>
+    <color name="white_blue_light_mix">#B6C9F3</color>
+    <color name="light_yellow">#FA9E5A</color>
+    <color name="orange_red">#FF4619</color>
+    <color name="orange_red_light">#FD7654</color>
+    <color name="bottom_menu_color">#F58040</color>
+    <color name="blue_btn">#3B5998</color>
+    <color name="bg_color">#D7D7D7</color>
+    <color name="bg_relative_color">#F7F7F7</color>
+    <color name="bg_un_selected_trophy">#CC57595B</color>
+    <color name="fb_bg_color">#395DD7</color>
+    <color name="light_blue">#A3B4EE</color>
+    <color name="progress_bg">#FDFDFD</color>
+    <color name="deactive_tab">#9198AA</color>
+    <color name="pro_bg_color">#ECEDF0</color>
+    <color name="bg_profile">#DBC357</color>
+    <color name="white_transparent">#33ffffff</color>
+    <color name="light_gray">#F7F7F7</color>
+    <color name="almost_txt">#7B7A7D</color>
+    <color name="difficult_text">#B4B4B4</color>
+    <color name="notes_text">#A5ADBE</color>
+    <color name="craving_date_bg">#FBE8E4</color>
+    <color name="gray_color">#9098A9</color>
+    <color name="home_tray_color">#E9E9E9</color>
+    <color name="home_tray_text_color">#C4C4C4</color>
+
+    <color name="yellowish">#FFCB00</color>
+    <color name="success_text">#0B9810</color>
+    <color name="devider_color">#eeeeee</color>
+    <color name="recent_view_bg">#fbfbfb</color>
+    <color name="scanner_bg">#BF696A6C</color>
+
+    <color name="light_blue_color">#edf4f7</color>
+    <color name="light_white">#48FFFFFF</color>
+    <color name="light_gray_txt">#7c7c7c</color>
+
+    <color name="dark_blue">#074FFE</color>
+    <color name="light_blue_card">#2CAAFF</color>
+</resources>

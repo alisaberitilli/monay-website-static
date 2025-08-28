@@ -1,0 +1,1082 @@
+openapi: 3.1.0
+info:
+  title: CaaS Platform API
+  description: Coin-as-a-Service Platform API with dual rail support for Base (EVM) and Solana
+  version: 1.0.0
+  contact:
+    name: Monay/Tilli Team
+    email: api@monay.com
+  license:
+    name: Proprietary
+    url: https://monay.com/license
+
+servers:
+  - url: https://api.monay.com/v1
+    description: Production API
+  - url: https://api-staging.monay.com/v1
+    description: Staging API
+  - url: http://localhost:3001/v1
+    description: Local Development
+
+security:
+  - BearerAuth: []
+  - ApiKeyAuth: []
+
+paths:
+  /issuers:
+    post:
+      summary: Create issuer tenant
+      description: Create a new issuer tenant with associated coins and policies
+      operationId: createIssuer
+      tags: [Issuers]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateIssuerRequest'
+      responses:
+        '201':
+          description: Issuer created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Issuer'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '422':
+          $ref: '#/components/responses/ValidationError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /tokens:
+    post:
+      summary: Deploy coin on selected rails
+      description: Deploy a new coin contract on specified blockchain rails
+      operationId: deployToken
+      tags: [Tokens]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeployTokenRequest'
+      responses:
+        '202':
+          description: Token deployment initiated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenDeployment'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '422':
+          $ref: '#/components/responses/ValidationError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /wallets:
+    post:
+      summary: Create custodial wallet
+      description: Create a new custodial wallet for a verified user
+      operationId: createWallet
+      tags: [Wallets]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateWalletRequest'
+      responses:
+        '201':
+          description: Wallet created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Wallet'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '422':
+          $ref: '#/components/responses/ValidationError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /kyc/sessions:
+    post:
+      summary: Start KYC session
+      description: Initialize a new KYC verification session for a user
+      operationId: startKYCSession
+      tags: [KYC]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StartKYCSessionRequest'
+      responses:
+        '201':
+          description: KYC session created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/KYCSession'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '422':
+          $ref: '#/components/responses/ValidationError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /mints:
+    post:
+      summary: Request mint (fiat to coin)
+      description: Request minting of coins in exchange for fiat deposits
+      operationId: requestMint
+      tags: [Mints]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MintRequest'
+      responses:
+        '202':
+          description: Mint request accepted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MintRequest'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '422':
+          $ref: '#/components/responses/ValidationError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /redeems:
+    post:
+      summary: Request redeem (coin to fiat)
+      description: Request redemption of coins for fiat withdrawal
+      operationId: requestRedeem
+      tags: [Redeems]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RedeemRequest'
+      responses:
+        '202':
+          description: Redeem request accepted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RedeemRequest'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '422':
+          $ref: '#/components/responses/ValidationError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /transfers:
+    post:
+      summary: Transfer coins between wallets
+      description: Transfer coins between wallets subject to BRF compliance checks
+      operationId: transferCoins
+      tags: [Transfers]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TransferRequest'
+      responses:
+        '202':
+          description: Transfer initiated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Transfer'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '422':
+          $ref: '#/components/responses/ValidationError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /swaps:
+    post:
+      summary: Cross-rail treasury swap
+      description: Execute cross-rail treasury swap (burn on source, mint on target)
+      operationId: executeSwap
+      tags: [Swaps]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SwapRequest'
+      responses:
+        '202':
+          description: Swap initiated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Swap'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '422':
+          $ref: '#/components/responses/ValidationError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /ledger/entries:
+    get:
+      summary: List journal entries
+      description: Retrieve ledger journal entries with filtering and pagination
+      operationId: listLedgerEntries
+      tags: [Ledger]
+      parameters:
+        - name: tenant_id
+          in: query
+          description: Filter by tenant ID
+          schema:
+            type: string
+            format: uuid
+        - name: account_code
+          in: query
+          description: Filter by account code
+          schema:
+            type: string
+        - name: rail
+          in: query
+          description: Filter by blockchain rail
+          schema:
+            type: string
+            enum: [base, solana]
+        - name: from_date
+          in: query
+          description: Filter from date (ISO 8601)
+          schema:
+            type: string
+            format: date-time
+        - name: to_date
+          in: query
+          description: Filter to date (ISO 8601)
+          schema:
+            type: string
+            format: date-time
+        - name: page
+          in: query
+          description: Page number for pagination
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+        - name: limit
+          in: query
+          description: Number of items per page
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+      responses:
+        '200':
+          description: Ledger entries retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LedgerEntriesResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /tokens/{id}/supply:
+    get:
+      summary: Get token supply information
+      description: Retrieve circulating and locked supply information for a token
+      operationId: getTokenSupply
+      tags: [Tokens]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Token ID
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Token supply information retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenSupply'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /webhooks:
+    post:
+      summary: Register webhook endpoint
+      description: Register a new webhook endpoint for receiving platform events
+      operationId: registerWebhook
+      tags: [Webhooks]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WebhookRegistration'
+      responses:
+        '201':
+          description: Webhook registered successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Webhook'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '422':
+          $ref: '#/components/responses/ValidationError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /compliance/cases:
+    get:
+      summary: List compliance cases
+      description: Retrieve compliance cases with filtering and pagination
+      operationId: listComplianceCases
+      tags: [Compliance]
+      parameters:
+        - name: status
+          in: query
+          description: Filter by case status
+          schema:
+            type: string
+            enum: [open, assigned, resolved, closed]
+        - name: priority
+          in: query
+          description: Filter by priority level
+          schema:
+            type: string
+            enum: [low, medium, high, critical]
+        - name: assigned_to
+          in: query
+          description: Filter by assigned user ID
+          schema:
+            type: string
+            format: uuid
+        - name: page
+          in: query
+          description: Page number for pagination
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+        - name: limit
+          in: query
+          description: Number of items per page
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+      responses:
+        '200':
+          description: Compliance cases retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ComplianceCasesResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /compliance/actions/{action}:
+    post:
+      summary: Execute compliance action
+      description: Execute compliance actions like freeze/unfreeze wallets or force transfers
+      operationId: executeComplianceAction
+      tags: [Compliance]
+      parameters:
+        - name: action
+          in: path
+          required: true
+          description: Action to execute
+          schema:
+            type: string
+            enum: [freeze, unfreeze, force_transfer]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ComplianceActionRequest'
+      responses:
+        '200':
+          description: Compliance action executed successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ComplianceAction'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '422':
+          $ref: '#/components/responses/ValidationError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: X-API-Key
+
+  schemas:
+    # Common schemas
+    Error:
+      type: object
+      properties:
+        error:
+          type: string
+          description: Error message
+        code:
+          type: string
+          description: Error code
+        correlation_id:
+          type: string
+          description: Correlation ID for debugging
+        details:
+          type: object
+          description: Additional error details
+
+    # Issuer schemas
+    CreateIssuerRequest:
+      type: object
+      required:
+        - name
+        - rails
+        - token_config
+      properties:
+        name:
+          type: string
+          description: Issuer company name
+          maxLength: 255
+        rails:
+          type: array
+          items:
+            type: string
+            enum: [base, solana]
+          description: Blockchain rails to deploy on
+          minItems: 1
+        token_config:
+          $ref: '#/components/schemas/TokenConfig'
+        kyb_documents:
+          type: array
+          items:
+            $ref: '#/components/schemas/KYBDocument'
+          description: KYB verification documents
+
+    Issuer:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        status:
+          type: string
+          enum: [pending, active, suspended, terminated]
+        rails:
+          type: array
+          items:
+            type: string
+            enum: [base, solana]
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+
+    # Token schemas
+    TokenConfig:
+      type: object
+      required:
+        - symbol
+        - name
+        - decimals
+        - supply_cap
+      properties:
+        symbol:
+          type: string
+          description: Token symbol (e.g., USDC)
+          maxLength: 10
+        name:
+          type: string
+          description: Token full name
+          maxLength: 255
+        decimals:
+          type: integer
+          description: Number of decimal places
+          minimum: 0
+          maximum: 18
+        supply_cap:
+          type: string
+          description: Maximum supply cap
+          pattern: '^[0-9]+$'
+
+    DeployTokenRequest:
+      type: object
+      required:
+        - issuer_id
+        - token_config
+        - rails
+      properties:
+        issuer_id:
+          type: string
+          format: uuid
+        token_config:
+          $ref: '#/components/schemas/TokenConfig'
+        rails:
+          type: array
+          items:
+            type: string
+            enum: [base, solana]
+
+    TokenDeployment:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        status:
+          type: string
+          enum: [pending, deploying, deployed, failed]
+        contract_addresses:
+          type: object
+          additionalProperties:
+            type: string
+        deployment_tx_hashes:
+          type: object
+          additionalProperties:
+            type: string
+
+    # Wallet schemas
+    CreateWalletRequest:
+      type: object
+      required:
+        - user_id
+        - rail
+        - wallet_type
+      properties:
+        user_id:
+          type: string
+          format: uuid
+        rail:
+          type: string
+          enum: [base, solana]
+        wallet_type:
+          type: string
+          enum: [custodial, non_custodial]
+        kyc_reference:
+          type: string
+          description: KYC verification reference
+
+    Wallet:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        user_id:
+          type: string
+          format: uuid
+        rail:
+          type: string
+          enum: [base, solana]
+        address:
+          type: string
+        wallet_type:
+          type: string
+          enum: [custodial, non_custodial]
+        status:
+          type: string
+          enum: [active, frozen, closed]
+        created_at:
+          type: string
+          format: date-time
+
+    # KYC schemas
+    StartKYCSessionRequest:
+      type: object
+      required:
+        - user_id
+        - kyc_level
+      properties:
+        user_id:
+          type: string
+          format: uuid
+        kyc_level:
+          type: string
+          enum: [basic, enhanced, corporate]
+        provider:
+          type: string
+          description: KYC provider to use
+
+    KYCSession:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        user_id:
+          type: string
+          format: uuid
+        status:
+          type: string
+          enum: [pending, in_progress, completed, failed]
+        upload_urls:
+          type: object
+          additionalProperties:
+            type: string
+        expires_at:
+          type: string
+          format: date-time
+
+    # Transaction schemas
+    MintRequest:
+      type: object
+      required:
+        - wallet_id
+        - amount
+        - fiat_amount
+        - fiat_currency
+      properties:
+        wallet_id:
+          type: string
+          format: uuid
+        amount:
+          type: string
+          description: Token amount to mint
+        fiat_amount:
+          type: string
+          description: Fiat amount deposited
+        fiat_currency:
+          type: string
+          description: Fiat currency code
+          maxLength: 3
+        bank_reference:
+          type: string
+          description: Bank transaction reference
+
+    RedeemRequest:
+      type: object
+      required:
+        - wallet_id
+        - amount
+        - bank_account
+      properties:
+        wallet_id:
+          type: string
+          format: uuid
+        amount:
+          type: string
+          description: Token amount to redeem
+        bank_account:
+          $ref: '#/components/schemas/BankAccount'
+        memo:
+          type: string
+          description: Optional memo for the transaction
+
+    TransferRequest:
+      type: object
+      required:
+        - from_wallet_id
+        - to_wallet_id
+        - amount
+      properties:
+        from_wallet_id:
+          type: string
+          format: uuid
+        to_wallet_id:
+          type: string
+          format: uuid
+        amount:
+          type: string
+          description: Amount to transfer
+        memo:
+          type: string
+          description: Optional memo
+
+    SwapRequest:
+      type: object
+      required:
+        - from_rail
+        - to_rail
+        - amount
+        - issuer_id
+      properties:
+        from_rail:
+          type: string
+          enum: [base, solana]
+        to_rail:
+          type: string
+          enum: [base, solana]
+        amount:
+          type: string
+          description: Amount to swap
+        issuer_id:
+          type: string
+          format: uuid
+        bridge_provider:
+          type: string
+          description: Optional bridge provider
+
+    # Response schemas
+    LedgerEntriesResponse:
+      type: object
+      properties:
+        entries:
+          type: array
+          items:
+            $ref: '#/components/schemas/LedgerEntry'
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+
+    TokenSupply:
+      type: object
+      properties:
+        circulating_supply:
+          type: string
+        locked_supply:
+          type: string
+        total_supply:
+          type: string
+        last_updated:
+          type: string
+          format: date-time
+
+    ComplianceCasesResponse:
+      type: object
+      properties:
+        cases:
+          type: array
+          items:
+            $ref: '#/components/schemas/ComplianceCase'
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+
+    # Additional schemas
+    BankAccount:
+      type: object
+      required:
+        - account_number
+        - routing_number
+        - account_type
+      properties:
+        account_number:
+          type: string
+        routing_number:
+          type: string
+        account_type:
+          type: string
+          enum: [checking, savings]
+
+    KYBDocument:
+      type: object
+      properties:
+        type:
+          type: string
+          enum: [business_license, articles_of_incorporation, tax_id]
+        url:
+          type: string
+          format: uri
+
+    LedgerEntry:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        account_code:
+          type: string
+        debit:
+          type: string
+        credit:
+          type: string
+        rail:
+          type: string
+          enum: [base, solana]
+        tx_hash:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+
+    ComplianceCase:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        status:
+          type: string
+          enum: [open, assigned, resolved, closed]
+        priority:
+          type: string
+          enum: [low, medium, high, critical]
+        assigned_to:
+          type: string
+          format: uuid
+        created_at:
+          type: string
+          format: date-time
+
+    WebhookRegistration:
+      type: object
+      required:
+        - url
+        - events
+      properties:
+        url:
+          type: string
+          format: uri
+        events:
+          type: array
+          items:
+            type: string
+            enum: [wallet.created, kyc.updated, mint.succeeded, transfer.succeeded, redeem.succeeded, swap.completed, brf.decision, ledger.closed]
+
+    Webhook:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        url:
+          type: string
+        events:
+          type: array
+          items:
+            type: string
+        status:
+          type: string
+          enum: [active, inactive]
+        created_at:
+          type: string
+          format: date-time
+
+    ComplianceActionRequest:
+      type: object
+      required:
+        - wallet_id
+        - reason
+      properties:
+        wallet_id:
+          type: string
+          format: uuid
+        reason:
+          type: string
+          description: Reason for the action
+        evidence:
+          type: array
+          items:
+            type: string
+          description: Evidence documents
+
+    ComplianceAction:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        action:
+          type: string
+          enum: [freeze, unfreeze, force_transfer]
+        wallet_id:
+          type: string
+          format: uuid
+        status:
+          type: string
+          enum: [pending, completed, failed]
+        executed_at:
+          type: string
+          format: date-time
+
+    Pagination:
+      type: object
+      properties:
+        page:
+          type: integer
+        limit:
+          type: integer
+        total:
+          type: integer
+        pages:
+          type: integer
+
+  responses:
+    BadRequest:
+      description: Bad request
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            error: "Invalid request parameters"
+            code: "VALIDATION_ERROR"
+            correlation_id: "req_123"
+            details:
+              field: "amount"
+              message: "Amount must be positive"
+
+    Unauthorized:
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            error: "Authentication required"
+            code: "UNAUTHORIZED"
+            correlation_id: "req_123"
+
+    Forbidden:
+      description: Forbidden
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            error: "Insufficient permissions"
+            code: "FORBIDDEN"
+            correlation_id: "req_123"
+
+    NotFound:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            error: "Resource not found"
+            code: "NOT_FOUND"
+            correlation_id: "req_123"
+
+    Conflict:
+      description: Resource conflict
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            error: "Resource already exists"
+            code: "CONFLICT"
+            correlation_id: "req_123"
+
+    ValidationError:
+      description: Validation error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            error: "Validation failed"
+            code: "VALIDATION_ERROR"
+            correlation_id: "req_123"
+            details:
+              - field: "email"
+                message: "Invalid email format"
+              - field: "amount"
+                message: "Amount must be positive"
+
+    InternalServerError:
+      description: Internal server error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            error: "Internal server error"
+            code: "INTERNAL_ERROR"
+            correlation_id: "req_123"
+
+tags:
+  - name: Issuers
+    description: Issuer tenant management
+  - name: Tokens
+    description: Token deployment and management
+  - name: Wallets
+    description: Wallet creation and management
+  - name: KYC
+    description: Know Your Customer verification
+  - name: Mints
+    description: Token minting operations
+  - name: Redeems
+    description: Token redemption operations
+  - name: Transfers
+    description: Token transfer operations
+  - name: Swaps
+    description: Cross-rail treasury swaps
+  - name: Ledger
+    description: Double-entry ledger operations
+  - name: Webhooks
+    description: Webhook management
+  - name: Compliance
+    description: Compliance and regulatory operations
+

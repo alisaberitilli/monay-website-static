@@ -1,0 +1,506 @@
+# Claude AI Project Configuration for Monay CaaS Implementation
+# This YAML file contains structured prompts for building the Coin-as-a-Service platform
+
+project:
+  name: "Monay CaaS Platform"
+  description: "Enterprise Coin-as-a-Service platform with dual-rail blockchain architecture"
+  version: "1.0.0"
+  repository: "monay-caas"
+
+context:
+  overview: |
+    Build a comprehensive Coin-as-a-Service (CaaS) platform that enables enterprises to create,
+    manage, and control their own branded stablecoins using a dual-rail blockchain architecture
+    (Base EVM L2 for enterprise operations, Solana for consumer transactions).
+  
+  existing_infrastructure:
+    - "monay-backend-common: Centralized API at port 3001"
+    - "monay-admin: Admin dashboard at port 3002"
+    - "Consumer wallet: Web app at port 3003 + iOS/Android apps"
+    - "PostgreSQL database: Shared across all services"
+    - "Beacon codebase: UI component library and patterns"
+
+  technical_requirements:
+    blockchain:
+      - "Base EVM L2 (Sepolia testnet for dev)"
+      - "Solana (Devnet for dev)"
+      - "ERC-3643 compliant tokens on Base"
+      - "Token Extensions on Solana"
+    
+    performance:
+      - "API response time < 200ms (P95)"
+      - "System uptime > 99.95%"
+      - "10,000 TPS capability"
+      - "Cross-rail swap < 60 seconds"
+
+prompts:
+  # Phase 1: Foundation Setup
+  setup_monorepo:
+    description: "Set up the CaaS monorepo structure"
+    prompt: |
+      Create a monorepo structure for the Monay CaaS platform with the following packages:
+      
+      Directory structure:
+      ```
+      monay-caas/
+      ├── apps/
+      │   ├── admin/        # CaaS admin dashboard (Next.js 14)
+      │   └── enterprise/   # Enterprise console (Next.js 14)
+      ├── services/
+      │   ├── token/        # Token management service
+      │   ├── treasury/     # Cross-rail treasury operations
+      │   └── compliance/   # BRF and compliance engine
+      ├── contracts/
+      │   ├── evm/          # Base smart contracts
+      │   └── solana/       # Solana programs
+      ├── packages/
+      │   ├── ui/           # Shared UI components (from Beacon)
+      │   ├── types/        # Shared TypeScript types
+      │   └── utils/        # Shared utilities
+      └── docs/             # Documentation
+      ```
+      
+      Requirements:
+      - Use pnpm for package management
+      - TypeScript with strict mode
+      - ESLint + Prettier configuration
+      - Shared tsconfig across packages
+      - GitHub Actions CI/CD setup
+      
+      Generate package.json files, tsconfig, and basic scaffolding for each package.
+
+  # Phase 2: Database Schema
+  create_database_schema:
+    description: "Create PostgreSQL schema extensions for CaaS"
+    prompt: |
+      Create PostgreSQL migrations for the CaaS platform that extend the existing monay database.
+      
+      Required tables:
+      1. enterprises - Enterprise accounts with KYB status
+      2. tokens - Token configurations for both rails
+      3. enterprise_wallets - Enterprise wallet management
+      4. cross_rail_swaps - Cross-rail transaction tracking
+      5. compliance_rules - BRF rule configurations
+      6. user_enterprise_tokens - User token holdings
+      7. audit_logs - Immutable audit trail
+      
+      Include:
+      - Proper foreign key relationships
+      - Indexes for performance
+      - Triggers for updated_at timestamps
+      - Row-level security policies
+      - Audit logging triggers
+      
+      Generate Prisma schema and SQL migrations compatible with the existing database.
+
+  # Phase 3: Smart Contracts
+  develop_smart_contracts:
+    description: "Create ERC-3643 compliant smart contracts"
+    prompt: |
+      Develop smart contracts for the CaaS platform on Base EVM L2.
+      
+      Contracts needed:
+      1. MonayEnterpriseToken.sol - ERC-3643 compliant token with:
+         - Compliance hooks (BRF integration)
+         - Multi-sig admin controls
+         - Mint/burn with authorization
+         - Transfer restrictions
+         - Upgradeable (UUPS proxy)
+      
+      2. TreasuryBridge.sol - Cross-rail bridge contract with:
+         - Burn verification on source rail
+         - Mint authorization on destination
+         - Atomic swap operations
+         - Fee management
+         - Emergency pause
+      
+      3. ComplianceRegistry.sol - Compliance management with:
+         - Whitelist/blacklist management
+         - Transfer rules engine
+         - KYB status tracking
+         - Geographic restrictions
+      
+      Include:
+      - Comprehensive unit tests (Hardhat)
+      - Gas optimization
+      - Security best practices (OpenZeppelin)
+      - Deployment scripts for Base Sepolia
+      - Formal verification specs
+
+  # Phase 4: API Development
+  extend_backend_api:
+    description: "Extend monay-backend-common with CaaS endpoints"
+    prompt: |
+      Extend the existing monay-backend-common API (Express.js at port 3001) with CaaS functionality.
+      
+      New API endpoints needed:
+      
+      Enterprise Management:
+      - POST /api/caas/enterprises/register
+      - GET /api/caas/enterprises/:id
+      - PUT /api/caas/enterprises/:id/kyb
+      - GET /api/caas/enterprises/:id/compliance
+      
+      Token Operations:
+      - POST /api/caas/tokens/create
+      - GET /api/caas/tokens/:id
+      - POST /api/caas/tokens/:id/mint
+      - POST /api/caas/tokens/:id/burn
+      - GET /api/caas/tokens/:id/supply
+      
+      Cross-Rail Operations:
+      - POST /api/caas/treasury/swap
+      - GET /api/caas/treasury/swap/:id
+      - GET /api/caas/treasury/balance
+      - POST /api/caas/treasury/reconcile
+      
+      Wallet Integration:
+      - GET /api/wallet/enterprise-tokens
+      - POST /api/wallet/enterprise-tokens/:id/transfer
+      - GET /api/wallet/cross-rail/status
+      
+      Requirements:
+      - TypeScript with proper typing
+      - Input validation (Joi/Zod)
+      - JWT authentication
+      - Rate limiting
+      - Error handling
+      - OpenAPI documentation
+      - Integration with existing auth system
+      
+      Create service layers, controllers, and database repositories.
+
+  # Phase 5: Admin Dashboard
+  build_admin_dashboard:
+    description: "Create CaaS admin dashboard"
+    prompt: |
+      Build the CaaS admin dashboard using Next.js 14 (App Router) at port 3005.
+      
+      Features:
+      1. Enterprise Management
+         - Registration approval workflow
+         - KYB verification status
+         - Compliance tier assignment
+         - Account suspension/activation
+      
+      2. Token Administration
+         - Token creation requests
+         - Supply monitoring
+         - Compliance rule configuration
+         - Cross-rail swap monitoring
+      
+      3. Analytics Dashboard
+         - Real-time metrics
+         - Transaction volumes by rail
+         - Compliance statistics
+         - System health monitoring
+      
+      4. Audit & Reporting
+         - Transaction audit trails
+         - Compliance reports
+         - Export functionality
+      
+      Technical requirements:
+      - Reuse Beacon UI components where possible
+      - Shadcn/ui for additional components
+      - TanStack Query for data fetching
+      - Zustand for state management
+      - Responsive design
+      - Real-time updates via WebSocket
+      
+      Generate pages, components, and API integration code.
+
+  # Phase 6: Enterprise Console
+  build_enterprise_console:
+    description: "Create self-service enterprise console"
+    prompt: |
+      Build the enterprise console using Next.js 14 at port 3006.
+      
+      Features:
+      1. Token Management
+         - Token creation wizard (multi-step)
+         - Mint/burn interface
+         - Supply tracking dashboard
+         - Transaction history
+      
+      2. Wallet Management
+         - Create enterprise wallets
+         - Multi-sig configuration
+         - Balance overview
+         - Transaction approval queue
+      
+      3. Compliance Controls
+         - BRF rule builder (visual + JSON)
+         - Whitelist/blacklist management
+         - Transaction limits configuration
+         - Geographic restrictions
+      
+      4. Treasury Operations
+         - Cross-rail swap interface
+         - Balance reconciliation
+         - Fee management
+         - Liquidity monitoring
+      
+      5. Reporting
+         - Generate compliance reports
+         - Export transaction data
+         - Analytics dashboard
+      
+      Requirements:
+      - Role-based access control
+      - Multi-factor authentication
+      - Audit logging
+      - API integration with backend
+      - Mobile responsive
+      
+      Create all necessary components, pages, and services.
+
+  # Phase 7: Wallet Integration
+  integrate_consumer_wallet:
+    description: "Integrate CaaS with existing consumer wallet"
+    prompt: |
+      Integrate enterprise token support into the existing consumer wallet at port 3003.
+      
+      Modifications needed:
+      1. Token Display
+         - Add enterprise token cards
+         - Show issuer information
+         - Display compliance status
+         - Real-time balance updates
+      
+      2. Transaction Support
+         - Send/receive enterprise tokens
+         - Cross-rail transfer UI
+         - Transaction fee display
+         - Compliance check indicators
+      
+      3. Mobile App Updates
+         - Sync iOS app with new features
+         - Sync Android app with new features
+         - Push notification support
+         - Biometric authentication
+      
+      Requirements:
+      - Maintain backward compatibility
+      - Preserve existing functionality
+      - Use existing auth system
+      - Minimal UI disruption
+      - Performance optimization
+      
+      Generate integration code and UI components.
+
+  # Phase 8: Solana Integration
+  develop_solana_programs:
+    description: "Create Solana programs for consumer rail"
+    prompt: |
+      Develop Solana programs using Anchor framework for the consumer rail.
+      
+      Programs needed:
+      1. monay_enterprise_token
+         - Token Extensions (Token-2022)
+         - Transfer hooks for compliance
+         - Metadata extension
+         - Cross-rail mint/burn
+      
+      2. treasury_bridge
+         - Cross-rail swap verification
+         - Atomic operations
+         - Fee collection
+         - Admin controls
+      
+      3. compliance_hook
+         - Pre-transfer validation
+         - BRF integration
+         - Velocity checks
+         - Blacklist enforcement
+      
+      Include:
+      - Anchor tests
+      - Client SDK (TypeScript)
+      - Deployment scripts for Devnet
+      - Integration with backend API
+      
+      Generate Rust programs, tests, and TypeScript SDK.
+
+  # Phase 9: Testing Suite
+  create_test_suite:
+    description: "Comprehensive testing implementation"
+    prompt: |
+      Create a comprehensive test suite for the entire CaaS platform.
+      
+      Test categories:
+      1. Unit Tests
+         - Smart contract tests (Hardhat)
+         - Solana program tests (Anchor)
+         - API endpoint tests (Jest)
+         - Component tests (React Testing Library)
+      
+      2. Integration Tests
+         - Cross-rail operations
+         - End-to-end token lifecycle
+         - Compliance rule execution
+         - Wallet integration flows
+      
+      3. E2E Tests
+         - User journey tests (Playwright)
+         - Multi-user scenarios
+         - Cross-browser testing
+         - Mobile app testing
+      
+      4. Performance Tests
+         - Load testing (K6)
+         - Stress testing
+         - Database query optimization
+         - Smart contract gas optimization
+      
+      5. Security Tests
+         - Smart contract auditing (Slither, Mythril)
+         - API penetration testing
+         - OWASP compliance
+         - Dependency scanning
+      
+      Generate test files, configurations, and CI/CD integration.
+
+  # Phase 10: Documentation
+  generate_documentation:
+    description: "Complete platform documentation"
+    prompt: |
+      Generate comprehensive documentation for the CaaS platform.
+      
+      Documentation needed:
+      1. Technical Documentation
+         - Architecture overview
+         - API reference (OpenAPI)
+         - Smart contract documentation
+         - Database schema
+         - Deployment guide
+      
+      2. User Documentation
+         - Enterprise onboarding guide
+         - Token creation tutorial
+         - Wallet integration guide
+         - Troubleshooting guide
+      
+      3. Developer Documentation
+         - SDK documentation
+         - Integration examples
+         - Webhook implementation
+         - Code examples
+      
+      4. Operational Documentation
+         - Monitoring setup
+         - Backup procedures
+         - Disaster recovery
+         - Security procedures
+      
+      Generate markdown files, diagrams, and interactive docs.
+
+  # Phase 11: Deployment
+  setup_deployment:
+    description: "Production deployment configuration"
+    prompt: |
+      Set up production deployment for the CaaS platform.
+      
+      Infrastructure needed:
+      1. Kubernetes Configuration
+         - Deployment manifests
+         - Service definitions
+         - ConfigMaps and Secrets
+         - Horizontal pod autoscaling
+         - Network policies
+      
+      2. CI/CD Pipeline (GitHub Actions)
+         - Build and test workflows
+         - Docker image creation
+         - Deployment to staging
+         - Production deployment (manual approval)
+         - Rollback procedures
+      
+      3. Monitoring & Observability
+         - Prometheus metrics
+         - Grafana dashboards
+         - ELK stack for logging
+         - Distributed tracing (Jaeger)
+         - Alerting rules
+      
+      4. Security Configuration
+         - TLS certificates
+         - WAF rules
+         - DDoS protection
+         - Secrets management (Vault)
+         - Backup encryption
+      
+      Generate all configuration files and deployment scripts.
+
+execution_order:
+  - setup_monorepo
+  - create_database_schema
+  - develop_smart_contracts
+  - extend_backend_api
+  - build_admin_dashboard
+  - build_enterprise_console
+  - integrate_consumer_wallet
+  - develop_solana_programs
+  - create_test_suite
+  - generate_documentation
+  - setup_deployment
+
+validation_checklist:
+  functional:
+    - [ ] Enterprise registration and KYB
+    - [ ] Token creation on both rails
+    - [ ] Cross-rail swaps working
+    - [ ] Compliance rules enforced
+    - [ ] Wallet integration complete
+    - [ ] Mobile apps updated
+  
+  non_functional:
+    - [ ] API response < 200ms
+    - [ ] 10,000 TPS achieved
+    - [ ] 99.95% uptime target
+    - [ ] Security audit passed
+    - [ ] Load testing completed
+    - [ ] Documentation complete
+  
+  compliance:
+    - [ ] KYC/AML integration
+    - [ ] OFAC screening
+    - [ ] Audit trails
+    - [ ] Data encryption
+    - [ ] GDPR compliance
+    - [ ] SOC2 readiness
+
+success_metrics:
+  launch:
+    enterprises_onboarded: 10
+    tokens_issued: 100
+    active_wallets: 1000
+    total_value_locked: "$1M"
+  
+  month_6:
+    enterprises_onboarded: 100
+    tokens_issued: 1000
+    active_wallets: 10000
+    total_value_locked: "$100M"
+  
+  year_1:
+    enterprises_onboarded: 1000
+    tokens_issued: 10000
+    active_wallets: 100000
+    total_value_locked: "$1B"
+
+notes: |
+  This YAML file serves as a structured prompt guide for Claude AI to build the Monay CaaS platform.
+  Each prompt can be executed independently or in sequence. The platform leverages existing
+  infrastructure (monay-backend-common, consumer wallet, PostgreSQL) while adding new
+  enterprise-focused capabilities.
+  
+  Key integration points:
+  - Shared PostgreSQL database with schema extensions
+  - Extended API at port 3001 (monay-backend-common)
+  - Consumer wallet remains at port 3003
+  - New admin dashboard at port 3005
+  - New enterprise console at port 3006
+  
+  For execution, copy each prompt to Claude and provide additional context as needed.
+

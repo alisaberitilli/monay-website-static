@@ -1,0 +1,65 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
+    <title><%= data.subject %></title>
+</head>
+<style type="text/css">
+    body {
+        margin: 0;
+        padding: 0;
+        font-family: 'Roboto', sans-serif !important;
+    }
+
+    table {
+        mso-table-lspace: 0pt;
+        mso-table-rspace: 0pt;
+    }
+
+    td,
+    th {
+        border-collapse: collapse;
+    }
+
+    td a img {
+        text-decoration: none;
+        border: none;
+    }
+</style>
+
+<body style="background: #f6f6f6;">
+<table cellpadding="0" cellspacing="0" align="center" width="650px" height="auto"
+       style="border-collapse:collapse;border-top:4px solid #1572e8;padding:50px;font-size:14px;color:#060613; margin-top: 130px; background-color: #ffffff;">
+    <tr style="padding:0">
+        <th colspan="1" align="center" style="padding: 30px 0px 20px; " valign="top">
+            <img src="<%= data.logo %>" alt="banner"
+                style="max-width: 260px;display:block;margin:0 auto;">
+        </th>
+    </tr>
+    <tr>
+        <th style="text-align:left;font-size:16px;padding:18px 0px 0px 38px;">Dear <%= data.name %>,</th>
+    </tr>
+    <tr>
+        <td style="padding:20px 38px 0px;font-size:15px;color:#000000">We have received the request to reset your password.<br>Use this <%= data.otp %> verification code on your mobile app to reset the password.</td>
+    </tr>
+    <tr>
+        <td style="padding: 25px 38px 2px;font-size:15px;color: #000000;">Regards,</td>
+    </tr>
+    <tr>
+        <td style="padding:5px 38px 30px;font-size:15px;">Monay Team</td>
+    </tr>
+    <tr>
+        <td valign="top" style="background:#1572e8;padding:5px 0 5px 40px;">
+            <p style="font-family:Tahoma, Geneva, sans-serif;font-size:14px;margin:8px 0;color: #fff;text-align:center;">
+                @Monay | Copyright <%= new Date().getFullYear() %>. Monay All Rights Reserved.</p>
+        </td>
+    </tr>
+</table>
+</body>
+
+</html>

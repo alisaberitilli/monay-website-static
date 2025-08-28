@@ -1,0 +1,143 @@
+{
+  "name": "monay-mobile",
+  "version": "2.0.0",
+  "description": "Monay Mobile Application - WaaS iOS & Android Platform",
+  "main": "index.ts",
+  "scripts": {
+    "start": "expo start",
+    "android": "expo start --android",
+    "ios": "expo start --ios",
+    "web": "expo start --web",
+    "build:ios": "expo build:ios",
+    "build:android": "expo build:android",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
+    "typecheck": "tsc --noEmit",
+    "waas:test": "node scripts/test-mobile-wallet.js",
+    "security:audit": "node scripts/security-audit.js"
+  },
+  "dependencies": {
+    "@expo/vector-icons": "^15.0.0",
+    "@react-native-async-storage/async-storage": "^2.2.0",
+    "@react-navigation/bottom-tabs": "^7.4.6",
+    "@react-navigation/native": "^7.1.17",
+    "@react-navigation/native-stack": "^7.3.25",
+    "@react-navigation/stack": "^7.4.7",
+    "@tanstack/react-query": "^5.85.5",
+    "axios": "^1.11.0",
+    "expo": "~53.0.22",
+    "expo-barcode-scanner": "^13.0.1",
+    "expo-camera": "^16.1.11",
+    "expo-constants": "^17.1.7",
+    "expo-device": "^7.1.4",
+    "expo-font": "^13.3.2",
+    "expo-linear-gradient": "^14.1.5",
+    "expo-local-authentication": "^16.0.5",
+    "expo-router": "^5.1.4",
+    "expo-secure-store": "^14.2.3",
+    "expo-status-bar": "~2.2.3",
+    "react": "19.0.0",
+    "react-hook-form": "^7.62.0",
+    "react-native": "0.79.6",
+    "expo-crypto": "^14.0.1",
+    "expo-haptics": "^14.0.0",
+    "expo-notifications": "^0.30.2",
+    "expo-splash-screen": "^0.31.5",
+    "expo-updates": "^0.27.1",
+    "react-native-gesture-handler": "^2.22.5",
+    "react-native-reanimated": "^3.17.5",
+    "react-native-safe-area-context": "^5.0.2",
+    "react-native-screens": "^4.7.0",
+    "react-native-svg": "^15.11.0",
+    "react-native-qrcode-svg": "^6.2.0",
+    "react-native-keychain": "^9.3.0",
+    "react-native-mmkv": "^3.1.2",
+    "ethers": "^6.8.0",
+    "@solana/web3.js": "^1.87.0",
+    "bip39": "^3.1.0",
+    "crypto-js": "^4.2.0",
+    "date-fns": "^3.6.0",
+    "lottie-react-native": "^7.1.0",
+    "react-native-confetti-cannon": "^1.5.2",
+    "react-native-chart-kit": "^6.12.0",
+    "react-native-shimmer-placeholder": "^2.0.9",
+    "react-native-toast-message": "^2.2.0",
+    "socket.io-client": "^4.7.4",
+    "zustand": "^4.4.7",
+    "zod": "^3.22.4"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.25.2",
+    "@types/react": "~19.0.10",
+    "@types/crypto-js": "^4.2.1",
+    "typescript": "~5.8.3",
+    "jest": "^29.7.0",
+    "jest-expo": "^53.0.0",
+    "@testing-library/react-native": "^12.4.0",
+    "eslint": "^8.57.0",
+    "eslint-config-expo": "^8.0.0",
+    "prettier": "^3.1.0"
+  },
+  "expo": {
+    "name": "Monay Wallet",
+    "slug": "monay-wallet",
+    "version": "2.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "automatic",
+    "splash": {
+      "image": "./assets/splash-icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#0052FF"
+    },
+    "updates": {
+      "fallbackToCacheTimeout": 0
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.monay.wallet",
+      "infoPlist": {
+        "NSFaceIDUsageDescription": "Monay uses Face ID to secure your wallet",
+        "NSCameraUsageDescription": "Monay needs camera access to scan QR codes",
+        "NSPhotoLibraryUsageDescription": "Monay needs photo library access to save QR codes"
+      }
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#0052FF"
+      },
+      "package": "com.monay.wallet",
+      "permissions": [
+        "CAMERA",
+        "USE_BIOMETRIC",
+        "USE_FINGERPRINT",
+        "VIBRATE"
+      ]
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    }
+  },
+  "private": true,
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=8.0.0"
+  },
+  "keywords": [
+    "monay",
+    "mobile",
+    "ios",
+    "android",
+    "waas",
+    "wallet",
+    "cryptocurrency",
+    "blockchain",
+    "react-native",
+    "expo"
+  ]
+}

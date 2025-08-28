@@ -1,0 +1,85 @@
+.add-page {
+    .cardSmall {
+        max-width: 420px;
+    }
+    .cardLarge {
+        max-width: 880px;
+    }
+    .cardMedium {
+        max-width: 640px;
+    }
+    .card {
+        border: 0px;
+        margin: 0 auto;
+        background-color: color(50);
+        @include box-shadow(0, 0, 20px, rgba(color(900), 0.05));
+        border-radius: 3px;
+        .card-body {
+            padding: 40px;
+            .btn_row {
+                margin-top: 40px;
+                &-small {
+                    margin-top: 15px;
+                }
+                .btn {
+                    min-width: 130px;
+                    &:not(:last-child) {
+                        margin-right: 12px;
+                    }
+                }
+            }
+        }
+    }
+
+    @media (max-width:1440px) {
+        .card {
+            .card-body {
+                padding: 30px;
+                .btn_row {
+                    margin-top: 30px;
+                    &-small {
+                        margin-top: 5px;
+                    }
+                }
+            }
+        }
+    }
+
+    @include media-breakpoint-down(lg) {
+        .card {
+            .card-header{
+                h4{
+                    font-size: 18px;
+                }
+            }
+            .card-body {
+                padding: 20px;
+                .btn_row {
+                    margin-top: 20px;
+                    &-small {
+                        margin-top: 5px;
+                    }
+                }
+            }
+        }
+    }
+
+    @include media-breakpoint-down(sm) {
+        .card {
+            .card-header{
+                h4{
+                    font-size: 16px;
+                }
+            }
+            .card-body {
+                padding: 15px;
+                .btn_row {
+                    .btn {
+                        min-width: 110px;
+                    }
+                }
+            }
+        }
+    }
+
+}

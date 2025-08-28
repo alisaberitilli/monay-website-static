@@ -1,0 +1,41 @@
+# Uncomment the next line to define a global platform for your project
+platform :ios, '12.0'
+
+target 'Monay' do
+  # Comment the next line if you don't want to use dynamic frameworks
+  use_frameworks!
+
+  # Pods for Monay
+
+  pod 'TTTAttributedLabel'
+  pod 'IQKeyboardManagerSwift'
+  pod 'TagListView', '~> 1.0'
+  pod 'ActionSheetPicker-3.0'
+  pod 'SwiftLint'
+  pod 'Kingfisher', '~> 7.0'
+  pod 'ObjectMapper'
+  pod 'JWTDecode'
+  pod 'KeychainAccess'
+  pod 'RxSwift'
+  pod 'RxCocoa'
+  pod 'RxOptional'
+  pod 'RxViewModel'
+  pod 'CocoaLumberjack/Swift'
+  pod 'Firebase/Core'
+  pod 'Firebase/Messaging'
+  pod 'PhoneNumberKit', '~> 3.3'
+  pod 'libPhoneNumber-iOS'
+  pod 'ZendeskSDK'
+  pod 'Firebase/Crashlytics'
+  pod 'Firebase/DynamicLinks'
+  
+  target 'MonayTests' do
+    inherit! :search_paths
+    # Pods for testing
+  end
+
+  target 'MonayUITests' do
+    # Pods for testing
+  end
+    
+end

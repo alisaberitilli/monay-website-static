@@ -1,0 +1,419 @@
+// Business Rules Framework Schema Extensions
+
+model BusinessRule {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  description String?
+  version     String   @default("1.0")
+  isActive    Boolean  @default(true)
+  category    BusinessRuleCategory
+  
+  // Rule Definition
+  conditions  Json     // Flexible condition structure
+  actions     Json     // Actions to take when conditions met
+  priority    Int      @default(100)
+  
+  // Metadata
+  createdBy   String?
+  approvedBy  String?
+  approvedAt  DateTime?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  // Relationships
+  userRules   UserBusinessRule[]
+  ruleAudits  BusinessRuleAudit[]
+  
+  @@map("business_rules")
+}
+
+model UserBusinessRule {
+  id           String       @id @default(cuid())
+  userId       String
+  businessRule BusinessRule @relation(fields: [businessRuleId], references: [id])
+  businessRuleId String
+  
+  // Assignment Details
+  assignedBy   String?
+  assignedAt   DateTime     @default(now())
+  effectiveFrom DateTime    @default(now())
+  effectiveTo  DateTime?
+  isActive     Boolean      @default(true)
+  
+  // Rule-specific Parameters
+  parameters   Json?        // User-specific rule parameters
+  
+  // Relationships
+  user         User         @relation(fields: [userId], references: [id])
+  violations   RuleViolation[]
+  
+  @@unique([userId, businessRuleId])
+  @@map("user_business_rules")
+}
+
+model KycProfile {
+  id                String            @id @default(cuid())
+  userId            String            @unique
+  
+  // Individual KYC
+  kycLevel          KycLevel          @default(NONE)
+  kycStatus         KycStatus         @default(PENDING)
+  kycProvider       String?           // Jumio, Onfido, etc.
+  kycReference      String?           // Provider reference ID
+  
+  // Identity Verification
+  identityVerified  Boolean           @default(false)
+  identityScore     Float?            // 0-1 confidence score
+  identityDocuments Json?             // Document metadata
+  
+  // Address Verification
+  addressVerified   Boolean           @default(false)
+  addressScore      Float?
+  addressDocuments  Json?
+  
+  // Income Verification
+  incomeVerified    Boolean           @default(false)
+  incomeRange       IncomeRange?
+  incomeDocuments   Json?
+  
+  // Risk Assessment
+  riskScore         Float?            // 0-1 risk score
+  riskCategory      RiskCategory      @default(MEDIUM)
+  sanctionsCheck    Boolean           @default(false)
+  pepCheck          Boolean           @default(false) // Politically Exposed Person
+  
+  // Compliance
+  fatcaStatus       FatcaStatus       @default(UNKNOWN)
+  crsStatus         CrsStatus         @default(UNKNOWN)
+  
+  // Timestamps
+  verifiedAt        DateTime?
+  expiresAt         DateTime?
+  lastReviewAt      DateTime?
+  createdAt         DateTime          @default(now())
+  updatedAt         DateTime          @updatedAt
+  
+  // Relationships
+  user              User              @relation(fields: [userId], references: [id])
+  kybProfile        KybProfile?       // If user is also a business
+  
+  @@map("kyc_profiles")
+}
+
+model KybProfile {
+  id                    String        @id @default(cuid())
+  kycProfileId          String        @unique
+  
+  // Business Information
+  businessName          String
+  businessType          BusinessType
+  registrationNumber    String?
+  taxId                 String?
+  incorporationCountry  String
+  incorporationDate     DateTime?
+  
+  // Business Verification
+  businessVerified      Boolean       @default(false)
+  businessScore         Float?        // 0-1 confidence score
+  registrationVerified  Boolean       @default(false)
+  
+  // Beneficial Ownership
+  beneficialOwners      Json          // Array of beneficial owner details
+  uboVerified           Boolean       @default(false) // Ultimate Beneficial Owner
+  
+  // Business Risk
+  businessRiskScore     Float?        // 0-1 risk score
+  industryRiskCategory  RiskCategory  @default(MEDIUM)
+  jurisdictionRisk      RiskCategory  @default(MEDIUM)
+  
+  // Compliance
+  amlCompliance         Boolean       @default(false)
+  sanctionsChecked     Boolean       @default(false)
+  
+  // Financial Information
+  annualRevenue         BigInt?
+  revenueRange          RevenueRange?
+  fundingSources        Json?         // Array of funding source details
+  
+  // Timestamps
+  verifiedAt            DateTime?
+  expiresAt            DateTime?
+  lastReviewAt         DateTime?
+  createdAt            DateTime      @default(now())
+  updatedAt            DateTime      @updatedAt
+  
+  // Relationships
+  kycProfile            KycProfile    @relation(fields: [kycProfileId], references: [id])
+  
+  @@map("kyb_profiles")
+}
+
+model SpendLimit {
+  id              String            @id @default(cuid())
+  userId          String
+  
+  // Limit Configuration
+  limitType       SpendLimitType    // DAILY, WEEKLY, MONTHLY, YEARLY, TRANSACTION
+  amount          BigInt
+  currency        String            @default("USD")
+  
+  // Scope
+  category        String?           // Optional spending category
+  merchant        String?           // Optional merchant restriction
+  region          String?           // Optional geographic restriction
+  
+  // Status
+  isActive        Boolean           @default(true)
+  currentSpent    BigInt            @default(0)
+  resetDate       DateTime?         // Next reset date for recurring limits
+  
+  // Metadata
+  createdBy       String?           // Who set this limit
+  reason          String?           // Reason for limit
+  businessRuleId  String?           // If set by business rule
+  
+  // Timestamps
+  effectiveFrom   DateTime          @default(now())
+  effectiveTo     DateTime?
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+  
+  // Relationships
+  user            User              @relation(fields: [userId], references: [id])
+  violations      SpendViolation[]
+  
+  @@map("spend_limits")
+}
+
+model RuleViolation {
+  id                String            @id @default(cuid())
+  userBusinessRuleId String
+  userId            String
+  
+  // Violation Details
+  violationType     ViolationType
+  severity          ViolationSeverity @default(MEDIUM)
+  description       String
+  transactionId     String?           // If violation related to transaction
+  
+  // Context
+  violationData     Json              // Violation-specific data
+  ruleCondition     Json              // Which condition was violated
+  
+  // Status
+  status            ViolationStatus   @default(OPEN)
+  resolvedBy        String?
+  resolvedAt        DateTime?
+  resolution        String?
+  
+  // Timestamps
+  detectedAt        DateTime          @default(now())
+  createdAt         DateTime          @default(now())
+  updatedAt         DateTime          @updatedAt
+  
+  // Relationships
+  userBusinessRule  UserBusinessRule  @relation(fields: [userBusinessRuleId], references: [id])
+  user              User              @relation(fields: [userId], references: [id])
+  
+  @@map("rule_violations")
+}
+
+model SpendViolation {
+  id            String          @id @default(cuid())
+  spendLimitId  String
+  userId        String
+  transactionId String
+  
+  // Violation Details
+  attemptedAmount BigInt
+  limitAmount     BigInt
+  excessAmount    BigInt
+  violationType   SpendViolationType
+  
+  // Action Taken
+  actionTaken     ViolationAction
+  blockReason     String?
+  
+  // Status
+  status          ViolationStatus @default(OPEN)
+  reviewedBy      String?
+  reviewedAt      DateTime?
+  
+  // Timestamps
+  occurredAt      DateTime        @default(now())
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+  
+  // Relationships
+  spendLimit      SpendLimit      @relation(fields: [spendLimitId], references: [id])
+  user            User            @relation(fields: [userId], references: [id])
+  
+  @@map("spend_violations")
+}
+
+model BusinessRuleAudit {
+  id             String       @id @default(cuid())
+  businessRuleId String
+  userId         String?      // User who made the change
+  
+  // Change Details
+  action         AuditAction  // CREATED, UPDATED, ACTIVATED, DEACTIVATED, ASSIGNED, UNASSIGNED
+  changes        Json         // What changed
+  oldValues      Json?        // Previous values
+  newValues      Json?        // New values
+  
+  // Context
+  reason         String?
+  ipAddress      String?
+  userAgent      String?
+  
+  // Timestamps
+  timestamp      DateTime     @default(now())
+  
+  // Relationships
+  businessRule   BusinessRule @relation(fields: [businessRuleId], references: [id])
+  
+  @@map("business_rule_audits")
+}
+
+// Enums
+enum BusinessRuleCategory {
+  KYC_ELIGIBILITY
+  SPEND_MANAGEMENT
+  TRANSACTION_MONITORING
+  COMPLIANCE
+  RISK_MANAGEMENT
+  GEOGRAPHIC_RESTRICTIONS
+}
+
+enum KycLevel {
+  NONE
+  BASIC
+  ENHANCED
+  PREMIUM
+}
+
+enum KycStatus {
+  PENDING
+  IN_PROGRESS
+  APPROVED
+  REJECTED
+  EXPIRED
+  SUSPENDED
+}
+
+enum IncomeRange {
+  UNDER_25K
+  RANGE_25K_50K
+  RANGE_50K_100K
+  RANGE_100K_250K
+  RANGE_250K_500K
+  OVER_500K
+}
+
+enum RiskCategory {
+  LOW
+  MEDIUM
+  HIGH
+  CRITICAL
+}
+
+enum FatcaStatus {
+  UNKNOWN
+  US_PERSON
+  NON_US_PERSON
+  EXEMPT
+}
+
+enum CrsStatus {
+  UNKNOWN
+  REPORTABLE
+  NON_REPORTABLE
+  EXEMPT
+}
+
+enum BusinessType {
+  SOLE_PROPRIETORSHIP
+  PARTNERSHIP
+  LLC
+  CORPORATION
+  NON_PROFIT
+  GOVERNMENT
+  OTHER
+}
+
+enum RevenueRange {
+  UNDER_100K
+  RANGE_100K_1M
+  RANGE_1M_10M
+  RANGE_10M_100M
+  OVER_100M
+}
+
+enum SpendLimitType {
+  TRANSACTION
+  DAILY
+  WEEKLY
+  MONTHLY
+  YEARLY
+  LIFETIME
+}
+
+enum ViolationType {
+  SPEND_LIMIT_EXCEEDED
+  KYC_REQUIREMENT_NOT_MET
+  GEOGRAPHIC_RESTRICTION
+  MERCHANT_RESTRICTION
+  SUSPICIOUS_ACTIVITY
+  COMPLIANCE_VIOLATION
+}
+
+enum ViolationSeverity {
+  LOW
+  MEDIUM
+  HIGH
+  CRITICAL
+}
+
+enum ViolationStatus {
+  OPEN
+  UNDER_REVIEW
+  RESOLVED
+  DISMISSED
+  ESCALATED
+}
+
+enum SpendViolationType {
+  DAILY_LIMIT
+  MONTHLY_LIMIT
+  TRANSACTION_LIMIT
+  CATEGORY_LIMIT
+  MERCHANT_LIMIT
+}
+
+enum ViolationAction {
+  BLOCKED
+  FLAGGED
+  APPROVED_WITH_WARNING
+  ESCALATED
+}
+
+enum AuditAction {
+  CREATED
+  UPDATED
+  ACTIVATED
+  DEACTIVATED
+  ASSIGNED
+  UNASSIGNED
+  VIOLATED
+  RESOLVED
+}
+
+// Extend existing User model
+extend User {
+  kycProfile        KycProfile?
+  businessRules     UserBusinessRule[]
+  spendLimits       SpendLimit[]
+  ruleViolations    RuleViolation[]
+  spendViolations   SpendViolation[]
+}

@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/white_rounded_corner"
+    android:orientation="vertical"
+    android:padding="@dimen/dp_20"
+    tools:ignore="MissingPrefix">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:fontFamily="@font/cerapro_medium"
+            android:text="@string/invite_friend"
+            android:textColor="@color/dark_black"
+            android:textSize="@dimen/size_18" />
+
+        <ImageView
+            android:id="@+id/imageCloseDialog"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:padding="@dimen/dp_10"
+            android:src="@mipmap/ic_cross"
+            android:tint="@color/dark_black" />
+
+    </RelativeLayout>
+
+
+    <TextView
+        android:id="@+id/tv_name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/dp_30"
+        android:fontFamily="@font/cerapro_regular"
+        android:text="Bhannon Ingram is not on Monay. Invite your friend."
+        android:textColor="@color/dark_black"
+        android:textSize="@dimen/size_15" />
+
+
+    <Button
+        android:id="@+id/btn_invite"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/dp_20"
+        android:layout_marginTop="@dimen/dp_50"
+        android:layout_marginEnd="@dimen/dp_20"
+        android:layout_marginBottom="@dimen/dp_20"
+        android:background="@drawable/rounded_btn_selector_yellowish"
+        android:fontFamily="@font/cerapro_medium"
+        android:gravity="center"
+        android:padding="@dimen/dp_15"
+        android:text="@string/invite"
+        android:textAllCaps="false"
+        android:textColor="@color/dark_black"
+        android:textSize="@dimen/size_18" />
+
+</LinearLayout>

@@ -1,0 +1,301 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:fitsSystemWindows="true"
+    tools:ignore="MissingPrefix">
+
+    <data>
+
+        <variable
+            name="mobileVerifyVM"
+            type="com.monayuser.ui.mobileverification.MobileVerificationViewModel" />
+    </data>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:id="@+id/headerLayout"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:background="@color/colorPrimary"
+            android:orientation="horizontal"
+            android:visibility="gone">
+
+            <ImageView
+                android:id="@+id/back_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginLeft="@dimen/dp_15"
+                android:background="@color/full_transparent"
+                android:onClick="@{()->mobileVerifyVM.backToPreviousScreen()}"
+                android:src="@mipmap/ic_back_white"
+                android:tint="@color/white" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/mobileHeaderText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginLeft="@dimen/dp_10"
+                android:gravity="center|start"
+                android:text="@string/pin"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:textColor="@color/white"
+                android:textSize="@dimen/dp_20"
+                app:fontFamily="@font/cerapro_medium" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/viewLine"
+            android:layout_width="match_parent"
+            android:layout_height="0.1dp"
+            android:background="#68CDFF"
+            android:orientation="vertical"
+            android:visibility="gone"></LinearLayout>
+
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/white"
+            android:fillViewport="true">
+
+            <LinearLayout
+                android:id="@+id/activity_spash_screen"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@color/white"
+                android:orientation="vertical">
+
+                <ImageView
+                    android:id="@+id/mVerify_logo"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentTop="true"
+                    android:layout_centerInParent="true"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="@dimen/dp_50"
+
+                    android:src="@mipmap/ic_logo_blue"
+                    android:visibility="gone" />
+
+                <TextView
+                    android:id="@+id/mVerifyText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="@dimen/dp_50"
+                    android:fontFamily="@font/cerapro_medium"
+                    android:singleLine="true"
+                    android:text="@string/mobile_verification"
+                    android:textColor="@color/dark_black"
+                    android:textSize="@dimen/size_32"
+                    android:visibility="visible" />
+
+                <TextView
+                    android:id="@+id/mVerifyMobileTxt"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="@dimen/dp_20"
+                    android:fontFamily="@font/cerapro_regular"
+                    android:gravity="center"
+                    android:lineSpacingExtra="@dimen/dp_5"
+                    android:paddingLeft="@dimen/dp_45"
+                    android:paddingRight="@dimen/dp_45"
+
+                    android:text="@string/please_enter_your_mobile_number_to_verify_your_account"
+                    android:textColor="@color/gray"
+                    android:textSize="@dimen/size_14"
+                    android:visibility="visible" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/dp_30"
+                    android:layout_marginTop="@dimen/dp_20"
+                    android:layout_marginEnd="@dimen/dp_30"
+                    android:orientation="vertical">
+
+
+                    <LinearLayout
+                        android:id="@+id/mobileLayout"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/dp_20"
+                        android:orientation="horizontal">
+
+                        <LinearLayout
+                            android:layout_width="270dp"
+                            android:layout_height="match_parent"
+                            android:layout_marginTop="@dimen/dp_4"
+                            android:layout_marginBottom="@dimen/dp_2"
+                            android:layout_weight="1"
+                            android:background="@drawable/gray_strok_backgourd"
+                            android:orientation="horizontal">
+
+                            <Spinner
+                                android:id="@+id/spinnerMobileVerify"
+                                android:layout_width="wrap_content"
+                                android:layout_height="match_parent"
+                                android:backgroundTint="@color/dark_black"
+                                android:dropDownSelector="@color/dark_black"
+                                android:popupBackground="@color/white"
+                                android:visibility="gone"
+                                tools:listitem="@layout/spinner_textview" />
+
+                            <com.hbb20.CountryCodePicker
+                                android:id="@+id/ccp"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:gravity="center"
+                                app:ccpDialog_textColor="@color/dark_black"
+                                app:ccp_arrowColor="@color/dark_black"
+                                app:ccp_arrowSize="@dimen/dp_25"
+                                app:ccp_clickable="false"
+                                app:ccp_showArrow="true"
+                                android:visibility="gone"
+                                app:ccp_defaultNameCode="US"
+                                app:ccp_showFlag="false"
+                                android:layout_marginTop="@dimen/dp_3"
+                                app:ccp_showFullName="false"
+                                app:ccp_showNameCode="false"
+                                app:ccp_showPhoneCode="true"
+                                app:ccp_textSize="@dimen/size_15" />
+                            <androidx.appcompat.widget.AppCompatTextView
+                                android:id="@+id/countryCodeTv"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:background="@null"
+                                android:drawableEnd="@mipmap/ic_down_arrow"
+                                android:drawableTint="@color/dark_black"
+                                android:drawablePadding="@dimen/dp_1"
+                                android:fontFamily="@font/cerapro_medium"
+                                android:hint="+1"
+                                android:layout_gravity="center"
+                                android:gravity="center"
+                                android:onClick="@{()-> mobileVerifyVM.navigator.countryCodeClick()}"
+                                android:paddingEnd="@dimen/dp_8"
+                                android:paddingStart="@dimen/dp_5"
+                                android:text=""
+                                android:textColor="@color/dark_black"
+                                android:textColorHint="@color/gray"
+                                android:textSize="@dimen/size_18"
+                                app:layout_constraintEnd_toStartOf="@id/guideline2"
+                                app:layout_constraintStart_toEndOf="@+id/phoneIV"
+                                app:layout_constraintTop_toBottomOf="@+id/dividerBelowEmail" />
+
+                        </LinearLayout>
+
+                        <com.google.android.material.textfield.TextInputLayout
+                            android:id="@+id/tl_mobile"
+                            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="@dimen/dp_20"
+                            android:layout_marginLeft="@dimen/dp_20"
+                            android:layout_weight="0.5">
+
+                            <com.google.android.material.textfield.TextInputEditText
+                                android:id="@+id/mobile_number_et"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center"
+                                android:background="@drawable/gray_strok_backgourd"
+                                android:fontFamily="@font/cerapro_regular"
+                                android:hint="@string/mobile_number"
+                                android:imeOptions="actionDone"
+                                android:inputType="number"
+                                android:maxLength="15"
+                                android:padding="@dimen/dp_18"
+                                android:singleLine="true"
+                                android:textColor="@color/dark_black"
+                                android:textColorHint="@color/gray_color"
+                                android:textSize="@dimen/size_15"></com.google.android.material.textfield.TextInputEditText>
+                        </com.google.android.material.textfield.TextInputLayout>
+
+                    </LinearLayout>
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/verifyEmail_Layout"
+                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/dp_20"
+                        android:visibility="gone">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/verifyEmail_et"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:background="@drawable/gray_strok_backgourd"
+                            android:focusableInTouchMode="true"
+                            android:fontFamily="@font/cerapro_regular"
+                            android:hint="@string/email"
+                            android:imeOptions="actionDone"
+                            android:maxLength="50"
+                            android:padding="@dimen/dp_18"
+                            android:singleLine="true"
+                            android:textColor="@color/dark_black"
+                            android:textColorHint="@color/gray_color"
+                            android:textSize="@dimen/size_15"></com.google.android.material.textfield.TextInputEditText>
+                    </com.google.android.material.textfield.TextInputLayout>
+
+
+                    <TextView
+                        android:id="@+id/useEmail_Instead"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="right"
+                        android:layout_marginLeft="@dimen/dp_5"
+                        android:layout_marginTop="@dimen/dp_20"
+                        android:background="@drawable/underline"
+                        android:fontFamily="@font/cerapro_medium"
+                        android:lineSpacingExtra="8sp"
+                        android:onClick="@{()-> mobileVerifyVM.useEmail()}"
+                        android:text="@string/use_email_instead"
+                        android:textColor="@color/colorPrimary"
+                        android:textSize="@dimen/size_14" />
+
+                    <Button
+                        android:id="@+id/sendBtn"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/dp_50"
+                        android:layout_marginBottom="@dimen/dp_30"
+                        android:background="@drawable/rounded_btn_selector_yellowish"
+                        android:fontFamily="@font/cerapro_medium"
+                        android:gravity="center"
+                        android:onClick="@{()->mobileVerifyVM.proceed()}"
+                        android:padding="@dimen/dp_15"
+                        android:text="@string/send"
+                        android:textAllCaps="false"
+                        android:textColor="@color/dark_black"
+                        android:textSize="@dimen/size_18" />
+
+                    <TextView
+                        android:id="@+id/backToLogin"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_marginTop="@dimen/dp_10"
+                        android:layout_marginBottom="@dimen/dp_10"
+                        android:background="@drawable/underline"
+                        android:fontFamily="@font/cerapro_medium"
+                        android:lineSpacingExtra="8sp"
+                        android:onClick="@{()-> mobileVerifyVM.backToLogin()}"
+                        android:text="@string/back_to_login"
+                        android:textColor="@color/colorPrimary"
+                        android:textSize="@dimen/size_16"
+                        android:visibility="gone" />
+                </LinearLayout>
+
+            </LinearLayout>
+        </ScrollView>
+    </LinearLayout>
+</layout>

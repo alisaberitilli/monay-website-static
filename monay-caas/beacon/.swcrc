@@ -1,0 +1,35 @@
+{
+  "$schema": "https://json.schemastore.org/swcrc",
+  "jsc": {
+    "baseUrl": ".",
+    "paths": {
+      "#server/*": [
+        "_server/*"
+      ],
+      "#schema": [
+        "prisma/generated/schemas/index.ts"
+      ],
+      "#constants": [
+        "constants.ts"
+      ],
+      "#helpers": [
+        "helpers.ts"
+      ]
+    },
+    "loose": true,
+    "parser": {
+      "syntax": "typescript",
+      "dynamicImport": true
+    },
+    "preserveAllComments": false,
+    "target": "esnext",
+    "minify": {}
+  },
+  "module": {
+    "type": "commonjs",
+    "strict": true,
+    "strictMode": true,
+    "lazy": false,
+    "noInterop": false
+  }
+}

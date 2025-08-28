@@ -1,0 +1,446 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:fitsSystemWindows="true"
+    tools:ignore="MissingPrefix">
+
+    <data>
+
+        <variable
+            name="settingsVM"
+            type="com.monayuser.ui.settings.SettingsViewModel" />
+    </data>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:layout_gravity="top"
+            android:background="@color/colorPrimary"
+            android:minHeight="65sp"
+            android:theme="@style/ThemeOverlay.AppCompat.Dark"
+            app:contentInsetLeft="0dp"
+            app:contentInsetStart="0dp">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@color/transparent">
+
+                <LinearLayout
+                    android:id="@+id/ll_back"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true">
+
+                    <ImageView
+                        android:id="@+id/back_button"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="@dimen/dp_15"
+                        android:onClick="@{()->settingsVM.clickOnBackButton()}"
+                        android:src="@mipmap/ic_back_white" />
+                </LinearLayout>
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="@dimen/dp_10"
+                    android:layout_toEndOf="@id/ll_back"
+                    android:text="@string/settings_amp_support"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/size_18"
+                    app:fontFamily="@font/cerapro_medium" />
+
+            </RelativeLayout>
+        </androidx.appcompat.widget.Toolbar>
+
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@+id/toolbar"
+            android:background="@color/white"
+            >
+<!--            android:layoutAnimation="@anim/layout_animation"-->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:padding="@dimen/dp_12">
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/dp_12"
+                    android:layout_marginTop="@dimen/dp_10"
+                    android:text="@string/settings"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:textColor="@color/dark_black"
+                    android:textSize="@dimen/size_18"
+                    app:fontFamily="@font/cerapro_medium" />
+
+                <RelativeLayout
+                    android:id="@+id/rl_security"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/dp_8"
+                    android:background="@color/white"
+                    android:gravity="center_vertical"
+                    android:onClick="@{()->settingsVM.clickOnSecurity()}"
+                    android:orientation="horizontal"
+                    android:padding="@dimen/dp_12">
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentLeft="true"
+                        android:background="@color/light_gray"
+                        android:padding="@dimen/dp_12"
+                        android:src="@mipmap/ic_security" />
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_centerInParent="true"
+                        android:layout_marginStart="@dimen/dp_70"
+                        android:layout_marginEnd="@dimen/dp_70"
+                        android:fontFamily="@font/cerapro_medium"
+                        android:text="@string/security"
+                        android:textColor="@color/dark_black"
+                        android:textSize="@dimen/size_16" />
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentRight="true"
+                        android:layout_centerInParent="true"
+                        android:padding="@dimen/dp_8"
+                        android:src="@mipmap/ic_arrow_right" />
+
+                </RelativeLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="@color/light_gray" />
+
+                <RelativeLayout
+                    android:id="@+id/rl_change_password"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@color/white"
+                    android:gravity="center_vertical"
+                    android:onClick="@{()->settingsVM.changePassword()}"
+                    android:orientation="horizontal"
+                    android:padding="@dimen/dp_12">
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentLeft="true"
+                        android:background="@color/light_gray"
+                        android:padding="@dimen/dp_12"
+                        android:src="@mipmap/ic_change_password" />
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_centerInParent="true"
+                        android:layout_marginStart="@dimen/dp_70"
+                        android:layout_marginEnd="@dimen/dp_70"
+                        android:fontFamily="@font/cerapro_medium"
+                        android:text="@string/change_password"
+                        android:textColor="@color/dark_black"
+                        android:textSize="@dimen/size_16" />
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentRight="true"
+                        android:layout_centerInParent="true"
+                        android:padding="@dimen/dp_8"
+                        android:src="@mipmap/ic_arrow_right" />
+
+                </RelativeLayout>
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/dp_12"
+                    android:layout_marginTop="@dimen/dp_10"
+                    android:text="@string/supports"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:textColor="@color/dark_black"
+                    android:textSize="@dimen/size_18"
+                    app:fontFamily="@font/cerapro_medium" />
+
+                <RelativeLayout
+                    android:id="@+id/rl_notifications"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/dp_10"
+                    android:background="@color/white"
+                    android:gravity="center_vertical"
+                    android:onClick="@{()->settingsVM.notification()}"
+                    android:orientation="horizontal"
+                    android:padding="@dimen/dp_12">
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentLeft="true"
+                        android:background="@color/light_gray"
+                        android:padding="@dimen/dp_12"
+                        android:src="@mipmap/ic_notification_blue" />
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_centerInParent="true"
+                        android:layout_marginStart="@dimen/dp_70"
+                        android:layout_marginEnd="@dimen/dp_70"
+                        android:fontFamily="@font/cerapro_medium"
+                        android:text="@string/notification"
+                        android:textColor="@color/dark_black"
+                        android:textSize="@dimen/size_16" />
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentRight="true"
+                        android:layout_centerInParent="true"
+                        android:padding="@dimen/dp_8"
+                        android:src="@mipmap/ic_arrow_right" />
+
+                </RelativeLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="@color/light_gray" />
+
+                <RelativeLayout
+                    android:id="@+id/rl_how"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@color/white"
+                    android:gravity="center_vertical"
+                    android:onClick="@{()->settingsVM.howItWorks()}"
+                    android:orientation="horizontal"
+                    android:padding="@dimen/dp_12">
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentLeft="true"
+                        android:background="@color/light_gray"
+                        android:padding="@dimen/dp_8"
+                        android:src="@mipmap/ic_how_it_work_new" />
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_centerInParent="true"
+                        android:layout_marginStart="@dimen/dp_70"
+                        android:layout_marginEnd="@dimen/dp_70"
+                        android:fontFamily="@font/cerapro_medium"
+                        android:text="@string/how_it_work"
+                        android:textColor="@color/dark_black"
+                        android:textSize="@dimen/size_16" />
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentRight="true"
+                        android:layout_centerInParent="true"
+                        android:padding="@dimen/dp_8"
+                        android:src="@mipmap/ic_arrow_right" />
+
+                </RelativeLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="@color/light_gray" />
+
+                <RelativeLayout
+                    android:id="@+id/rl_faq"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@color/white"
+                    android:gravity="center_vertical"
+                    android:onClick="@{()->settingsVM.faq()}"
+                    android:orientation="horizontal"
+                    android:padding="@dimen/dp_12">
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentLeft="true"
+                        android:background="@color/light_gray"
+                        android:padding="@dimen/dp_12"
+                        android:src="@mipmap/ic_faq" />
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_centerInParent="true"
+                        android:layout_marginStart="@dimen/dp_70"
+                        android:layout_marginEnd="@dimen/dp_70"
+                        android:fontFamily="@font/cerapro_medium"
+                        android:text="@string/faq"
+                        android:textColor="@color/dark_black"
+                        android:textSize="@dimen/size_16" />
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentRight="true"
+                        android:layout_centerInParent="true"
+                        android:padding="@dimen/dp_8"
+                        android:src="@mipmap/ic_arrow_right" />
+
+                </RelativeLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="@color/light_gray" />
+
+                <RelativeLayout
+                    android:id="@+id/rl_support"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@color/white"
+                    android:gravity="center_vertical"
+                    android:onClick="@{()->settingsVM.support()}"
+                    android:orientation="horizontal"
+                    android:padding="@dimen/dp_12">
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentLeft="true"
+                        android:background="@color/light_gray"
+                        android:padding="@dimen/dp_12"
+                        android:src="@mipmap/ic_support" />
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_centerInParent="true"
+                        android:layout_marginStart="@dimen/dp_70"
+                        android:layout_marginEnd="@dimen/dp_70"
+                        android:fontFamily="@font/cerapro_medium"
+                        android:text="@string/support"
+                        android:textColor="@color/dark_black"
+                        android:textSize="@dimen/size_16" />
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentRight="true"
+                        android:layout_centerInParent="true"
+                        android:padding="@dimen/dp_8"
+                        android:src="@mipmap/ic_arrow_right" />
+
+                </RelativeLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="@color/light_gray" />
+
+                <RelativeLayout
+                    android:id="@+id/rl_terms"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@color/white"
+                    android:gravity="center_vertical"
+                    android:onClick="@{()->settingsVM.termsCondition()}"
+                    android:orientation="horizontal"
+                    android:padding="@dimen/dp_12">
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentLeft="true"
+                        android:background="@color/light_gray"
+                        android:padding="@dimen/dp_12"
+                        android:src="@mipmap/ic_terms_and_condition" />
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_centerInParent="true"
+                        android:layout_marginStart="@dimen/dp_70"
+                        android:layout_marginEnd="@dimen/dp_70"
+                        android:fontFamily="@font/cerapro_medium"
+                        android:text="@string/terms_amp_conditions"
+                        android:textColor="@color/dark_black"
+                        android:textSize="@dimen/size_16" />
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentRight="true"
+                        android:layout_centerInParent="true"
+                        android:padding="@dimen/dp_8"
+                        android:src="@mipmap/ic_arrow_right" />
+
+                </RelativeLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="@color/light_gray" />
+
+                <RelativeLayout
+                    android:id="@+id/rl_privacy"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@color/white"
+                    android:gravity="center_vertical"
+                    android:onClick="@{()->settingsVM.userPolicy()}"
+                    android:orientation="horizontal"
+                    android:padding="@dimen/dp_12">
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentLeft="true"
+                        android:background="@color/light_gray"
+                        android:padding="@dimen/dp_12"
+                        android:src="@mipmap/ic_user_policy" />
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_centerInParent="true"
+                        android:layout_marginStart="@dimen/dp_70"
+                        android:layout_marginEnd="@dimen/dp_70"
+                        android:fontFamily="@font/cerapro_medium"
+                        android:text="@string/privacy_policy_title"
+                        android:textColor="@color/dark_black"
+                        android:textSize="@dimen/size_16" />
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentRight="true"
+                        android:layout_centerInParent="true"
+                        android:padding="@dimen/dp_8"
+                        android:src="@mipmap/ic_arrow_right" />
+
+                </RelativeLayout>
+            </LinearLayout>
+        </ScrollView>
+    </RelativeLayout>
+</layout>

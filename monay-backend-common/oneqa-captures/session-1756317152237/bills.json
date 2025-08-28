@@ -1,0 +1,1985 @@
+{
+  "tables": [],
+  "billItems": [
+    {
+      "selector": "[class*=\"bill\"]",
+      "text": "Pepco  Invoice: 200621437832  Date: 25/02/2021  6514 78TH ST CABIN JOHN MD 20818  Amount $206.43 Status: Unpaid Due Date   View Bill",
+      "class": "row bill-row"
+    },
+    {
+      "selector": "[class*=\"bill\"]",
+      "text": "Amount $206.43",
+      "class": "col-4 bill-item-right-box"
+    },
+    {
+      "selector": "[class*=\"bill\"]",
+      "text": "View Bill",
+      "class": "col-4 bill-item-right-box"
+    },
+    {
+      "selector": "[class*=\"bill\"]",
+      "text": "View Bill",
+      "class": "btn btn-lg btn-view-bill"
+    },
+    {
+      "selector": "[class*=\"bill\"]",
+      "text": "Pepco  Invoice: 200971150051  Date: 29/01/2021  6514 78TH ST CABIN JOHN MD 20818  Amount $211.12 Status: Unpaid Due Date   View Bill",
+      "class": "row bill-row"
+    },
+    {
+      "selector": "[class*=\"bill\"]",
+      "text": "Amount $211.12",
+      "class": "col-4 bill-item-right-box"
+    },
+    {
+      "selector": "[class*=\"bill\"]",
+      "text": "View Bill",
+      "class": "col-4 bill-item-right-box"
+    },
+    {
+      "selector": "[class*=\"bill\"]",
+      "text": "View Bill",
+      "class": "btn btn-lg btn-view-bill"
+    },
+    {
+      "selector": "[class*=\"bill\"]",
+      "text": "Pepco  Invoice: 200281458234  Date: 30/12/2020  6514 78TH ST CABIN JOHN MD 20818  Amount $224.07 Status: Unpaid Due Date   View Bill",
+      "class": "row bill-row"
+    },
+    {
+      "selector": "[class*=\"bill\"]",
+      "text": "Amount $224.07",
+      "class": "col-4 bill-item-right-box"
+    },
+    {
+      "selector": "[class*=\"bill\"]",
+      "text": "View Bill",
+      "class": "col-4 bill-item-right-box"
+    },
+    {
+      "selector": "[class*=\"bill\"]",
+      "text": "View Bill",
+      "class": "btn btn-lg btn-view-bill"
+    },
+    {
+      "selector": "[class*=\"bill\"]",
+      "text": "Pepco  Invoice: 200171448720  Date: 25/11/2020  6514 78TH ST CABIN JOHN MD 20818  Amount $5.25 Status: Unpaid Due Date   View Bill",
+      "class": "row bill-row"
+    },
+    {
+      "selector": "[class*=\"bill\"]",
+      "text": "Amount $5.25",
+      "class": "col-4 bill-item-right-box"
+    },
+    {
+      "selector": "[class*=\"bill\"]",
+      "text": "View Bill",
+      "class": "col-4 bill-item-right-box"
+    },
+    {
+      "selector": "[class*=\"bill\"]",
+      "text": "View Bill",
+      "class": "btn btn-lg btn-view-bill"
+    },
+    {
+      "selector": "[class*=\"bill\"]",
+      "text": "Pepco  Invoice: 200361402912  Date: 28/10/2020  6514 78TH ST CABIN JOHN MD 20818  Amount $146.08 Status: Unpaid Due Date   View Bill",
+      "class": "row bill-row"
+    },
+    {
+      "selector": "[class*=\"bill\"]",
+      "text": "Amount $146.08",
+      "class": "col-4 bill-item-right-box"
+    },
+    {
+      "selector": "[class*=\"bill\"]",
+      "text": "View Bill",
+      "class": "col-4 bill-item-right-box"
+    },
+    {
+      "selector": "[class*=\"bill\"]",
+      "text": "View Bill",
+      "class": "btn btn-lg btn-view-bill"
+    },
+    {
+      "selector": "[class*=\"bill\"]",
+      "text": "Pepco  Invoice: 200711315341  Date: 29/09/2020  6514 78TH ST CABIN JOHN MD 20818  Amount $214.73 Status: Unpaid Due Date   View Bill",
+      "class": "row bill-row"
+    },
+    {
+      "selector": "[class*=\"bill\"]",
+      "text": "Amount $214.73",
+      "class": "col-4 bill-item-right-box"
+    },
+    {
+      "selector": "[class*=\"bill\"]",
+      "text": "View Bill",
+      "class": "col-4 bill-item-right-box"
+    },
+    {
+      "selector": "[class*=\"bill\"]",
+      "text": "View Bill",
+      "class": "btn btn-lg btn-view-bill"
+    },
+    {
+      "selector": "[class*=\"bill\"]",
+      "text": "Pepco  Invoice: 200651309691  Date: 28/08/2020  6514 78TH ST CABIN JOHN MD 20818  Amount $249.76 Status: Unpaid Due Date   View Bill",
+      "class": "row bill-row"
+    },
+    {
+      "selector": "[class*=\"bill\"]",
+      "text": "Amount $249.76",
+      "class": "col-4 bill-item-right-box"
+    },
+    {
+      "selector": "[class*=\"bill\"]",
+      "text": "View Bill",
+      "class": "col-4 bill-item-right-box"
+    },
+    {
+      "selector": "[class*=\"bill\"]",
+      "text": "View Bill",
+      "class": "btn btn-lg btn-view-bill"
+    },
+    {
+      "selector": "[class*=\"bill\"]",
+      "text": "Pepco  Invoice: 200501321812  Date: 29/07/2020  6514 78TH ST CABIN JOHN MD 20818  Amount $366.95 Status: Unpaid Due Date   View Bill",
+      "class": "row bill-row"
+    },
+    {
+      "selector": "[class*=\"bill\"]",
+      "text": "Amount $366.95",
+      "class": "col-4 bill-item-right-box"
+    },
+    {
+      "selector": "[class*=\"bill\"]",
+      "text": "View Bill",
+      "class": "col-4 bill-item-right-box"
+    },
+    {
+      "selector": "[class*=\"bill\"]",
+      "text": "View Bill",
+      "class": "btn btn-lg btn-view-bill"
+    },
+    {
+      "selector": "[class*=\"bill\"]",
+      "text": "Pepco  Invoice: 200341326441  Date: 26/06/2020  6514 78TH ST CABIN JOHN MD 20818  Amount $212.44 Status: Unpaid Due Date   View Bill",
+      "class": "row bill-row"
+    },
+    {
+      "selector": "[class*=\"bill\"]",
+      "text": "Amount $212.44",
+      "class": "col-4 bill-item-right-box"
+    },
+    {
+      "selector": "[class*=\"bill\"]",
+      "text": "View Bill",
+      "class": "col-4 bill-item-right-box"
+    },
+    {
+      "selector": "[class*=\"bill\"]",
+      "text": "View Bill",
+      "class": "btn btn-lg btn-view-bill"
+    },
+    {
+      "selector": "[class*=\"bill\"]",
+      "text": "Pepco  Invoice: 200751222107  Date: 28/05/2020  6514 78TH ST CABIN JOHN MD 20818  Amount $148.15 Status: Unpaid Due Date   View Bill",
+      "class": "row bill-row"
+    },
+    {
+      "selector": "[class*=\"bill\"]",
+      "text": "Amount $148.15",
+      "class": "col-4 bill-item-right-box"
+    },
+    {
+      "selector": "[class*=\"bill\"]",
+      "text": "View Bill",
+      "class": "col-4 bill-item-right-box"
+    },
+    {
+      "selector": "[class*=\"bill\"]",
+      "text": "View Bill",
+      "class": "btn btn-lg btn-view-bill"
+    },
+    {
+      "selector": "[class*=\"bill\"]",
+      "text": "Pepco  Invoice: 200641231730  Date: 28/04/2020  6514 78TH ST CABIN JOHN MD 20818  Amount $146.86 Status: Unpaid Due Date   View Bill",
+      "class": "row bill-row"
+    },
+    {
+      "selector": "[class*=\"bill\"]",
+      "text": "Amount $146.86",
+      "class": "col-4 bill-item-right-box"
+    },
+    {
+      "selector": "[class*=\"bill\"]",
+      "text": "View Bill",
+      "class": "col-4 bill-item-right-box"
+    },
+    {
+      "selector": "[class*=\"bill\"]",
+      "text": "View Bill",
+      "class": "btn btn-lg btn-view-bill"
+    },
+    {
+      "selector": "[class*=\"bill\"]",
+      "text": "Pepco  Invoice: 200011304406  Date: 27/03/2020  6514 78TH ST CABIN JOHN MD 20818  Amount $117.35 Status: Unpaid Due Date   View Bill",
+      "class": "row bill-row"
+    },
+    {
+      "selector": "[class*=\"bill\"]",
+      "text": "Amount $117.35",
+      "class": "col-4 bill-item-right-box"
+    },
+    {
+      "selector": "[class*=\"bill\"]",
+      "text": "View Bill",
+      "class": "col-4 bill-item-right-box"
+    },
+    {
+      "selector": "[class*=\"bill\"]",
+      "text": "View Bill",
+      "class": "btn btn-lg btn-view-bill"
+    },
+    {
+      "selector": "[class*=\"bill\"]",
+      "text": "Pepco  Invoice: 200970961178  Date: 27/02/2020  6514 78TH ST CABIN JOHN MD 20818  Amount $118.85 Status: Unpaid Due Date   View Bill",
+      "class": "row bill-row"
+    },
+    {
+      "selector": "[class*=\"bill\"]",
+      "text": "Amount $118.85",
+      "class": "col-4 bill-item-right-box"
+    },
+    {
+      "selector": "[class*=\"bill\"]",
+      "text": "View Bill",
+      "class": "col-4 bill-item-right-box"
+    },
+    {
+      "selector": "[class*=\"bill\"]",
+      "text": "View Bill",
+      "class": "btn btn-lg btn-view-bill"
+    },
+    {
+      "selector": "[class*=\"bill\"]",
+      "text": "Pepco  Invoice: 200271230808  Date: 30/01/2020  6514 78TH ST CABIN JOHN MD 20818  Amount $160.79 Status: Unpaid Due Date   View Bill",
+      "class": "row bill-row"
+    },
+    {
+      "selector": "[class*=\"bill\"]",
+      "text": "Amount $160.79",
+      "class": "col-4 bill-item-right-box"
+    },
+    {
+      "selector": "[class*=\"bill\"]",
+      "text": "View Bill",
+      "class": "col-4 bill-item-right-box"
+    },
+    {
+      "selector": "[class*=\"bill\"]",
+      "text": "View Bill",
+      "class": "btn btn-lg btn-view-bill"
+    },
+    {
+      "selector": "[class*=\"bill\"]",
+      "text": "Pepco  Invoice: 200791109555  Date: 30/12/2019  6514 78TH ST CABIN JOHN MD 20818  Amount $281.34 Status: Unpaid Due Date   View Bill",
+      "class": "row bill-row"
+    },
+    {
+      "selector": "[class*=\"bill\"]",
+      "text": "Amount $281.34",
+      "class": "col-4 bill-item-right-box"
+    },
+    {
+      "selector": "[class*=\"bill\"]",
+      "text": "View Bill",
+      "class": "col-4 bill-item-right-box"
+    },
+    {
+      "selector": "[class*=\"bill\"]",
+      "text": "View Bill",
+      "class": "btn btn-lg btn-view-bill"
+    },
+    {
+      "selector": "[class*=\"bill\"]",
+      "text": "Pepco  Invoice: 200191199688  Date: 26/11/2019  6514 78TH ST CABIN JOHN MD 20818  Amount $230.22 Status: Unpaid Due Date   View Bill",
+      "class": "row bill-row"
+    },
+    {
+      "selector": "[class*=\"bill\"]",
+      "text": "Amount $230.22",
+      "class": "col-4 bill-item-right-box"
+    },
+    {
+      "selector": "[class*=\"bill\"]",
+      "text": "View Bill",
+      "class": "col-4 bill-item-right-box"
+    },
+    {
+      "selector": "[class*=\"bill\"]",
+      "text": "View Bill",
+      "class": "btn btn-lg btn-view-bill"
+    },
+    {
+      "selector": "[class*=\"bill\"]",
+      "text": "Pepco  Invoice: 200281169637  Date: 28/10/2019  6514 78TH ST CABIN JOHN MD 20818  Amount $158.95 Status: Unpaid Due Date   View Bill",
+      "class": "row bill-row"
+    },
+    {
+      "selector": "[class*=\"bill\"]",
+      "text": "Amount $158.95",
+      "class": "col-4 bill-item-right-box"
+    },
+    {
+      "selector": "[class*=\"bill\"]",
+      "text": "View Bill",
+      "class": "col-4 bill-item-right-box"
+    },
+    {
+      "selector": "[class*=\"bill\"]",
+      "text": "View Bill",
+      "class": "btn btn-lg btn-view-bill"
+    },
+    {
+      "selector": "[class*=\"bill\"]",
+      "text": "Pepco  Invoice: 200311144825  Date: 27/09/2019  6514 78TH ST CABIN JOHN MD 20818  Amount $1,098.25 Status: Unpaid Due Date   View Bill",
+      "class": "row bill-row"
+    },
+    {
+      "selector": "[class*=\"bill\"]",
+      "text": "Amount $1,098.25",
+      "class": "col-4 bill-item-right-box"
+    },
+    {
+      "selector": "[class*=\"bill\"]",
+      "text": "View Bill",
+      "class": "col-4 bill-item-right-box"
+    },
+    {
+      "selector": "[class*=\"bill\"]",
+      "text": "View Bill",
+      "class": "btn btn-lg btn-view-bill"
+    },
+    {
+      "selector": "[class*=\"bill\"]",
+      "text": "Pepco  Invoice: 200401113139  Date: 28/08/2019  6514 78TH ST CABIN JOHN MD 20818  Amount $882.66 Status: Unpaid Due Date   View Bill",
+      "class": "row bill-row"
+    },
+    {
+      "selector": "[class*=\"bill\"]",
+      "text": "Amount $882.66",
+      "class": "col-4 bill-item-right-box"
+    },
+    {
+      "selector": "[class*=\"bill\"]",
+      "text": "View Bill",
+      "class": "col-4 bill-item-right-box"
+    },
+    {
+      "selector": "[class*=\"bill\"]",
+      "text": "View Bill",
+      "class": "btn btn-lg btn-view-bill"
+    },
+    {
+      "selector": "[class*=\"bill\"]",
+      "text": "Pepco  Invoice: 200541081202  Date: 14/08/2019  6514 78TH ST CABIN JOHN MD 20818  Amount $610.04 Status: Unpaid Due Date   View Bill",
+      "class": "row bill-row"
+    },
+    {
+      "selector": "[class*=\"bill\"]",
+      "text": "Amount $610.04",
+      "class": "col-4 bill-item-right-box"
+    },
+    {
+      "selector": "[class*=\"bill\"]",
+      "text": "View Bill",
+      "class": "col-4 bill-item-right-box"
+    },
+    {
+      "selector": "[class*=\"bill\"]",
+      "text": "View Bill",
+      "class": "btn btn-lg btn-view-bill"
+    },
+    {
+      "selector": "[class*=\"bill\"]",
+      "text": "Pepco  Invoice: 200251107779  Date: 29/07/2019  6514 78TH ST CABIN JOHN MD 20818  Amount $610.04 Status: Unpaid Due Date   View Bill",
+      "class": "row bill-row"
+    },
+    {
+      "selector": "[class*=\"bill\"]",
+      "text": "Amount $610.04",
+      "class": "col-4 bill-item-right-box"
+    },
+    {
+      "selector": "[class*=\"bill\"]",
+      "text": "View Bill",
+      "class": "col-4 bill-item-right-box"
+    },
+    {
+      "selector": "[class*=\"bill\"]",
+      "text": "View Bill",
+      "class": "btn btn-lg btn-view-bill"
+    },
+    {
+      "selector": "[class*=\"bill\"]",
+      "text": "Pepco  Invoice: 200411070149  Date: 27/06/2019  6514 78TH ST CABIN JOHN MD 20818  Amount $299.89 Status: Unpaid Due Date   View Bill",
+      "class": "row bill-row"
+    },
+    {
+      "selector": "[class*=\"bill\"]",
+      "text": "Amount $299.89",
+      "class": "col-4 bill-item-right-box"
+    },
+    {
+      "selector": "[class*=\"bill\"]",
+      "text": "View Bill",
+      "class": "col-4 bill-item-right-box"
+    },
+    {
+      "selector": "[class*=\"bill\"]",
+      "text": "View Bill",
+      "class": "btn btn-lg btn-view-bill"
+    },
+    {
+      "selector": "[class*=\"bill\"]",
+      "text": "Pepco  Invoice: 200261068639  Date: 29/05/2019  6514 78TH ST CABIN JOHN MD 20818  Amount $105.70 Status: Unpaid Due Date   View Bill",
+      "class": "row bill-row"
+    },
+    {
+      "selector": "[class*=\"bill\"]",
+      "text": "Amount $105.70",
+      "class": "col-4 bill-item-right-box"
+    },
+    {
+      "selector": "[class*=\"bill\"]",
+      "text": "View Bill",
+      "class": "col-4 bill-item-right-box"
+    },
+    {
+      "selector": "[class*=\"bill\"]",
+      "text": "View Bill",
+      "class": "btn btn-lg btn-view-bill"
+    },
+    {
+      "selector": "[class*=\"bill\"]",
+      "text": "Pepco  Invoice: 200960863922  Date: 10/07/2019  6203 LEEKE FOREST CT BETHESDA MD 20817  Amount $276.00 Status: Unpaid Due Date   View Bill",
+      "class": "row bill-row"
+    },
+    {
+      "selector": "[class*=\"bill\"]",
+      "text": "Amount $276.00",
+      "class": "col-4 bill-item-right-box"
+    },
+    {
+      "selector": "[class*=\"bill\"]",
+      "text": "View Bill",
+      "class": "col-4 bill-item-right-box"
+    },
+    {
+      "selector": "[class*=\"bill\"]",
+      "text": "View Bill",
+      "class": "btn btn-lg btn-view-bill"
+    },
+    {
+      "selector": "[class*=\"bill\"]",
+      "text": "Pepco  Invoice: 200810990608  Date: 03/07/2019  6203 LEEKE FOREST CT BETHESDA MD 20817  Amount $215.75 Status: Unpaid Due Date   View Bill",
+      "class": "row bill-row"
+    },
+    {
+      "selector": "[class*=\"bill\"]",
+      "text": "Amount $215.75",
+      "class": "col-4 bill-item-right-box"
+    },
+    {
+      "selector": "[class*=\"bill\"]",
+      "text": "View Bill",
+      "class": "col-4 bill-item-right-box"
+    },
+    {
+      "selector": "[class*=\"bill\"]",
+      "text": "View Bill",
+      "class": "btn btn-lg btn-view-bill"
+    },
+    {
+      "selector": "[class*=\"bill\"]",
+      "text": "Pepco  Invoice: 200081094106  Date: 05/06/2019  6203 LEEKE FOREST CT BETHESDA MD 20817  Amount $347.87 Status: Unpaid Due Date   View Bill",
+      "class": "row bill-row"
+    },
+    {
+      "selector": "[class*=\"bill\"]",
+      "text": "Amount $347.87",
+      "class": "col-4 bill-item-right-box"
+    },
+    {
+      "selector": "[class*=\"bill\"]",
+      "text": "View Bill",
+      "class": "col-4 bill-item-right-box"
+    },
+    {
+      "selector": "[class*=\"bill\"]",
+      "text": "View Bill",
+      "class": "btn btn-lg btn-view-bill"
+    },
+    {
+      "selector": "[class*=\"bill\"]",
+      "text": "Pepco  Invoice: 200401036301  Date: 03/05/2019  6203 LEEKE FOREST CT BETHESDA MD 20817  Amount $165.54 Status: Unpaid Due Date   View Bill",
+      "class": "row bill-row"
+    },
+    {
+      "selector": "[class*=\"bill\"]",
+      "text": "Amount $165.54",
+      "class": "col-4 bill-item-right-box"
+    },
+    {
+      "selector": "[class*=\"bill\"]",
+      "text": "View Bill",
+      "class": "col-4 bill-item-right-box"
+    },
+    {
+      "selector": "[class*=\"bill\"]",
+      "text": "View Bill",
+      "class": "btn btn-lg btn-view-bill"
+    },
+    {
+      "selector": "[class*=\"bill\"]",
+      "text": "Pepco  Invoice: 200311026122  Date: 03/04/2019  6203 LEEKE FOREST CT BETHESDA MD 20817  Amount $269.21 Status: Unpaid Due Date   View Bill",
+      "class": "row bill-row"
+    },
+    {
+      "selector": "[class*=\"bill\"]",
+      "text": "Amount $269.21",
+      "class": "col-4 bill-item-right-box"
+    },
+    {
+      "selector": "[class*=\"bill\"]",
+      "text": "View Bill",
+      "class": "col-4 bill-item-right-box"
+    },
+    {
+      "selector": "[class*=\"bill\"]",
+      "text": "View Bill",
+      "class": "btn btn-lg btn-view-bill"
+    },
+    {
+      "selector": "[class*=\"bill\"]",
+      "text": "AmWater  Invoice:   Date: 23/09/2021  3813 Watkins Mill Dr Alexandria VA 22304  Amount $0.00 Status: Unpaid Due Date   View Bill",
+      "class": "row bill-row"
+    },
+    {
+      "selector": "[class*=\"bill\"]",
+      "text": "Amount $0.00",
+      "class": "col-4 bill-item-right-box"
+    },
+    {
+      "selector": "[class*=\"bill\"]",
+      "text": "View Bill",
+      "class": "col-4 bill-item-right-box"
+    },
+    {
+      "selector": "[class*=\"bill\"]",
+      "text": "View Bill",
+      "class": "btn btn-lg btn-view-bill"
+    },
+    {
+      "selector": "[class*=\"bill\"]",
+      "text": "AmWater  Invoice:   Date: 23/09/2021  3813 Watkins Mill Dr Alexandria VA 22304  Amount $26.39 Status: Unpaid Due Date   View Bill",
+      "class": "row bill-row"
+    },
+    {
+      "selector": "[class*=\"bill\"]",
+      "text": "Amount $26.39",
+      "class": "col-4 bill-item-right-box"
+    },
+    {
+      "selector": "[class*=\"bill\"]",
+      "text": "View Bill",
+      "class": "col-4 bill-item-right-box"
+    },
+    {
+      "selector": "[class*=\"bill\"]",
+      "text": "View Bill",
+      "class": "btn btn-lg btn-view-bill"
+    },
+    {
+      "selector": "[class*=\"bill\"]",
+      "text": "AmWater  Invoice:   Date: 23/08/2021  3813 Watkins Mill Dr Alexandria VA 22304  Amount $0.00 Status: Unpaid Due Date   View Bill",
+      "class": "row bill-row"
+    },
+    {
+      "selector": "[class*=\"bill\"]",
+      "text": "Amount $0.00",
+      "class": "col-4 bill-item-right-box"
+    },
+    {
+      "selector": "[class*=\"bill\"]",
+      "text": "View Bill",
+      "class": "col-4 bill-item-right-box"
+    },
+    {
+      "selector": "[class*=\"bill\"]",
+      "text": "View Bill",
+      "class": "btn btn-lg btn-view-bill"
+    },
+    {
+      "selector": "[class*=\"bill\"]",
+      "text": "AmWater  Invoice:   Date: 23/08/2021  3813 Watkins Mill Dr Alexandria VA 22304  Amount $26.39 Status: Unpaid Due Date   View Bill",
+      "class": "row bill-row"
+    },
+    {
+      "selector": "[class*=\"bill\"]",
+      "text": "Amount $26.39",
+      "class": "col-4 bill-item-right-box"
+    },
+    {
+      "selector": "[class*=\"bill\"]",
+      "text": "View Bill",
+      "class": "col-4 bill-item-right-box"
+    },
+    {
+      "selector": "[class*=\"bill\"]",
+      "text": "View Bill",
+      "class": "btn btn-lg btn-view-bill"
+    }
+  ],
+  "amounts": [
+    {
+      "amount": "$206.43",
+      "context": "UtilliOne\n  \n  \n  \n  \nh1[_ngcontent-chr-c0]{font-size:1.2em;margin-bottom:0}h2[_ngcontent-chr-c0]{fo",
+      "tag": "HTML",
+      "class": ""
+    },
+    {
+      "amount": "$206.43",
+      "context": "Bills Pepco  Invoice: 200621437832  Date: 25/02/2021  6514 78TH ST CABIN JOHN MD 20818  Amount $206.",
+      "tag": "BODY",
+      "class": ""
+    },
+    {
+      "amount": "$206.43",
+      "context": "Bills Pepco  Invoice: 200621437832  Date: 25/02/2021  6514 78TH ST CABIN JOHN MD 20818  Amount $206.",
+      "tag": "APP-ROOT",
+      "class": ""
+    },
+    {
+      "amount": "$206.43",
+      "context": "Bills Pepco  Invoice: 200621437832  Date: 25/02/2021  6514 78TH ST CABIN JOHN MD 20818  Amount $206.",
+      "tag": "APP-LAYOUT",
+      "class": ""
+    },
+    {
+      "amount": "$206.43",
+      "context": "Bills Pepco  Invoice: 200621437832  Date: 25/02/2021  6514 78TH ST CABIN JOHN MD 20818  Amount $206.",
+      "tag": "DIV",
+      "class": "layout"
+    },
+    {
+      "amount": "$206.43",
+      "context": "Bills Pepco  Invoice: 200621437832  Date: 25/02/2021  6514 78TH ST CABIN JOHN MD 20818  Amount $206.",
+      "tag": "APP-BILLS",
+      "class": ""
+    },
+    {
+      "amount": "$206.43",
+      "context": "Bills Pepco  Invoice: 200621437832  Date: 25/02/2021  6514 78TH ST CABIN JOHN MD 20818  Amount $206.",
+      "tag": "DIV",
+      "class": "container"
+    },
+    {
+      "amount": "$206.43",
+      "context": "Pepco  Invoice: 200621437832  Date: 25/02/2021  6514 78TH ST CABIN JOHN MD 20818  Amount $206.43 Sta",
+      "tag": "DIV",
+      "class": "service-provider"
+    },
+    {
+      "amount": "$206.43",
+      "context": "Pepco  Invoice: 200621437832  Date: 25/02/2021  6514 78TH ST CABIN JOHN MD 20818  Amount $206.43 Sta",
+      "tag": "DIV",
+      "class": "row main-row"
+    },
+    {
+      "amount": "$206.43",
+      "context": "Pepco  Invoice: 200621437832  Date: 25/02/2021  6514 78TH ST CABIN JOHN MD 20818  Amount $206.43 Sta",
+      "tag": "DIV",
+      "class": "accounts collapse show loader"
+    },
+    {
+      "amount": "$206.43",
+      "context": "Pepco  Invoice: 200621437832  Date: 25/02/2021  6514 78TH ST CABIN JOHN MD 20818  Amount $206.43 Sta",
+      "tag": "DIV",
+      "class": "row bill-row"
+    },
+    {
+      "amount": "$206.43",
+      "context": "Pepco  Invoice: 200621437832  Date: 25/02/2021  6514 78TH ST CABIN JOHN MD 20818  Amount $206.43",
+      "tag": "DIV",
+      "class": "row full-line"
+    },
+    {
+      "amount": "$206.43",
+      "context": "Amount $206.43",
+      "tag": "DIV",
+      "class": "col-4 bill-item-right-box"
+    },
+    {
+      "amount": "$206.43",
+      "context": "Amount $206.43",
+      "tag": "DIV",
+      "class": "row full-line"
+    },
+    {
+      "amount": "$206.43",
+      "context": "$206.43",
+      "tag": "DIV",
+      "class": "col-12 align-right amount"
+    },
+    {
+      "amount": "$206.43",
+      "context": "$206.43",
+      "tag": "SPAN",
+      "class": ""
+    },
+    {
+      "amount": "$211.12",
+      "context": "Pepco  Invoice: 200971150051  Date: 29/01/2021  6514 78TH ST CABIN JOHN MD 20818  Amount $211.12 Sta",
+      "tag": "DIV",
+      "class": "row bill-row"
+    },
+    {
+      "amount": "$211.12",
+      "context": "Pepco  Invoice: 200971150051  Date: 29/01/2021  6514 78TH ST CABIN JOHN MD 20818  Amount $211.12",
+      "tag": "DIV",
+      "class": "row full-line"
+    },
+    {
+      "amount": "$211.12",
+      "context": "Amount $211.12",
+      "tag": "DIV",
+      "class": "col-4 bill-item-right-box"
+    },
+    {
+      "amount": "$211.12",
+      "context": "Amount $211.12",
+      "tag": "DIV",
+      "class": "row full-line"
+    },
+    {
+      "amount": "$211.12",
+      "context": "$211.12",
+      "tag": "DIV",
+      "class": "col-12 align-right amount"
+    },
+    {
+      "amount": "$211.12",
+      "context": "$211.12",
+      "tag": "SPAN",
+      "class": ""
+    },
+    {
+      "amount": "$224.07",
+      "context": "Pepco  Invoice: 200281458234  Date: 30/12/2020  6514 78TH ST CABIN JOHN MD 20818  Amount $224.07 Sta",
+      "tag": "DIV",
+      "class": "row bill-row"
+    },
+    {
+      "amount": "$224.07",
+      "context": "Pepco  Invoice: 200281458234  Date: 30/12/2020  6514 78TH ST CABIN JOHN MD 20818  Amount $224.07",
+      "tag": "DIV",
+      "class": "row full-line"
+    },
+    {
+      "amount": "$224.07",
+      "context": "Amount $224.07",
+      "tag": "DIV",
+      "class": "col-4 bill-item-right-box"
+    },
+    {
+      "amount": "$224.07",
+      "context": "Amount $224.07",
+      "tag": "DIV",
+      "class": "row full-line"
+    },
+    {
+      "amount": "$224.07",
+      "context": "$224.07",
+      "tag": "DIV",
+      "class": "col-12 align-right amount"
+    },
+    {
+      "amount": "$224.07",
+      "context": "$224.07",
+      "tag": "SPAN",
+      "class": ""
+    },
+    {
+      "amount": "$5.25",
+      "context": "Pepco  Invoice: 200171448720  Date: 25/11/2020  6514 78TH ST CABIN JOHN MD 20818  Amount $5.25 Statu",
+      "tag": "DIV",
+      "class": "row bill-row"
+    },
+    {
+      "amount": "$5.25",
+      "context": "Pepco  Invoice: 200171448720  Date: 25/11/2020  6514 78TH ST CABIN JOHN MD 20818  Amount $5.25",
+      "tag": "DIV",
+      "class": "row full-line"
+    },
+    {
+      "amount": "$5.25",
+      "context": "Amount $5.25",
+      "tag": "DIV",
+      "class": "col-4 bill-item-right-box"
+    },
+    {
+      "amount": "$5.25",
+      "context": "Amount $5.25",
+      "tag": "DIV",
+      "class": "row full-line"
+    },
+    {
+      "amount": "$5.25",
+      "context": "$5.25",
+      "tag": "DIV",
+      "class": "col-12 align-right amount"
+    },
+    {
+      "amount": "$5.25",
+      "context": "$5.25",
+      "tag": "SPAN",
+      "class": ""
+    },
+    {
+      "amount": "$146.08",
+      "context": "Pepco  Invoice: 200361402912  Date: 28/10/2020  6514 78TH ST CABIN JOHN MD 20818  Amount $146.08 Sta",
+      "tag": "DIV",
+      "class": "row bill-row"
+    },
+    {
+      "amount": "$146.08",
+      "context": "Pepco  Invoice: 200361402912  Date: 28/10/2020  6514 78TH ST CABIN JOHN MD 20818  Amount $146.08",
+      "tag": "DIV",
+      "class": "row full-line"
+    },
+    {
+      "amount": "$146.08",
+      "context": "Amount $146.08",
+      "tag": "DIV",
+      "class": "col-4 bill-item-right-box"
+    },
+    {
+      "amount": "$146.08",
+      "context": "Amount $146.08",
+      "tag": "DIV",
+      "class": "row full-line"
+    },
+    {
+      "amount": "$146.08",
+      "context": "$146.08",
+      "tag": "DIV",
+      "class": "col-12 align-right amount"
+    },
+    {
+      "amount": "$146.08",
+      "context": "$146.08",
+      "tag": "SPAN",
+      "class": ""
+    },
+    {
+      "amount": "$214.73",
+      "context": "Pepco  Invoice: 200711315341  Date: 29/09/2020  6514 78TH ST CABIN JOHN MD 20818  Amount $214.73 Sta",
+      "tag": "DIV",
+      "class": "row bill-row"
+    },
+    {
+      "amount": "$214.73",
+      "context": "Pepco  Invoice: 200711315341  Date: 29/09/2020  6514 78TH ST CABIN JOHN MD 20818  Amount $214.73",
+      "tag": "DIV",
+      "class": "row full-line"
+    },
+    {
+      "amount": "$214.73",
+      "context": "Amount $214.73",
+      "tag": "DIV",
+      "class": "col-4 bill-item-right-box"
+    },
+    {
+      "amount": "$214.73",
+      "context": "Amount $214.73",
+      "tag": "DIV",
+      "class": "row full-line"
+    },
+    {
+      "amount": "$214.73",
+      "context": "$214.73",
+      "tag": "DIV",
+      "class": "col-12 align-right amount"
+    },
+    {
+      "amount": "$214.73",
+      "context": "$214.73",
+      "tag": "SPAN",
+      "class": ""
+    },
+    {
+      "amount": "$249.76",
+      "context": "Pepco  Invoice: 200651309691  Date: 28/08/2020  6514 78TH ST CABIN JOHN MD 20818  Amount $249.76 Sta",
+      "tag": "DIV",
+      "class": "row bill-row"
+    },
+    {
+      "amount": "$249.76",
+      "context": "Pepco  Invoice: 200651309691  Date: 28/08/2020  6514 78TH ST CABIN JOHN MD 20818  Amount $249.76",
+      "tag": "DIV",
+      "class": "row full-line"
+    },
+    {
+      "amount": "$249.76",
+      "context": "Amount $249.76",
+      "tag": "DIV",
+      "class": "col-4 bill-item-right-box"
+    },
+    {
+      "amount": "$249.76",
+      "context": "Amount $249.76",
+      "tag": "DIV",
+      "class": "row full-line"
+    },
+    {
+      "amount": "$249.76",
+      "context": "$249.76",
+      "tag": "DIV",
+      "class": "col-12 align-right amount"
+    },
+    {
+      "amount": "$249.76",
+      "context": "$249.76",
+      "tag": "SPAN",
+      "class": ""
+    },
+    {
+      "amount": "$366.95",
+      "context": "Pepco  Invoice: 200501321812  Date: 29/07/2020  6514 78TH ST CABIN JOHN MD 20818  Amount $366.95 Sta",
+      "tag": "DIV",
+      "class": "row bill-row"
+    },
+    {
+      "amount": "$366.95",
+      "context": "Pepco  Invoice: 200501321812  Date: 29/07/2020  6514 78TH ST CABIN JOHN MD 20818  Amount $366.95",
+      "tag": "DIV",
+      "class": "row full-line"
+    },
+    {
+      "amount": "$366.95",
+      "context": "Amount $366.95",
+      "tag": "DIV",
+      "class": "col-4 bill-item-right-box"
+    },
+    {
+      "amount": "$366.95",
+      "context": "Amount $366.95",
+      "tag": "DIV",
+      "class": "row full-line"
+    },
+    {
+      "amount": "$366.95",
+      "context": "$366.95",
+      "tag": "DIV",
+      "class": "col-12 align-right amount"
+    },
+    {
+      "amount": "$366.95",
+      "context": "$366.95",
+      "tag": "SPAN",
+      "class": ""
+    },
+    {
+      "amount": "$212.44",
+      "context": "Pepco  Invoice: 200341326441  Date: 26/06/2020  6514 78TH ST CABIN JOHN MD 20818  Amount $212.44 Sta",
+      "tag": "DIV",
+      "class": "row bill-row"
+    },
+    {
+      "amount": "$212.44",
+      "context": "Pepco  Invoice: 200341326441  Date: 26/06/2020  6514 78TH ST CABIN JOHN MD 20818  Amount $212.44",
+      "tag": "DIV",
+      "class": "row full-line"
+    },
+    {
+      "amount": "$212.44",
+      "context": "Amount $212.44",
+      "tag": "DIV",
+      "class": "col-4 bill-item-right-box"
+    },
+    {
+      "amount": "$212.44",
+      "context": "Amount $212.44",
+      "tag": "DIV",
+      "class": "row full-line"
+    },
+    {
+      "amount": "$212.44",
+      "context": "$212.44",
+      "tag": "DIV",
+      "class": "col-12 align-right amount"
+    },
+    {
+      "amount": "$212.44",
+      "context": "$212.44",
+      "tag": "SPAN",
+      "class": ""
+    },
+    {
+      "amount": "$148.15",
+      "context": "Pepco  Invoice: 200751222107  Date: 28/05/2020  6514 78TH ST CABIN JOHN MD 20818  Amount $148.15 Sta",
+      "tag": "DIV",
+      "class": "row bill-row"
+    },
+    {
+      "amount": "$148.15",
+      "context": "Pepco  Invoice: 200751222107  Date: 28/05/2020  6514 78TH ST CABIN JOHN MD 20818  Amount $148.15",
+      "tag": "DIV",
+      "class": "row full-line"
+    },
+    {
+      "amount": "$148.15",
+      "context": "Amount $148.15",
+      "tag": "DIV",
+      "class": "col-4 bill-item-right-box"
+    },
+    {
+      "amount": "$148.15",
+      "context": "Amount $148.15",
+      "tag": "DIV",
+      "class": "row full-line"
+    },
+    {
+      "amount": "$148.15",
+      "context": "$148.15",
+      "tag": "DIV",
+      "class": "col-12 align-right amount"
+    },
+    {
+      "amount": "$148.15",
+      "context": "$148.15",
+      "tag": "SPAN",
+      "class": ""
+    },
+    {
+      "amount": "$146.86",
+      "context": "Pepco  Invoice: 200641231730  Date: 28/04/2020  6514 78TH ST CABIN JOHN MD 20818  Amount $146.86 Sta",
+      "tag": "DIV",
+      "class": "row bill-row"
+    },
+    {
+      "amount": "$146.86",
+      "context": "Pepco  Invoice: 200641231730  Date: 28/04/2020  6514 78TH ST CABIN JOHN MD 20818  Amount $146.86",
+      "tag": "DIV",
+      "class": "row full-line"
+    },
+    {
+      "amount": "$146.86",
+      "context": "Amount $146.86",
+      "tag": "DIV",
+      "class": "col-4 bill-item-right-box"
+    },
+    {
+      "amount": "$146.86",
+      "context": "Amount $146.86",
+      "tag": "DIV",
+      "class": "row full-line"
+    },
+    {
+      "amount": "$146.86",
+      "context": "$146.86",
+      "tag": "DIV",
+      "class": "col-12 align-right amount"
+    },
+    {
+      "amount": "$146.86",
+      "context": "$146.86",
+      "tag": "SPAN",
+      "class": ""
+    },
+    {
+      "amount": "$117.35",
+      "context": "Pepco  Invoice: 200011304406  Date: 27/03/2020  6514 78TH ST CABIN JOHN MD 20818  Amount $117.35 Sta",
+      "tag": "DIV",
+      "class": "row bill-row"
+    },
+    {
+      "amount": "$117.35",
+      "context": "Pepco  Invoice: 200011304406  Date: 27/03/2020  6514 78TH ST CABIN JOHN MD 20818  Amount $117.35",
+      "tag": "DIV",
+      "class": "row full-line"
+    },
+    {
+      "amount": "$117.35",
+      "context": "Amount $117.35",
+      "tag": "DIV",
+      "class": "col-4 bill-item-right-box"
+    },
+    {
+      "amount": "$117.35",
+      "context": "Amount $117.35",
+      "tag": "DIV",
+      "class": "row full-line"
+    },
+    {
+      "amount": "$117.35",
+      "context": "$117.35",
+      "tag": "DIV",
+      "class": "col-12 align-right amount"
+    },
+    {
+      "amount": "$117.35",
+      "context": "$117.35",
+      "tag": "SPAN",
+      "class": ""
+    },
+    {
+      "amount": "$118.85",
+      "context": "Pepco  Invoice: 200970961178  Date: 27/02/2020  6514 78TH ST CABIN JOHN MD 20818  Amount $118.85 Sta",
+      "tag": "DIV",
+      "class": "row bill-row"
+    },
+    {
+      "amount": "$118.85",
+      "context": "Pepco  Invoice: 200970961178  Date: 27/02/2020  6514 78TH ST CABIN JOHN MD 20818  Amount $118.85",
+      "tag": "DIV",
+      "class": "row full-line"
+    },
+    {
+      "amount": "$118.85",
+      "context": "Amount $118.85",
+      "tag": "DIV",
+      "class": "col-4 bill-item-right-box"
+    },
+    {
+      "amount": "$118.85",
+      "context": "Amount $118.85",
+      "tag": "DIV",
+      "class": "row full-line"
+    },
+    {
+      "amount": "$118.85",
+      "context": "$118.85",
+      "tag": "DIV",
+      "class": "col-12 align-right amount"
+    },
+    {
+      "amount": "$118.85",
+      "context": "$118.85",
+      "tag": "SPAN",
+      "class": ""
+    },
+    {
+      "amount": "$160.79",
+      "context": "Pepco  Invoice: 200271230808  Date: 30/01/2020  6514 78TH ST CABIN JOHN MD 20818  Amount $160.79 Sta",
+      "tag": "DIV",
+      "class": "row bill-row"
+    },
+    {
+      "amount": "$160.79",
+      "context": "Pepco  Invoice: 200271230808  Date: 30/01/2020  6514 78TH ST CABIN JOHN MD 20818  Amount $160.79",
+      "tag": "DIV",
+      "class": "row full-line"
+    },
+    {
+      "amount": "$160.79",
+      "context": "Amount $160.79",
+      "tag": "DIV",
+      "class": "col-4 bill-item-right-box"
+    },
+    {
+      "amount": "$160.79",
+      "context": "Amount $160.79",
+      "tag": "DIV",
+      "class": "row full-line"
+    },
+    {
+      "amount": "$160.79",
+      "context": "$160.79",
+      "tag": "DIV",
+      "class": "col-12 align-right amount"
+    },
+    {
+      "amount": "$160.79",
+      "context": "$160.79",
+      "tag": "SPAN",
+      "class": ""
+    },
+    {
+      "amount": "$281.34",
+      "context": "Pepco  Invoice: 200791109555  Date: 30/12/2019  6514 78TH ST CABIN JOHN MD 20818  Amount $281.34 Sta",
+      "tag": "DIV",
+      "class": "row bill-row"
+    },
+    {
+      "amount": "$281.34",
+      "context": "Pepco  Invoice: 200791109555  Date: 30/12/2019  6514 78TH ST CABIN JOHN MD 20818  Amount $281.34",
+      "tag": "DIV",
+      "class": "row full-line"
+    },
+    {
+      "amount": "$281.34",
+      "context": "Amount $281.34",
+      "tag": "DIV",
+      "class": "col-4 bill-item-right-box"
+    },
+    {
+      "amount": "$281.34",
+      "context": "Amount $281.34",
+      "tag": "DIV",
+      "class": "row full-line"
+    },
+    {
+      "amount": "$281.34",
+      "context": "$281.34",
+      "tag": "DIV",
+      "class": "col-12 align-right amount"
+    },
+    {
+      "amount": "$281.34",
+      "context": "$281.34",
+      "tag": "SPAN",
+      "class": ""
+    },
+    {
+      "amount": "$230.22",
+      "context": "Pepco  Invoice: 200191199688  Date: 26/11/2019  6514 78TH ST CABIN JOHN MD 20818  Amount $230.22 Sta",
+      "tag": "DIV",
+      "class": "row bill-row"
+    },
+    {
+      "amount": "$230.22",
+      "context": "Pepco  Invoice: 200191199688  Date: 26/11/2019  6514 78TH ST CABIN JOHN MD 20818  Amount $230.22",
+      "tag": "DIV",
+      "class": "row full-line"
+    },
+    {
+      "amount": "$230.22",
+      "context": "Amount $230.22",
+      "tag": "DIV",
+      "class": "col-4 bill-item-right-box"
+    },
+    {
+      "amount": "$230.22",
+      "context": "Amount $230.22",
+      "tag": "DIV",
+      "class": "row full-line"
+    },
+    {
+      "amount": "$230.22",
+      "context": "$230.22",
+      "tag": "DIV",
+      "class": "col-12 align-right amount"
+    },
+    {
+      "amount": "$230.22",
+      "context": "$230.22",
+      "tag": "SPAN",
+      "class": ""
+    },
+    {
+      "amount": "$158.95",
+      "context": "Pepco  Invoice: 200281169637  Date: 28/10/2019  6514 78TH ST CABIN JOHN MD 20818  Amount $158.95 Sta",
+      "tag": "DIV",
+      "class": "row bill-row"
+    },
+    {
+      "amount": "$158.95",
+      "context": "Pepco  Invoice: 200281169637  Date: 28/10/2019  6514 78TH ST CABIN JOHN MD 20818  Amount $158.95",
+      "tag": "DIV",
+      "class": "row full-line"
+    },
+    {
+      "amount": "$158.95",
+      "context": "Amount $158.95",
+      "tag": "DIV",
+      "class": "col-4 bill-item-right-box"
+    },
+    {
+      "amount": "$158.95",
+      "context": "Amount $158.95",
+      "tag": "DIV",
+      "class": "row full-line"
+    },
+    {
+      "amount": "$158.95",
+      "context": "$158.95",
+      "tag": "DIV",
+      "class": "col-12 align-right amount"
+    },
+    {
+      "amount": "$158.95",
+      "context": "$158.95",
+      "tag": "SPAN",
+      "class": ""
+    },
+    {
+      "amount": "$1,098.25",
+      "context": "Pepco  Invoice: 200311144825  Date: 27/09/2019  6514 78TH ST CABIN JOHN MD 20818  Amount $1,098.25 S",
+      "tag": "DIV",
+      "class": "row bill-row"
+    },
+    {
+      "amount": "$1,098.25",
+      "context": "Pepco  Invoice: 200311144825  Date: 27/09/2019  6514 78TH ST CABIN JOHN MD 20818  Amount $1,098.25",
+      "tag": "DIV",
+      "class": "row full-line"
+    },
+    {
+      "amount": "$1,098.25",
+      "context": "Amount $1,098.25",
+      "tag": "DIV",
+      "class": "col-4 bill-item-right-box"
+    },
+    {
+      "amount": "$1,098.25",
+      "context": "Amount $1,098.25",
+      "tag": "DIV",
+      "class": "row full-line"
+    },
+    {
+      "amount": "$1,098.25",
+      "context": "$1,098.25",
+      "tag": "DIV",
+      "class": "col-12 align-right amount"
+    },
+    {
+      "amount": "$1,098.25",
+      "context": "$1,098.25",
+      "tag": "SPAN",
+      "class": ""
+    },
+    {
+      "amount": "$882.66",
+      "context": "Pepco  Invoice: 200401113139  Date: 28/08/2019  6514 78TH ST CABIN JOHN MD 20818  Amount $882.66 Sta",
+      "tag": "DIV",
+      "class": "row bill-row"
+    },
+    {
+      "amount": "$882.66",
+      "context": "Pepco  Invoice: 200401113139  Date: 28/08/2019  6514 78TH ST CABIN JOHN MD 20818  Amount $882.66",
+      "tag": "DIV",
+      "class": "row full-line"
+    },
+    {
+      "amount": "$882.66",
+      "context": "Amount $882.66",
+      "tag": "DIV",
+      "class": "col-4 bill-item-right-box"
+    },
+    {
+      "amount": "$882.66",
+      "context": "Amount $882.66",
+      "tag": "DIV",
+      "class": "row full-line"
+    },
+    {
+      "amount": "$882.66",
+      "context": "$882.66",
+      "tag": "DIV",
+      "class": "col-12 align-right amount"
+    },
+    {
+      "amount": "$882.66",
+      "context": "$882.66",
+      "tag": "SPAN",
+      "class": ""
+    },
+    {
+      "amount": "$610.04",
+      "context": "Pepco  Invoice: 200541081202  Date: 14/08/2019  6514 78TH ST CABIN JOHN MD 20818  Amount $610.04 Sta",
+      "tag": "DIV",
+      "class": "row bill-row"
+    },
+    {
+      "amount": "$610.04",
+      "context": "Pepco  Invoice: 200541081202  Date: 14/08/2019  6514 78TH ST CABIN JOHN MD 20818  Amount $610.04",
+      "tag": "DIV",
+      "class": "row full-line"
+    },
+    {
+      "amount": "$610.04",
+      "context": "Amount $610.04",
+      "tag": "DIV",
+      "class": "col-4 bill-item-right-box"
+    },
+    {
+      "amount": "$610.04",
+      "context": "Amount $610.04",
+      "tag": "DIV",
+      "class": "row full-line"
+    },
+    {
+      "amount": "$610.04",
+      "context": "$610.04",
+      "tag": "DIV",
+      "class": "col-12 align-right amount"
+    },
+    {
+      "amount": "$610.04",
+      "context": "$610.04",
+      "tag": "SPAN",
+      "class": ""
+    },
+    {
+      "amount": "$610.04",
+      "context": "Pepco  Invoice: 200251107779  Date: 29/07/2019  6514 78TH ST CABIN JOHN MD 20818  Amount $610.04 Sta",
+      "tag": "DIV",
+      "class": "row bill-row"
+    },
+    {
+      "amount": "$610.04",
+      "context": "Pepco  Invoice: 200251107779  Date: 29/07/2019  6514 78TH ST CABIN JOHN MD 20818  Amount $610.04",
+      "tag": "DIV",
+      "class": "row full-line"
+    },
+    {
+      "amount": "$610.04",
+      "context": "Amount $610.04",
+      "tag": "DIV",
+      "class": "col-4 bill-item-right-box"
+    },
+    {
+      "amount": "$610.04",
+      "context": "Amount $610.04",
+      "tag": "DIV",
+      "class": "row full-line"
+    },
+    {
+      "amount": "$610.04",
+      "context": "$610.04",
+      "tag": "DIV",
+      "class": "col-12 align-right amount"
+    },
+    {
+      "amount": "$610.04",
+      "context": "$610.04",
+      "tag": "SPAN",
+      "class": ""
+    },
+    {
+      "amount": "$299.89",
+      "context": "Pepco  Invoice: 200411070149  Date: 27/06/2019  6514 78TH ST CABIN JOHN MD 20818  Amount $299.89 Sta",
+      "tag": "DIV",
+      "class": "row bill-row"
+    },
+    {
+      "amount": "$299.89",
+      "context": "Pepco  Invoice: 200411070149  Date: 27/06/2019  6514 78TH ST CABIN JOHN MD 20818  Amount $299.89",
+      "tag": "DIV",
+      "class": "row full-line"
+    },
+    {
+      "amount": "$299.89",
+      "context": "Amount $299.89",
+      "tag": "DIV",
+      "class": "col-4 bill-item-right-box"
+    },
+    {
+      "amount": "$299.89",
+      "context": "Amount $299.89",
+      "tag": "DIV",
+      "class": "row full-line"
+    },
+    {
+      "amount": "$299.89",
+      "context": "$299.89",
+      "tag": "DIV",
+      "class": "col-12 align-right amount"
+    },
+    {
+      "amount": "$299.89",
+      "context": "$299.89",
+      "tag": "SPAN",
+      "class": ""
+    },
+    {
+      "amount": "$105.70",
+      "context": "Pepco  Invoice: 200261068639  Date: 29/05/2019  6514 78TH ST CABIN JOHN MD 20818  Amount $105.70 Sta",
+      "tag": "DIV",
+      "class": "row bill-row"
+    },
+    {
+      "amount": "$105.70",
+      "context": "Pepco  Invoice: 200261068639  Date: 29/05/2019  6514 78TH ST CABIN JOHN MD 20818  Amount $105.70",
+      "tag": "DIV",
+      "class": "row full-line"
+    },
+    {
+      "amount": "$105.70",
+      "context": "Amount $105.70",
+      "tag": "DIV",
+      "class": "col-4 bill-item-right-box"
+    },
+    {
+      "amount": "$105.70",
+      "context": "Amount $105.70",
+      "tag": "DIV",
+      "class": "row full-line"
+    },
+    {
+      "amount": "$105.70",
+      "context": "$105.70",
+      "tag": "DIV",
+      "class": "col-12 align-right amount"
+    },
+    {
+      "amount": "$105.70",
+      "context": "$105.70",
+      "tag": "SPAN",
+      "class": ""
+    },
+    {
+      "amount": "$276.00",
+      "context": "Pepco  Invoice: 200960863922  Date: 10/07/2019  6203 LEEKE FOREST CT BETHESDA MD 20817  Amount $276.",
+      "tag": "DIV",
+      "class": "row bill-row"
+    },
+    {
+      "amount": "$276.00",
+      "context": "Pepco  Invoice: 200960863922  Date: 10/07/2019  6203 LEEKE FOREST CT BETHESDA MD 20817  Amount $276.",
+      "tag": "DIV",
+      "class": "row full-line"
+    },
+    {
+      "amount": "$276.00",
+      "context": "Amount $276.00",
+      "tag": "DIV",
+      "class": "col-4 bill-item-right-box"
+    },
+    {
+      "amount": "$276.00",
+      "context": "Amount $276.00",
+      "tag": "DIV",
+      "class": "row full-line"
+    },
+    {
+      "amount": "$276.00",
+      "context": "$276.00",
+      "tag": "DIV",
+      "class": "col-12 align-right amount"
+    },
+    {
+      "amount": "$276.00",
+      "context": "$276.00",
+      "tag": "SPAN",
+      "class": ""
+    },
+    {
+      "amount": "$215.75",
+      "context": "Pepco  Invoice: 200810990608  Date: 03/07/2019  6203 LEEKE FOREST CT BETHESDA MD 20817  Amount $215.",
+      "tag": "DIV",
+      "class": "row bill-row"
+    },
+    {
+      "amount": "$215.75",
+      "context": "Pepco  Invoice: 200810990608  Date: 03/07/2019  6203 LEEKE FOREST CT BETHESDA MD 20817  Amount $215.",
+      "tag": "DIV",
+      "class": "row full-line"
+    },
+    {
+      "amount": "$215.75",
+      "context": "Amount $215.75",
+      "tag": "DIV",
+      "class": "col-4 bill-item-right-box"
+    },
+    {
+      "amount": "$215.75",
+      "context": "Amount $215.75",
+      "tag": "DIV",
+      "class": "row full-line"
+    },
+    {
+      "amount": "$215.75",
+      "context": "$215.75",
+      "tag": "DIV",
+      "class": "col-12 align-right amount"
+    },
+    {
+      "amount": "$215.75",
+      "context": "$215.75",
+      "tag": "SPAN",
+      "class": ""
+    },
+    {
+      "amount": "$347.87",
+      "context": "Pepco  Invoice: 200081094106  Date: 05/06/2019  6203 LEEKE FOREST CT BETHESDA MD 20817  Amount $347.",
+      "tag": "DIV",
+      "class": "row bill-row"
+    },
+    {
+      "amount": "$347.87",
+      "context": "Pepco  Invoice: 200081094106  Date: 05/06/2019  6203 LEEKE FOREST CT BETHESDA MD 20817  Amount $347.",
+      "tag": "DIV",
+      "class": "row full-line"
+    },
+    {
+      "amount": "$347.87",
+      "context": "Amount $347.87",
+      "tag": "DIV",
+      "class": "col-4 bill-item-right-box"
+    },
+    {
+      "amount": "$347.87",
+      "context": "Amount $347.87",
+      "tag": "DIV",
+      "class": "row full-line"
+    },
+    {
+      "amount": "$347.87",
+      "context": "$347.87",
+      "tag": "DIV",
+      "class": "col-12 align-right amount"
+    },
+    {
+      "amount": "$347.87",
+      "context": "$347.87",
+      "tag": "SPAN",
+      "class": ""
+    },
+    {
+      "amount": "$165.54",
+      "context": "Pepco  Invoice: 200401036301  Date: 03/05/2019  6203 LEEKE FOREST CT BETHESDA MD 20817  Amount $165.",
+      "tag": "DIV",
+      "class": "row bill-row"
+    },
+    {
+      "amount": "$165.54",
+      "context": "Pepco  Invoice: 200401036301  Date: 03/05/2019  6203 LEEKE FOREST CT BETHESDA MD 20817  Amount $165.",
+      "tag": "DIV",
+      "class": "row full-line"
+    },
+    {
+      "amount": "$165.54",
+      "context": "Amount $165.54",
+      "tag": "DIV",
+      "class": "col-4 bill-item-right-box"
+    },
+    {
+      "amount": "$165.54",
+      "context": "Amount $165.54",
+      "tag": "DIV",
+      "class": "row full-line"
+    },
+    {
+      "amount": "$165.54",
+      "context": "$165.54",
+      "tag": "DIV",
+      "class": "col-12 align-right amount"
+    },
+    {
+      "amount": "$165.54",
+      "context": "$165.54",
+      "tag": "SPAN",
+      "class": ""
+    },
+    {
+      "amount": "$269.21",
+      "context": "Pepco  Invoice: 200311026122  Date: 03/04/2019  6203 LEEKE FOREST CT BETHESDA MD 20817  Amount $269.",
+      "tag": "DIV",
+      "class": "row bill-row"
+    },
+    {
+      "amount": "$269.21",
+      "context": "Pepco  Invoice: 200311026122  Date: 03/04/2019  6203 LEEKE FOREST CT BETHESDA MD 20817  Amount $269.",
+      "tag": "DIV",
+      "class": "row full-line"
+    },
+    {
+      "amount": "$269.21",
+      "context": "Amount $269.21",
+      "tag": "DIV",
+      "class": "col-4 bill-item-right-box"
+    },
+    {
+      "amount": "$269.21",
+      "context": "Amount $269.21",
+      "tag": "DIV",
+      "class": "row full-line"
+    },
+    {
+      "amount": "$269.21",
+      "context": "$269.21",
+      "tag": "DIV",
+      "class": "col-12 align-right amount"
+    },
+    {
+      "amount": "$269.21",
+      "context": "$269.21",
+      "tag": "SPAN",
+      "class": ""
+    },
+    {
+      "amount": "$0.00",
+      "context": "AmWater  Invoice:   Date: 23/09/2021  3813 Watkins Mill Dr Alexandria VA 22304  Amount $0.00 Status:",
+      "tag": "DIV",
+      "class": "row bill-row"
+    },
+    {
+      "amount": "$0.00",
+      "context": "AmWater  Invoice:   Date: 23/09/2021  3813 Watkins Mill Dr Alexandria VA 22304  Amount $0.00",
+      "tag": "DIV",
+      "class": "row full-line"
+    },
+    {
+      "amount": "$0.00",
+      "context": "Amount $0.00",
+      "tag": "DIV",
+      "class": "col-4 bill-item-right-box"
+    },
+    {
+      "amount": "$0.00",
+      "context": "Amount $0.00",
+      "tag": "DIV",
+      "class": "row full-line"
+    },
+    {
+      "amount": "$0.00",
+      "context": "$0.00",
+      "tag": "DIV",
+      "class": "col-12 align-right amount"
+    },
+    {
+      "amount": "$0.00",
+      "context": "$0.00",
+      "tag": "SPAN",
+      "class": ""
+    },
+    {
+      "amount": "$26.39",
+      "context": "AmWater  Invoice:   Date: 23/09/2021  3813 Watkins Mill Dr Alexandria VA 22304  Amount $26.39 Status",
+      "tag": "DIV",
+      "class": "row bill-row"
+    },
+    {
+      "amount": "$26.39",
+      "context": "AmWater  Invoice:   Date: 23/09/2021  3813 Watkins Mill Dr Alexandria VA 22304  Amount $26.39",
+      "tag": "DIV",
+      "class": "row full-line"
+    },
+    {
+      "amount": "$26.39",
+      "context": "Amount $26.39",
+      "tag": "DIV",
+      "class": "col-4 bill-item-right-box"
+    },
+    {
+      "amount": "$26.39",
+      "context": "Amount $26.39",
+      "tag": "DIV",
+      "class": "row full-line"
+    },
+    {
+      "amount": "$26.39",
+      "context": "$26.39",
+      "tag": "DIV",
+      "class": "col-12 align-right amount"
+    },
+    {
+      "amount": "$26.39",
+      "context": "$26.39",
+      "tag": "SPAN",
+      "class": ""
+    },
+    {
+      "amount": "$0.00",
+      "context": "AmWater  Invoice:   Date: 23/08/2021  3813 Watkins Mill Dr Alexandria VA 22304  Amount $0.00 Status:",
+      "tag": "DIV",
+      "class": "row bill-row"
+    },
+    {
+      "amount": "$0.00",
+      "context": "AmWater  Invoice:   Date: 23/08/2021  3813 Watkins Mill Dr Alexandria VA 22304  Amount $0.00",
+      "tag": "DIV",
+      "class": "row full-line"
+    },
+    {
+      "amount": "$0.00",
+      "context": "Amount $0.00",
+      "tag": "DIV",
+      "class": "col-4 bill-item-right-box"
+    },
+    {
+      "amount": "$0.00",
+      "context": "Amount $0.00",
+      "tag": "DIV",
+      "class": "row full-line"
+    },
+    {
+      "amount": "$0.00",
+      "context": "$0.00",
+      "tag": "DIV",
+      "class": "col-12 align-right amount"
+    },
+    {
+      "amount": "$0.00",
+      "context": "$0.00",
+      "tag": "SPAN",
+      "class": ""
+    },
+    {
+      "amount": "$26.39",
+      "context": "AmWater  Invoice:   Date: 23/08/2021  3813 Watkins Mill Dr Alexandria VA 22304  Amount $26.39 Status",
+      "tag": "DIV",
+      "class": "row bill-row"
+    },
+    {
+      "amount": "$26.39",
+      "context": "AmWater  Invoice:   Date: 23/08/2021  3813 Watkins Mill Dr Alexandria VA 22304  Amount $26.39",
+      "tag": "DIV",
+      "class": "row full-line"
+    },
+    {
+      "amount": "$26.39",
+      "context": "Amount $26.39",
+      "tag": "DIV",
+      "class": "col-4 bill-item-right-box"
+    },
+    {
+      "amount": "$26.39",
+      "context": "Amount $26.39",
+      "tag": "DIV",
+      "class": "row full-line"
+    },
+    {
+      "amount": "$26.39",
+      "context": "$26.39",
+      "tag": "DIV",
+      "class": "col-12 align-right amount"
+    },
+    {
+      "amount": "$26.39",
+      "context": "$26.39",
+      "tag": "SPAN",
+      "class": ""
+    }
+  ],
+  "allText": [
+    "Invoice: 200621437832",
+    "Date: 25/02/2021",
+    "6514 78TH ST CABIN JOHN MD 20818",
+    "Status: Unpaid",
+    "Invoice: 200971150051",
+    "Date: 29/01/2021",
+    "6514 78TH ST CABIN JOHN MD 20818",
+    "Status: Unpaid",
+    "Invoice: 200281458234",
+    "Date: 30/12/2020",
+    "6514 78TH ST CABIN JOHN MD 20818",
+    "Status: Unpaid",
+    "Invoice: 200171448720",
+    "Date: 25/11/2020",
+    "6514 78TH ST CABIN JOHN MD 20818",
+    "Status: Unpaid",
+    "Invoice: 200361402912",
+    "Date: 28/10/2020",
+    "6514 78TH ST CABIN JOHN MD 20818",
+    "Status: Unpaid",
+    "Invoice: 200711315341",
+    "Date: 29/09/2020",
+    "6514 78TH ST CABIN JOHN MD 20818",
+    "Status: Unpaid",
+    "Invoice: 200651309691",
+    "Date: 28/08/2020",
+    "6514 78TH ST CABIN JOHN MD 20818",
+    "Status: Unpaid",
+    "Invoice: 200501321812",
+    "Date: 29/07/2020",
+    "6514 78TH ST CABIN JOHN MD 20818",
+    "Status: Unpaid",
+    "Invoice: 200341326441",
+    "Date: 26/06/2020",
+    "6514 78TH ST CABIN JOHN MD 20818",
+    "Status: Unpaid",
+    "Invoice: 200751222107",
+    "Date: 28/05/2020",
+    "6514 78TH ST CABIN JOHN MD 20818",
+    "Status: Unpaid",
+    "Invoice: 200641231730",
+    "Date: 28/04/2020",
+    "6514 78TH ST CABIN JOHN MD 20818",
+    "Status: Unpaid",
+    "Invoice: 200011304406",
+    "Date: 27/03/2020",
+    "6514 78TH ST CABIN JOHN MD 20818",
+    "Status: Unpaid",
+    "Invoice: 200970961178",
+    "Date: 27/02/2020",
+    "6514 78TH ST CABIN JOHN MD 20818",
+    "Status: Unpaid",
+    "Invoice: 200271230808",
+    "Date: 30/01/2020",
+    "6514 78TH ST CABIN JOHN MD 20818",
+    "Status: Unpaid",
+    "Invoice: 200791109555",
+    "Date: 30/12/2019",
+    "6514 78TH ST CABIN JOHN MD 20818",
+    "Status: Unpaid",
+    "Invoice: 200191199688",
+    "Date: 26/11/2019",
+    "6514 78TH ST CABIN JOHN MD 20818",
+    "Status: Unpaid",
+    "Invoice: 200281169637",
+    "Date: 28/10/2019",
+    "6514 78TH ST CABIN JOHN MD 20818",
+    "Status: Unpaid",
+    "Invoice: 200311144825",
+    "Date: 27/09/2019",
+    "6514 78TH ST CABIN JOHN MD 20818",
+    "Status: Unpaid",
+    "Invoice: 200401113139",
+    "Date: 28/08/2019",
+    "6514 78TH ST CABIN JOHN MD 20818",
+    "Status: Unpaid",
+    "Invoice: 200541081202",
+    "Date: 14/08/2019",
+    "6514 78TH ST CABIN JOHN MD 20818",
+    "Status: Unpaid",
+    "Invoice: 200251107779",
+    "Date: 29/07/2019",
+    "6514 78TH ST CABIN JOHN MD 20818",
+    "Status: Unpaid",
+    "Invoice: 200411070149",
+    "Date: 27/06/2019",
+    "6514 78TH ST CABIN JOHN MD 20818",
+    "Status: Unpaid",
+    "Invoice: 200261068639",
+    "Date: 29/05/2019",
+    "6514 78TH ST CABIN JOHN MD 20818",
+    "Status: Unpaid",
+    "Invoice: 200960863922",
+    "Date: 10/07/2019",
+    "6203 LEEKE FOREST CT BETHESDA MD 20817",
+    "Status: Unpaid",
+    "Invoice: 200810990608",
+    "Date: 03/07/2019",
+    "6203 LEEKE FOREST CT BETHESDA MD 20817",
+    "Status: Unpaid",
+    "Invoice: 200081094106",
+    "Date: 05/06/2019",
+    "6203 LEEKE FOREST CT BETHESDA MD 20817",
+    "Status: Unpaid",
+    "Invoice: 200401036301",
+    "Date: 03/05/2019",
+    "6203 LEEKE FOREST CT BETHESDA MD 20817",
+    "Status: Unpaid",
+    "Invoice: 200311026122",
+    "Date: 03/04/2019",
+    "6203 LEEKE FOREST CT BETHESDA MD 20817",
+    "Status: Unpaid",
+    "Date: 23/09/2021",
+    "3813 Watkins Mill Dr Alexandria VA 22304",
+    "Status: Unpaid",
+    "Date: 23/09/2021",
+    "3813 Watkins Mill Dr Alexandria VA 22304",
+    "Status: Unpaid",
+    "Date: 23/08/2021",
+    "3813 Watkins Mill Dr Alexandria VA 22304",
+    "Status: Unpaid",
+    "Date: 23/08/2021",
+    "3813 Watkins Mill Dr Alexandria VA 22304",
+    "Status: Unpaid"
+  ]
+}

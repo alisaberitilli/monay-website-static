@@ -1,0 +1,86 @@
+paths:
+  /user/card:
+    post:
+        tags:
+          - Card
+        summary: Add Card
+        security:
+          - BearerAuth: []
+        produces:
+          - application/json
+        parameters:
+          - in: body
+            name: body
+            required: true
+            schema:
+              "$ref": "#/definitions/add-card-request"
+        responses:
+          '200':
+            description: OK
+
+  /user/card/{cardId}:
+    get:
+      tags:
+        - Card
+      summary: Get Specific Card Detail
+      security:
+        - BearerAuth: []
+      produces:
+        - application/json
+      parameters:
+        - in: path
+          name: cardId
+          type: integer
+          required: true
+      responses:
+        '200':
+          description: OK
+    delete:
+      tags:
+        - Card
+      summary: Delete Specific Card
+      security:
+        - BearerAuth: []
+      produces:
+        - application/json
+      parameters:
+        - in: path
+          name: cardId
+          type: integer
+          required: true
+      responses:
+        '200':
+          description: OK
+
+  /user/cards:
+    get:
+      tags:
+        - Card
+      summary: Get Specific User Cards
+      security:
+        - BearerAuth: []
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: OK
+  
+definitions:
+  add-card-request:
+    type: object
+    properties:
+      cardNumber:
+        type: string
+        required: true   
+      nameOnCard:
+        type: string
+        required: true   
+      month:
+        type: string
+        required: true   
+      year:
+        type: string
+        required: true   
+      cvv:
+        type: string
+        required: true      

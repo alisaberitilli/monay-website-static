@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:ignore="MissingPrefix">
+
+    <data>
+
+        <variable
+            name="myRequestVM"
+            type="com.monayuser.ui.myrequest.MyRequestViewModel" />
+
+    </data>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/white"
+        android:orientation="vertical">
+
+        <RelativeLayout
+            android:id="@+id/main_layout"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_marginTop="@dimen/dp_10"
+            android:layout_weight="1"
+            android:visibility="visible">
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/paidRequestRecycler"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_above="@+id/progress"
+                tools:listitem="@layout/row_my_payment_request">
+
+            </androidx.recyclerview.widget.RecyclerView>
+
+            <ProgressBar
+                android:id="@+id/progress"
+                android:layout_width="@dimen/dp_50"
+                android:layout_height="@dimen/dp_50"
+                android:layout_alignParentBottom="true"
+                android:layout_centerInParent="true"
+                android:indeterminate="true"
+                android:indeterminateTint="@color/light_red"
+                android:indeterminateTintMode="src_atop"
+                android:padding="10dp"
+                android:visibility="gone" />
+
+            <TextView
+                android:id="@+id/txtNoArticalFound"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:fontFamily="@font/cerapro_medium"
+                android:text="@string/no_request_found"
+                android:textColor="@color/gray_color"
+                android:textSize="@dimen/size_18"
+                android:visibility="gone" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/noInternetConnectionLayout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@+id/topLayout"
+            android:layout_marginTop="-100dp"
+            android:orientation="vertical"
+            android:visibility="gone">
+
+            <TextView
+                android:id="@+id/noInternet"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:fontFamily="@font/cerapro_medium"
+                android:gravity="center"
+                android:padding="3dp"
+                android:text="@string/no_internet"
+                android:textColor="@color/gray_color"
+                android:textSize="@dimen/size_18"
+                android:visibility="visible" />
+
+            <com.dd.ShadowLayout
+                android:id="@+id/try_again"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/noInternet"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="@dimen/dp_10"
+                android:minWidth="180dp"
+                android:onClick="@{()->myRequestVM.tryAgain()}"
+                app:sl_cornerRadius="30dp"
+                app:sl_dx="3dp"
+                app:sl_dy="3dp"
+                app:sl_fillColor="@color/colorPrimary"
+                app:sl_shadowColor="#C5E1F1"
+                app:sl_shadowRadius="10dp">
+
+                <Button
+                    android:id="@+id/try_again_btn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="45dp"
+                    android:layout_gravity="top|center"
+                    android:background="#00000000"
+                    android:fontFamily="@font/cerapro_medium"
+                    android:gravity="center"
+                    android:onClick="@{()->myRequestVM.tryAgain()}"
+                    android:text="@string/try_again_text"
+                    android:textAllCaps="false"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/size_18" />
+
+            </com.dd.ShadowLayout>
+
+        </RelativeLayout>
+
+    </LinearLayout>
+
+</layout>

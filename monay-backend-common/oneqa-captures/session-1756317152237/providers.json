@@ -1,0 +1,155 @@
+[
+  {
+    "type": "service-provider-class",
+    "class": "service-provider first",
+    "text": "Pepco Total Amount  $420.47  6514 78TH ST  50018913371  $263.69 Due: 17 Sep 6203 LEEKE FOREST CT  55019204738  $156.78 Due: 01 Oct",
+    "clickable": false
+  },
+  {
+    "type": "service-provider-class",
+    "class": "service-provider second",
+    "text": "Pennsylvania American Water Total Amount  $82.69  3813 Watkins Mill Dr  1027-210036160531  $82.69 Due: 15 Oct",
+    "clickable": false
+  },
+  {
+    "type": "service-provider-class",
+    "class": "service-provider third",
+    "text": "Washington Gas Total Amount  $70.70  3813 Watkins Mill Dr  1027-210036160531  $70.70 Due: 30 Sep",
+    "clickable": false
+  },
+  {
+    "type": "text-match",
+    "provider": "Pepco",
+    "tag": "DIV",
+    "class": "service-provider first",
+    "id": "",
+    "parentClass": "container"
+  },
+  {
+    "type": "text-match",
+    "provider": "Pepco",
+    "tag": "DIV",
+    "class": "summary",
+    "id": "",
+    "parentClass": "service-provider first"
+  },
+  {
+    "type": "text-match",
+    "provider": "Pepco",
+    "tag": "DIV",
+    "class": "row gutter-0",
+    "id": "",
+    "parentClass": "summary"
+  },
+  {
+    "type": "text-match",
+    "provider": "Pepco",
+    "tag": "DIV",
+    "class": "col-7 company-logo-name",
+    "id": "",
+    "parentClass": "row gutter-0"
+  },
+  {
+    "type": "text-match",
+    "provider": "Pepco",
+    "tag": "DIV",
+    "class": "company-name",
+    "id": "",
+    "parentClass": "col-7 company-logo-name"
+  },
+  {
+    "type": "text-match",
+    "provider": "Pennsylvania American Water",
+    "tag": "DIV",
+    "class": "service-provider second",
+    "id": "",
+    "parentClass": "container"
+  },
+  {
+    "type": "text-match",
+    "provider": "Pennsylvania American Water",
+    "tag": "DIV",
+    "class": "summary",
+    "id": "",
+    "parentClass": "service-provider second"
+  },
+  {
+    "type": "text-match",
+    "provider": "Pennsylvania American Water",
+    "tag": "DIV",
+    "class": "row gutter-0",
+    "id": "",
+    "parentClass": "summary"
+  },
+  {
+    "type": "text-match",
+    "provider": "Pennsylvania American Water",
+    "tag": "DIV",
+    "class": "col-7 company-logo-name",
+    "id": "",
+    "parentClass": "row gutter-0"
+  },
+  {
+    "type": "text-match",
+    "provider": "Pennsylvania American Water",
+    "tag": "DIV",
+    "class": "company-name",
+    "id": "",
+    "parentClass": "col-7 company-logo-name"
+  },
+  {
+    "type": "text-match",
+    "provider": "Washington Gas",
+    "tag": "DIV",
+    "class": "service-provider third",
+    "id": "",
+    "parentClass": "container"
+  },
+  {
+    "type": "text-match",
+    "provider": "Washington Gas",
+    "tag": "DIV",
+    "class": "summary",
+    "id": "",
+    "parentClass": "service-provider third"
+  },
+  {
+    "type": "text-match",
+    "provider": "Washington Gas",
+    "tag": "DIV",
+    "class": "row gutter-0",
+    "id": "",
+    "parentClass": "summary"
+  },
+  {
+    "type": "text-match",
+    "provider": "Washington Gas",
+    "tag": "DIV",
+    "class": "col-7 company-logo-name",
+    "id": "",
+    "parentClass": "row gutter-0"
+  },
+  {
+    "type": "text-match",
+    "provider": "Washington Gas",
+    "tag": "DIV",
+    "class": "company-name",
+    "id": "",
+    "parentClass": "col-7 company-logo-name"
+  },
+  {
+    "type": "card",
+    "text": "Pepco Total Amount  $420.47  6514 78TH ST  50018913371  $263.69 Due: 17 Sep 6203 LEEKE FOREST CT  55019204738  $156.78 Due: 01 Oct",
+    "class": "service-provider first"
+  },
+  {
+    "type": "card",
+    "text": "Pennsylvania American Water Total Amount  $82.69  3813 Watkins Mill Dr  1027-210036160531  $82.69 Due: 15 Oct",
+    "class": "service-provider second"
+  },
+  {
+    "type": "card",
+    "text": "Washington Gas Total Amount  $70.70  3813 Watkins Mill Dr  1027-210036160531  $70.70 Due: 30 Sep",
+    "class": "service-provider third"
+  }
+]

@@ -1,0 +1,86 @@
+{
+  "expo": {
+    "name": "Monay Wallet",
+    "slug": "monay-wallet",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "automatic",
+    "newArchEnabled": true,
+    "splash": {
+      "image": "./assets/splash-icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#2196F3"
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTablet": false,
+      "bundleIdentifier": "com.monayuser.wallet",
+      "infoPlist": {
+        "NSCameraUsageDescription": "This app uses camera to scan QR codes for payments.",
+        "NSContactsUsageDescription": "This app uses contacts to find other Monay users.",
+        "NSFaceIDUsageDescription": "This app uses Face ID for secure authentication.",
+        "NSLocationWhenInUseUsageDescription": "This app uses location for security and fraud prevention."
+      },
+      "associatedDomains": [
+        "applinks:monay.page.link"
+      ]
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#2196F3"
+      },
+      "package": "com.monayuser.wallet",
+      "permissions": [
+        "CAMERA",
+        "READ_CONTACTS",
+        "WRITE_CONTACTS",
+        "USE_BIOMETRIC",
+        "USE_FINGERPRINT",
+        "INTERNET",
+        "ACCESS_NETWORK_STATE",
+        "VIBRATE"
+      ],
+      "intentFilters": [
+        {
+          "action": "VIEW",
+          "autoVerify": true,
+          "data": [
+            {
+              "scheme": "https",
+              "host": "monay.page.link"
+            }
+          ],
+          "category": [
+            "BROWSABLE",
+            "DEFAULT"
+          ]
+        }
+      ]
+    },
+    "web": {
+      "favicon": "./assets/favicon.png",
+      "bundler": "metro"
+    },
+    "plugins": [
+      "expo-secure-store",
+      "expo-local-authentication",
+      "expo-camera",
+      [
+        "expo-barcode-scanner",
+        {
+          "cameraPermission": "Allow Monay to access camera for QR code scanning."
+        }
+      ]
+    ],
+    "scheme": "monay",
+    "extra": {
+      "eas": {
+        "projectId": "your-eas-project-id-here"
+      }
+    }
+  }
+}

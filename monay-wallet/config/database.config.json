@@ -1,0 +1,46 @@
+{
+  "development": {
+    "host": "localhost",
+    "port": 5432,
+    "username": "alisaberi",
+    "password": "",
+    "database": "monay_wallet",
+    "dialect": "postgresql",
+    "logging": true
+  },
+  "test": {
+    "host": "localhost",
+    "port": 5432,
+    "username": "alisaberi",
+    "password": "",
+    "database": "monay_wallet_test",
+    "dialect": "postgresql",
+    "logging": false
+  },
+  "production": {
+    "host": "${DB_HOST}",
+    "port": "${DB_PORT}",
+    "username": "${DB_USERNAME}",
+    "password": "${DB_PASSWORD}",
+    "database": "${DB_NAME}",
+    "dialect": "postgresql",
+    "logging": false,
+    "ssl": {
+      "require": true,
+      "rejectUnauthorized": false
+    }
+  },
+  "api": {
+    "baseUrl": "http://localhost:3001",
+    "apiVersion": "v1",
+    "timeout": 30000
+  },
+  "services": {
+    "otp": {
+      "database": "monay_otp",
+      "host": "localhost",
+      "port": 5432,
+      "username": "alisaberi"
+    }
+  }
+}

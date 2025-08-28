@@ -1,0 +1,40 @@
+{
+  "extends": "@electron-toolkit/tsconfig/tsconfig.web.json",
+  "compilerOptions": {
+    "composite": true,
+    "experimentalDecorators": true,
+    "useDefineForClassFields": true,
+    "skipLibCheck": true,
+    "jsx": "react-jsx",
+    "baseUrl": ".",
+    "paths": {
+      "#client/*": [
+        "_client/renderer/src/*"
+      ],
+      "#constants": [
+        "constants.ts"
+      ],
+      "#helpers": [
+        "helpers.ts"
+      ]
+    },
+  },
+  "include": [
+    "_client/renderer/src/env.d.ts",
+    "_client/renderer/src/types.d.ts",
+    "_client/renderer/src/svg.d.ts",
+    "_client/renderer/src/**/*",
+    "_client/renderer/src/**/*.tsx",
+    "_client/preload/*.d.ts",
+    "constants.ts",
+    "helpers.ts"
+  ],
+  "buildOptions": {
+    "verbose": true
+  },
+  "references": [
+    {
+      "path": "./tsconfig.server.json"
+    }
+  ]
+}

@@ -1,0 +1,26 @@
+
+============================================================
+📊 SEARCH ENGINE SUBMISSION REPORT
+============================================================
+Website: https://monay.com
+Sitemap: https://monay.com/sitemap.xml
+Submission Date: 2025-08-28 01:55:17
+------------------------------------------------------------
+
+Google:
+  Status: Code 404
+  URL: http://www.google.com/ping?sitemap=https%3A//monay.com/sitemap.xml
+
+Bing/Yahoo:
+  Status: Code 410
+  URL: http://www.bing.com/ping?sitemap=https%3A//monay.com/sitemap.xml
+
+Yandex:
+  Status: Success
+  URL: http://blogs.yandex.ru/pings/?status=success&url=https%3A//monay.com/sitemap.xml
+
+IndexNow:
+  Status: Success
+  URL: https://api.indexnow.org
+
+============================================================

@@ -1,0 +1,101 @@
+paths:
+   
+  /admin/activity/log:
+    get:
+      tags:
+        - Activity Log
+      summary: Admin 
+      security:
+        - BearerAuth: []
+      produces:
+        - application/json
+      parameters:
+        - in: query
+          name: userType
+          type: string
+          required: false
+          enum:
+            - admin
+            - subadmin
+        - in: query
+          name: activityType
+          type: string
+          required: false
+          enum:
+            - login
+            - logout
+            - change_password
+            - update_profile
+            - change_status
+            - change_kyc_status
+            - change_transaction_status
+            - user_update_cms
+            - merchant_update_cms
+            - user_add_faq
+            - merchant_add_faq
+            - user_update_faq
+            - merchant_update_faq
+            - user_delete_faq
+            - merchant_delete_faq
+            - sms_setting
+            - email_setting
+            - kyc_setting
+        - in: query
+          name: name
+          type: string
+          required: false
+        - in: query
+          name: email
+          type: string
+          required: false
+        - in: query
+          name: ip
+          type: string
+          required: false
+        
+        - in: query
+          name: limit
+          type: integer
+          required: false
+        - in: query
+          name: offset
+          type: integer
+          required: false
+        - in: header
+          name: timezone
+          type: string
+          required: false   
+        - in: query
+          name: sortType
+          enum:
+            - 'ASC'
+            - 'DESC'
+          type: string
+          required: false
+        - in: query
+          name: sortBy
+          enum:
+            - 'id'
+            - 'name'
+            - 'email'
+            - 'userType'
+            - 'ip'
+            - 'activityType'
+            - 'createdAt'
+          type: string
+          required: false
+        - in: query
+          name: fromDate
+          type: string
+          description: '2020-09-30'     
+          required: false
+        - in: query
+          name: toDate
+          type: string
+          description: '2020-09-30'     
+          required: false           
+      responses:
+        '200':
+          description: OK           
+          
+

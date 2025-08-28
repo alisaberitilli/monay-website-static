@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TextView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/county_picker"
+    android:layout_width="@dimen/dp_60"
+    android:layout_height="@dimen/dp_45"
+    android:layout_gravity="right"
+    android:fontFamily="@font/cerapro_medium"
+    android:gravity="left|center_vertical"
+    android:hint="@string/first_name"
+    android:paddingLeft="@dimen/dp_15"
+    android:singleLine="true"
+    android:text="+1"
+    android:textColor="@color/dark_black"
+    android:textColorHint="@color/dark_black"
+    android:textSize="@dimen/size_18">
+
+</TextView>

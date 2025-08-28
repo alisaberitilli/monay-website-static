@@ -1,0 +1,78 @@
+{
+  "types": [
+    {
+      "description": "Convenience Fee",
+      "unit": "USD",
+      "currency": "$"
+    },
+    {
+      "description": "Convenience Fee",
+      "unit": "INR",
+      "currency": "₹"
+    },
+    {
+      "description": "Fee",
+      "unit": "USD",
+      "currency": "$"
+    },
+    {
+      "description": "Fee",
+      "unit": "INR",
+      "currency": "₹"
+    },
+    {
+      "description": "Amount",
+      "unit": "USD",
+      "currency": "$"
+    },
+    {
+      "description": "Amount",
+      "unit": "INR",
+      "currency": "₹"
+    },
+    {
+      "description": "Quantity",
+      "unit": "Each"
+    },
+    {
+      "description": "Quantity",
+      "unit": "CCF"
+    },
+    {
+      "description": "Quantity",
+      "unit": "Gallon"
+    },
+    {
+      "description": "Quantity",
+      "unit": "KWh"
+    },
+    {
+      "description": "Quantity",
+      "unit": "Therm"
+    },
+    {
+      "description": "Quantity",
+      "unit": "KW"
+    },
+    {
+      "description": "Price",
+      "unit": "Therm"
+    },
+    {
+      "description": "Price",
+      "unit": "KW"
+    },
+    {
+      "description": "Price",
+      "unit": "KWh"
+    },
+    {
+      "description": "Price",
+      "unit": "Gallon"
+    },
+    {
+      "description": "Price",
+      "unit": "CCF"
+    }
+  ]
+}

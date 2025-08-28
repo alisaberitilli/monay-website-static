@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="15705" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+    <device id="retina6_1" orientation="portrait" appearance="light"/>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="15706"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <customFonts key="customFonts">
+        <array key="CeraPro-Medium.ttf">
+            <string>CeraPro-Medium</string>
+        </array>
+    </customFonts>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <tableViewCell contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="SettingHeaderCell" id="f7p-LY-RO0" customClass="SettingHeaderCell" customModule="Monay" customModuleProvider="target">
+            <rect key="frame" x="0.0" y="0.0" width="434" height="50"/>
+            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+            <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="f7p-LY-RO0" id="bgq-Nb-hHQ">
+                <rect key="frame" x="0.0" y="0.0" width="434" height="50"/>
+                <autoresizingMask key="autoresizingMask"/>
+                <subviews>
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Account" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="MA2-54-7Yt">
+                        <rect key="frame" x="20" y="16" width="70" height="18"/>
+                        <fontDescription key="fontDescription" name="CeraPro-Medium" family="Cera Pro" pointSize="18"/>
+                        <color key="textColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <nil key="highlightedColor"/>
+                    </label>
+                </subviews>
+                <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                <constraints>
+                    <constraint firstAttribute="bottom" secondItem="MA2-54-7Yt" secondAttribute="bottom" constant="16" id="MW0-0i-yCg"/>
+                    <constraint firstItem="MA2-54-7Yt" firstAttribute="centerY" secondItem="bgq-Nb-hHQ" secondAttribute="centerY" id="Oi0-do-FVJ"/>
+                    <constraint firstItem="MA2-54-7Yt" firstAttribute="top" secondItem="bgq-Nb-hHQ" secondAttribute="top" constant="16" id="aNI-5Y-pts"/>
+                    <constraint firstItem="MA2-54-7Yt" firstAttribute="leading" secondItem="bgq-Nb-hHQ" secondAttribute="leading" constant="20" id="gCf-J6-Mfx"/>
+                </constraints>
+            </tableViewCellContentView>
+            <viewLayoutGuide key="safeArea" id="ghS-Uw-T0j"/>
+            <connections>
+                <outlet property="lblTitle" destination="MA2-54-7Yt" id="X81-02-9ip"/>
+            </connections>
+            <point key="canvasLocation" x="-33.333333333333336" y="66.964285714285708"/>
+        </tableViewCell>
+    </objects>
+</document>

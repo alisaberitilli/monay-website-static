@@ -1,0 +1,204 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    >
+
+    <data>
+
+        <variable
+            name="secondaryScanVM"
+            type="com.monayuser.ui.secondaryuserlink.SecondaryUserScanViewModel" />
+
+    </data>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/topLayout"
+        android:background="@drawable/gray_rounded_corner">
+    <RelativeLayout
+        android:id="@+id/main_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        >
+
+        <FrameLayout
+            android:id="@+id/content_frame"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_above="@id/view_one">
+
+        </FrameLayout>
+
+        <ImageView
+            android:layout_width="@dimen/dp_25"
+            android:layout_height="@dimen/dp_25"
+            android:layout_margin="@dimen/dp_20"
+            android:onClick="@{()->secondaryScanVM.navigator.cancelScan()}"
+            android:src="@mipmap/ic_cross_grey"
+            android:tint="@color/white"
+            tools:ignore="UseAppTint" />
+
+        <ImageView
+            android:layout_width="@dimen/dp_25"
+            android:layout_height="@dimen/dp_25"
+            android:layout_alignParentRight="true"
+            android:layout_margin="@dimen/dp_20"
+            android:onClick="@{()->secondaryScanVM.navigator.flashClick()}"
+            android:src="@mipmap/flash_light"
+            android:tint="@color/white"
+            tools:ignore="UseAppTint" />
+
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/bottomLayout"
+            android:layout_alignParentRight="true"
+            android:layout_marginTop="@dimen/dp_10"
+            android:layout_marginBottom="@dimen/dp_50"
+            android:fontFamily="@font/cerapro_medium"
+            android:gravity="center"
+            android:text="@string/scan_primary_user_s_qr"
+            android:textColor="#E1E1E1"
+            android:textSize="@dimen/size_16" />
+        <View
+            android:id="@+id/view_one"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/dp_10"
+            android:layout_above="@id/bottomLayout"
+            android:layout_marginBottom="0dp" />
+        <LinearLayout
+            android:id="@+id/bottomLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:background="@drawable/white_squar_scan_bg"
+            android:orientation="vertical"
+            android:padding="@dimen/dp_20">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/countryCodeTv"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:drawableEnd="@mipmap/ic_down_arrow"
+                    android:drawableTint="@color/dark_black"
+                    android:drawablePadding="@dimen/dp_1"
+                    android:fontFamily="@font/cerapro_medium"
+                    android:hint="+1"
+                    android:layout_gravity="center"
+                    android:gravity="center"
+                    android:onClick="@{()-> secondaryScanVM.navigator.countryCodeClick()}"
+                    android:paddingEnd="@dimen/dp_8"
+                    android:paddingStart="@dimen/dp_5"
+                    android:text=""
+                    android:background="@drawable/gray_strok_backgourd"
+                    android:layout_weight="3"
+                    android:textColor="@color/dark_black"
+                    android:textColorHint="@color/gray"
+                    android:textSize="@dimen/size_18" />
+                <EditText
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_weight="1"
+                    android:layout_marginStart="@dimen/dp_15"
+                    android:background="@drawable/gray_strok_backgourd"
+                    android:fontFamily="@font/cerapro_regular"
+                    android:hint="@string/primary_user_mobile_no"
+                    android:padding="@dimen/dp_15"
+                    android:singleLine="true"
+                    android:inputType="phone"
+                    android:id="@+id/etPrimaryUserMobile"
+                    android:textColor="@color/dark_black"
+                    android:textColorHint="@color/gray_color"
+                    android:textSize="@dimen/size_15" />
+            </LinearLayout>
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/dp_5"
+                android:background="@drawable/rounded_btn_selector_yellowish"
+                android:fontFamily="@font/cerapro_medium"
+                android:layout_marginTop="@dimen/dp_40"
+                android:gravity="center"
+                android:padding="@dimen/dp_15"
+                android:text="@string/next"
+                android:textAllCaps="false"
+                android:onClick="@{()->secondaryScanVM.navigator.onClickNext()}"
+                android:textColor="@color/dark_black"
+                android:textSize="@dimen/size_16" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/dp_4"
+                android:background="@drawable/gray_rounded_corner"
+                android:layout_marginTop="@dimen/dp_30"
+                android:layout_marginStart="@dimen/dp_60"
+                android:layout_marginEnd="@dimen/dp_60"/>
+
+        </LinearLayout>
+
+    </RelativeLayout>
+        <RelativeLayout
+            android:id="@+id/noInternetConnectionLayout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="-100dp"
+            android:orientation="vertical"
+            android:visibility="gone">
+
+            <TextView
+                android:id="@+id/noInternet"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:fontFamily="@font/cerapro_medium"
+                android:gravity="center"
+                android:padding="3dp"
+                android:text="@string/no_internet"
+                android:textColor="@color/gray_color"
+                android:textSize="@dimen/size_18"
+                android:visibility="visible" />
+
+            <com.dd.ShadowLayout
+                android:id="@+id/try_again"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/noInternet"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="@dimen/dp_10"
+                android:minWidth="180dp"
+                android:onClick="@{()->secondaryScanVM.navigator.tryAgain()}"
+                app:sl_cornerRadius="30dp"
+                app:sl_dx="3dp"
+                app:sl_dy="3dp"
+                app:sl_fillColor="@color/colorPrimary"
+                app:sl_shadowColor="#C5E1F1"
+                app:sl_shadowRadius="10dp">
+
+                <Button
+                    android:id="@+id/try_again_btn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="45dp"
+                    android:layout_gravity="top|center"
+                    android:background="#00000000"
+                    android:fontFamily="@font/cerapro_medium"
+                    android:gravity="center"
+                    android:onClick="@{()->secondaryScanVM.navigator.tryAgain()}"
+                    android:text="@string/try_again_text"
+                    android:textAllCaps="false"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/size_18" />
+
+            </com.dd.ShadowLayout>
+
+        </RelativeLayout>
+    </RelativeLayout>
+
+
+</layout>

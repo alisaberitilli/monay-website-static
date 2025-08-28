@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="17709" systemVersion="20D75" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
+    <entity name="Contact" representedClassName="Contact" syncable="YES" codeGenerationType="class">
+        <attribute name="countryCode" optional="YES" attributeType="String"/>
+        <attribute name="email" optional="YES" attributeType="String"/>
+        <attribute name="firstName" optional="YES" attributeType="String"/>
+        <attribute name="isAppUser" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
+        <attribute name="lastName" optional="YES" attributeType="String"/>
+        <attribute name="mobileNumber" optional="YES" attributeType="String"/>
+        <attribute name="userImage" optional="YES" attributeType="Binary"/>
+    </entity>
+    <entity name="ContactSaveStatus" representedClassName="ContactSaveStatus" syncable="YES" codeGenerationType="class">
+        <attribute name="isAllContactSave" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
+    </entity>
+    <elements>
+        <element name="Contact" positionX="-63" positionY="-18" width="128" height="148"/>
+        <element name="ContactSaveStatus" positionX="-54" positionY="54" width="128" height="44"/>
+    </elements>
+</model>

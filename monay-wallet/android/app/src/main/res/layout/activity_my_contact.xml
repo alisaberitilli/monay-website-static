@@ -1,0 +1,415 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:fitsSystemWindows="true"
+    tools:ignore="MissingPrefix">
+
+    <data>
+
+        <variable
+            name="myContactVM"
+            type="com.monayuser.ui.mycontact.MyContactViewModel" />
+    </data>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/white">
+
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/myContactTool"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:layout_gravity="top"
+            android:background="@color/colorPrimary"
+            android:minHeight="65sp"
+            android:theme="@style/ThemeOverlay.AppCompat.Dark"
+            app:contentInsetLeft="0dp"
+            app:contentInsetStart="0dp">
+
+            <RelativeLayout
+                android:id="@+id/firstLayout"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@color/transparent"
+                android:visibility="gone">
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentLeft="true"
+                    android:layout_centerInParent="true"
+                    android:padding="@dimen/dp_15">
+
+                    <ImageView
+                        android:id="@+id/back_button1"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="@color/full_transparent"
+                        android:onClick="@{()->myContactVM.backToPreviousActivity()}"
+                        android:src="@mipmap/ic_back_white"
+                        android:tint="@color/white" />
+                </LinearLayout>
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/headerText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentLeft="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="@dimen/dp_60"
+                    android:layout_marginTop="@dimen/dp_5"
+                    android:gravity="center|start"
+                    android:text="@string/my_contacts"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/dp_20"
+
+                    app:fontFamily="@font/cerapro_medium" />
+
+                <ImageView
+                    android:id="@+id/contactSearchImg"
+                    android:layout_width="@dimen/dp_30"
+                    android:layout_height="@dimen/dp_30"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginRight="@dimen/dp_60"
+                    android:drawableTint="@color/white"
+                    android:onClick="@{()->myContactVM.filterContact()}"
+                    android:src="@mipmap/ic_serach" />
+
+                <ImageView
+                    android:id="@+id/scanImg1"
+                    android:layout_width="@dimen/dp_30"
+                    android:layout_height="@dimen/dp_30"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginRight="@dimen/dp_15"
+                    android:drawableTint="@color/white"
+                    android:onClick="@{()->myContactVM.scanClick()}"
+                    android:src="@mipmap/ic_scan" />
+
+
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/searchLayout"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:visibility="visible">
+
+                <ImageView
+                    android:id="@+id/back_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentLeft="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="@dimen/dp_10"
+                    android:background="@color/full_transparent"
+                    android:onClick="@{()->myContactVM.backToPreviousActivity()}"
+                    android:src="@mipmap/ic_back_white"
+                    android:tint="@color/white" />
+
+                <EditText
+                    android:id="@+id/searchEdit"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginLeft="@dimen/dp_5"
+                    android:layout_marginTop="@dimen/dp_5"
+                    android:layout_marginRight="@dimen/dp_20"
+                    android:layout_marginBottom="@dimen/dp_5"
+                    android:layout_toRightOf="@+id/back_button"
+                    android:background="@drawable/search_edit_background"
+                    android:cursorVisible="true"
+                    android:drawableLeft="@mipmap/search_icon"
+                    android:drawablePadding="@dimen/dp_5"
+                    android:drawableTint="@color/white"
+                    android:ellipsize="end"
+                    android:fontFamily="@font/cerapro_regular"
+                    android:hint="@string/enter_name_and_number"
+                    android:paddingLeft="@dimen/dp_10"
+                    android:paddingRight="55dp"
+                    android:singleLine="true"
+                    android:textColor="@color/white"
+                    android:textColorHint="@color/white"
+                    android:textCursorDrawable="@drawable/white_cursor"
+                    android:textSize="@dimen/size_16">
+
+                </EditText>
+
+                <LinearLayout
+                    android:layout_width="@dimen/dp_1"
+                    android:layout_height="@dimen/dp_27"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginRight="@dimen/dp_70"
+                    android:background="@color/white" />
+
+                <ImageView
+                    android:id="@+id/crossImage"
+                    android:layout_width="@dimen/dp_30"
+                    android:layout_height="@dimen/dp_30"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginRight="@dimen/dp_30"
+                    android:onClick="@{()->myContactVM.filterCancel()}"
+                    android:src="@mipmap/ic_scan"
+                    android:tint="@color/white"
+                    android:visibility="gone"></ImageView>
+
+                <ImageView
+                    android:id="@+id/scanImg"
+                    android:layout_width="@dimen/dp_30"
+                    android:layout_height="@dimen/dp_30"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginRight="@dimen/dp_30"
+                    android:drawableTint="@color/white"
+                    android:onClick="@{()->myContactVM.scanClick()}"
+                    android:src="@mipmap/ic_scan" />
+            </RelativeLayout>
+        </androidx.appcompat.widget.Toolbar>
+
+        <TextView
+            android:id="@+id/tv_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/myContactTool"
+            android:layout_marginStart="@dimen/dp_20"
+            android:layout_marginTop="@dimen/dp_15"
+            android:layout_marginEnd="@dimen/dp_20"
+            android:textColor="@color/red"
+            android:textSize="@dimen/size_12"
+            android:visibility="gone" />
+
+        <RelativeLayout
+            android:id="@+id/main_layout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@+id/myContactTool">
+
+            <com.hbb20.CountryCodePicker
+                android:id="@+id/ccp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                app:ccpDialog_textColor="@color/dark_black"
+                app:ccp_arrowColor="@color/dark_black"
+                app:ccp_arrowSize="@dimen/dp_25"
+                app:ccp_clickable="false"
+                app:ccp_showArrow="false"
+                app:ccp_defaultNameCode="US"
+                app:ccp_showFlag="false"
+                android:visibility="gone"
+                app:ccp_showFullName="false"
+                app:ccp_showNameCode="false"
+                app:ccp_showPhoneCode="true"
+                app:ccp_textSize="@dimen/size_15" />
+
+            <LinearLayout
+                android:id="@+id/recentLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/recent_view_bg"
+                android:orientation="vertical">
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/recentText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/myContactTool"
+                    android:layout_alignParentLeft="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="@dimen/dp_20"
+                    android:layout_marginTop="@dimen/dp_10"
+                    android:text="@string/recent_payments"
+                    android:textColor="@color/dark_black"
+                    android:textSize="@dimen/dp_18"
+                    app:fontFamily="@font/cerapro_medium" />
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/myRecentContactRecyclerView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/recentText"
+                    android:layout_marginLeft="@dimen/dp_10"
+                    android:layout_marginTop="@dimen/dp_10"
+                    android:layout_marginRight="@dimen/dp_10"
+                    tools:itemCount="3"
+
+                    tools:listitem="@layout/item_recent_contact_list" />
+
+                <TextView
+                    android:id="@+id/txtNoRecentUser"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="@dimen/dp_20"
+                    android:layout_marginBottom="@dimen/dp_20"
+                    android:fontFamily="@font/cerapro_medium"
+                    android:text="@string/there_are_no_recent_contacts"
+                    android:textColor="@color/gray"
+                    android:textSize="@dimen/size_16"
+                    android:visibility="gone" />
+            </LinearLayout>
+
+            <View
+                android:id="@+id/view1"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/dp_1"
+                android:layout_below="@+id/recentLayout"
+                android:background="@color/devider_color" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/contactText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/view1"
+                android:layout_alignParentLeft="true"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="@dimen/dp_20"
+                android:layout_marginTop="@dimen/dp_15"
+                android:text="@string/contacts_on_monay"
+                android:textColor="@color/dark_black"
+                android:textSize="@dimen/size_18"
+                android:visibility="gone"
+                app:fontFamily="@font/cerapro_medium" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/myContactRecyclerView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/contactText"
+                android:layout_marginLeft="@dimen/dp_10"
+                android:layout_marginTop="@dimen/dp_10"
+                android:layout_marginRight="@dimen/dp_10"
+                android:visibility="gone"
+                tools:itemCount="3"
+                tools:listitem="@layout/item_transaction_list" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/noContactText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/contactText"
+                android:layout_marginTop="@dimen/dp_70"
+                android:gravity="center"
+                android:text="@string/no_contact_found"
+                android:textColor="@color/dark_black"
+                android:textSize="@dimen/size_18"
+                android:visibility="gone"
+                app:fontFamily="@font/cerapro_medium" />
+
+            <com.dd.ShadowLayout
+                android:id="@+id/sync_contact"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/noContactText"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="@dimen/dp_10"
+                android:minWidth="180dp"
+                android:onClick="@{()->myContactVM.syncContact()}"
+                app:sl_cornerRadius="30dp"
+                app:sl_dx="3dp"
+                app:sl_dy="3dp"
+                android:visibility="gone"
+                app:sl_fillColor="@color/colorPrimary"
+                app:sl_shadowColor="#C5E1F1"
+                app:sl_shadowRadius="10dp">
+
+                <Button
+                    android:id="@+id/sync_contact_btn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="45dp"
+                    android:layout_gravity="top|center"
+                    android:background="#00000000"
+                    android:fontFamily="@font/cerapro_medium"
+                    android:gravity="center"
+                    android:onClick="@{()->myContactVM.syncContact()}"
+                    android:text="@string/sync_contact_text"
+                    android:textAllCaps="false"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/size_18"
+                    android:visibility="visible" />
+
+            </com.dd.ShadowLayout>
+
+            <Button
+                android:id="@+id/btnProceed"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:layout_margin="@dimen/dp_25"
+                android:background="@drawable/rounded_btn_selector_yellowish"
+                android:fontFamily="@font/cerapro_medium"
+                android:gravity="center"
+                android:onClick="@{()->myContactVM.clickOnProceedButton()}"
+                android:padding="@dimen/dp_15"
+                android:text="@string/proceed"
+                android:textAllCaps="false"
+                android:textColor="@color/dark_black"
+                android:textSize="@dimen/size_18"
+                android:visibility="gone" />
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/noInternetConnectionLayout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@+id/myContactTool"
+            android:layout_marginTop="-100dp"
+            android:orientation="vertical"
+            android:visibility="gone">
+
+            <TextView
+                android:id="@+id/noInternet"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:fontFamily="@font/cerapro_medium"
+                android:gravity="center"
+                android:padding="3dp"
+                android:text="@string/no_internet"
+                android:textColor="@color/gray_color"
+                android:textSize="@dimen/size_18"
+                android:visibility="visible" />
+
+            <com.dd.ShadowLayout
+                android:id="@+id/try_again"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/noInternet"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="@dimen/dp_10"
+                android:minWidth="180dp"
+                android:onClick="@{()->myContactVM.tryAgain()}"
+                app:sl_cornerRadius="30dp"
+                app:sl_dx="3dp"
+                app:sl_dy="3dp"
+                app:sl_fillColor="@color/colorPrimary"
+                app:sl_shadowColor="#C5E1F1"
+                app:sl_shadowRadius="10dp">
+
+                <Button
+                    android:id="@+id/try_again_btn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="45dp"
+                    android:layout_gravity="top|center"
+                    android:background="#00000000"
+                    android:fontFamily="@font/cerapro_medium"
+                    android:gravity="center"
+                    android:onClick="@{()->myContactVM.tryAgain()}"
+                    android:text="@string/try_again_text"
+                    android:textAllCaps="false"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/size_18" />
+
+            </com.dd.ShadowLayout>
+
+        </RelativeLayout>
+    </RelativeLayout>
+</layout>

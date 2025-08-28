@@ -1,0 +1,193 @@
+apply plugin: 'com.android.application'
+
+apply plugin: 'kotlin-android'
+
+// kotlin-android-extensions is deprecated, use viewbinding instead
+apply plugin: "kotlin-kapt"
+apply plugin: 'com.google.gms.google-services'
+android {
+    namespace 'com.monayuser'
+    
+    signingConfigs {
+        myconfig {
+            if (project.hasProperty('MONAY_RELEASE_STORE_FILE')) {
+                storeFile file(MONAY_RELEASE_STORE_FILE)
+                storePassword MONAY_RELEASE_STORE_PASSWORD
+                keyAlias MONAY_RELEASE_KEY_ALIAS
+                keyPassword MONAY_RELEASE_KEY_PASSWORD
+            }
+        }
+    }
+
+    compileSdkVersion 34
+    buildToolsVersion "34.0.0"
+    defaultConfig {
+        applicationId "com.monayuser"
+        minSdkVersion 24
+        targetSdkVersion 34
+        versionCode 1
+        versionName "1.2.0"
+        multiDexEnabled true
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    buildFeatures {
+        dataBinding = true
+        viewBinding = true
+        buildConfig = true
+    }
+
+    compileOptions {
+        targetCompatibility 1.8
+        sourceCompatibility 1.8
+    }
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
+
+    // Removed deprecated cruncher options - new cruncher is always enabled
+
+
+    configurations.all {
+        exclude module: 'okhttp-ws'
+    }
+
+    lint {
+        abortOnError false
+    }
+
+    flavorDimensions "version"
+    productFlavors {
+
+        def app_name = "Monay"
+
+        dev {
+            versionCode 1
+            versionName "0.1.0-alpha.4"
+            signingConfig signingConfigs.myconfig
+            buildConfigField 'String', 'BASE_URL', "\"https://monay.codiantdev.com/api/\""
+            resValue "string", "app_name", app_name
+        }
+
+        staging {
+            versionCode 1
+            versionName "0.1.0-beta.7"
+            signingConfig signingConfigs.myconfig
+            buildConfigField 'String', 'BASE_URL', "\"https://monay-staging.codiantdev.com/api/\""
+            resValue "string", "app_name", app_name
+        }
+
+        client_staging {
+            versionCode 1
+            versionName "1.9.0"
+            signingConfig signingConfigs.myconfig
+            buildConfigField 'String', 'BASE_URL', "\"https://qa.monay.com/api/\""
+            resValue "string", "app_name", app_name
+        }
+
+        production {
+            versionCode 1
+            versionName "1.0.0"
+            signingConfig signingConfigs.myconfig
+            buildConfigField 'String', 'BASE_URL', "\"https://qa.monay.com/api/\""
+            resValue "string", "app_name", app_name
+        }
+    }
+}
+
+dependencies {
+    implementation group: 'com.zendesk', name: 'support', version: '5.0.0'
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+    implementation 'androidx.appcompat:appcompat:1.6.1'
+    implementation 'androidx.core:core-ktx:1.12.0'
+    implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
+    implementation 'androidx.legacy:legacy-support-v4:1.0.0'
+    implementation 'com.google.firebase:firebase-dynamic-links:21.2.0'
+    testImplementation 'junit:junit:4.13.2'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.5'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
+
+    androidTestImplementation 'com.android.support.test:rules:1.0.2'
+
+    // Import the Firebase BoM
+    //implementation 'com.google.firebase:firebase-bom:30.2.0')
+    // TODO: Add the dependencies for Firebase products you want to use
+    // When using the BoM, don't specify versions in Firebase dependencies
+    //implementation 'com.google.firebase:firebase-analytics-ktx'
+    // Add the dependencies for any other desired Firebase products
+    // https://firebase.google.com/docs/android/setup#available-libraries
+
+    /*support libs */
+    implementation 'com.github.f0ris.sweetalert:library:1.6.2'
+    /*fire-base*/
+    implementation "com.google.firebase:firebase-core:21.1.1"
+    implementation "com.google.firebase:firebase-auth:22.3.0"
+    implementation "com.google.firebase:firebase-messaging:23.4.0"
+    /*retrofit2*/
+    implementation "com.squareup.retrofit2:retrofit:2.9.0"
+    implementation "com.squareup.retrofit2:converter-gson:2.9.0"
+    /*Glide*/
+    implementation "com.github.bumptech.glide:glide:4.16.0"
+    kapt "com.github.bumptech.glide:compiler:4.16.0"
+    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:2.7.0"
+    implementation 'com.squareup.okhttp3:logging-interceptor:4.12.0'
+    implementation 'io.reactivex.rxjava2:rxjava:2.2.0'
+    implementation 'com.github.tbruyelle:rxpermissions:0.10.2'
+    // lifecycle-extensions is deprecated, using individual components instead
+    implementation 'io.reactivex.rxjava2:rxandroid:2.1.0'
+    implementation 'com.squareup.retrofit2:adapter-rxjava2:2.9.0'
+    implementation 'org.conscrypt:conscrypt-android:2.2.1'
+    implementation "androidx.security:security-crypto:1.1.0-alpha06"
+    /*shadow*/
+    implementation 'com.github.dmytrodanylyk.shadow-layout:library:1.0.1'
+    implementation 'com.squareup.okhttp3:logging-interceptor:4.12.0'
+    implementation 'com.squareup.okhttp3:okhttp:4.12.0'
+    implementation 'de.hdodenhof:circleimageview:3.1.0'
+    // QR code scanning - using newer ZXing
+    implementation 'com.journeyapps:zxing-android-embedded:4.3.0'
+    implementation 'com.google.zxing:core:3.5.0'
+    
+    // Phone number library - using Google's library directly
+    implementation 'com.googlecode.libphonenumber:libphonenumber:8.13.26'
+    
+    // Image cropper - using UCrop as alternative
+    implementation 'com.github.yalantis:ucrop:2.2.6'
+    
+    // Country code picker - using direct dependency
+    implementation 'com.hbb20:ccp:2.7.0'
+    
+    // Navigation view - using material bottom navigation
+    implementation 'com.google.android.material:material:1.11.0'
+    
+    // Month/Year picker - using material date picker
+    implementation 'com.google.android.material:material:1.11.0'
+    // Room database - using AndroidX  
+    implementation "androidx.room:room-runtime:2.6.1"
+    kapt "androidx.room:room-compiler:2.6.1"
+    implementation "androidx.room:room-ktx:2.6.1"
+    
+    // SQLite JDBC for Room compilation on Apple Silicon
+    kapt "org.xerial:sqlite-jdbc:3.44.1.0"
+    
+    // Lifecycle components - using AndroidX
+    implementation "androidx.lifecycle:lifecycle-extensions:2.2.0"
+    kapt "androidx.lifecycle:lifecycle-compiler:2.7.0"
+    implementation 'com.iceteck.silicompressorr:silicompressor:2.2.4'
+    implementation 'androidx.activity:activity-ktx:1.8.2'
+    implementation 'androidx.fragment:fragment-ktx:1.6.2'
+}
+
+// Room KAPT configuration
+kapt {
+    arguments {
+        arg("room.schemaLocation", "$projectDir/schemas")
+        arg("room.incremental", "true")
+    }
+}

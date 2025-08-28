@@ -1,0 +1,51 @@
+import axios from 'axios';
+import Cookies from 'js-cookie';
+
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
+
+class DashboardService {
+  private getHeaders() {
+    const token = Cookies.get('token');
+    return {
+      Authorization: token ? `Bearer ${token}` : '',
+    };
+  }
+
+  async getStats() {
+    try {
+      const response = await axios.get(`${API_URL}/api/dashboard/stats`, {
+        headers: this.getHeaders(),
+      });
+      return response.data;
+    } catch (error) {
+      console.error('Failed to fetch dashboard stats:', error);
+      return null;
+    }
+  }
+
+  async getRecentTransactions() {
+    try {
+      const response = await axios.get(`${API_URL}/api/transactions?limit=10`, {
+        headers: this.getHeaders(),
+      });
+      return response.data;
+    } catch (error) {
+      console.error('Failed to fetch recent transactions:', error);
+      return null;
+    }
+  }
+
+  async getChartData(period: 'week' | 'month' | 'year' = 'month') {
+    try {
+      const response = await axios.get(`${API_URL}/api/dashboard/chart-data?period=${period}`, {
+        headers: this.getHeaders(),
+      });
+      return response.data;
+    } catch (error) {
+      console.error('Failed to fetch chart data:', error);
+      return null;
+    }
+  }
+}
+
+export const dashboardService = new DashboardService();

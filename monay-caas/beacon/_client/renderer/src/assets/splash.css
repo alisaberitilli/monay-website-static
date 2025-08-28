@@ -1,0 +1,7 @@
+.splash {
+  background: url("noise.webp") repeat,
+    linear-gradient(83.21deg, #3245ff 0%, #bc22ee 100%);
+  background-blend-mode: overlay;
+  z-index: -1;
+  mask-image: radial-gradient(rgba(0, 0, 0, 0.4), transparent 60%);
+}

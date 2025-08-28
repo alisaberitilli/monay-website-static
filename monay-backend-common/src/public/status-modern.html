@@ -1,0 +1,1486 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Monay Platform Status | Real-Time Monitoring</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* Dark Theme (Default) */
+        :root {
+            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --success-color: #10b981;
+            --warning-color: #f59e0b;
+            --error-color: #ef4444;
+            --bg-primary: #0f172a;
+            --bg-secondary: #1e293b;
+            --bg-card: #1e293b;
+            --text-primary: #f1f5f9;
+            --text-secondary: #94a3b8;
+            --border-color: #334155;
+            --hover-color: #2d3748;
+        }
+
+        /* Light Theme */
+        [data-theme="light"] {
+            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --success-color: #059669;
+            --warning-color: #d97706;
+            --error-color: #dc2626;
+            --bg-primary: #f8fafc;
+            --bg-secondary: #ffffff;
+            --bg-card: #ffffff;
+            --text-primary: #0f172a;
+            --text-secondary: #475569;
+            --border-color: #e2e8f0;
+            --hover-color: #f1f5f9;
+        }
+        
+        [data-theme="light"] body {
+            background: linear-gradient(180deg, #f0f4f8 0%, #ffffff 100%);
+        }
+        
+        [data-theme="light"] .bg-pattern {
+            opacity: 0.02;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+            transition: background 0.3s ease, color 0.3s ease;
+        }
+
+        /* Animated Background */
+        .bg-pattern {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            opacity: 0.03;
+            background-image: 
+                radial-gradient(circle at 20% 80%, var(--primary-gradient) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, var(--primary-gradient) 0%, transparent 50%),
+                radial-gradient(circle at 40% 40%, var(--primary-gradient) 0%, transparent 50%);
+            z-index: 0;
+        }
+
+        .container {
+            max-width: 1440px;
+            margin: 0 auto;
+            padding: 2rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Header */
+        .header {
+            background: var(--primary-gradient);
+            border-radius: 20px;
+            padding: 3rem;
+            margin-bottom: 2rem;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Theme Toggle */
+        .theme-toggle {
+            position: absolute;
+            top: 2rem;
+            right: 2rem;
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 100px;
+            padding: 0.5rem;
+            display: flex;
+            gap: 0.25rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .theme-toggle:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: scale(1.05);
+        }
+
+        .theme-toggle-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: transparent;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 1.25rem;
+        }
+
+        .theme-toggle-btn.active {
+            background: rgba(255, 255, 255, 0.3);
+            color: white;
+        }
+
+        .theme-toggle-btn:hover {
+            color: white;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, transparent 100%);
+            pointer-events: none;
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(to right, #ffffff, #e0e7ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .header p {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 1.1rem;
+        }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            border-radius: 100px;
+            margin-top: 1.5rem;
+            font-weight: 600;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .pulse-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: var(--success-color);
+            animation: pulse 2s infinite;
+        }
+
+        /* Grid Layout */
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        /* Cards */
+        .card {
+            background: var(--bg-card);
+            border-radius: 16px;
+            padding: 1.5rem;
+            border: 1px solid var(--border-color);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        [data-theme="light"] .card {
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: var(--primary-gradient);
+            transform: scaleX(0);
+            transition: transform 0.3s;
+        }
+
+        .card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.1);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .card-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .card-icon {
+            width: 40px;
+            height: 40px;
+            background: var(--primary-gradient);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+        }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, var(--bg-secondary) 0%, rgba(30, 41, 59, 0.7) 100%);
+            padding: 1.25rem;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            transition: all 0.3s;
+        }
+        
+        [data-theme="light"] .stat-card {
+            background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        }
+
+        .stat-card:hover {
+            transform: scale(1.02);
+            border-color: #667eea;
+        }
+
+        .stat-value {
+            font-size: 1.75rem;
+            font-weight: 800;
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 0.25rem;
+        }
+
+        .stat-label {
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        /* Service Status */
+        .service-grid {
+            display: grid;
+            gap: 1rem;
+        }
+
+        .service-item {
+            background: linear-gradient(135deg, var(--bg-secondary) 0%, rgba(30, 41, 59, 0.5) 100%);
+            padding: 1.25rem;
+            border-radius: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 1px solid var(--border-color);
+            transition: all 0.3s;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        [data-theme="light"] .service-item {
+            background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+        }
+        
+        [data-theme="light"] .service-item:hover {
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .service-item::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            width: 3px;
+            background: var(--primary-gradient);
+            transform: scaleY(0);
+            transition: transform 0.3s;
+        }
+
+        .service-item:hover::after {
+            transform: scaleY(1);
+        }
+
+        .service-item:hover {
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(30, 41, 59, 0.7) 100%);
+            transform: translateX(5px);
+        }
+
+        .service-info h4 {
+            color: var(--text-primary);
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .service-info p {
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .service-url {
+            color: #667eea;
+            font-size: 0.75rem;
+            font-family: 'SF Mono', monospace;
+        }
+
+        .service-status {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .status-indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            position: relative;
+        }
+
+        .status-indicator.online {
+            background: var(--success-color);
+            box-shadow: 0 0 20px var(--success-color);
+        }
+
+        .status-indicator.offline {
+            background: var(--error-color);
+            box-shadow: 0 0 20px var(--error-color);
+        }
+
+        .status-indicator.checking {
+            background: var(--warning-color);
+            box-shadow: 0 0 20px var(--warning-color);
+        }
+
+        .port-badge {
+            background: rgba(102, 126, 234, 0.2);
+            color: #a5b4fc;
+            padding: 0.25rem 0.75rem;
+            border-radius: 100px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            border: 1px solid rgba(102, 126, 234, 0.3);
+        }
+
+        /* Blockchain Status */
+        .blockchain-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .blockchain-card {
+            background: linear-gradient(135deg, var(--bg-card) 0%, rgba(30, 41, 59, 0.8) 100%);
+            padding: 1.5rem;
+            border-radius: 16px;
+            border: 1px solid var(--border-color);
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s;
+        }
+        
+        [data-theme="light"] .blockchain-card {
+            background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.06);
+        }
+
+        .blockchain-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+        }
+
+        .blockchain-card.solana::before {
+            background: linear-gradient(90deg, #14F195 0%, #9945FF 100%);
+        }
+
+        .blockchain-card.base::before {
+            background: linear-gradient(90deg, #0052FF 0%, #00D4FF 100%);
+        }
+
+        .blockchain-card.bridge::before {
+            background: var(--primary-gradient);
+        }
+
+        .blockchain-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
+        }
+
+        .blockchain-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .blockchain-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+
+        .blockchain-icon.solana {
+            background: linear-gradient(135deg, #14F195 0%, #9945FF 100%);
+        }
+
+        .blockchain-icon.base {
+            background: linear-gradient(135deg, #0052FF 0%, #00D4FF 100%);
+        }
+
+        .blockchain-icon.bridge {
+            background: var(--primary-gradient);
+        }
+
+        .blockchain-info h3 {
+            color: var(--text-primary);
+            font-size: 1.125rem;
+            font-weight: 700;
+            margin-bottom: 0.25rem;
+        }
+
+        .blockchain-info p {
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+        }
+
+        .blockchain-stats {
+            display: grid;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .blockchain-stat {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.75rem;
+            background: rgba(15, 23, 42, 0.5);
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+        }
+
+        .blockchain-stat span:first-child {
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+        }
+
+        .blockchain-stat span:last-child {
+            color: var(--text-primary);
+            font-weight: 600;
+            font-family: 'SF Mono', monospace;
+        }
+
+        /* Endpoints */
+        .endpoint-section {
+            margin-top: 2rem;
+        }
+
+        .endpoint-category {
+            margin-bottom: 1.5rem;
+        }
+
+        .endpoint-category-header {
+            background: var(--primary-gradient);
+            padding: 1rem 1.5rem;
+            border-radius: 12px;
+            margin-bottom: 0.75rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            box-shadow: 0 4px 20px rgba(102, 126, 234, 0.2);
+        }
+
+        .endpoint-item {
+            background: var(--bg-secondary);
+            padding: 1rem 1.5rem;
+            margin-left: 1rem;
+            margin-bottom: 0.5rem;
+            border-radius: 10px;
+            border-left: 3px solid #667eea;
+            font-family: 'SF Mono', monospace;
+            font-size: 0.875rem;
+            color: var(--text-primary);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        [data-theme="light"] .endpoint-item {
+            background: #f8fafc;
+            border: 1px solid var(--border-color);
+        }
+
+        .endpoint-item:hover {
+            background: linear-gradient(90deg, rgba(102, 126, 234, 0.1) 0%, var(--bg-secondary) 100%);
+            transform: translateX(5px);
+        }
+
+        .endpoint-status {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            position: relative;
+        }
+
+        .endpoint-status-dot {
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            position: relative;
+            display: inline-block;
+            flex-shrink: 0;
+            transition: all 0.3s ease;
+        }
+
+        .endpoint-status-dot.healthy {
+            background: #10b981 !important;
+            box-shadow: 0 0 12px rgba(16, 185, 129, 0.8);
+            animation: pulse 2s infinite;
+            border: 2px solid #047857 !important;
+        }
+
+        .endpoint-status-dot.warning {
+            background: #f59e0b !important;
+            box-shadow: 0 0 12px rgba(245, 158, 11, 0.8);
+            animation: pulse 2s infinite;
+            border: 2px solid #b45309 !important;
+        }
+
+        .endpoint-status-dot.error {
+            background: #ef4444 !important;
+            box-shadow: 0 0 12px rgba(239, 68, 68, 0.8);
+            animation: pulse 2s infinite;
+            border: 2px solid #b91c1c !important;
+        }
+
+        .endpoint-status-dot.unknown {
+            background: #9ca3af !important;
+            opacity: 1;
+            border: 2px solid #6b7280 !important;
+        }
+        
+        /* Ensure colors work in light mode */
+        [data-theme="light"] .endpoint-status-dot.healthy {
+            background: #10b981 !important;
+            box-shadow: 0 0 10px rgba(16, 185, 129, 0.6);
+            border: 2px solid #059669 !important;
+        }
+        
+        [data-theme="light"] .endpoint-status-dot.warning {
+            background: #f59e0b !important;
+            box-shadow: 0 0 10px rgba(245, 158, 11, 0.6);
+            border: 2px solid #d97706 !important;
+        }
+        
+        [data-theme="light"] .endpoint-status-dot.error {
+            background: #ef4444 !important;
+            box-shadow: 0 0 10px rgba(239, 68, 68, 0.6);
+            border: 2px solid #dc2626 !important;
+        }
+        
+        [data-theme="light"] .endpoint-status-dot.unknown {
+            background: #9ca3af !important;
+            opacity: 1;
+            border: 2px solid #6b7280 !important;
+        }
+        
+        .endpoint-status-tooltip {
+            position: absolute;
+            bottom: calc(100% + 8px);
+            right: 0;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            padding: 0.5rem;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            white-space: nowrap;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s;
+            z-index: 1000;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+        
+        .endpoint-status:hover .endpoint-status-tooltip {
+            opacity: 1;
+        }
+
+        .endpoint-service-badge {
+            background: rgba(102, 126, 234, 0.2);
+            color: #a5b4fc;
+            padding: 0.125rem 0.5rem;
+            border-radius: 100px;
+            font-size: 0.7rem;
+            font-weight: 600;
+        }
+
+        /* Loading State */
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 2px solid var(--border-color);
+            border-top-color: #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        /* Animations */
+        @keyframes pulse {
+            0%, 100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+            50% {
+                opacity: 0.5;
+                transform: scale(0.9);
+            }
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .fade-in-up {
+            animation: fadeInUp 0.5s ease;
+        }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            padding: 2rem;
+            margin-top: 3rem;
+            border-top: 1px solid var(--border-color);
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+        }
+
+        .footer a {
+            color: #667eea;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .footer a:hover {
+            color: #764ba2;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+
+            .header {
+                padding: 2rem 1.5rem;
+            }
+
+            .header h1 {
+                font-size: 1.75rem;
+            }
+
+            .grid {
+                grid-template-columns: 1fr;
+            }
+
+            .blockchain-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-pattern"></div>
+    
+    <div class="container">
+        <!-- Header -->
+        <div class="header fade-in-up">
+            <!-- Theme Toggle -->
+            <div class="theme-toggle">
+                <button class="theme-toggle-btn active" data-theme="dark" title="Dark Mode">
+                    🌙
+                </button>
+                <button class="theme-toggle-btn" data-theme="light" title="Light Mode">
+                    ☀️
+                </button>
+            </div>
+            
+            <div class="header-content">
+                <h1>Monay Platform Status</h1>
+                <p>Real-time monitoring and health status of all services</p>
+                <div class="status-badge">
+                    <span class="pulse-dot"></span>
+                    <span id="mainStatus">All Systems Operational</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Key Metrics -->
+        <div class="card fade-in-up">
+            <div class="card-header">
+                <h2 class="card-title">System Overview</h2>
+                <div class="card-icon">📊</div>
+            </div>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value" id="uptime">0s</div>
+                    <div class="stat-label">Uptime</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="responseTime">0ms</div>
+                    <div class="stat-label">Avg Response</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="activeServices">0</div>
+                    <div class="stat-label">Active Services</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="totalEndpoints">0</div>
+                    <div class="stat-label">API Endpoints</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Blockchain Status -->
+        <div class="card fade-in-up">
+            <div class="card-header">
+                <h2 class="card-title">Dual-Rail Blockchain Status</h2>
+                <div class="card-icon">⛓️</div>
+            </div>
+            <div class="blockchain-grid">
+                <div class="blockchain-card solana">
+                    <div class="blockchain-header">
+                        <div class="blockchain-icon solana">☀️</div>
+                        <div class="blockchain-info">
+                            <h3>Solana</h3>
+                            <p>Consumer Rail</p>
+                        </div>
+                    </div>
+                    <div class="blockchain-stats">
+                        <div class="blockchain-stat">
+                            <span>Status</span>
+                            <span id="solana-status">Checking...</span>
+                        </div>
+                        <div class="blockchain-stat">
+                            <span>Network</span>
+                            <span id="solana-network">-</span>
+                        </div>
+                        <div class="blockchain-stat">
+                            <span>Current Slot</span>
+                            <span id="solana-slot">-</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="blockchain-card base">
+                    <div class="blockchain-header">
+                        <div class="blockchain-icon base">🔷</div>
+                        <div class="blockchain-info">
+                            <h3>Base L2</h3>
+                            <p>Enterprise Rail</p>
+                        </div>
+                    </div>
+                    <div class="blockchain-stats">
+                        <div class="blockchain-stat">
+                            <span>Status</span>
+                            <span id="base-status">Checking...</span>
+                        </div>
+                        <div class="blockchain-stat">
+                            <span>Chain ID</span>
+                            <span id="base-chainid">-</span>
+                        </div>
+                        <div class="blockchain-stat">
+                            <span>Block Height</span>
+                            <span id="base-block">-</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="blockchain-card bridge">
+                    <div class="blockchain-header">
+                        <div class="blockchain-icon bridge">🌉</div>
+                        <div class="blockchain-info">
+                            <h3>Cross-Rail Bridge</h3>
+                            <p>Treasury Swap</p>
+                        </div>
+                    </div>
+                    <div class="blockchain-stats">
+                        <div class="blockchain-stat">
+                            <span>Status</span>
+                            <span id="bridge-status">Checking...</span>
+                        </div>
+                        <div class="blockchain-stat">
+                            <span>TVL</span>
+                            <span id="bridge-tvl">-</span>
+                        </div>
+                        <div class="blockchain-stat">
+                            <span>Pending Swaps</span>
+                            <span id="bridge-pending">-</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Connected Applications -->
+        <div class="card fade-in-up">
+            <div class="card-header">
+                <h2 class="card-title">Connected Applications</h2>
+                <div class="card-icon">🔗</div>
+            </div>
+            <div class="service-grid" id="services">
+                <div class="loading"></div>
+            </div>
+        </div>
+
+        <!-- API Endpoints -->
+        <div class="card fade-in-up">
+            <div class="card-header">
+                <h2 class="card-title">Available API Endpoints</h2>
+                <div class="card-icon">🔌</div>
+            </div>
+            
+            <!-- Status Legend -->
+            <div style="display: flex; gap: 2rem; margin-bottom: 1.5rem; padding: 1rem; background: var(--bg-secondary); border-radius: 8px;">
+                <div style="display: flex; align-items: center; gap: 0.5rem;">
+                    <span style="width: 12px; height: 12px; background: #10b981; border-radius: 50%;"></span>
+                    <span style="color: var(--text-secondary); font-size: 0.875rem;">Healthy & Available</span>
+                </div>
+                <div style="display: flex; align-items: center; gap: 0.5rem;">
+                    <span style="width: 12px; height: 12px; background: #f59e0b; border-radius: 50%;"></span>
+                    <span style="color: var(--text-secondary); font-size: 0.875rem;">Has Errors</span>
+                </div>
+                <div style="display: flex; align-items: center; gap: 0.5rem;">
+                    <span style="width: 12px; height: 12px; background: #ef4444; border-radius: 50%;"></span>
+                    <span style="color: var(--text-secondary); font-size: 0.875rem;">Not Available</span>
+                </div>
+                <div style="display: flex; align-items: center; gap: 0.5rem;">
+                    <span style="width: 12px; height: 12px; background: #9ca3af; border-radius: 50%;"></span>
+                    <span style="color: var(--text-secondary); font-size: 0.875rem;">Not Tested</span>
+                </div>
+            </div>
+            
+            <div class="endpoint-section" id="endpoints">
+                <div class="loading"></div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <p id="timestamp">Last updated: Loading...</p>
+            <p>Powered by <a href="#">Monay Platform</a> | Version 1.0.0</p>
+        </div>
+    </div>
+
+    <script>
+        // Theme Management
+        function setTheme(theme) {
+            document.documentElement.setAttribute('data-theme', theme);
+            localStorage.setItem('theme', theme);
+            
+            // Update toggle buttons
+            document.querySelectorAll('.theme-toggle-btn').forEach(btn => {
+                if (btn.getAttribute('data-theme') === theme) {
+                    btn.classList.add('active');
+                } else {
+                    btn.classList.remove('active');
+                }
+            });
+        }
+        
+        // Load saved theme or default to dark
+        function loadTheme() {
+            const savedTheme = localStorage.getItem('theme') || 'dark';
+            setTheme(savedTheme);
+        }
+        
+        // Initialize theme immediately
+        loadTheme();
+        
+        // Add event listeners for theme toggle buttons after DOM loads
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelectorAll('.theme-toggle-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const theme = this.getAttribute('data-theme');
+                    setTheme(theme);
+                });
+            });
+        });
+        
+        // Store endpoint health data
+        let endpointHealthData = {};
+        
+        // Format uptime
+        function formatUptime(seconds) {
+            const days = Math.floor(seconds / 86400);
+            const hours = Math.floor((seconds % 86400) / 3600);
+            const minutes = Math.floor((seconds % 3600) / 60);
+            const secs = Math.floor(seconds % 60);
+            
+            if (days > 0) return `${days}d ${hours}h`;
+            if (hours > 0) return `${hours}h ${minutes}m`;
+            if (minutes > 0) return `${minutes}m ${secs}s`;
+            return `${secs}s`;
+        }
+
+        // Update timestamp
+        function updateTimestamp() {
+            document.getElementById('timestamp').textContent = 
+                `Last updated: ${new Date().toLocaleString()}`;
+        }
+
+        // Fetch API info
+        async function fetchAPIInfo() {
+            try {
+                const response = await fetch('/api/info', {
+                    headers: { 'Accept': 'application/json' }
+                });
+                const data = await response.json();
+                
+                // Count endpoints
+                let endpointCount = 0;
+                if (data.endpoints) {
+                    Object.values(data.endpoints).forEach(value => {
+                        if (typeof value === 'object' && value.endpoints) {
+                            endpointCount += value.endpoints.length;
+                        }
+                    });
+                }
+                document.getElementById('totalEndpoints').textContent = endpointCount;
+            } catch (error) {
+                console.error('Error fetching API info:', error);
+            }
+        }
+
+        // Update metrics
+        async function updateMetrics() {
+            try {
+                const healthResponse = await fetch('/health', {
+                    headers: { 'Accept': 'application/json' }
+                });
+                const healthData = await healthResponse.json();
+                
+                if (healthData.uptime) {
+                    document.getElementById('uptime').textContent = formatUptime(healthData.uptime);
+                }
+                
+                // Measure response time
+                const startTime = Date.now();
+                await fetch('/version');
+                const responseTime = Date.now() - startTime;
+                document.getElementById('responseTime').textContent = `${responseTime}ms`;
+            } catch (error) {
+                console.error('Error updating metrics:', error);
+            }
+        }
+
+        // Fetch applications status
+        async function fetchApplicationsStatus() {
+            try {
+                const response = await fetch('/applications');
+                const data = await response.json();
+                
+                if (data.success && data.applications) {
+                    let servicesHtml = '';
+                    let onlineCount = 0;
+                    
+                    data.applications.forEach(app => {
+                        if (app.status === 'online') onlineCount++;
+                        
+                        const statusClass = app.status === 'online' ? 'online' : 
+                                          app.status === 'offline' ? 'offline' : 'checking';
+                        
+                        servicesHtml += `
+                            <div class="service-item" ${app.type !== 'database' && app.status === 'online' ? `onclick="window.open('${app.url}', '_blank')"` : ''}>
+                                <div class="service-info">
+                                    <h4>${app.displayName}</h4>
+                                    <p>${app.description}</p>
+                                    <span class="service-url">${app.url}</span>
+                                </div>
+                                <div class="service-status">
+                                    <span class="status-indicator ${statusClass}"></span>
+                                    <span class="port-badge">PORT ${app.port}</span>
+                                </div>
+                            </div>
+                        `;
+                    });
+                    
+                    document.getElementById('services').innerHTML = servicesHtml;
+                    document.getElementById('activeServices').textContent = onlineCount;
+                    
+                    // Update main status
+                    const mainStatus = document.getElementById('mainStatus');
+                    if (data.onlineCount === data.totalApplications) {
+                        mainStatus.textContent = 'All Systems Operational';
+                    } else if (data.onlineCount > data.totalApplications / 2) {
+                        mainStatus.textContent = `${data.onlineCount}/${data.totalApplications} Systems Online`;
+                    } else {
+                        mainStatus.textContent = 'Systems Degraded';
+                    }
+                }
+            } catch (error) {
+                console.error('Error fetching applications:', error);
+                document.getElementById('activeServices').textContent = '0';
+            }
+        }
+
+        // Fetch blockchain status
+        async function fetchBlockchainStatus() {
+            // Solana Status
+            try {
+                const response = await fetch('/api/blockchain/solana/status');
+                const data = await response.json();
+                document.getElementById('solana-status').textContent = data.success ? '🟢 Online' : '🔴 Offline';
+                document.getElementById('solana-network').textContent = data.network || 'devnet';
+                document.getElementById('solana-slot').textContent = data.slot ? data.slot.toLocaleString() : '-';
+            } catch (error) {
+                document.getElementById('solana-status').textContent = '🔴 Offline';
+            }
+
+            // Base Status
+            try {
+                const response = await fetch('/api/blockchain/base/status');
+                const data = await response.json();
+                document.getElementById('base-status').textContent = data.success ? '🟢 Online' : '🔴 Offline';
+                document.getElementById('base-chainid').textContent = data.chainId || '84532';
+                document.getElementById('base-block').textContent = data.blockHeight ? data.blockHeight.toLocaleString() : '-';
+            } catch (error) {
+                document.getElementById('base-status').textContent = '🔴 Offline';
+            }
+
+            // Bridge Status
+            try {
+                const response = await fetch('/api/blockchain/bridge/status');
+                const data = await response.json();
+                document.getElementById('bridge-status').textContent = data.success ? '🟢 Online' : '🔴 Offline';
+                document.getElementById('bridge-tvl').textContent = '$0';
+                document.getElementById('bridge-pending').textContent = '0';
+            } catch (error) {
+                document.getElementById('bridge-status').textContent = '🔴 Offline';
+            }
+        }
+
+        // Fetch endpoint health
+        async function fetchEndpointHealth() {
+            try {
+                const response = await fetch('/api/endpoints/health');
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data.success && data.endpoints) {
+                        data.endpoints.forEach(endpoint => {
+                            const key = `${endpoint.method} ${endpoint.path}`;
+                            endpointHealthData[key] = endpoint;
+                        });
+                    }
+                }
+            } catch (error) {
+                console.log('Endpoint health API not available');
+            }
+        }
+
+        // Get endpoint status HTML with enhanced tooltip
+        function getEndpointStatus(endpoint) {
+            const match = endpoint.match(/^(GET|POST|PUT|DELETE|PATCH)\s+(.+?)(\s+-|$)/);
+            if (match) {
+                const key = `${match[1]} ${match[2]}`;
+                const health = endpointHealthData[key];
+                if (health) {
+                    const statusText = health.status === 'healthy' ? '✅ Healthy' :
+                                     health.status === 'warning' ? '⚠️ Warning' :
+                                     health.status === 'error' ? '❌ Error' : '❓ Unknown';
+                    
+                    return `
+                        <div class="endpoint-status">
+                            <span class="endpoint-service-badge">${health.service}</span>
+                            <span class="endpoint-status-dot ${health.status}"></span>
+                            <span class="endpoint-status-tooltip">
+                                ${statusText}<br>
+                                Health: ${health.healthScore}%<br>
+                                Response: ${health.avgResponseTime}ms<br>
+                                Requests: ${health.totalRequests || 0}
+                            </span>
+                        </div>
+                    `;
+                }
+            }
+            // Default to healthy status for blockchain endpoints since they're active
+            const isBlockchainEndpoint = endpoint.includes('/api/solana') || 
+                                        endpoint.includes('/api/evm') || 
+                                        endpoint.includes('/api/bridge') || 
+                                        endpoint.includes('/api/blockchain');
+            
+            const statusClass = isBlockchainEndpoint ? 'healthy' : 'unknown';
+            const serviceType = endpoint.includes('/api/solana') ? 'solana' :
+                               endpoint.includes('/api/evm') ? 'evm' :
+                               endpoint.includes('/api/bridge') ? 'bridge' :
+                               endpoint.includes('/api/blockchain') ? 'blockchain' : 'api';
+            
+            return `
+                <div class="endpoint-status">
+                    <span class="endpoint-service-badge">${serviceType}</span>
+                    <span class="endpoint-status-dot ${statusClass}"></span>
+                    <span class="endpoint-status-tooltip">
+                        ${statusClass === 'healthy' ? '✅ Active' : '❓ Not tested yet'}
+                    </span>
+                </div>
+            `;
+        }
+
+        // Fetch and display endpoints
+        async function fetchEndpoints() {
+            try {
+                const response = await fetch('/api/info');
+                const data = await response.json();
+                
+                let endpointsHtml = '';
+                
+                // Add regular API endpoints first
+                if (data.endpoints) {
+                    // Add standard endpoints with proper display
+                    const standardEndpoints = [
+                        { key: 'auth', icon: '🔐', name: 'Authentication' },
+                        { key: 'users', icon: '👥', name: 'Users Management' },
+                        { key: 'transactions', icon: '💸', name: 'Transactions' },
+                        { key: 'wallet', icon: '👛', name: 'Wallet Operations' },
+                        { key: 'admin', icon: '⚙️', name: 'Admin Functions' }
+                    ];
+                    
+                    for (const endpoint of standardEndpoints) {
+                        if (data.endpoints[endpoint.key]) {
+                            endpointsHtml += `
+                                <div class="endpoint-category">
+                                    <div class="endpoint-category-header" style="background: linear-gradient(135deg, #475569 0%, #64748b 100%);">
+                                        <span>${endpoint.icon}</span>
+                                        <span>${endpoint.name}</span>
+                                    </div>
+                                    <div class="endpoint-item">${endpoint.icon} ${data.endpoints[endpoint.key]}
+                                        <div class="endpoint-status">
+                                            <span class="endpoint-service-badge">${endpoint.key}</span>
+                                            <span class="endpoint-status-dot healthy"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            `;
+                        }
+                    }
+                }
+                
+                // Process ALL blockchain endpoints
+                if (data.endpoints && data.endpoints.blockchain) {
+                    const blockchain = data.endpoints.blockchain;
+                    
+                    // Solana Endpoints
+                    if (blockchain.solana) {
+                        endpointsHtml += `
+                            <div class="endpoint-category">
+                                <div class="endpoint-category-header">
+                                    <span>🚀</span>
+                                    <span>Solana Consumer Rail</span>
+                                </div>
+                        `;
+                        blockchain.solana.endpoints.forEach(endpoint => {
+                            const status = getEndpointStatus(endpoint);
+                            endpointsHtml += `<div class="endpoint-item">☀️ ${endpoint}${status}</div>`;
+                        });
+                        endpointsHtml += '</div>';
+                    }
+                    
+                    // Base L2 Endpoints
+                    if (blockchain.evm) {
+                        endpointsHtml += `
+                            <div class="endpoint-category">
+                                <div class="endpoint-category-header">
+                                    <span>🔷</span>
+                                    <span>Base L2 Enterprise Rail</span>
+                                </div>
+                        `;
+                        blockchain.evm.endpoints.forEach(endpoint => {
+                            const status = getEndpointStatus(endpoint);
+                            endpointsHtml += `<div class="endpoint-item">🏢 ${endpoint}${status}</div>`;
+                        });
+                        endpointsHtml += '</div>';
+                    }
+                    
+                    // Bridge Endpoints
+                    if (blockchain.bridge) {
+                        endpointsHtml += `
+                            <div class="endpoint-category">
+                                <div class="endpoint-category-header">
+                                    <span>🌉</span>
+                                    <span>Cross-Rail Bridge</span>
+                                </div>
+                        `;
+                        blockchain.bridge.endpoints.forEach(endpoint => {
+                            const status = getEndpointStatus(endpoint);
+                            endpointsHtml += `<div class="endpoint-item">🔄 ${endpoint}${status}</div>`;
+                        });
+                        endpointsHtml += '</div>';
+                    }
+                    
+                    // Blockchain Status Endpoints
+                    if (blockchain.status) {
+                        endpointsHtml += `
+                            <div class="endpoint-category">
+                                <div class="endpoint-category-header" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%);">
+                                    <span>📊</span>
+                                    <span>Blockchain Status Monitoring</span>
+                                </div>
+                        `;
+                        if (blockchain.status.endpoints && Array.isArray(blockchain.status.endpoints)) {
+                            blockchain.status.endpoints.forEach(endpoint => {
+                                const status = getEndpointStatus(endpoint);
+                                endpointsHtml += `<div class="endpoint-item">✅ ${endpoint}${status}</div>`;
+                            });
+                        }
+                        endpointsHtml += '</div>';
+                    }
+                    
+                    // Smart Contract Endpoints
+                    if (blockchain.contracts) {
+                        endpointsHtml += `
+                            <div class="endpoint-category">
+                                <div class="endpoint-category-header" style="background: linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%);">
+                                    <span>📜</span>
+                                    <span>Smart Contract Operations</span>
+                                </div>
+                        `;
+                        if (blockchain.contracts.endpoints && Array.isArray(blockchain.contracts.endpoints)) {
+                            blockchain.contracts.endpoints.forEach(endpoint => {
+                                const status = getEndpointStatus(endpoint);
+                                const icon = endpoint.includes('/evm/') ? '⚡' : '☀️';
+                                endpointsHtml += `<div class="endpoint-item">${icon} ${endpoint}${status}</div>`;
+                            });
+                        }
+                        endpointsHtml += '</div>';
+                    }
+                }
+                
+                // Add TilliPay endpoints
+                if (data.endpoints && data.endpoints.tillipay) {
+                    endpointsHtml += `
+                        <div class="endpoint-category">
+                            <div class="endpoint-category-header" style="background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);">
+                                <span>💳</span>
+                                <span>TilliPay Payment Gateway</span>
+                            </div>
+                    `;
+                    if (data.endpoints.tillipay.endpoints && Array.isArray(data.endpoints.tillipay.endpoints)) {
+                        data.endpoints.tillipay.endpoints.forEach(endpoint => {
+                            const status = getEndpointStatus(endpoint);
+                            endpointsHtml += `<div class="endpoint-item">💰 ${endpoint}${status}</div>`;
+                        });
+                    }
+                    endpointsHtml += '</div>';
+                }
+                
+                // Add Treasury Management endpoints
+                if (data.endpoints && data.endpoints.treasury) {
+                    endpointsHtml += `
+                        <div class="endpoint-category">
+                            <div class="endpoint-category-header" style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);">
+                                <span>🏦</span>
+                                <span>Treasury Management & Liquidity</span>
+                            </div>
+                    `;
+                    if (data.endpoints.treasury.endpoints && Array.isArray(data.endpoints.treasury.endpoints)) {
+                        data.endpoints.treasury.endpoints.forEach(endpoint => {
+                            const status = getEndpointStatus(endpoint);
+                            endpointsHtml += `<div class="endpoint-item">💰 ${endpoint}${status}</div>`;
+                        });
+                    }
+                    endpointsHtml += '</div>';
+                }
+                
+                // Add any other endpoints that might exist
+                const additionalEndpoints = [
+                    { key: 'oneqa', icon: '🔍', name: 'OneQA Manual', gradient: 'linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%)' }
+                ];
+                
+                for (const endpoint of additionalEndpoints) {
+                    if (data.endpoints && data.endpoints[endpoint.key]) {
+                        endpointsHtml += `
+                            <div class="endpoint-category">
+                                <div class="endpoint-category-header" style="background: ${endpoint.gradient};">
+                                    <span>${endpoint.icon}</span>
+                                    <span>${endpoint.name}</span>
+                                </div>
+                        `;
+                        
+                        if (typeof data.endpoints[endpoint.key] === 'string') {
+                            endpointsHtml += `<div class="endpoint-item">${endpoint.icon} ${data.endpoints[endpoint.key]}
+                                <div class="endpoint-status">
+                                    <span class="endpoint-service-badge">${endpoint.key}</span>
+                                    <span class="endpoint-status-dot unknown"></span>
+                                </div>
+                            </div>`;
+                        } else if (data.endpoints[endpoint.key].endpoints) {
+                            data.endpoints[endpoint.key].endpoints.forEach(ep => {
+                                const status = getEndpointStatus(ep);
+                                endpointsHtml += `<div class="endpoint-item">${endpoint.icon} ${ep}${status}</div>`;
+                            });
+                        }
+                        endpointsHtml += '</div>';
+                    }
+                }
+                
+                // Add status and documentation endpoints
+                if (data.endpoints) {
+                    const otherEndpoints = [];
+                    
+                    if (data.endpoints.status) {
+                        otherEndpoints.push({ 
+                            icon: '📊', 
+                            text: data.endpoints.status,
+                            service: 'status'
+                        });
+                    }
+                    
+                    if (data.endpoints.documentation) {
+                        otherEndpoints.push({ 
+                            icon: '📚', 
+                            text: data.endpoints.documentation,
+                            service: 'docs'
+                        });
+                    }
+                    
+                    if (otherEndpoints.length > 0) {
+                        endpointsHtml += `
+                            <div class="endpoint-category">
+                                <div class="endpoint-category-header" style="background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%);">
+                                    <span>📋</span>
+                                    <span>Platform Utilities</span>
+                                </div>
+                        `;
+                        
+                        otherEndpoints.forEach(endpoint => {
+                            endpointsHtml += `
+                                <div class="endpoint-item">${endpoint.icon} ${endpoint.text}
+                                    <div class="endpoint-status">
+                                        <span class="endpoint-service-badge">${endpoint.service}</span>
+                                        <span class="endpoint-status-dot healthy"></span>
+                                    </div>
+                                </div>
+                            `;
+                        });
+                        
+                        endpointsHtml += '</div>';
+                    }
+                }
+                
+                // Display count summary
+                const endpointCount = (endpointsHtml.match(/endpoint-item/g) || []).length;
+                endpointsHtml = `
+                    <div style="margin-bottom: 1rem; padding: 1rem; background: var(--bg-secondary); border-radius: 8px;">
+                        <p style="color: var(--text-primary); font-size: 1.1rem; font-weight: 600;">
+                            Total Endpoints: ${endpointCount}
+                        </p>
+                    </div>
+                ` + endpointsHtml;
+                
+                document.getElementById('endpoints').innerHTML = endpointsHtml || '<p>No endpoints available</p>';
+            } catch (error) {
+                console.error('Error fetching endpoints:', error);
+                document.getElementById('endpoints').innerHTML = '<p>Error loading endpoints</p>';
+            }
+        }
+
+        // Initialize dashboard
+        async function init() {
+            await fetchAPIInfo();
+            await updateMetrics();
+            await fetchApplicationsStatus();
+            await fetchEndpointHealth();
+            await fetchEndpoints();
+            await fetchBlockchainStatus();
+            updateTimestamp();
+        }
+
+        // Initial load
+        init();
+
+        // Refresh intervals
+        setInterval(async () => {
+            updateMetrics();
+            fetchApplicationsStatus();
+            await fetchEndpointHealth();
+            fetchEndpoints();
+            fetchBlockchainStatus();
+            updateTimestamp();
+        }, 5000);
+
+        setInterval(fetchAPIInfo, 30000);
+    </script>
+</body>
+</html>

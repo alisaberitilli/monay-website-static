@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "946894924978",
+    "firebase_url": "https://monayuser-db086.firebaseio.com",
+    "project_id": "monayuser-db086",
+    "storage_bucket": "monayuser-db086.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:946894924978:android:28febef38875d8c4136dab",
+        "android_client_info": {
+          "package_name": "com.monayuser"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "946894924978-l3gte87k1i0tvf0e5nls87shumt0vj2m.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.monayuser",
+            "certificate_hash": "d3a7798486232c3a7c6bc4f80b951059ab1d4e86"
+          }
+        },
+        {
+          "client_id": "946894924978-pn08a1119lhdmieo2sjgqpnuk1uup1l5.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBlvutcjdV1Xi6AFG568t250yvOlU2gkf8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "946894924978-pn08a1119lhdmieo2sjgqpnuk1uup1l5.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

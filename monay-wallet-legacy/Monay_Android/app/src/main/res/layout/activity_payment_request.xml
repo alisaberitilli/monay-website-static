@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+
+        <variable
+            name="paymentRequestVM"
+            type="com.monayuser.ui.paymentrequest.PaymentRequestViewModel" />
+
+    </data>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="65sp"
+            android:layout_gravity="top"
+            android:background="@color/colorPrimary"
+            android:minHeight="65sp"
+            android:theme="@style/ThemeOverlay.AppCompat.Dark"
+            app:contentInsetLeft="0dp"
+            app:contentInsetStart="0dp">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@color/transparent">
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentLeft="true"
+                    android:layout_centerInParent="true"
+                    android:onClick="@{()->paymentRequestVM.backToPreviousActivity()}"
+                    android:padding="@dimen/dp_15">
+
+                    <ImageView
+                        android:id="@+id/back_button"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="@color/full_transparent"
+                        android:onClick="@{()->paymentRequestVM.backToPreviousActivity()}"
+
+                        android:src="@mipmap/ic_back_white"
+                        android:tint="@color/white" />
+                </LinearLayout>
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/textUserName"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:layout_marginLeft="@dimen/dp_140"
+                    android:layout_marginTop="@dimen/dp_5"
+                    android:gravity="center|start"
+                    android:text="@string/payment_request_title"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/dp_20"
+                    app:fontFamily="@font/cerapro_medium" />
+
+            </RelativeLayout>
+        </androidx.appcompat.widget.Toolbar>
+
+
+        <LinearLayout
+            android:id="@+id/mainlayout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@id/toolbar"
+            android:orientation="vertical"
+            android:visibility="visible">
+
+            <com.google.android.material.tabs.TabLayout
+                android:id="@+id/tabs"
+                android:layout_width="match_parent"
+                android:layout_height="65sp"
+                android:paddingLeft="@dimen/dp_5"
+                android:paddingRight="@dimen/dp_5"
+                app:elevation="@dimen/dp_2"
+                app:tabIndicatorColor="@color/colorPrimary"
+                app:tabIndicatorHeight="2dp"
+                app:tabMode="scrollable"
+                app:tabSelectedTextColor="@color/colorPrimary"
+                app:tabTextAppearance="@style/CustomTabText"
+                app:tabTextColor="@android:color/darker_gray" />
+
+            <View
+                android:id="@+id/line_view2"
+                android:layout_width="match_parent"
+                android:layout_height="0.3sp"
+                android:layout_below="@id/tabs"
+                android:background="@color/gray_light" />
+
+            <androidx.viewpager.widget.ViewPager
+                android:id="@+id/viewPager"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_below="@id/tabs" />
+
+
+        </LinearLayout>
+    </RelativeLayout>
+
+</layout>

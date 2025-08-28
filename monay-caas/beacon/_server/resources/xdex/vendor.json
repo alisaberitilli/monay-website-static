@@ -1,0 +1,509 @@
+{
+  "response": [
+    {
+      "CompCode": 1005,
+      "VendorNo": 111,
+      "Name": "LAKE COUNTY YMCA"
+    },
+    {
+      "CompCode": 1005,
+      "VendorNo": 759,
+      "Name": "PCLS Educational Foundation"
+    },
+    {
+      "CompCode": 1005,
+      "VendorNo": 764,
+      "Name": "Phoenix Loss Control"
+    },
+    {
+      "CompCode": 1005,
+      "VendorNo": 829,
+      "Name": "Majaac Inc."
+    },
+    {
+      "CompCode": 1005,
+      "VendorNo": 831,
+      "Name": "Mahoning County Engineers"
+    },
+    {
+      "CompCode": 1005,
+      "VendorNo": 833,
+      "Name": "Lyden Oil Company"
+    },
+    {
+      "CompCode": 1005,
+      "VendorNo": 309,
+      "Name": "Royalty Enterprises Inc."
+    },
+    {
+      "CompCode": 1005,
+      "VendorNo": 471,
+      "Name": "The Fishel Company"
+    },
+    {
+      "CompCode": 1005,
+      "VendorNo": 528,
+      "Name": "Bruest Catalytic Heaters"
+    },
+    {
+      "CompCode": 1005,
+      "VendorNo": 601,
+      "Name": "Bermex Inc."
+    },
+    {
+      "CompCode": 1005,
+      "VendorNo": 708,
+      "Name": "Envantage Inc."
+    },
+    {
+      "CompCode": 1005,
+      "VendorNo": 750,
+      "Name": "Our Ohio Communications"
+    },
+    {
+      "CompCode": 1005,
+      "VendorNo": 751,
+      "Name": "Paige Electric Company LP."
+    },
+    {
+      "CompCode": 1005,
+      "VendorNo": 753,
+      "Name": "O.S.L.S."
+    },
+    {
+      "CompCode": 1005,
+      "VendorNo": 754,
+      "Name": "Osborne Inc."
+    },
+    {
+      "CompCode": 1005,
+      "VendorNo": 755,
+      "Name": "Osborne Concrete & Stone Co."
+    },
+    {
+      "CompCode": 1005,
+      "VendorNo": 756,
+      "Name": "OsAir Inc."
+    },
+    {
+      "CompCode": 1005,
+      "VendorNo": 757,
+      "Name": "Paradigm Liaison Services LLC"
+    },
+    {
+      "CompCode": 1005,
+      "VendorNo": 761,
+      "Name": "Performance Pipe"
+    },
+    {
+      "CompCode": 1005,
+      "VendorNo": 765,
+      "Name": "Orwell Printing"
+    },
+    {
+      "CompCode": 1005,
+      "VendorNo": 768,
+      "Name": "SHERIE ROLF"
+    },
+    {
+      "CompCode": 1005,
+      "VendorNo": 770,
+      "Name": "CHAGRIN VALLEY AUTO PARTS"
+    },
+    {
+      "CompCode": 1005,
+      "VendorNo": 772,
+      "Name": "O'REILLY AUTO PARTS"
+    },
+    {
+      "CompCode": 1005,
+      "VendorNo": 774,
+      "Name": "Ohio Oil and Gas Energy Educat"
+    },
+    {
+      "CompCode": 1005,
+      "VendorNo": 776,
+      "Name": "Ohio Oil and Gas Assn."
+    },
+    {
+      "CompCode": 1005,
+      "VendorNo": 778,
+      "Name": "Ohio Edison"
+    },
+    {
+      "CompCode": 1005,
+      "VendorNo": 780,
+      "Name": "Ohio Treasurer"
+    },
+    {
+      "CompCode": 1005,
+      "VendorNo": 781,
+      "Name": "Portage County Bar Association"
+    },
+    {
+      "CompCode": 1005,
+      "VendorNo": 760,
+      "Name": "Pepsi - Cola"
+    },
+    {
+      "CompCode": 1005,
+      "VendorNo": 811,
+      "Name": "Postmaster"
+    },
+    {
+      "CompCode": 1005,
+      "VendorNo": 813,
+      "Name": "OHIO PIPE & SUPPLY CO."
+    },
+    {
+      "CompCode": 1005,
+      "VendorNo": 814,
+      "Name": "Midway Chevrolet Inc"
+    },
+    {
+      "CompCode": 1005,
+      "VendorNo": 820,
+      "Name": "Mentor Recycled Landscape Mat."
+    },
+    {
+      "CompCode": 1005,
+      "VendorNo": 823,
+      "Name": "McMillan Builders Supply Inc."
+    },
+    {
+      "CompCode": 1005,
+      "VendorNo": 825,
+      "Name": "MATCH WORKS TAVERN"
+    },
+    {
+      "CompCode": 1005,
+      "VendorNo": 826,
+      "Name": "MARTLIN DISTRIBUTING LLC"
+    },
+    {
+      "CompCode": 1005,
+      "VendorNo": 828,
+      "Name": "Marlowe's Premium Coffee & Bev"
+    },
+    {
+      "CompCode": 1005,
+      "VendorNo": 830,
+      "Name": "Mahoning County Treasurer"
+    },
+    {
+      "CompCode": 1005,
+      "VendorNo": 832,
+      "Name": "Madison Village"
+    },
+    {
+      "CompCode": 1005,
+      "VendorNo": 838,
+      "Name": "LDC Inc."
+    },
+    {
+      "CompCode": 1005,
+      "VendorNo": 339,
+      "Name": "MRC GLOBAL (US) INC."
+    },
+    {
+      "CompCode": 1005,
+      "VendorNo": 763,
+      "Name": "Petrox Inc."
+    },
+    {
+      "CompCode": 1005,
+      "VendorNo": 827,
+      "Name": "Mars Electric Co."
+    },
+    {
+      "CompCode": 1005,
+      "VendorNo": 834,
+      "Name": "Lockwood Ridge Condominiums"
+    },
+    {
+      "CompCode": 1005,
+      "VendorNo": 342,
+      "Name": "Master Controls"
+    },
+    {
+      "CompCode": 1005,
+      "VendorNo": 547,
+      "Name": "Shirley Lorraine Cross"
+    },
+    {
+      "CompCode": 1005,
+      "VendorNo": 702,
+      "Name": "Fairfield County Treasurer"
+    },
+    {
+      "CompCode": 1005,
+      "VendorNo": 749,
+      "Name": "PA DEPARTMENT OF REVENUE"
+    },
+    {
+      "CompCode": 1005,
+      "VendorNo": 752,
+      "Name": "Papsco Filtration"
+    },
+    {
+      "CompCode": 1005,
+      "VendorNo": 758,
+      "Name": "PASTA OVEN"
+    },
+    {
+      "CompCode": 1005,
+      "VendorNo": 762,
+      "Name": "Personnel Concepts"
+    },
+    {
+      "CompCode": 1005,
+      "VendorNo": 766,
+      "Name": "Orwell Trumbull Pipeline Co."
+    },
+    {
+      "CompCode": 1005,
+      "VendorNo": 767,
+      "Name": "Anne Yeager"
+    },
+    {
+      "CompCode": 1005,
+      "VendorNo": 769,
+      "Name": "Orwell Natural Gas Co Inc."
+    },
+    {
+      "CompCode": 1005,
+      "VendorNo": 771,
+      "Name": "O'Reilly Equipment LLC"
+    },
+    {
+      "CompCode": 1005,
+      "VendorNo": 773,
+      "Name": "Onward Manufacturing Co."
+    },
+    {
+      "CompCode": 1005,
+      "VendorNo": 775,
+      "Name": "Ohio Utilities Protection Serv"
+    },
+    {
+      "CompCode": 1005,
+      "VendorNo": 777,
+      "Name": "Ohio Gas Association"
+    },
+    {
+      "CompCode": 1005,
+      "VendorNo": 779,
+      "Name": "Ohio Consumers' Counsel"
+    },
+    {
+      "CompCode": 1005,
+      "VendorNo": 782,
+      "Name": "Shannon Fence Co."
+    },
+    {
+      "CompCode": 1005,
+      "VendorNo": 783,
+      "Name": "Sequent Energy Management LP"
+    },
+    {
+      "CompCode": 1005,
+      "VendorNo": 784,
+      "Name": "Schwartz Land Surveying Inc."
+    },
+    {
+      "CompCode": 1005,
+      "VendorNo": 786,
+      "Name": "Santee Security Inc."
+    },
+    {
+      "CompCode": 1005,
+      "VendorNo": 787,
+      "Name": "Sage Quest"
+    },
+    {
+      "CompCode": 1005,
+      "VendorNo": 788,
+      "Name": "RVK Mechanical Heating/Cooling"
+    },
+    {
+      "CompCode": 1005,
+      "VendorNo": 789,
+      "Name": "RUDD EQUIPMENT"
+    },
+    {
+      "CompCode": 1005,
+      "VendorNo": 790,
+      "Name": "R R Donnelley"
+    },
+    {
+      "CompCode": 1005,
+      "VendorNo": 791,
+      "Name": "Robert E. Anchor Plumbing Inc"
+    },
+    {
+      "CompCode": 1005,
+      "VendorNo": 792,
+      "Name": "Ray Murray Inc."
+    },
+    {
+      "CompCode": 1005,
+      "VendorNo": 793,
+      "Name": "RJ Martin Electrical Services"
+    },
+    {
+      "CompCode": 1005,
+      "VendorNo": 794,
+      "Name": "Rich Wood Plumbing Heating"
+    },
+    {
+      "CompCode": 1005,
+      "VendorNo": 795,
+      "Name": "Rhino Marking & Protection Sys"
+    },
+    {
+      "CompCode": 1005,
+      "VendorNo": 796,
+      "Name": "REMAX HOME TOWN REALTY"
+    },
+    {
+      "CompCode": 1005,
+      "VendorNo": 798,
+      "Name": "R. W. Sidley Inc."
+    },
+    {
+      "CompCode": 1005,
+      "VendorNo": 804,
+      "Name": "Public Utilities Commission"
+    },
+    {
+      "CompCode": 1005,
+      "VendorNo": 805,
+      "Name": "PROLINE SCREEN WEAR INC"
+    },
+    {
+      "CompCode": 1005,
+      "VendorNo": 807,
+      "Name": "Pro-Pak Industries Idnc."
+    },
+    {
+      "CompCode": 1005,
+      "VendorNo": 808,
+      "Name": "Pride of the Hills Mfg. Inc."
+    },
+    {
+      "CompCode": 1005,
+      "VendorNo": 810,
+      "Name": "Precision Pipeline LLC"
+    },
+    {
+      "CompCode": 1005,
+      "VendorNo": 812,
+      "Name": "Portage County Treasurer"
+    },
+    {
+      "CompCode": 1005,
+      "VendorNo": 816,
+      "Name": "Middlefield Banking Company"
+    },
+    {
+      "CompCode": 1005,
+      "VendorNo": 818,
+      "Name": "Michael T. Judy Co. LPA"
+    },
+    {
+      "CompCode": 1005,
+      "VendorNo": 821,
+      "Name": "Mentor Hardware Store Ltd."
+    },
+    {
+      "CompCode": 1005,
+      "VendorNo": 824,
+      "Name": "SEAN CARTER"
+    },
+    {
+      "CompCode": 1005,
+      "VendorNo": 817,
+      "Name": "Middlefield Farm & Garden"
+    },
+    {
+      "CompCode": 1005,
+      "VendorNo": 785,
+      "Name": "Carl Schaney"
+    },
+    {
+      "CompCode": 1005,
+      "VendorNo": 797,
+      "Name": "Reliable Mfg. LLC"
+    },
+    {
+      "CompCode": 1005,
+      "VendorNo": 835,
+      "Name": "Lake County Clerk of Courts"
+    },
+    {
+      "CompCode": 1005,
+      "VendorNo": 799,
+      "Name": "R L Laughlin & Co. Inc."
+    },
+    {
+      "CompCode": 1005,
+      "VendorNo": 802,
+      "Name": "Quality Boring & Exc. Inc"
+    },
+    {
+      "CompCode": 1005,
+      "VendorNo": 836,
+      "Name": "Level Seven Group LLC"
+    },
+    {
+      "CompCode": 1005,
+      "VendorNo": 800,
+      "Name": "Quick Change"
+    },
+    {
+      "CompCode": 1005,
+      "VendorNo": 803,
+      "Name": "Purple Feet Distributing LLC"
+    },
+    {
+      "CompCode": 1005,
+      "VendorNo": 837,
+      "Name": "Leroy School Assoc."
+    },
+    {
+      "CompCode": 1005,
+      "VendorNo": 801,
+      "Name": "MIDDLEFIELD OIL CHANGE"
+    },
+    {
+      "CompCode": 1005,
+      "VendorNo": 806,
+      "Name": "PROCESS VALVE & EQUIPMENT CO"
+    },
+    {
+      "CompCode": 1005,
+      "VendorNo": 809,
+      "Name": "Precision Pipeline Equipment"
+    },
+    {
+      "CompCode": 1005,
+      "VendorNo": 815,
+      "Name": "Midnight Cleaning"
+    },
+    {
+      "CompCode": 1005,
+      "VendorNo": 819,
+      "Name": "Mentor Office Center"
+    },
+    {
+      "CompCode": 1005,
+      "VendorNo": 822,
+      "Name": "MegaPath"
+    },
+    {
+      "CompCode": 1005,
+      "VendorNo": 839,
+      "Name": "KEVIN LALLY"
+    }
+  ]
+}

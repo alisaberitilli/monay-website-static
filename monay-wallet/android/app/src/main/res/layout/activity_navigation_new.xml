@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+
+        <variable
+            name="navigationVM"
+            type="com.monayuser.ui.navigation.NavigationViewModel" />
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <FrameLayout
+            android:id="@+id/container"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:background="@color/white"
+            app:layout_constraintBottom_toTopOf="@id/bottom_navigation"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:background="@color/white"
+            app:layout_constraintTop_toBottomOf="@id/container"
+            app:layout_constraintBottom_toBottomOf="parent"/>
+
+        <com.google.android.material.bottomnavigation.BottomNavigationView
+            android:id="@+id/bottom_navigation"
+            android:layout_width="0dp"
+            android:layout_height="65dp"
+            android:background="@color/white_gray_color"
+            android:elevation="@dimen/dp_5"
+            android:paddingBottom="@dimen/dp_5"
+            android:visibility="visible"
+            app:itemIconTint="@color/nav_selector"
+            app:itemTextAppearanceActive="@style/MenuItemsActive"
+            app:itemTextAppearanceInactive="@style/MenuItemsInActive"
+            app:itemTextColor="@color/nav_selector"
+            app:labelVisibilityMode="unlabeled"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:menu="@menu/bottom_nav_menu" />
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/floating_action_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/dp_35"
+            android:background="@color/colorPrimary"
+            android:clickable="true"
+            android:onClick="@{()->navigationVM.openScanner()}"
+            android:src="@mipmap/ic_scan_circle"
+            android:visibility="gone"
+            app:backgroundTint="@color/transparent"
+            app:elevation="@dimen/dp_10"
+            app:fabSize="normal"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:maxImageSize="56sp"
+            app:pressedTranslationZ="10dp"
+            app:rippleColor="@color/transparent" />
+
+        <androidx.cardview.widget.CardView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            app:cardBackgroundColor="@color/transparent"
+            app:cardCornerRadius="@dimen/dp_50"
+            app:cardElevation="@dimen/dp_7"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent">
+
+<!--            <com.aminography.view.BezierCurveBulgeLayout-->
+<!--                android:layout_width="@dimen/dp_90"-->
+<!--                android:layout_height="55dp"-->
+<!--                android:layout_alignParentBottom="true"-->
+<!--                android:layout_centerInParent="true"-->
+<!--                android:layout_marginBottom="@dimen/dp_45"-->
+<!--                app:bulgeColor="@color/white"-->
+<!--                app:bulgeType="bulge"-->
+<!--                app:curveWidth="@dimen/dp_80"-->
+<!--                app:flatHeight="@dimen/dp_70"-->
+<!--                app:flatWidth="@dimen/dp_5">-->
+
+
+<!--            </com.aminography.view.BezierCurveBulgeLayout>-->
+        </androidx.cardview.widget.CardView>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

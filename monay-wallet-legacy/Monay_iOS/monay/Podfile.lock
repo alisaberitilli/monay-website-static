@@ -1,0 +1,235 @@
+PODS:
+  - ActionSheetPicker-3.0 (2.7.1)
+  - CocoaLumberjack/Core (3.7.2)
+  - CocoaLumberjack/Swift (3.7.2):
+    - CocoaLumberjack/Core
+  - Firebase/Core (8.6.1):
+    - Firebase/CoreOnly
+    - FirebaseAnalytics (~> 8.6.0)
+  - Firebase/CoreOnly (8.6.1):
+    - FirebaseCore (= 8.6.1)
+  - Firebase/Crashlytics (8.6.1):
+    - Firebase/CoreOnly
+    - FirebaseCrashlytics (~> 8.6.0)
+  - Firebase/DynamicLinks (8.6.1):
+    - Firebase/CoreOnly
+    - FirebaseDynamicLinks (~> 8.6.0)
+  - Firebase/Messaging (8.6.1):
+    - Firebase/CoreOnly
+    - FirebaseMessaging (~> 8.6.0)
+  - FirebaseAnalytics (8.6.0):
+    - FirebaseAnalytics/AdIdSupport (= 8.6.0)
+    - FirebaseCore (~> 8.0)
+    - FirebaseInstallations (~> 8.0)
+    - GoogleUtilities/AppDelegateSwizzler (~> 7.4)
+    - GoogleUtilities/MethodSwizzler (~> 7.4)
+    - GoogleUtilities/Network (~> 7.4)
+    - "GoogleUtilities/NSData+zlib (~> 7.4)"
+    - nanopb (~> 2.30908.0)
+  - FirebaseAnalytics/AdIdSupport (8.6.0):
+    - FirebaseCore (~> 8.0)
+    - FirebaseInstallations (~> 8.0)
+    - GoogleAppMeasurement (= 8.6.0)
+    - GoogleUtilities/AppDelegateSwizzler (~> 7.4)
+    - GoogleUtilities/MethodSwizzler (~> 7.4)
+    - GoogleUtilities/Network (~> 7.4)
+    - "GoogleUtilities/NSData+zlib (~> 7.4)"
+    - nanopb (~> 2.30908.0)
+  - FirebaseCore (8.6.1):
+    - FirebaseCoreDiagnostics (~> 8.0)
+    - GoogleUtilities/Environment (~> 7.4)
+    - GoogleUtilities/Logger (~> 7.4)
+  - FirebaseCoreDiagnostics (8.6.0):
+    - GoogleDataTransport (~> 9.0)
+    - GoogleUtilities/Environment (~> 7.4)
+    - GoogleUtilities/Logger (~> 7.4)
+    - nanopb (~> 2.30908.0)
+  - FirebaseCrashlytics (8.6.0):
+    - FirebaseCore (~> 8.0)
+    - FirebaseInstallations (~> 8.0)
+    - GoogleDataTransport (~> 9.0)
+    - GoogleUtilities/Environment (~> 7.4)
+    - nanopb (~> 2.30908.0)
+    - PromisesObjC (< 3.0, >= 1.2)
+  - FirebaseDynamicLinks (8.6.0):
+    - FirebaseCore (~> 8.0)
+  - FirebaseInstallations (8.6.0):
+    - FirebaseCore (~> 8.0)
+    - GoogleUtilities/Environment (~> 7.4)
+    - GoogleUtilities/UserDefaults (~> 7.4)
+    - PromisesObjC (< 3.0, >= 1.2)
+  - FirebaseMessaging (8.6.0):
+    - FirebaseCore (~> 8.0)
+    - FirebaseInstallations (~> 8.0)
+    - GoogleDataTransport (~> 9.0)
+    - GoogleUtilities/AppDelegateSwizzler (~> 7.4)
+    - GoogleUtilities/Environment (~> 7.4)
+    - GoogleUtilities/Reachability (~> 7.4)
+    - GoogleUtilities/UserDefaults (~> 7.4)
+    - nanopb (~> 2.30908.0)
+  - GoogleAppMeasurement (8.6.0):
+    - GoogleAppMeasurement/AdIdSupport (= 8.6.0)
+    - GoogleUtilities/AppDelegateSwizzler (~> 7.4)
+    - GoogleUtilities/MethodSwizzler (~> 7.4)
+    - GoogleUtilities/Network (~> 7.4)
+    - "GoogleUtilities/NSData+zlib (~> 7.4)"
+    - nanopb (~> 2.30908.0)
+  - GoogleAppMeasurement/AdIdSupport (8.6.0):
+    - GoogleUtilities/AppDelegateSwizzler (~> 7.4)
+    - GoogleUtilities/MethodSwizzler (~> 7.4)
+    - GoogleUtilities/Network (~> 7.4)
+    - "GoogleUtilities/NSData+zlib (~> 7.4)"
+    - nanopb (~> 2.30908.0)
+  - GoogleDataTransport (9.1.0):
+    - GoogleUtilities/Environment (~> 7.2)
+    - nanopb (~> 2.30908.0)
+    - PromisesObjC (< 3.0, >= 1.2)
+  - GoogleUtilities/AppDelegateSwizzler (7.5.1):
+    - GoogleUtilities/Environment
+    - GoogleUtilities/Logger
+    - GoogleUtilities/Network
+  - GoogleUtilities/Environment (7.5.1):
+    - PromisesObjC (< 3.0, >= 1.2)
+  - GoogleUtilities/Logger (7.5.1):
+    - GoogleUtilities/Environment
+  - GoogleUtilities/MethodSwizzler (7.5.1):
+    - GoogleUtilities/Logger
+  - GoogleUtilities/Network (7.5.1):
+    - GoogleUtilities/Logger
+    - "GoogleUtilities/NSData+zlib"
+    - GoogleUtilities/Reachability
+  - "GoogleUtilities/NSData+zlib (7.5.1)"
+  - GoogleUtilities/Reachability (7.5.1):
+    - GoogleUtilities/Logger
+  - GoogleUtilities/UserDefaults (7.5.1):
+    - GoogleUtilities/Logger
+  - IQKeyboardManagerSwift (6.5.6)
+  - JWTDecode (2.6.2)
+  - KeychainAccess (4.2.2)
+  - Kingfisher (7.3.2)
+  - libPhoneNumber-iOS (0.9.15)
+  - nanopb (2.30908.0):
+    - nanopb/decode (= 2.30908.0)
+    - nanopb/encode (= 2.30908.0)
+  - nanopb/decode (2.30908.0)
+  - nanopb/encode (2.30908.0)
+  - ObjectMapper (4.2.0)
+  - PhoneNumberKit (3.3.3):
+    - PhoneNumberKit/PhoneNumberKitCore (= 3.3.3)
+    - PhoneNumberKit/UIKit (= 3.3.3)
+  - PhoneNumberKit/PhoneNumberKitCore (3.3.3)
+  - PhoneNumberKit/UIKit (3.3.3):
+    - PhoneNumberKit/PhoneNumberKitCore
+  - PromisesObjC (2.0.0)
+  - RxCocoa (4.5.0):
+    - RxSwift (>= 4.4.2, ~> 4.4)
+  - RxOptional (3.6.2):
+    - RxCocoa (~> 4.0)
+    - RxSwift (~> 4.0)
+  - RxSwift (4.5.0)
+  - RxViewModel (6.0.0):
+    - RxSwift (~> 4.0)
+  - SwiftLint (0.43.1)
+  - TagListView (1.4.1)
+  - TTTAttributedLabel (2.0.0)
+  - ZendeskSDK (4.0.1):
+    - ZendeskSDK/Providers (= 4.0.1)
+    - ZendeskSDK/UI (= 4.0.1)
+  - ZendeskSDK/Core (4.0.1)
+  - ZendeskSDK/Providers (4.0.1):
+    - ZendeskSDK/Core
+  - ZendeskSDK/UI (4.0.1):
+    - ZendeskSDK/Core
+    - ZendeskSDK/Providers
+
+DEPENDENCIES:
+  - ActionSheetPicker-3.0
+  - CocoaLumberjack/Swift
+  - Firebase/Core
+  - Firebase/Crashlytics
+  - Firebase/DynamicLinks
+  - Firebase/Messaging
+  - IQKeyboardManagerSwift
+  - JWTDecode
+  - KeychainAccess
+  - Kingfisher (~> 7.0)
+  - libPhoneNumber-iOS
+  - ObjectMapper
+  - PhoneNumberKit (~> 3.3)
+  - RxCocoa
+  - RxOptional
+  - RxSwift
+  - RxViewModel
+  - SwiftLint
+  - TagListView (~> 1.0)
+  - TTTAttributedLabel
+  - ZendeskSDK
+
+SPEC REPOS:
+  trunk:
+    - ActionSheetPicker-3.0
+    - CocoaLumberjack
+    - Firebase
+    - FirebaseAnalytics
+    - FirebaseCore
+    - FirebaseCoreDiagnostics
+    - FirebaseCrashlytics
+    - FirebaseDynamicLinks
+    - FirebaseInstallations
+    - FirebaseMessaging
+    - GoogleAppMeasurement
+    - GoogleDataTransport
+    - GoogleUtilities
+    - IQKeyboardManagerSwift
+    - JWTDecode
+    - KeychainAccess
+    - Kingfisher
+    - libPhoneNumber-iOS
+    - nanopb
+    - ObjectMapper
+    - PhoneNumberKit
+    - PromisesObjC
+    - RxCocoa
+    - RxOptional
+    - RxSwift
+    - RxViewModel
+    - SwiftLint
+    - TagListView
+    - TTTAttributedLabel
+    - ZendeskSDK
+
+SPEC CHECKSUMS:
+  ActionSheetPicker-3.0: 36da254b97a09ff89679ecb8b8510bd3e5bdc773
+  CocoaLumberjack: b7e05132ff94f6ae4dfa9d5bce9141893a21d9da
+  Firebase: e84d95f6d3a91f634abc384f0751c434cb3aecfa
+  FirebaseAnalytics: 8f32ae54ad42754f503354782575c4ddfc1425c3
+  FirebaseCore: a753c231801f04f5ccd10cc92119ad1b12a61165
+  FirebaseCoreDiagnostics: 3721920bde3a9a6d5aa093c1d25e9d3e47f694af
+  FirebaseCrashlytics: 58f8ecea7c799c61c50e8111d2e438424a8a1d2e
+  FirebaseDynamicLinks: 406d67290fd123e133641f93a333b4957af22c09
+  FirebaseInstallations: 0ede6ffcd215b8f93c19d9b06c1c54e2d4107e98
+  FirebaseMessaging: ce0a5ee974f7bfe83b6cc5acce88c2d969e37c41
+  GoogleAppMeasurement: 2c0c6e2a7ab3fe730ade6379f732bdefb46f50b0
+  GoogleDataTransport: 85fd18ff3019bb85d3f2c551d04c481dedf71fc9
+  GoogleUtilities: 3df19e3c24f7bbc291d8b5809aa6b0d41e642437
+  IQKeyboardManagerSwift: c7df9d2deb356c04522f5c4b7b6e4ce4d8ed94fe
+  JWTDecode: 2cc56f950540c95fd11b14ff6388f7c6cb9760ab
+  KeychainAccess: c0c4f7f38f6fc7bbe58f5702e25f7bd2f65abf51
+  Kingfisher: 0086ad83719761ba9b2cdaf6ef4d5b4878cbae23
+  libPhoneNumber-iOS: 0a32a9525cf8744fe02c5206eb30d571e38f7d75
+  nanopb: a0ba3315591a9ae0a16a309ee504766e90db0c96
+  ObjectMapper: 1eb41f610210777375fa806bf161dc39fb832b81
+  PhoneNumberKit: 4ce83273551c4d2ae10b7361162f4283dd02835f
+  PromisesObjC: 68159ce6952d93e17b2dfe273b8c40907db5ba58
+  RxCocoa: cbf70265dc65a981d4ac982e513c10cf23df24a0
+  RxOptional: 80426a0ddbd092573e4c482d8cc13302078c4d5e
+  RxSwift: f172070dfd1a93d70a9ab97a5a01166206e1c575
+  RxViewModel: a50db3976409628887bad943825ab5f641275f0c
+  SwiftLint: 99f82d07b837b942dd563c668de129a03fc3fb52
+  TagListView: a1c236d17960a0cf64156725a76ce6d73ebce2be
+  TTTAttributedLabel: 8cffe8e127e4e82ff3af1e5386d4cd0ad000b656
+  ZendeskSDK: a5d4a6b1f117ed3177d72bbcc09b51d7600dd299
+
+PODFILE CHECKSUM: 4630634e11a437f574791966c6dc13c78247cf06
+
+COCOAPODS: 1.11.3

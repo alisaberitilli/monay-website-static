@@ -1,0 +1,37 @@
+{
+  "data": [
+    {
+      "id": "INVOICE:CREATED",
+      "header": "New Invoice",
+      "body": "A new invoice is available from {biller.name}",
+      "mergeTags": {
+        "biller.name": "string"
+      },
+      "tags": []
+    },
+    {
+      "id": "INVOICE:DUE",
+      "header": "",
+      "body": "",
+      "mergeTags": {
+        "biller.name": "string",
+        "invoice.due_date": "string"
+      },
+      "tags": []
+    },
+    {
+      "id": "PAYMENT:RECEIVED",
+      "header": "",
+      "body": "",
+      "mergeTags": {},
+      "tags": []
+    },
+    {
+      "id": "AD_HOC",
+      "header": "",
+      "body": "",
+      "mergeTags": {},
+      "tags": []
+    }
+  ]
+}

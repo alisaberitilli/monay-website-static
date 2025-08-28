@@ -1,0 +1,1147 @@
+// Model fields are grouped into:
+// 1) non-relational fields
+// 2) field+foreign key combos for @relation fields
+//    - for these put the prisma model field and then the foreign key field
+// 3) optional prisma model fields
+// 4) prisma model array fields
+// 5) model dating fields (createdAt, updatedAt, deletedAt)
+// 6) primary keys
+// 7) @@unique([]) constraints
+// 8) @@index([]) indices
+//
+// any proper database field (READ: fields that are not prisma syntactic sugar for js models) should be `@map()`ed from camelCase to snake_case
+
+// START AT `Organization`
+
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["metrics"]
+}
+
+// generator erd {
+//   provider = "prisma-erd-generator"
+// }
+
+generator zod {
+  provider          = "prisma-zod-generator"
+  isGenerateInclude = true
+  output            = "../prisma/generated"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Status {
+  ACTIVE
+  INACTIVE
+  DELETED
+}
+
+model EncryptionKey {
+  id String @id @default(cuid())
+
+  key String
+  iv  String
+}
+
+// Organizations will have registered email domains
+// The testEmail for each domain must be "tested" (aka we send an email to them) to verify that the domain can be "owned" by the organization
+// the testEmail MUST use the same domain as the domain field
+// They can specify whether their registered domains act as an exclusive whitelist or general whitelist
+// Exclusive whitelist: we ONLY allow signups for emails from this domain, every other email signup does not expose that this organization exists
+// General whitelist: signups for emails using this domain have no verification step on the org side
+// org MUST specify a default role for users coming from whitelisted domains
+model EmailDomain {
+  domain    String
+  testEmail String @map("test_email")
+
+  organization   Organization @relation(references: [id], fields: [organizationId])
+  organizationId String       @map("organization_id")
+
+  @@id([organizationId, domain])
+}
+
+// Submerchant -> general merchant/ underwriting information
+// more of a boilerplate schema
+model Submerchant {
+  name        String
+  description String
+  type        String
+
+  organization   Organization @relation(fields: [organizationId], references: [id])
+  organizationId String       @map("organization_id")
+
+  deletedAt DateTime? @map("deleted_at")
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+
+  id String @unique
+}
+
+enum VendorSource {
+  BEACON
+  BEACON_PORTAL
+  XDEX_BBPS
+  MANUAL
+  SCRIPT
+}
+
+// TODO: once we have a better understanding of unique constraints from XDEX, we need to enable those same unique constraints here
+model Subscriber {
+  name         String?
+  subscriberId String?       @map("subscriber_id") // XDEX buyer code
+  companyCode  String?
+  source       VendorSource? @default(BEACON)
+
+  organization   Organization? @relation(fields: [organizationId], references: [id])
+  organizationId String?       @map("organization_id")
+
+  accounts    Account[]
+  contactInfo SubscriberContact[]
+
+  deletedAt DateTime? @map("deleted_at")
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+
+  id       String  @id @default(cuid())
+  Biller   Biller? @relation(fields: [billerId], references: [id])
+  billerId String?
+}
+
+model Biller {
+  name        String?
+  billerId    String?       @map("biller_id") // XDEX biller id
+  companyCode String?
+  source      VendorSource?
+
+  organization   Organization? @relation(fields: [organizationId], references: [id])
+  organizationId String?       @map("organization_id")
+
+  accounts    Account[]
+  contactInfo BillerContact[]
+  subscribers Subscriber[]
+
+  deletedAt DateTime? @map("deleted_at")
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+
+  id String @id @default(cuid())
+}
+
+enum AccountStatus {
+  ACTIVE
+  INACTIVE
+  PENDING
+}
+
+model Account {
+  accountId   String // source id, we differentiate because these are not necessarily unique (chances for collisions are low but still possible technically)
+  description String?
+  status      AccountStatus @default(ACTIVE)
+
+  biller                 Biller            @relation(fields: [billerId], references: [id])
+  billerId               String            @map("biller_id")
+  subscriber             Subscriber        @relation(fields: [subscriberId], references: [id])
+  subscriberId           String            @map("subscriber_id")
+  defaultPaymentMethod   OrgPaymentMethod? @relation(fields: [defaultPaymentMethodId], references: [id])
+  defaultPaymentMethodId String?           @map("default_payment_method_id")
+
+  contracts     Contract[]
+  invoices      Invoice[]
+  assignedUsers UserAssignment[]
+
+  id String @id @default(cuid())
+
+  @@unique([accountId, billerId, subscriberId])
+}
+
+// TODO: RUN REDISCOVERY ON THESE DATA STRUCTURES; WHAT IS HAPPENING HERE RE: -PAYMENTTERMS VS FEES/ FEE STRUCTURES?
+model Contract {
+  id             String
+  externalRefNum String?   @map("external_reference_number")
+  startDate      DateTime?
+  endDate        DateTime?
+  description    String?
+
+  account   Account @relation(fields: [accountId], references: [id])
+  accountId String  @map("account_id")
+
+  services     Service[]
+  paymentTerms PaymentTerm[]
+
+  deletedAt DateTime? @map("deleted_at")
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+
+  @@id([id, accountId])
+}
+
+model Service {
+  serviceId   String
+  description String?
+
+  type         ServiceType @relation(fields: [typeCode], references: [code])
+  typeCode     String
+  industry     Industry    @relation(fields: [industryCode], references: [code])
+  industryCode String
+  contract     Contract    @relation(fields: [contractId, accountId], references: [id, accountId])
+  contractId   String      @map("contract_id")
+  accountId    String      @map("account_id")
+
+  fees          Fee[]
+  feeStructures FeeStructure[]
+
+  id String @id @default(cuid())
+
+  @@unique([serviceId, contractId, accountId])
+}
+
+model ServiceType {
+  name        String
+  description String?
+  primaryUnit String
+
+  associatedServices Service[]
+
+  code String @id @unique
+}
+
+model Industry {
+  type        String
+  description String?
+  special     Boolean @default(false)
+
+  associatedServices Service[]
+
+  code String @id @unique
+}
+
+model OrgExpected {
+  domain       String
+  organization String
+  email        String?
+
+  @@id([domain, organization])
+}
+
+// START HERE
+model Organization {
+  name           String?
+  spaceId        String? @unique @map("space_id") // primary sid from Wallet
+  merchantId     String? @unique @map("merchant_id") // primary mid from GPS
+  mainMerchantId String? @map("main_merchant_id")
+  buyerCode      String? @unique @map("buyer_code") // XDEX
+  image          String? // S3 url
+  about          String?
+  deactivated    Boolean @default(false)
+
+  address   Address? @relation(fields: [addressId], references: [id])
+  addressId String?  @map("address_id")
+
+  kybDoc  KybDocument?
+  orgUser OrgUser?
+
+  users          User[]
+  roles          UserRole[]
+  invites        UserInvite[]
+  domains        EmailDomain[]
+  submerchants   Submerchant[]
+  nudges         Nudge[]
+  paymentMethods OrgPaymentMethod[]
+
+  // these are sources of truth from XDEX primarily
+  subscriberUnits Subscriber[]
+  billerUnits     Biller[]
+
+  id String @id @default(cuid())
+}
+
+// Future-proofing a consolidated superuser for every organization including GPS user credentials (gpsUser)
+model OrgUser {
+  user    User     @relation(fields: [userId], references: [id])
+  userId  String   @unique @map("user_id")
+  gpsUser GpsUser?
+  gpsId   String?  @map("gps_id")
+
+  organization   Organization @relation(fields: [organizationId], references: [id])
+  organizationId String       @unique
+
+  @@id([userId])
+}
+
+// Store GPS related parameters here
+// used to connect to GPS
+// every organization will have one GpsUser (related via OrgUser)
+// may have multiple GpsUsers in the future (via GPS subuser functionality)
+// we will need to refactor this in order to properly handle encryption keying
+model GpsUser {
+  orgUser   OrgUser @relation(fields: [orgUserId], references: [userId])
+  orgUserId String  @unique @map("org_user_id")
+
+  encPassword      String
+  enckey           String
+  iv               String
+  maxAuthorization Decimal @default(1000000000.00) // this should be the max volume allowed per tx in GPS
+
+  // bearer token and bearer token expiration
+  // token should be valid for up to 1 month
+  token         String?
+  tokenExpiryAt DateTime @map("token_expiry_at")
+
+  gpsId String @id @unique @map("gps_id")
+}
+
+enum DeactivationReason {
+  REORGANIZATION
+  DATA_MIGRATION
+  NEW_SYSTEM_IMPLEMENTATION
+  SECURITY_AUDITS_REMEDIATION
+  USER_TRAINING_ONBOARDING
+  THIRD_PARTY_VENDOR_CHANGES
+  ORGANIZATION_DEACTIVATION
+  SELF_DEACTIVATION
+}
+
+// individual end-user on the platform
+// always tied to a single organization only
+// email does NOT have to be tied to org email domain, depends on org policy
+model User {
+  email String  @unique
+  name  String
+  phone String?
+  image String?
+
+  deactivationReason DeactivationReason? @map("deactivation_reason")
+
+  role           UserRole     @relation(fields: [roleId, organizationId], references: [role, organizationId])
+  roleId         String       @map("role_id")
+  organization   Organization @relation(fields: [organizationId], references: [id])
+  organizationId String       @map("organization_id")
+
+  orgUser    OrgUser?
+  flags      UserFlags?
+  prefs      UserPrefs?
+  nudgePrefs UserNudgePrefs?
+
+  devices            UserDevice[]
+  contactInfo        UserContact[] // FIXME: find a better name for this. contacts is also bad imo
+  nudges             Nudge[]
+  approvalRequests   InvoiceRequest[]   @relation("invoice_requests")
+  approvalsRequested InvoiceRequest[]   @relation("invoice_approvals")
+  complainant        InvoiceComplaint[] @relation("complainant_user")
+  assignedTo         InvoiceComplaint[] @relation("resolver_user")
+
+  assignments UserAssignment[]
+  reportsTo   UserReport[]     @relation("reports_to")
+  reports     UserReport[]     @relation("reports_from")
+
+  deactivatedAt DateTime? @map("deactivated_at")
+  createdAt     DateTime  @default(now()) @map("created_at")
+  updatedAt     DateTime  @updatedAt @map("updated_at")
+
+  id String @id @default(cuid())
+}
+
+// NEED TO MAKE SURE IN CODEBASE THAT RECURSION/ CYCLICAL REPORTS DO NOT HAPPEN
+model UserReport {
+  user   User   @relation("reports_to", fields: [userId], references: [id])
+  userId String
+
+  reportsToUser   User   @relation("reports_from", fields: [reportsToUserId], references: [id])
+  reportsToUserId String
+
+  @@unique([userId, reportsToUserId])
+}
+
+model UserAssignment {
+  user   User   @relation(fields: [userId], references: [id])
+  userId String
+
+  account   Account @relation(fields: [accountId], references: [id])
+  accountId String
+
+  @@unique([userId, accountId])
+}
+
+model UserInvite {
+  email String
+
+  role           UserRole     @relation(fields: [roleId, organizationId], references: [role, organizationId])
+  roleId         String       @map("role_id")
+  organization   Organization @relation(fields: [organizationId], references: [id])
+  organizationId String       @map("organization_id")
+
+  id String @id @default(cuid())
+
+  @@unique([organizationId, email])
+}
+
+enum DeviceType {
+  WEB
+  DESKTOP
+  IOS
+  ANDROID
+}
+
+model UserDevice {
+  os          String
+  appVersion  String     @map("app_version")
+  lastIp      String     @map("last_ip")
+  timezone    String
+  fingerprint String
+  type        DeviceType
+  shouldFlush Boolean    @default(false) @map("should_flush")
+  active      Boolean    @default(true)
+
+  user   User   @relation(fields: [userId], references: [id])
+  userId String @unique @map("user_id")
+
+  deactivatedAt DateTime? @map("deactivated_at")
+  deletedAt     DateTime? @map("deleted_at")
+  createdAt     DateTime  @default(now()) @map("created_at")
+  updatedAt     DateTime  @updatedAt @map("updated_at")
+
+  id String @id // convert from fingerprint into some id format
+
+  @@unique([userId, id])
+}
+
+model UserRole {
+  role               String
+  description        String?
+  isDefault          Boolean @default(false) @map("is_default")
+  isWhitelistDefault Boolean @default(false) @map("is_whitelist_default")
+  reportLevel        Int     @default(0)
+
+  organization   Organization @relation(fields: [organizationId], references: [id])
+  organizationId String       @map("organization_id")
+
+  accessControl UserControl?
+
+  users   User[]
+  invites UserInvite[]
+
+  deletedAt DateTime? @map("deleted_at")
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+
+  @@id([role, organizationId])
+}
+
+enum Access {
+  NONE
+  READ
+  WRITE
+}
+
+model UserControl {
+  role           UserRole @relation(fields: [roleCode, organizationId], references: [role, organizationId])
+  roleCode       String   @unique @map("role_id")
+  organizationId String   @map("organization_id")
+
+  organization  Access  @default(READ)
+  users         Access  @default(READ)
+  userInvite    Access  @default(NONE)
+  nudges        Access  @default(NONE)
+  payments      Access  @default(NONE)
+  maxPayment    Decimal @default(0.00)
+  billers       Access  @default(NONE)
+  bills         Access  @default(NONE)
+  invoices      Access  @default(NONE)
+  subscribers   Access  @default(NONE)
+  subscriptions Access  @default(NONE)
+  permissions   Access  @default(NONE)
+  kyb           Access  @default(NONE)
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@id([roleCode, organizationId])
+}
+
+// "raw" data refers to schemaless json data that we're not sure if we need a distinct column for just yet
+// onboardingTime/ omboardingComplete are managed primarily via our auth provider
+// other flags we'll add here will include whether certain feature flags are enabled for this account
+// other flags we'll add here will include whether the user has an active debug session or has been marked as fraudulent or needs to be blocked
+model UserFlags {
+  user   User   @relation(references: [id], fields: [userId])
+  userId String @unique @map("user_id")
+
+  raw                Json    @default("{}")
+  onboardingTime     Float?  @map("onboarding_time")
+  onboardingComplete Boolean @default(false) @map("onboarding_complete")
+
+  @@id([userId])
+}
+
+enum Theme {
+  USER
+  LIGHT
+  DARK
+}
+
+// global platform-wide preferences
+// does NOT include device-specific preferences
+// device-specific preferences can also override some of these preferences
+model UserPrefs {
+  user   User   @relation(references: [id], fields: [userId])
+  userId String @unique @map("user_id")
+
+  theme Theme @default(USER)
+
+  @@id([userId])
+}
+
+// same as above UserPrefs model
+// if `unsubAll` is set to true, we always honor that over any other prefs set here
+model UserNudgePrefs {
+  user   User   @relation(references: [id], fields: [userId])
+  userId String @unique @map("user_id")
+
+  unsubAll Boolean @default(false)
+
+  @@id([userId])
+}
+
+enum FulfillmentType {
+  POS_IMMEDIATE
+  POS_DELAYED
+  MAIL_ORDER
+  PHONE_ORDER
+  INTERNET_ORDER
+}
+
+enum BusinessType {
+  GOV
+  INTL
+  LLC
+  LLP
+  PARTNERSHIP
+  PROPRIETOR
+  SOLE_PROPRIETORSHIP
+  PRIVATE
+  PUBLIC
+  NPO
+}
+
+enum TaxIdType {
+  SSN
+  EIN
+  OTHER_FEDERAL_TAX
+}
+
+enum DbaContactType {
+  MOBILE
+  LANDLINE
+}
+
+// for GPS use only really
+model KybDocument {
+  // business information
+  merchantName   String?         @map("merchant_name") //business-legal-name   //use - fin-info (US)
+  subMerchantDba String?         @map("sub_merchant_dba") //
+  website        String?
+  taxId          String?         @map("tax_id")
+  phone          String?
+  phoneType      DbaContactType? @default(MOBILE)
+  linkedinUrl    String?         @map("linkedin_url")
+  facebookUrl    String?         @map("url_facebook")
+  twitterUrl     String?         @map("url_twitter")
+  instagramUrl   String?         @map("url_instagram")
+  overview       String?
+  //business address
+  address        Address?        @relation(fields: [addressId], references: [id], name: "kybAddress")
+  addressId      String?         @map("address_id")
+
+  // other information
+  productDescription String?          @map("product_description")
+  primaryBusiness    String?          @map("primary_business") //use- other-info(US), fin-info(US), primary line of the business
+  firstYearSalesVol  Float?           @map("first_year_sales_vol") //use-other-info(US)
+  averageTxAmt       Float?           @map("average_tx_amt") //use- other-info(US)
+  posType            FulfillmentType? @map("order_processing_type") //use - other-info(US)
+  posPct             Decimal?         @map("pos_pct") //use- other-info (US)
+
+  // financial documentation
+  businessType        BusinessType? @map("business_type") //use - fin-info(US)
+  productsAndServices String?       @map("products_and_services") //use - fin-info(US)
+  backgroundInfo      String?       @map("background_info") //linkedin or other url, use - fin-info(US)
+  backgroundInfoUrl   String?       @map("background_info_url") //if doc is uploaded then only, use-US fin_doc
+  // these are s3 keys to uploaded pdfs
+  // s3 url format will be bucket.s3.region.com/organizations/{ORG_ID}/{KEY}
+  // where KEY is what is stored below
+  resumeUrl           String?       @map("resume_url")
+  corpOverviewUrl     String?       @map("corporate_overview_url")
+  statementUrl        String?       @map("statement_url")
+  statementInterimUrl String?       @map("statement_interim_url")
+  depositoryInfoUrl   String?       @map("depository_info_url")
+  merchProcessingUrl  String?       @map("merchant_processing_url")
+  profitLossUrl       String?       @map("profit_loss_url")
+
+  // boarding form info
+  feeModel             FeeModel?       @default(ABSORPTION)
+  locationCount        Int?            @map("location_count") //used in contact
+  incorporationDate    DateTime?       @map("incorporation_date")
+  incorporationState   String?         @map("stat-inc")
+  taxIdType            TaxIdType?      @map("tax_id_type")
+  taxName              String?         @map("tax_name") //Company's name registered in Internal Revenue Service (IRS) for the administration of tax laws.
+  dbaName              String?         @map("dba_name") //use - boarding(US),
+  dbaNumber            String?         @map("dba_number") // use - boarding(US),
+  dbaContactName       String?         @map("dba_contact_name") //use - boarding(US),
+  dbaContactType       DbaContactType? @map("dba_contact_type")
+  retailDescriptor     String?         @map("retail_descriptor") //use - boarding(US),
+  customerServiceNum   String?         @map("customer_service_number")
+  customerServiceEmail String?         @map("customer_service_email")
+  billToName           String?         @map("bill_to_name") //use - boarding(US),
+  billToContactName    String?         @map("bill_to_contact_name") //use - boarding(US),
+  billToPhone          String?         @map("bill_to_phone")
+  billToAddress        Address?        @relation(fields: [billToAddressId], references: [id], name: "billToKybAddress")
+  billToAddressId      String?         @map("bill_to_address_id")
+  companyFax           String?         @map("company_fax")
+  companyFaxCCC        String?         @map("company_fac_ccc")
+  companySignUrl       String?         @map("company_signature")
+  companyLogoUrl       String?         @map("company_logo")
+
+  organization   Organization @relation(references: [id], fields: [organizationId])
+  organizationId String       @unique @map("organization_id")
+
+  localeData KybLocaleData?
+
+  owners        KybOwner[] //contact form
+  //Name, title and, profile of people having authority and responsibility for planning, directing, and controlling the activities of the company, either directly or indirectly.
+  keyManagement KybManager[] //list of key mgmt
+
+  //bank details
+  bankRoutingNum String? @map("bank_routing_number") //IFSC Code
+  bankAccNum     String? @map("bank_account_number")
+  bankAccType    String? @map("account_type")
+  checkType      String? @map("check_type")
+  checkNum       String? @map("check_number")
+
+  deletedAt DateTime? @map("deleted_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+  createdAt DateTime  @default(now()) @map("created_at")
+
+  id String @id @default(uuid())
+}
+
+model KybLocaleIndia {
+  kybLocaleData KybLocaleData @relation(fields: [kybDocumentId], references: [kybDocumentId])
+  kybDocumentId String
+
+  locale     Locale @relation(fields: [localeCode], references: [code])
+  localeCode String @default("hi-IN")
+
+  @@id([kybDocumentId])
+}
+
+model KybLocaleUs {
+  kybLocaleData KybLocaleData @relation(fields: [kybDocumentId], references: [kybDocumentId])
+  kybDocumentId String
+
+  // add-financial documentation => with ticker symbol
+  isTicker     Boolean? @default(false)
+  tickerSymbol String?
+
+  // add-financial documentation => without ticker symbol
+  backgroundInfoUrl String? @map("background_info") //background info url on principal eg-linkedin/resume/bio link
+  // businessDicription
+
+  isAuthorisedCb Boolean @map("is_authorised_cb")
+
+  //list of key mgmt
+
+  locale     Locale @relation(fields: [localeCode], references: [code])
+  localeCode String @default("en-US")
+
+  @@id([kybDocumentId])
+}
+
+model KybLocaleData {
+  kybDocument   KybDocument @relation(fields: [kybDocumentId], references: [id])
+  kybDocumentId String
+
+  kybLocaleIndia KybLocaleIndia?
+  kybLocaleUs    KybLocaleUs?
+
+  @@id([kybDocumentId])
+}
+
+enum FeeModel {
+  ABSORPTION
+  CONVENIENCE
+}
+
+enum PiiType {
+  SSN
+  LICENSE
+  AADHAR
+  PASSPORT
+}
+
+model KybOwner {
+  name           String?
+  dob            DateTime?
+  title          String?
+  ownershipPct   Decimal?  @map("ownership_pct")
+  pii            String? // instead of SSN
+  piiType        PiiType?
+  piiUpload1     String? // url of uploaded PII
+  piiUpload2     String? // url of uploaded PII if theres a second submissions
+  piiUploadType  PiiType?
+  piiUploadName1 String?
+  piiUploadName2 String?
+  email          String?
+  mobile         String?
+
+  kybDoc    KybDocument @relation(fields: [kybDocId], references: [id])
+  kybDocId  String      @map("kyb_doc_id")
+  address   Address?    @relation(fields: [addressId], references: [id])
+  addressId String?
+
+  updatedAt DateTime @updatedAt @map("updated_at")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  id String @id @default(uuid())
+}
+
+model KybManager {
+  name        String
+  title       String
+  linkedinUrl String? @map("linkedin_url") // this is required in GPS
+  resumeUrl   String? @map("resume_url") //s3 url of resume
+
+  kybDoc   KybDocument @relation(fields: [kybDocId], references: [id])
+  kybDocId String      @map("kyb_doc_id")
+
+  updatedAt DateTime @updatedAt @map("updated_at")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  id String @id @default(uuid())
+}
+
+// contains many countries
+// locale type => en-US/ hi-IN
+// debug description just contains whatever useful information we need
+// is never exposed in production
+model Locale {
+  name             String
+  debugDescription String @map("debug_description")
+
+  countries  Country[]
+  appInputs  ApplicationInput[]
+  indianKybs KybLocaleIndia[]
+  usKybs     KybLocaleUs[]
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  code String @id @unique
+}
+
+// addresses will always have a country and also therefore locale
+model Address {
+  googlePlacesId String @map("google_places_id")
+  jsonAddress    Json
+
+  country     Country @relation(fields: [countryCode], references: [code])
+  countryCode String  @map("country_code")
+
+  kybDocs       KybDocument[]  @relation(name: "kybAddress")
+  kybBillToDocs KybDocument[]  @relation(name: "billToKybAddress")
+  kybOwners     KybOwner[]
+  organizations Organization[]
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  id String @id @default(cuid())
+}
+
+// addresses and other schema-needed stuff operates from here primarily
+// country restrictions supercede all else
+model Country {
+  name         String
+  callingCode  String @map("calling_code")
+  currencyCode String @map("currency_code")
+  flag         String
+  status       Status @default(ACTIVE)
+
+  defaultLocale   Locale @relation(fields: [defaultLocaleId], references: [code])
+  defaultLocaleId String @map("default_locale_id")
+
+  addresses Address[]
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  code String @id @unique
+}
+
+enum ContactType {
+  LANDLINE
+  MOBILE
+  FAX
+  EMAIL
+}
+
+model Contact {
+  id   String      @id @default(cuid())
+  type ContactType @default(MOBILE)
+  info String // the actual number or fax number or email
+
+  userContact       UserContact?
+  subscriberContact SubscriberContact?
+  billerContact     BillerContact?
+}
+
+model UserContact {
+  isPrimary Boolean @default(false)
+
+  user      User    @relation(fields: [userId], references: [id])
+  userId    String  @map("user_id")
+  contact   Contact @relation(fields: [contactId], references: [id])
+  contactId String  @unique @map("contact_id")
+
+  @@id([userId, contactId])
+  @@unique([isPrimary, userId, contactId])
+}
+
+model SubscriberContact {
+  isPrimary Boolean @default(true)
+
+  subscriber   Subscriber @relation(fields: [subscriberId], references: [id])
+  subscriberId String     @map("subscriber_id")
+  contact      Contact    @relation(fields: [contactId], references: [id])
+  contactId    String     @unique @map("contact_id")
+
+  @@id([subscriberId, contactId])
+}
+
+model BillerContact {
+  isPrimary Boolean @default(true)
+
+  biller    Biller  @relation(fields: [billerId], references: [id])
+  billerId  String  @map("biller_id")
+  contact   Contact @relation(fields: [contactId], references: [id])
+  contactId String  @unique @map("contact_id")
+
+  @@id([billerId, contactId])
+}
+
+enum Channel {
+  PUSH
+  SMS
+  EMAIL
+  WHATSAPP
+}
+
+// types and variants are set by us (TILLI). we create and manage these as entry points for all notifications that are outbound by us. in the case we need to send some ad hoc notification, we'll also be creating a specific nudge type that will allow for usage of the nudge model "customHeader" and "customBody" fields
+model NudgeVariant {
+  type   NudgeType @relation(fields: [typeId], references: [id])
+  typeId String
+
+  header String?
+  body   String
+  uri    String?
+
+  nudges Nudge[]
+
+  id String @id @default(cuid())
+
+  @@unique([typeId, body])
+}
+
+model NudgeType {
+  header    String
+  body      String
+  mergeTags Json     @map("merge_tags")
+  uri       String
+  tags      String[]
+
+  variants NudgeVariant[]
+  nudges   Nudge[]
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  id String @id @unique
+
+  @@unique([header, body])
+}
+
+// notifications
+// can be tied to a specific user or organization
+// each nudge will have a list of channels that it uses for delivery
+model Nudge {
+  data         Json
+  customHeader String? @map("custom_header")
+  customBody   String? @map("custom_body")
+
+  user           User?         @relation(fields: [userId], references: [id])
+  userId         String?       @map("user_id")
+  organization   Organization? @relation(fields: [organizationId], references: [id])
+  organizationId String?       @map("organization_id")
+  type           NudgeType     @relation(fields: [typeId], references: [id])
+  typeId         String        @map("type_id")
+  variant        NudgeVariant? @relation(fields: [variantId], references: [id])
+  variantId      String?       @map("variant_id")
+
+  channels Channel[]
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  id String @id @default(cuid())
+}
+
+model PaymentTerm {
+  description String?
+
+  contract   Contract @relation(fields: [contractId, accountId], references: [id, accountId])
+  contractId String   @map("contract_id")
+  accountId  String   @map("account_id")
+
+  prices   Price[]
+  invoices Invoice[]
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  id String @id @default(cuid())
+}
+
+model Price {
+  description String?
+  amount      Float
+  startDate   DateTime? @map("start_date")
+  endDate     DateTime? @map("end_date")
+  scaleFrom   String?   @map("scale_from")
+  scaleTo     String?   @map("scale_to")
+  blockFrom   String?   @map("block_from")
+  blockTo     String?   @map("block_to")
+
+  type          PriceType   @relation(fields: [typeId], references: [code])
+  typeId        String      @map("type_id")
+  paymentTerm   PaymentTerm @relation(fields: [paymentTermId], references: [id])
+  paymentTermId String      @map("payment_term_id")
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  id String @id @default(cuid())
+
+  @@unique([startDate, endDate])
+  @@unique([scaleFrom, scaleTo, blockFrom, blockTo])
+}
+
+model PriceType {
+  description String
+  unit        String
+  currency    String?
+
+  associatedPrices Price[]
+
+  code String @id @unique
+}
+
+model Fee {
+  structureKey String
+
+  service        Service      @relation(fields: [serviceId], references: [id])
+  serviceId      String       @map("service_id")
+  feeStructure   FeeStructure @relation(fields: [feeStructureId], references: [id])
+  feeStructureId String       @map("fee_structure_id")
+
+  id String @id @default(cuid())
+}
+
+model FeeStructure {
+  structure Json
+
+  service   Service @relation(fields: [serviceId], references: [id])
+  serviceId String  @map("service_id")
+
+  fees Fee[]
+
+  id String @id @default(cuid())
+}
+
+enum PaymentType {
+  ACH
+  CREDIT
+  DEBIT
+  AADHAR
+}
+
+model PaymentMethod {
+  type PaymentType
+
+  associatedOrgs OrgPaymentMethod[]
+
+  deletedAt DateTime? @map("deleted_at")
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+
+  token String @id @unique
+}
+
+model OrgPaymentMethod {
+  isPrimary Boolean @default(false)
+
+  method         PaymentMethod @relation(fields: [token], references: [token])
+  token          String
+  organization   Organization  @relation(fields: [organizationId], references: [id])
+  organizationId String        @map("organization_id")
+
+  accountsUsingAsDefault Account[]
+  invoicesUsedOn         Invoice[]
+
+  id String @id @default(cuid())
+
+  @@unique([token, organizationId])
+}
+
+enum ComplainStatus {
+  OPEN //under review 
+  UNDER_INVESTIGATION //company is actively looking into the complaint
+  IN_PROGRESS // resolution process is ongoing
+  PENDING_CUSTOMER_RESPONSE // customer wants for addoitional info or feedback from cust
+  RESOLVED //it is resolved and satisfied the user
+  CLOSED //complaint is resolvd and closed
+  ESCALATED //complaint has been elevated to a higher authority for further action
+  REJECTED //customer determined that comlaint is not valid
+  ON_HOLD //complaint is delayed/suspended for some time for some reason
+  WITH_DRAWN //user has withdrawn their complaint
+}
+
+enum ComplainPriority {
+  NO_PRIORITY
+  URGENT
+  HIGH
+  MEDIUM
+  LOW
+}
+
+model InvoiceComplaint {
+  complaintId    String           @map("compaint_id") //default like COMP-x-digin num or num+alpha_char
+  status         ComplainStatus
+  priority       ComplainPriority @default(NO_PRIORITY)
+  complainText   String
+  resolutionText String?
+
+  invoiceId        String
+  invoice          Invoice @relation(fields: [invoiceId], references: [id])
+  complainantId    String
+  complainant      User    @relation("complainant_user", references: [id], fields: [complainantId])
+  assignedToUserId String
+  assignedTo       User    @relation("resolver_user", references: [id], fields: [assignedToUserId])
+
+  createdAt DateTime  @default(now()) @map("complain_date")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+  deletedAt DateTime?
+
+  id String @id @default(cuid())
+
+  @@unique([complaintId, invoiceId])
+}
+
+enum InvoiceStatus {
+  UNPAID
+  PROCESSING
+  DISPUTED
+  FINANCING_PENDING
+  ON_PAYMENT_PLAN
+  PARTIALLY_PAID
+  FULLY_PAID
+  VOIDED
+}
+
+model Invoice {
+  invoiceNum  String        @map("invoice_num") // FROM ERP
+  amount      Float
+  invoiceDate DateTime      @map("invoice_date")
+  dueDate     DateTime      @map("due_date")
+  pdfUrl      String?       @map("pdf_url")
+  status      InvoiceStatus @default(UNPAID)
+
+  account            Account           @relation(fields: [accountId], references: [id])
+  accountId          String
+  paymentMethodUsed  OrgPaymentMethod? @relation(fields: [orgPaymentMethodId], references: [id])
+  orgPaymentMethodId String?           @map("org_payment_method_id")
+  paymentTerm        PaymentTerm?      @relation(fields: [paymentTermId], references: [id])
+  paymentTermId      String?           @map("payment_term_id")
+
+  approvalRequests InvoiceRequest[]
+  complaints       InvoiceComplaint[]
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  id String @id @default(cuid())
+  // InvoiceComplaint InvoiceComplaint[]
+}
+
+enum InvoiceRequestStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  PARTIALLY_APPROVED
+  VOIDED
+}
+
+model InvoiceRequest {
+  status InvoiceRequestStatus @default(PENDING)
+  amount Float
+  note   String
+
+  invoice   Invoice @relation(fields: [invoiceId], references: [id])
+  invoiceId String  @map("invoice_id")
+
+  requestingUser   User   @relation("invoice_requests", fields: [requestingUserId], references: [id])
+  requestingUserId String
+  approvingUser    User   @relation("invoice_approvals", fields: [approvingUserId], references: [id])
+  approvingUserId  String
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  id String @id @default(cuid())
+}
+
+enum AppInputType {
+  TEXT
+  SELECT
+  REGEX
+}
+
+// inputData is modeled after ApplicationInput type:
+// {
+//   "TEXT": "..."
+// }
+// e.g. you can always safely do:
+//   const input = await prisma.appInput.findOne(...);
+//   const data = input.inputData[input.type];
+model ApplicationInput {
+  inputData  Json
+  type       AppInputType
+  locale     Locale?      @relation(fields: [localeCode], references: [code])
+  localeCode String?
+
+  id String @id @unique
+}
+
+model Faq {
+  url      String?
+  tags     String[]
+  question String
+  answer   String
+  jsonData Json     @map("json_data")
+
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+  deletedAt DateTime?
+
+  id String @id @default(cuid())
+}

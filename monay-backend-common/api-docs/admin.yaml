@@ -1,0 +1,47 @@
+paths:
+  /admin/dashboard:
+    get:
+      tags:
+        - Admin
+      summary: Dashboard api for admin
+      security:
+        - BearerAuth: []
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: OK  
+  /admin/dashboard/donut/graph:
+    get:
+      tags:
+        - Admin
+      summary: Dashboard graph api for admin
+      security:
+        - BearerAuth: []
+      produces:
+        - application/json
+      parameters:
+        - in: query
+          name: type
+          type: string
+          enum: 
+            - 'week'
+            - 'month'
+            - 'year'
+          required: true  
+      responses:
+        '200':
+          description: OK   
+  /admin/dashboard/line/graph:
+    get:
+      tags:
+        - Admin
+      summary: Dashboard graph api for admin
+      security:
+        - BearerAuth: []
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: OK           
+

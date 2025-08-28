@@ -1,0 +1,74 @@
+[
+  {
+    "name": "Pepco",
+    "element": {
+      "tag": "DIV",
+      "class": "service-provider first",
+      "id": "",
+      "href": null,
+      "onclick": false
+    },
+    "boundingBox": {
+      "x": 94,
+      "y": 199.515625,
+      "width": 1092,
+      "height": 90.796875,
+      "top": 199.515625,
+      "right": 1186,
+      "bottom": 290.3125,
+      "left": 94
+    },
+    "parent": {
+      "tag": "DIV",
+      "class": "container"
+    }
+  },
+  {
+    "name": "Pennsylvania American Water",
+    "element": {
+      "tag": "DIV",
+      "class": "service-provider second",
+      "id": "",
+      "href": null,
+      "onclick": false
+    },
+    "boundingBox": {
+      "x": 94,
+      "y": 306.3125,
+      "width": 1092,
+      "height": 90.796875,
+      "top": 306.3125,
+      "right": 1186,
+      "bottom": 397.109375,
+      "left": 94
+    },
+    "parent": {
+      "tag": "DIV",
+      "class": "container"
+    }
+  },
+  {
+    "name": "Washington Gas",
+    "element": {
+      "tag": "DIV",
+      "class": "service-provider third",
+      "id": "",
+      "href": null,
+      "onclick": false
+    },
+    "boundingBox": {
+      "x": 94,
+      "y": 413.109375,
+      "width": 1092,
+      "height": 90.796875,
+      "top": 413.109375,
+      "right": 1186,
+      "bottom": 503.90625,
+      "left": 94
+    },
+    "parent": {
+      "tag": "DIV",
+      "class": "container"
+    }
+  }
+]

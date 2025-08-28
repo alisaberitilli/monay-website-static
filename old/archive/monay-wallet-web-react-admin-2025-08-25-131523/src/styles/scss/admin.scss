@@ -1,0 +1,24 @@
+//Tools
+@import './tools/tools.mixins';
+
+//Settings
+@import './settings/settings.main';
+
+//Utilities
+@import './utilities/utilities.main';
+
+//Element
+@import './elements/elements.html';
+
+//Object
+@import './objects/objects';
+
+//Component
+@import './components/components.main';
+
+// pages
+@import './pages/dashboard';
+@import './pages/error-page';
+@import './pages/login';
+@import './pages/faq-page';
+@import './pages/notification';

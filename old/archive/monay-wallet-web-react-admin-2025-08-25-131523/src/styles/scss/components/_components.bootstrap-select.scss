@@ -1,0 +1,152 @@
+.bootstrap-select {
+    height: auto;
+    .dropdown-toggle {
+        font-size: 14px;
+        font-family: font(rg);
+        border-color: color(180);
+        border-radius: 3px;
+        height: 44px;
+        transition: none;
+        color: color(900);
+        background-color: transparent;
+        padding: 10px 15px;
+        &.btn-light {
+            border-color: color(180) !important;
+        }
+        .filter-option-inner {
+            padding-right: 0px;
+        }
+        &:hover,
+        &:focus,
+        &:active:focus,
+        &:active,
+        &:active:hover,
+        &:not(:disabled),
+        &:not(.disabled):active {
+            background-color: transparent !important;
+            outline: none !important;
+            color: #6C6F70;
+            box-shadow: none !important;
+            outline: 0px auto -webkit-focus-ring-color !important;
+        }
+        .filter-option-inner-inner {
+            color: color(900);
+            @include text-overflow();
+            display: inline-block;
+            width: 100%;
+            padding-right: 23px;
+        }
+        &:after {
+            content: "\ea60";
+            font-family: 'icomoon';
+            border: none;
+            top: -2px;
+            font-size: 19px;
+            position: relative;
+            color: #8E9199;
+            vertical-align: middle;
+            right: -4px;
+        }
+        &.bs-placeholder {
+            .filter-option-inner-inner {
+                color: #888888;
+            }
+        }
+    }
+
+    // when show class add
+    &.form-control {
+        z-index: initial;
+    }
+    &.show {
+        .dropdown-toggle {
+            border-radius: 3px 3px 0 0;
+            border-color: color(500);
+            &.btn-light {
+                border-color: color(500) !important;
+            }
+        }
+        .dropdown-menu {
+            min-width: 100% !important;
+            border-color: color(500);
+            width: 100%;
+            margin-top: 0px;
+            background-color: color(50);
+            border-top: 0;
+            border-radius: 0 0 3px 3px;
+            z-index: 3;
+            padding: 0;
+            ul {
+                display: block !important;
+            }
+            .inner {
+                li {
+                    &.active,
+                    &:active,
+                    &.selected {
+                        a {
+                            background-color: color(500);
+                            color: color(50);
+                            span {
+                                top: 10px;
+                            }
+                        }
+                    }
+                    a {
+                        padding: 5px 15px;
+                        font-size: 14px;
+                        white-space: normal;
+                        line-height: normal;
+                        color: color(900);
+                        &:hover {
+                            background-color: color(500);
+                            color: color(50);
+
+                            span {
+                                top: 10px;
+                            }
+                        }
+                    }
+                    span {
+                        @include text-overflow();
+                        width: 100%;
+                    }
+                }
+            }
+        }
+    }
+
+    // when dropup class add
+    &.dropup {
+        .dropdown-menu.show {
+            >.inner.show {
+                padding-top: 1px;
+                border-top: 1px solid color(500);
+            }
+        }
+        &.show {
+            .dropdown-toggle {
+                border-radius: 0 0 3px 3px;
+            }
+        }
+        .dropdown-menu {
+            padding: 0;
+            margin-bottom: 0;
+            border-bottom: 0;
+            border-top: 0;
+            border-radius: 3px 3px 0 0;
+        }
+    }
+
+    @include media-breakpoint-down(sm) {
+        .dropdown-toggle {
+            height: 40px;
+            font-size: 14px;
+            padding: 8px 15px;
+            &:after {
+                font-size: 16px;
+            }
+        }
+    }
+
+}

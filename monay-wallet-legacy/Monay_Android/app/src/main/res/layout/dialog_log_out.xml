@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/transparent"
+    android:gravity="center"
+    tools:ignore="MissingPrefix">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/white_rounded_corner">
+
+        <TextView
+            android:id="@+id/textview__header"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:fontFamily="@font/cerapro_regular"
+            android:gravity="center"
+            android:padding="13dp"
+            android:text="@string/logout_alert"
+            android:textColor="@color/dark_black"
+            android:textSize="@dimen/size_18" />
+
+        <RelativeLayout
+            android:id="@+id/relative_layout1"
+            android:layout_width="match_parent"
+            android:layout_height="0.2dp"
+            android:layout_below="@+id/textview__header"
+            android:background="@color/gray_light" />
+
+        <RelativeLayout
+            android:id="@+id/relativelayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/relative_layout1"
+            android:background="@color/gray_light" />
+
+        <TextView
+            android:id="@+id/textview__messages"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/relativelayout"
+            android:layout_centerHorizontal="true"
+            android:fontFamily="@font/cerapro_regular"
+            android:gravity="center"
+            android:lineSpacingExtra="3dp"
+            android:padding="18sp"
+            android:text="@string/want_to_logout"
+            android:textColor="@color/gray"
+            android:textSize="@dimen/size_18" />
+
+
+        <RelativeLayout
+            android:id="@+id/relative_layout"
+            android:layout_width="match_parent"
+            android:layout_height="0.8dp"
+            android:layout_below="@+id/textview__messages"
+            android:background="@color/gray_light" />
+
+
+        <RelativeLayout
+            android:id="@+id/rl"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/relative_layout">
+
+            <TextView
+                android:id="@+id/button_cancel"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_toLeftOf="@+id/framelayout"
+                android:fontFamily="@font/cerapro_regular"
+                android:gravity="center"
+                android:padding="13sp"
+                android:text="@string/stay_logged_in"
+                android:textColor="@color/dark_black"
+                android:textSize="@dimen/size_18" />
+
+            <FrameLayout
+                android:id="@+id/framelayout"
+                android:layout_width="0.8dp"
+                android:layout_height="39sp"
+                android:layout_centerInParent="true"
+                android:background="@color/gray_light"
+                android:clipToPadding="true"
+                android:foregroundGravity="center"
+                android:gravity="center"
+                android:layoutMode="clipBounds" />
+
+            <TextView
+                android:id="@+id/button_ok"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_toRightOf="@+id/framelayout"
+                android:fontFamily="@font/cerapro_regular"
+                android:gravity="center"
+                android:padding="13sp"
+                android:text="@string/logout"
+                android:textColor="@color/dark_black"
+                android:textSize="@dimen/size_18" />
+        </RelativeLayout>
+    </RelativeLayout>
+
+</RelativeLayout>

@@ -1,0 +1,606 @@
+paths:       
+  /admin/login:              
+    post:                
+      tags:               
+        - Auth           
+      summary: Admin Login
+      produces:
+      - application/json
+      parameters:         
+      - in: body          
+        name: login     
+        description:
+        required: false
+        schema:          
+          $ref: '#/definitions/login' 
+      responses:          
+        200:
+          description: An object with user
+  /send-otp:
+    post:
+      tags:
+        - Auth
+      summary: "Send otp"
+      produces:
+        - application/json
+      parameters:
+        - in: body
+          name: send-otp
+          description: null
+          required: false
+          schema:
+            $ref: "#/definitions/send-otp"
+      responses:
+        "200":
+          description: "An object"
+  /send-primary-otp:
+    post:
+      tags:
+        - Auth
+      summary: "Send otp"
+      security:
+        - BearerAuth: []
+      produces:
+        - application/json
+      parameters:
+        - in: body
+          name: send-otp
+          description: null
+          required: false
+          schema:
+            $ref: "#/definitions/send-otp"
+      responses:
+        "200":
+          description: "An object"
+  /user-scan/{id}:
+    get:
+      tags:
+        - Auth
+      summary: "Scan user for link primary account"
+      security:
+        - BearerAuth: []
+      produces:
+        - application/json
+      parameters:
+        - in: path
+          name: id
+          description: Qr scan code
+          required: true
+      responses:
+        "200":
+          description: "An object"
+  /verify-primary-otp:
+    post:
+      tags:
+        - Auth
+      summary: "Verify otp (Default OTP:- 4444)"
+      security:
+        - BearerAuth: []
+      produces:
+        - application/json
+      parameters:
+        - in: body
+          name: verify-otp
+          description: null
+          required: false
+          schema:
+            $ref: "#/definitions/verify-primary-otp"
+      responses:
+        "200":
+          description: "An object"     
+  /verify-otp:
+    post:
+      tags:
+        - Auth
+      summary: "Verify otp (Default OTP:- 4444)"
+      produces:
+        - application/json
+      parameters:
+        - in: body
+          name: verify-otp
+          description: null
+          required: false
+          schema:
+            $ref: "#/definitions/verify-otp"
+      responses:
+        "200":
+          description: "An object"             
+  /verify-otp-only:
+    post:
+      tags:
+        - Auth
+      summary: "Verify otp (Default OTP:- 4444)"
+      produces:
+        - application/json
+      parameters:
+        - in: body
+          name: verify-otp
+          description: null
+          required: false
+          schema:
+            $ref: "#/definitions/verify-otp"
+      responses:
+        "200":
+          description: "An object"             
+  /login:              
+    post:                
+      tags:               
+        - Auth           
+      summary: User (User or Merchant) Login
+      produces:
+      - application/json
+      parameters:         
+      - in: body          
+        name: login     
+        description:
+        required: false
+        schema:          
+          $ref: '#/definitions/account-login' 
+      responses:          
+        200:
+          description: An object with user
+#  /mpin-login:              
+#    post:                
+#      tags:               
+#        - Auth           
+#      summary: User (User or Merchant) mPin Login
+#      produces:
+#      - application/json
+#      parameters:         
+#      - in: body          
+#        name: login     
+#        description:
+#        required: false
+#        schema:          
+#          $ref: '#/definitions/mpin-login' 
+#      responses:          
+#        200:
+#          description: An object with user
+  /account/logout:              
+    post:                
+      tags:               
+        - Account           
+      summary: logout
+      security:
+        - BearerAuth: []
+      produces:
+      - application/json
+      parameters:         
+      - in: body          
+        name: logout     
+        description:
+        required: false         
+      responses:          
+        200:
+          description: An object with user         
+  /account/change-password:
+    post:
+      tags:               
+        - Account     
+      summary: Change password
+      security:
+        - BearerAuth: []
+      produces:
+      - application/json
+      parameters:         
+      - in: body          
+        name: change-password     
+        description:
+        required: false
+        schema:          
+          $ref: '#/definitions/change-password' 
+      responses:
+        '200':
+          description: OK
+  /account/me:              
+   get:                
+     tags:               
+       - Account           
+     summary: My account information
+     produces:
+     - application/json
+     security:
+       - BearerAuth: []      
+     responses:          
+       200:
+         description: An object with user                              
+  /admin/account/update-profile :
+    put:                
+      tags:               
+        - Account           
+      summary: Admin Update Profile
+      produces:
+      - application/json
+      security:
+        - BearerAuth: []
+      parameters:         
+      - in: body          
+        name: update-profile     
+        description:
+        required: false
+        schema:          
+          $ref: '#/definitions/update-profile' 
+      responses:          
+        200:
+          description: An object
+  /admin/forgot-password :              
+    post:                
+      tags:               
+        - Auth           
+      summary: Admin forgot password
+      produces:
+      - application/json
+      parameters:         
+      - in: body          
+        name: forgot-password     
+        description:
+        required: true
+        schema:          
+          $ref: '#/definitions/admin-forgot-password'
+      responses:          
+        200:
+          description: An object
+  /admin/reset-password:
+    post:
+      tags:               
+        - Auth     
+      summary: Admin reset password 
+      produces:
+      - application/json
+      parameters:         
+      - in: body          
+        name: reset-password
+        description: Reset password 
+        required: false
+        schema:          
+          $ref: '#/definitions/admin-reset-password' 
+      responses:
+        '200':
+          description: OK   
+  /user/signup:
+    post:
+      tags:               
+        - Auth     
+      summary: User create new account
+      produces:
+      - application/json
+      parameters:         
+      - in: body          
+        name:  User create new account
+        description:  User create new account 
+        required: false
+        schema:          
+          $ref: '#/definitions/user-signup' 
+      responses:
+        '200':
+          description: OK   
+  /merchant/signup:
+    post:
+      tags:               
+        - Auth     
+      summary: Merchant create new account
+      produces:
+      - application/json
+      parameters:         
+      - in: body          
+        name:  Merchant create new account
+        description:  Merchant create new account 
+        required: false
+        schema:          
+          $ref: '#/definitions/merchant-signup' 
+      responses:
+        '200':
+          description: OK                     
+  /resend/otp:
+    post:
+      tags:
+        - Auth
+      summary: "Resent Otp"
+      produces:
+        - application/json
+      parameters:
+        - in: body
+          name: resend-otp
+          description: null
+          required: false
+          schema:
+            $ref: "#/definitions/resend-otp"
+      responses:
+        "200":
+          description: "An object"
+  /forgot-password:
+    post:
+      tags:
+        - Auth
+      summary: "Forgot password  Otp"
+      produces:
+        - application/json
+      parameters:
+        - in: body
+          name: resend-otp
+          description: null
+          required: false
+          schema:
+            $ref: "#/definitions/resend-otp"
+      responses:
+        "200":
+          description: "An object"
+  /reset-password:
+    post:
+      tags:               
+        - Auth     
+      summary: user/merchant reset password 
+      produces:
+      - application/json
+      parameters:         
+      - in: body          
+        name: reset-password
+        description: Reset password 
+        required: false
+        schema:          
+          $ref: '#/definitions/reset-password' 
+      responses:
+        '200':
+          description: OK   
+  /send/email-verification-code:
+    post:
+      tags:
+        - Account
+      summary: "Send email verification code"
+      security:
+        - BearerAuth: []
+      produces:
+        - application/json
+      parameters:
+        - in: body
+          name: send-email-verification-code
+          description: null
+          required: false
+          schema:
+            $ref: "#/definitions/send-email-verification-code"
+      responses:
+        "200":
+          description: "An object"                                            
+definitions: 
+  login:
+    type: object
+    properties:
+      email:
+        type: string
+        required: true
+      password:
+        type: string
+        required: true
+      deviceType:
+        type: string
+        enum: 
+          - 'web'
+          - 'android'
+          - 'ios'  
+        required: true
+      firebaseToken:
+        type: string
+        required: true 
+  account-login:
+     type: object
+     properties:
+      phoneCountryCode:
+        type: string
+        required: true
+      username:
+        type: string
+        required: true
+      password:
+        type: string
+        required: true
+      deviceType:
+        type: string
+        enum: 
+          - 'android'
+          - 'ios'  
+        required: true
+      firebaseToken:
+        type: string
+        required: true 
+  mpin-login:
+     type: object
+     properties:
+      phoneCountryCode:
+        type: string
+        required: true
+      username:
+        type: string
+        required: true
+      mpin:
+        type: string
+        required: true
+      deviceType:
+        type: string
+        enum: 
+          - 'android'
+          - 'ios'  
+        required: true
+      firebaseToken:
+        type: string
+        required: true    
+  user-signup:
+    type: object
+    properties:
+      firstName:
+        type: string
+      lastName:
+        type: string
+      phoneNumberCountryCode:
+        type: string
+      phoneNumber:
+        type: string
+      email:
+        type: string
+        required: true
+      password:
+        type: string
+        required: true
+      confirmPassword:
+        type: string
+      deviceType:
+        type: string
+        enum: 
+          - 'android'
+          - 'ios'  
+        required: true
+      firebaseToken:
+        type: string
+        required: true
+      referralCode:
+        type: string
+        required: false
+      
+  merchant-signup:
+    type: object
+    properties:
+      firstName:
+        type: string
+      lastName:
+        type: string
+      phoneNumberCountryCode:
+        type: string
+      phoneNumber:
+        type: string
+      email:
+        type: string
+        required: true
+      password:
+        type: string
+        required: true
+      confirmPassword:
+        type: string    
+      companyName:
+        type: string  
+      taxId:
+        type: string 
+      chamberOfCommerce:
+        type: string
+      deviceType:
+        type: string
+        enum: 
+          - 'android'
+          - 'ios'  
+        required: true
+      firebaseToken:
+        type: string
+        required: true  
+  change-password:
+    type: object
+    properties:
+      currentPassword:
+        type: string
+      newPassword:
+        type: string
+      confirmNewPassword:
+        type: string
+  admin-forgot-password:
+    type: object
+    properties:
+      email:
+        type: string                          
+  update-profile:
+    type: object
+    properties:
+      firstName:
+        type: string 
+      lastName:
+        type: string 
+      email:
+        type: string   
+      profilePicture:
+        type: string
+      phoneNumberCountryCode:
+        type: string
+      phoneNumber:
+        type: string  
+  admin-reset-password :
+    type: object
+    properties:
+      token:
+        type: string
+      newPassword :
+        type: string
+      confirmPassword:
+        type: string       
+  resend-otp:
+    type: object
+    properties:
+      phoneNumberCountryCode:
+        type: string
+        enum:
+          - '+91'
+        required: true
+      username:
+        type: string
+        required: true 
+  reset-password :
+    type: object
+    properties:
+      phoneNumberCountryCode:
+        type: string
+        enum:
+          - '+91'
+        required: true
+      username:
+        type: string
+        required: true 
+      otp:
+        type: string
+      newPassword :
+        type: string
+      confirmPassword:
+        type: string  
+  send-otp:
+    type: object
+    properties:
+      phoneNumberCountryCode:
+        type: string
+        enum:
+          - '+91'
+        required: true
+      phoneNumber:
+        type: string
+        required: true      
+      userType:
+        type: string
+        enum: 
+          - 'user'
+          - 'merchant'  
+        required: true  
+  verify-primary-otp:
+    type: object
+    properties:
+      phoneNumberCountryCode:
+        type: string
+        enum:
+          - '+91'
+        required: true
+      username:
+        type: string
+        required: true
+      otp:
+        type: string
+        required: true
+  verify-otp:
+    type: object
+    properties:
+      phoneNumberCountryCode:
+        type: string
+        enum:
+          - '+91'
+        required: true
+      username:
+        type: string
+        required: true   
+      otp:
+        type: string
+        required: true
+ 
+       
+         
+  
