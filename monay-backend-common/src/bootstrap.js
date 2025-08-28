@@ -157,6 +157,6 @@ export default class Bootstrap {
      * @memberOf Bootstrap
      */
     scheduleJob() {
-        schedule.scheduleJob('* */1 * * *', scheduleJob.deleteMedia);
+        schedule.scheduleJob('0 */1 * * *', scheduleJob.deleteMedia);
     }
 }

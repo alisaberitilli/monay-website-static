@@ -1,8 +1,0 @@
-Seeder file added below
-1 kycDocument file added date 07-09-2022
-
-Migrations file added below
-1 country file added column name status on date 07-09-2022
-2 kycDocument file added column name upload_image_count on date 08-09-2022
-3 user file added column name user_type,referral_code, refile_wallet_amount and minimum_wallet_amount on date 08-09-2022
-4 userKyc file added column name id_proof_back_image and address_proof_back_image on date 08-09-2022

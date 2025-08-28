@@ -1,0 +1,3393 @@
+// ==============================================================================
+// MERGED PRISMA SCHEMA - Combining Monay Platform with Legacy B2B Systems
+// ==============================================================================
+// Generated: 2025-08-28T21:14:16.912Z
+// Modern schema models: 62
+// Legacy schema models: 59
+// Total merged models: 120
+// ==============================================================================
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ==============================================================================
+// ENUM DEFINITIONS
+// ==============================================================================
+
+enum Access {
+  NONE
+  READ
+  WRITE
+}
+
+enum AppInputType {
+  TEXT
+  SELECT
+  REGEX
+}
+
+enum ApplicationType {
+  website
+  backend
+  frontend
+  web_app
+  mobile_ios
+  mobile_android
+  enterprise_wallet
+}
+
+enum AttestationType {
+  identity
+  compliance
+  transfer
+  cross_rail
+  batch_operation
+}
+
+enum BlockchainNetwork {
+  base_mainnet
+  base_testnet
+  polygon_zkevm_mainnet
+  polygon_zkevm_testnet
+  solana_mainnet
+  solana_devnet
+}
+
+enum BusinessType {
+  GOV
+  INTL
+  LLC
+  LLP
+  PARTNERSHIP
+  PROPRIETOR
+  SOLE_PROPRIETORSHIP
+  PRIVATE
+  PUBLIC
+  NPO
+}
+
+enum CardNetwork {
+  visa
+  mastercard
+  amex
+  discover
+}
+
+enum CardType {
+  physical
+  virtual
+}
+
+enum Channel {
+  PUSH
+  SMS
+  EMAIL
+  WHATSAPP
+}
+
+enum ClaimStatus {
+  pending
+  verified
+  rejected
+  expired
+  revoked
+}
+
+enum ClaimType {
+  kyc_verified
+  aml_cleared
+  accredited_investor
+  qualified_purchaser
+  institutional
+  geographic_restriction
+  age_verification
+  source_of_funds
+}
+
+enum ComplaintPriority {
+  NO_PRIORITY
+  URGENT
+  HIGH
+  MEDIUM
+  LOW
+}
+
+enum ComplaintStatus {
+  OPEN //under review
+  UNDER_INVESTIGATION //company is actively looking into the complaint
+  IN_PROGRESS // resolution process is ongoing
+  PENDING_CUSTOMER_RESPONSE // customer wants for addoitional info or feedback from cust
+  RESOLVED //it is resolved and satisfied the user
+  CLOSED //complaint is resolvd and closed
+  ESCALATED //complaint has been elevated to a higher authority for further action
+  REJECTED //customer determined that comlaint is not valid
+  ON_HOLD //complaint is delayed/suspended for some time for some reason
+  WITH_DRAWN //user has withdrawn their complaint
+}
+
+enum ContactType {
+  LANDLINE
+  MOBILE
+  FAX
+  EMAIL
+}
+
+enum CryptoAssetType {
+  stablecoin
+  volatile
+  cbdc
+  wrapped
+  synthetic
+  governance
+  utility
+  security
+  commodity
+}
+
+enum DbaContactType {
+  MOBILE
+  LANDLINE
+}
+
+enum DeactivationReason {
+  REORGANIZATION
+  DATA_MIGRATION
+  NEW_SYSTEM_IMPLEMENTATION
+  SECURITY_AUDITS_REMEDIATION
+  USER_TRAINING_ONBOARDING
+  THIRD_PARTY_VENDOR_CHANGES
+  ORGANIZATION_DEACTIVATION
+  SELF_DEACTIVATION
+}
+
+enum DeviceType {
+  WEB
+  DESKTOP
+  IOS
+  ANDROID
+}
+
+enum FeeModel {
+  ABSORPTION
+  CONVENIENCE
+}
+
+enum FulfillmentType {
+  POS_IMMEDIATE
+  POS_DELAYED
+  MAIL_ORDER
+  PHONE_ORDER
+  INTERNET_ORDER
+}
+
+enum InvoiceApprovalStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  PARTIALLY_APPROVED
+  VOIDED
+}
+
+enum InvoiceStatus {
+  UNPAID
+  PROCESSING
+  DISPUTED
+  FINANCING_PENDING
+  ON_PAYMENT_PLAN
+  PARTIALLY_PAID
+  FULLY_PAID
+  VOIDED
+}
+
+enum KycLevel {
+  basic
+  standard
+  enhanced
+  enterprise
+}
+
+enum KycProvider {
+  persona
+  alloy
+  onfido
+  internal
+}
+
+enum KycStatus {
+  not_started
+  pending
+  in_review
+  approved
+  rejected
+  expired
+}
+
+enum MultiSigStatus {
+  pending
+  partially_signed
+  executed
+  cancelled
+  expired
+}
+
+enum OracleSource {
+  chainlink
+  pyth
+  band_protocol
+  dia
+  uma
+  api3
+  tellor
+  redstone
+  flux
+  umbrella
+  internal
+}
+
+enum PaymentMethodType {
+  card
+  ach
+  wire
+  wallet
+  crypto_stable
+  crypto_unstable
+  bank_account
+  invoice
+  crypto_defi
+  crypto_cbdc
+}
+
+enum PaymentType {
+  ACH
+  CREDIT
+  DEBIT
+  AADHAR
+}
+
+enum PiiType {
+  SSN
+  LICENSE
+  AADHAR
+  PASSPORT
+}
+
+enum ReconciliationStatus {
+  pending
+  matched
+  mismatched
+  investigating
+  resolved
+}
+
+enum ResourceType {
+  INVOICE
+  ACCOUNT
+  BILLER
+  SUBSCRIBER
+  ORGANIZATION
+}
+
+enum RestrictionType {
+  country_based
+  time_based
+  amount_based
+  recipient_based
+  token_based
+}
+
+enum RuleAction {
+  block
+  review
+  approve
+  notify
+  report
+}
+
+enum RuleType {
+  transaction_limit
+  velocity_limit
+  kyc_requirement
+  geographic_restriction
+  token_restriction
+  compliance_check
+}
+
+enum ServiceType {
+  caas
+  waas
+  admin
+  enterprise
+  consumer
+}
+
+enum SolanaProgramType {
+  native
+  spl_token
+  token_2022
+  anchor
+  custom
+}
+
+enum StablecoinBacking {
+  fiat_collateralized
+  crypto_collateralized
+  algorithmic
+  commodity_backed
+  hybrid
+}
+
+enum StablecoinPeg {
+  USD
+  EUR
+  GBP
+  JPY
+  CHF
+  AUD
+  CAD
+  SGD
+  GOLD
+  SILVER
+  BASKET
+}
+
+enum Status {
+  ACTIVE
+  INACTIVE
+  PENDING
+  DELETED
+}
+
+enum TaxIdType {
+  SSN
+  EIN
+  OTHER_FEDERAL_TAX
+}
+
+enum TechStack {
+  nextjs
+  react_native
+  nodejs
+  express
+  solidity
+  rust
+}
+
+enum Theme {
+  USER
+  LIGHT
+  DARK
+}
+
+enum TimeInterval {
+  DAY
+  MONTH
+  QUARTER
+  SEMIANNUAL
+  ANNUAL
+  OTHER
+}
+
+enum TokenExtensionType {
+  transfer_hook
+  permanent_delegate
+  transfer_fee
+  interest_bearing
+  confidential_transfer
+  metadata
+  memo_required
+}
+
+enum TokenStandard {
+  ERC20
+  ERC3643
+  TOKEN2022
+  SPL
+}
+
+enum TransactionStatus {
+  pending
+  processing
+  completed
+  failed
+  cancelled
+  reversed
+}
+
+enum TransactionType {
+  deposit
+  withdrawal
+  transfer
+  swap
+  mint
+  burn
+  cross_rail
+  payment
+  refund
+  invoice_payment
+  crypto_exchange
+  staking
+  yield_farming
+  liquidity_provision
+  collateralization
+}
+
+enum UserRoleType {
+  platform_admin
+  compliance_officer
+  treasury_manager
+  support_agent
+  enterprise_admin
+  enterprise_finance
+  enterprise_developer
+  premium_consumer
+  verified_consumer
+  basic_consumer
+  secondary_user
+  merchant
+  payment_processor
+}
+
+enum UserStatus {
+  active
+  inactive
+  suspended
+  deleted
+  pending_verification
+}
+
+enum VendorSource {
+  BEACON
+  BEACON_PORTAL
+  XDEX_BBPS
+  MANUAL
+  SCRIPT
+}
+
+// ==============================================================================
+// DATA MODELS
+// ==============================================================================
+
+model Account {
+  id                String   @id @default(uuid()) @db.Uuid
+  name              String
+  account_number    String   @unique
+  account_type      String
+  currency          String   @default("USD")
+  balance           Decimal  @default(0) @db.Decimal(20, 2)
+  available_balance Decimal  @default(0) @db.Decimal(20, 2)
+  pending_balance   Decimal  @default(0) @db.Decimal(20, 2)
+  credit_limit      Decimal? @db.Decimal(20, 2)
+  is_active         Boolean  @default(true)
+  metadata          Json     @default("{}")
+  created_at        DateTime @default(now()) @db.Timestamptz(6)
+  updated_at        DateTime @default(now()) @updatedAt @db.Timestamptz(6)
+
+  // Relations
+  invoices Invoice[]
+
+  @@index([account_number], name: "idx_accounts_number")
+}
+
+model Activity {
+  resourceType ResourceType
+  resourceId   String
+  text         String       @default("")
+  data         Json         @default("{}")
+
+  user   LegacyUser @relation(fields: [userId], references: [id])
+  userId String     @map("user_id")
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  id String @id @default(cuid())
+}
+
+model ActivityLog {
+  id               String   @id @default(uuid()) @db.Uuid
+  user_id          String?  @db.Uuid
+  action           String
+  entity_type      String?
+  entity_id        String?
+  ip_address       String?  @db.Inet
+  user_agent       String?
+  session_id       String?
+  request_id       String?
+  response_status  Int?
+  response_time_ms Int?
+  metadata         Json     @default("{}")
+  created_at       DateTime @default(now()) @db.Timestamptz(6)
+
+  // Relations
+  user User? @relation(fields: [user_id], references: [id], onDelete: SetNull)
+
+  @@index([user_id], name: "idx_activity_logs_user")
+  @@index([action], name: "idx_activity_logs_action")
+  @@index([created_at], name: "idx_activity_logs_created")
+}
+
+model Address {
+  googlePlacesId String   @map("google_places_id")
+  jsonAddress    Json?    @map("json_address")
+  street_address String?
+  political      String?
+  state          String?
+  county         String?
+  city           String?
+  premise        String?
+  country        String?
+  plus_code      String?
+  postal_code    String?
+  street_number  String?
+  latitude       Decimal?
+  longitude      Decimal?
+  display        String?
+
+  beaconCountry Country @relation(fields: [countryCode], references: [code])
+  countryCode   String  @map("country_code")
+
+  kybDocs       KybDocument[]  @relation(name: "kybAddress")
+  kybBillToDocs KybDocument[]  @relation(name: "billToKybAddress")
+  kybOwners     KybOwner[]
+  organizations Organization[]
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  id String @id @default(cuid())
+}
+
+model AdminActionLog {
+  id           String   @id @default(uuid()) @db.Uuid
+  admin_id     String   @db.Uuid
+  action       String
+  target_type  String?
+  target_id    String?
+  old_value    Json?
+  new_value    Json?
+  reason       String?
+  ip_address   String?  @db.Inet
+  user_agent   String?
+  metadata     Json     @default("{}")
+  performed_at DateTime @default(now()) @db.Timestamptz(6)
+
+  // Relations
+  admin User @relation(fields: [admin_id], references: [id])
+
+  @@index([admin_id], name: "idx_admin_logs_admin")
+  @@index([action], name: "idx_admin_logs_action")
+  @@index([performed_at], name: "idx_admin_logs_performed")
+}
+
+model ApplicationInput {
+  name       String
+  inputData  Json         @map("input_data")
+  type       AppInputType
+  locale     Locale?      @relation(fields: [localeCode], references: [code])
+  localeCode String?      @map("locale_code")
+
+  id String @id @unique
+
+  @@unique([name, localeCode])
+}
+
+model BatchOperation {
+  id                 String            @id @default(uuid()) @db.Uuid
+  batch_type         String
+  blockchain_network BlockchainNetwork
+
+  // Batch details
+  operation_count Int
+  total_value     Decimal? @db.Decimal(30, 18)
+
+  // Gas optimization
+  individual_gas_estimate BigInt?
+  batch_gas_used          BigInt?
+  gas_saved               BigInt?
+  gas_savings_percentage  Decimal? @db.Decimal(5, 2)
+
+  // Execution
+  status           String  @default("pending")
+  transaction_hash String?
+  block_number     BigInt?
+
+  // Operations
+  operations Json
+  results    Json?
+
+  // Timing
+  initiated_at DateTime  @default(now()) @db.Timestamptz(6)
+  executed_at  DateTime? @db.Timestamptz(6)
+  confirmed_at DateTime? @db.Timestamptz(6)
+
+  metadata   Json     @default("{}")
+  created_at DateTime @default(now()) @db.Timestamptz(6)
+  updated_at DateTime @default(now()) @updatedAt @db.Timestamptz(6)
+
+  @@index([batch_type], name: "idx_batch_operations_type")
+  @@index([blockchain_network], name: "idx_batch_operations_network")
+  @@index([status], name: "idx_batch_operations_status")
+}
+
+model BeaconPlugin {
+  id String @id
+
+  configData Json?   @map("config_data")
+  authScheme Json?   @map("auth_scheme")
+  sourceUrl  String? @map("source_url")
+}
+
+model Biller {
+  name        String?
+  billerId    String?       @map("biller_id") // XDEX biller id
+  companyCode String?       @map("company_code")
+  image       String?
+  description String?
+  source      VendorSource?
+
+  organization      Organization? @relation(fields: [organizationId], references: [id])
+  organizationId    String?       @map("organization_id")
+  orgExpected       OrgExpected?  @relation(fields: [orgExpectedDomain, orgExpectedId], references: [domain, organization])
+  orgExpectedDomain String?
+  orgExpectedId     String?
+
+  accounts    LegacyAccount[]
+  contactInfo BillerContact[]
+
+  deletedAt DateTime? @map("deleted_at")
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+
+  id String @id @default(cuid())
+
+  @@unique([billerId, source])
+}
+
+model BillerContact {
+  isPrimary Boolean @default(true) @map("is_primary")
+
+  biller    Biller  @relation(fields: [billerId], references: [id])
+  billerId  String  @map("biller_id")
+  contact   Contact @relation(fields: [contactId], references: [id])
+  contactId String  @unique @map("contact_id")
+
+  @@id([billerId, contactId])
+}
+
+model BlockchainNetworkHealth {
+  id                   String            @id @default(uuid()) @db.Uuid
+  network              BlockchainNetwork
+  block_height         String
+  gas_price            Decimal           @db.Decimal(30, 18)
+  tps                  Decimal           @db.Decimal(10, 2)
+  pending_transactions Int
+  network_hashrate     String?
+  node_count           Int?
+  is_synced            Boolean           @default(true)
+  last_block_time      DateTime          @db.Timestamptz(6)
+  average_block_time   Decimal?          @db.Decimal(10, 3)
+  health_score         Int               @default(100)
+  alerts               String[]          @default([])
+  metadata             Json              @default("{}")
+  checked_at           DateTime          @default(now()) @db.Timestamptz(6)
+
+  @@index([network], name: "idx_network_health_network")
+  @@index([checked_at], name: "idx_network_health_checked")
+}
+
+model BlockchainPerformanceMetric {
+  id      String            @id @default(uuid()) @db.Uuid
+  network BlockchainNetwork
+
+  // Performance metrics
+  tps_current Decimal? @db.Decimal(10, 2)
+  tps_peak    Decimal? @db.Decimal(10, 2)
+  tps_average Decimal? @db.Decimal(10, 2)
+
+  // Confirmation times (milliseconds)
+  avg_confirmation_time Int?
+  min_confirmation_time Int?
+  max_confirmation_time Int?
+  p95_confirmation_time Int?
+  p99_confirmation_time Int?
+
+  // Success rates
+  success_rate Decimal? @db.Decimal(5, 2)
+  failure_rate Decimal? @db.Decimal(5, 2)
+  timeout_rate Decimal? @db.Decimal(5, 2)
+
+  // Network health
+  block_time_ms        Int?
+  pending_transactions Int?
+  mempool_size         Int?
+  active_validators    Int?
+
+  // Gas/Fee metrics
+  avg_gas_price Decimal? @db.Decimal(30, 18)
+  min_gas_price Decimal? @db.Decimal(30, 18)
+  max_gas_price Decimal? @db.Decimal(30, 18)
+
+  // RPC health
+  rpc_latency_ms Int?
+  rpc_error_rate Decimal? @db.Decimal(5, 2)
+
+  metadata    Json     @default("{}")
+  measured_at DateTime @default(now()) @db.Timestamptz(6)
+
+  @@index([network], name: "idx_blockchain_metrics_network")
+  @@index([measured_at], name: "idx_blockchain_metrics_time")
+}
+
+model BlockchainWallet {
+  id                    String            @id @default(uuid()) @db.Uuid
+  user_id               String            @db.Uuid
+  network               BlockchainNetwork
+  address               String
+  private_key_encrypted String?
+  public_key            String?
+  mnemonic_encrypted    String?
+  derivation_path       String?
+  wallet_type           String            @default("standard")
+  is_primary            Boolean           @default(false)
+  is_active             Boolean           @default(true)
+  balance               Decimal           @default(0) @db.Decimal(30, 18)
+  last_sync             DateTime?         @db.Timestamptz(6)
+  metadata              Json              @default("{}")
+  created_at            DateTime          @default(now()) @db.Timestamptz(6)
+  updated_at            DateTime          @default(now()) @updatedAt @db.Timestamptz(6)
+
+  // Relations
+  user User @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@unique([network, address], name: "unique_wallet_address")
+  @@index([user_id], name: "idx_blockchain_wallets_user")
+  @@index([network], name: "idx_blockchain_wallets_network")
+}
+
+model BusinessRule {
+  id                 String        @id @default(uuid()) @db.Uuid
+  name               String        @unique
+  description        String?
+  rule_type          RuleType
+  rule_action        RuleAction
+  conditions         Json
+  priority           Int           @default(0)
+  is_active          Boolean       @default(true)
+  applies_to_service ServiceType?
+  applies_to_role    UserRoleType?
+  effective_from     DateTime      @default(now()) @db.Timestamptz(6)
+  effective_until    DateTime?     @db.Timestamptz(6)
+  metadata           Json          @default("{}")
+  created_at         DateTime      @default(now()) @db.Timestamptz(6)
+  updated_at         DateTime      @default(now()) @updatedAt @db.Timestamptz(6)
+
+  // Relations
+  violations       BusinessRuleViolation[]
+  user_assignments UserBusinessRuleAssignment[]
+
+  @@index([rule_type], name: "idx_business_rules_type")
+  @@index([is_active], name: "idx_business_rules_active")
+}
+
+model BusinessRuleViolation {
+  id                String    @id @default(uuid()) @db.Uuid
+  rule_id           String    @db.Uuid
+  user_id           String    @db.Uuid
+  violation_details Json
+  severity          String    @default("medium")
+  action_taken      String?
+  resolved          Boolean   @default(false)
+  resolved_by       String?
+  resolved_at       DateTime? @db.Timestamptz(6)
+  resolution_notes  String?
+  metadata          Json      @default("{}")
+  occurred_at       DateTime  @default(now()) @db.Timestamptz(6)
+  created_at        DateTime  @default(now()) @db.Timestamptz(6)
+
+  // Relations
+  rule BusinessRule @relation(fields: [rule_id], references: [id])
+  user User         @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@index([rule_id], name: "idx_rule_violations_rule")
+  @@index([user_id], name: "idx_rule_violations_user")
+  @@index([severity], name: "idx_rule_violations_severity")
+  @@index([resolved], name: "idx_rule_violations_resolved")
+}
+
+model ChangeMobileHistory {
+  id                String    @id @default(uuid()) @db.Uuid
+  user_id           String    @db.Uuid
+  old_mobile        String
+  new_mobile        String
+  change_reason     String?
+  verification_code String?
+  verified          Boolean   @default(false)
+  verified_at       DateTime? @db.Timestamptz(6)
+  ip_address        String?   @db.Inet
+  user_agent        String?
+  metadata          Json      @default("{}")
+  created_at        DateTime  @default(now()) @db.Timestamptz(6)
+
+  // Relations
+  user User @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@index([user_id], name: "idx_change_mobile_user")
+  @@index([created_at], name: "idx_change_mobile_created")
+}
+
+model ChildParentRelationship {
+  id                     String    @id @default(uuid()) @db.Uuid
+  child_id               String    @db.Uuid
+  parent_id              String    @db.Uuid
+  relationship_type      String    @default("parent")
+  permissions            Json      @default("{}")
+  spending_limit_daily   Decimal?  @db.Decimal(20, 2)
+  spending_limit_monthly Decimal?  @db.Decimal(20, 2)
+  is_active              Boolean   @default(true)
+  activated_at           DateTime  @default(now()) @db.Timestamptz(6)
+  deactivated_at         DateTime? @db.Timestamptz(6)
+  metadata               Json      @default("{}")
+  created_at             DateTime  @default(now()) @db.Timestamptz(6)
+  updated_at             DateTime  @default(now()) @updatedAt @db.Timestamptz(6)
+
+  // Relations
+  child  User @relation("ChildUser", fields: [child_id], references: [id], onDelete: Cascade)
+  parent User @relation("ParentUser", fields: [parent_id], references: [id], onDelete: Cascade)
+
+  @@unique([child_id, parent_id], name: "unique_child_parent")
+  @@index([parent_id], name: "idx_child_parent_parent")
+  @@index([is_active], name: "idx_child_parent_active")
+}
+
+model CmsContent {
+  id               String    @id @default(uuid()) @db.Uuid
+  content_type     String
+  slug             String    @unique
+  title            String
+  content          String
+  excerpt          String?
+  author           String?
+  category         String?
+  tags             String[]  @default([])
+  status           String    @default("draft")
+  published_at     DateTime? @db.Timestamptz(6)
+  featured_image   String?
+  meta_title       String?
+  meta_description String?
+  view_count       Int       @default(0)
+  metadata         Json      @default("{}")
+  created_at       DateTime  @default(now()) @db.Timestamptz(6)
+  updated_at       DateTime  @default(now()) @updatedAt @db.Timestamptz(6)
+
+  @@index([content_type], name: "idx_cms_content_type")
+  @@index([status], name: "idx_cms_content_status")
+  @@index([category], name: "idx_cms_content_category")
+}
+
+model ComplianceAttestation {
+  id               String          @id @default(uuid()) @db.Uuid
+  attestation_type AttestationType
+
+  // Related entities
+  transaction_id String? @db.Uuid
+  user_id        String? @db.Uuid
+  token_id       String? @db.Uuid
+
+  // Attestation data
+  attestation_hash String? @unique
+  attestation_data Json
+
+  // Compliance checks
+  rules_checked   Json     @default("[]")
+  rules_passed    Boolean  @default(false)
+  failure_reasons String[]
+
+  // Signatures
+  attester_address   String?
+  attester_signature String? @db.VarChar(500)
+
+  // Validity
+  valid_from  DateTime  @default(now()) @db.Timestamptz(6)
+  valid_until DateTime? @db.Timestamptz(6)
+
+  metadata   Json     @default("{}")
+  created_at DateTime @default(now()) @db.Timestamptz(6)
+
+  // Relations
+  transaction      Transaction?    @relation(fields: [transaction_id], references: [id])
+  user             User?           @relation(fields: [user_id], references: [id])
+  token            Token?          @relation(fields: [token_id], references: [id])
+  cross_rail_swaps CrossRailSwap[]
+
+  @@index([transaction_id], name: "idx_compliance_attestations_tx")
+  @@index([user_id], name: "idx_compliance_attestations_user")
+  @@index([attestation_hash], name: "idx_compliance_attestations_hash")
+}
+
+model Contact {
+  id      String      @id @default(cuid())
+  type    ContactType @default(MOBILE)
+  info    String // the actual number or fax number or email
+  prepend String? // something to prepend to the info
+  append  String? // something to append to the info
+
+  userContact       LegacyUserContact?
+  subscriberContact SubscriberContact?
+  billerContact     BillerContact?
+}
+
+model Contract {
+  id             String
+  externalRefNum String?   @map("external_reference_number")
+  startDate      DateTime? @map("start_date")
+  endDate        DateTime? @map("end_date")
+  description    String?
+
+  account   LegacyAccount @relation(fields: [accountId], references: [id])
+  accountId String        @unique @map("account_id")
+
+  services     Service[]
+  paymentTerms PaymentTerm[]
+
+  deletedAt DateTime? @map("deleted_at")
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+
+  @@id([id, accountId])
+}
+
+model ContractUpgrade {
+  id String @id @default(uuid()) @db.Uuid
+
+  // Contract details
+  contract_address   String
+  blockchain_network BlockchainNetwork
+  current_version    String?
+  new_version        String?
+
+  // Upgrade details
+  upgrade_type String?
+  upgrade_data Json?
+
+  // Governance
+  proposal_id    String?
+  proposer       String?
+  votes_for      Int     @default(0)
+  votes_against  Int     @default(0)
+  quorum_reached Boolean @default(false)
+
+  // Timeline
+  proposed_at      DateTime  @default(now()) @db.Timestamptz(6)
+  voting_ends_at   DateTime? @db.Timestamptz(6)
+  timelock_ends_at DateTime? @db.Timestamptz(6)
+  executed_at      DateTime? @db.Timestamptz(6)
+
+  // Status
+  status String @default("proposed")
+
+  // Verification
+  audit_report_url     String? @db.VarChar(500)
+  verified_source_code Boolean @default(false)
+
+  metadata   Json     @default("{}")
+  created_at DateTime @default(now()) @db.Timestamptz(6)
+  updated_at DateTime @default(now()) @updatedAt @db.Timestamptz(6)
+
+  @@index([contract_address], name: "idx_contract_upgrades_contract")
+  @@index([status], name: "idx_contract_upgrades_status")
+}
+
+model Country {
+  name         String
+  callingCode  String @map("calling_code")
+  currencyCode String @map("currency_code")
+  flag         String
+  status       Status @default(ACTIVE)
+
+  defaultLocale   Locale @relation(fields: [defaultLocaleId], references: [code])
+  defaultLocaleId String @map("default_locale_id")
+
+  addresses Address[]
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  code String @id @unique
+}
+
+model CrossRailSwap {
+  id                        String            @id @default(uuid()) @db.Uuid
+  source_network            BlockchainNetwork
+  destination_network       BlockchainNetwork
+  source_account_id         String            @db.Uuid
+  destination_account_id    String            @db.Uuid
+  source_token_address      String?
+  destination_token_address String?
+  amount_in                 Decimal           @db.Decimal(30, 18)
+  amount_out                Decimal           @db.Decimal(30, 18)
+  exchange_rate             Decimal           @db.Decimal(20, 10)
+  fee_amount                Decimal           @default(0) @db.Decimal(20, 8)
+  status                    TransactionStatus @default(pending)
+  source_tx_hash            String?
+  destination_tx_hash       String?
+  initiated_at              DateTime          @default(now()) @db.Timestamptz(6)
+  completed_at              DateTime?         @db.Timestamptz(6)
+  expires_at                DateTime          @db.Timestamptz(6)
+
+  // Enhanced fields for blockchain requirements
+  correlation_id          String?              @unique
+  atomic_guarantee        Boolean              @default(false)
+  reconciliation_status   ReconciliationStatus @default(pending)
+  bridge_contract_address String?
+  attestation_id          String?              @db.Uuid
+  slippage_tolerance      Decimal              @default(0.01) @db.Decimal(5, 4)
+  priority_fee            Decimal              @default(0) @db.Decimal(20, 8)
+  retry_count             Int                  @default(0)
+  max_retries             Int                  @default(3)
+  error_message           String?
+  reconciled_at           DateTime?            @db.Timestamptz(6)
+
+  metadata   Json     @default("{}")
+  created_at DateTime @default(now()) @db.Timestamptz(6)
+  updated_at DateTime @default(now()) @updatedAt @db.Timestamptz(6)
+
+  // Relations
+  source_account      TreasuryAccount        @relation("SourceAccount", fields: [source_account_id], references: [id])
+  destination_account TreasuryAccount        @relation("DestinationAccount", fields: [destination_account_id], references: [id])
+  attestation         ComplianceAttestation? @relation(fields: [attestation_id], references: [id])
+
+  @@index([status], name: "idx_cross_rail_swaps_status")
+  @@index([initiated_at], name: "idx_cross_rail_swaps_initiated")
+  @@index([correlation_id], name: "idx_cross_rail_swaps_correlation")
+  @@index([reconciliation_status], name: "idx_cross_rail_swaps_reconciliation")
+}
+
+model CryptoAsset {
+  id                      String              @id @default(uuid()) @db.Uuid
+  symbol                  String              @unique
+  name                    String
+  asset_type              CryptoAssetType
+  decimals                Int                 @default(18)
+  contract_addresses      Json                @default("{}")
+  is_active               Boolean             @default(true)
+  is_tradable             Boolean             @default(true)
+  is_transferable         Boolean             @default(true)
+  min_transfer_amount     Decimal?            @db.Decimal(30, 18)
+  max_transfer_amount     Decimal?            @db.Decimal(30, 18)
+  daily_transfer_limit    Decimal?            @db.Decimal(30, 18)
+  transfer_fee_percentage Decimal             @default(0) @db.Decimal(5, 4)
+  transfer_fee_fixed      Decimal             @default(0) @db.Decimal(20, 8)
+  supported_networks      BlockchainNetwork[] @default([])
+  price_usd               Decimal?            @db.Decimal(30, 18)
+  market_cap_usd          Decimal?            @db.Decimal(30, 2)
+  volume_24h_usd          Decimal?            @db.Decimal(30, 2)
+  circulating_supply      Decimal?            @db.Decimal(30, 0)
+  total_supply            Decimal?            @db.Decimal(30, 0)
+  max_supply              Decimal?            @db.Decimal(30, 0)
+  coingecko_id            String?
+  coinmarketcap_id        String?
+  icon_url                String?
+  website_url             String?
+  explorer_urls           Json                @default("{}")
+  tags                    String[]            @default([])
+  risk_score              Int                 @default(50)
+  compliance_notes        String?
+  metadata                Json                @default("{}")
+  created_at              DateTime            @default(now()) @db.Timestamptz(6)
+  updated_at              DateTime            @default(now()) @updatedAt @db.Timestamptz(6)
+
+  // Relations
+  stablecoin_config      StablecoinConfig?
+  price_feeds            CryptoPriceFeed[]
+  wallet_configs         CryptoWalletConfig[]
+  base_pairs             CryptoExchangePair[]          @relation("BaseAsset")
+  quote_pairs            CryptoExchangePair[]          @relation("QuoteAsset")
+  reserves               StablecoinReserve[]
+  transactions           Transaction[]
+  transaction_monitoring CryptoTransactionMonitoring[]
+
+  @@index([asset_type], name: "idx_crypto_assets_type")
+  @@index([is_active], name: "idx_crypto_assets_active")
+}
+
+model CryptoExchangePair {
+  id               String   @id @default(uuid()) @db.Uuid
+  base_asset_id    String   @db.Uuid
+  quote_asset_id   String   @db.Uuid
+  exchange_name    String   @default("internal")
+  is_active        Boolean  @default(true)
+  min_trade_amount Decimal  @db.Decimal(30, 18)
+  max_trade_amount Decimal? @db.Decimal(30, 18)
+  maker_fee        Decimal  @default(0.001) @db.Decimal(6, 5)
+  taker_fee        Decimal  @default(0.002) @db.Decimal(6, 5)
+  price_precision  Int      @default(8)
+  amount_precision Int      @default(8)
+  last_price       Decimal? @db.Decimal(30, 18)
+  volume_24h       Decimal? @db.Decimal(30, 8)
+  high_24h         Decimal? @db.Decimal(30, 18)
+  low_24h          Decimal? @db.Decimal(30, 18)
+  metadata         Json     @default("{}")
+  created_at       DateTime @default(now()) @db.Timestamptz(6)
+  updated_at       DateTime @default(now()) @updatedAt @db.Timestamptz(6)
+
+  // Relations
+  base_asset  CryptoAsset @relation("BaseAsset", fields: [base_asset_id], references: [id])
+  quote_asset CryptoAsset @relation("QuoteAsset", fields: [quote_asset_id], references: [id])
+
+  @@unique([base_asset_id, quote_asset_id, exchange_name], name: "unique_exchange_pair")
+  @@index([is_active], name: "idx_exchange_pairs_active")
+}
+
+model CryptoPriceFeed {
+  id               String       @id @default(uuid()) @db.Uuid
+  crypto_asset_id  String       @db.Uuid
+  oracle_source    OracleSource
+  price_usd        Decimal      @db.Decimal(30, 18)
+  price_timestamp  DateTime     @db.Timestamptz(6)
+  volume_24h       Decimal?     @db.Decimal(30, 2)
+  market_cap       Decimal?     @db.Decimal(30, 2)
+  price_change_24h Decimal?     @db.Decimal(10, 4)
+  high_24h         Decimal?     @db.Decimal(30, 18)
+  low_24h          Decimal?     @db.Decimal(30, 18)
+  confidence_score Decimal?     @db.Decimal(3, 2)
+  metadata         Json         @default("{}")
+  created_at       DateTime     @default(now()) @db.Timestamptz(6)
+
+  // Relations
+  crypto_asset CryptoAsset @relation(fields: [crypto_asset_id], references: [id], onDelete: Cascade)
+
+  @@index([crypto_asset_id], name: "idx_crypto_price_feeds_asset")
+  @@index([price_timestamp], name: "idx_crypto_price_feeds_timestamp")
+  @@index([oracle_source], name: "idx_crypto_price_feeds_oracle")
+}
+
+model CryptoTransactionMonitoring {
+  id               String    @id @default(uuid()) @db.Uuid
+  transaction_id   String    @db.Uuid
+  user_id          String    @db.Uuid
+  crypto_asset_id  String    @db.Uuid
+  risk_score       Int       @default(0)
+  risk_factors     String[]  @default([])
+  aml_status       String    @default("pending")
+  fraud_status     String    @default("pending")
+  sanctions_check  Boolean   @default(false)
+  velocity_check   Boolean   @default(true)
+  pattern_analysis Json      @default("{}")
+  alerts_triggered String[]  @default([])
+  review_required  Boolean   @default(false)
+  reviewed_by      String?
+  reviewed_at      DateTime? @db.Timestamptz(6)
+  review_notes     String?
+  metadata         Json      @default("{}")
+  created_at       DateTime  @default(now()) @db.Timestamptz(6)
+  updated_at       DateTime  @default(now()) @updatedAt @db.Timestamptz(6)
+
+  // Relations
+  transaction  Transaction @relation(fields: [transaction_id], references: [id], onDelete: Cascade)
+  user         User        @relation(fields: [user_id], references: [id])
+  crypto_asset CryptoAsset @relation(fields: [crypto_asset_id], references: [id])
+
+  @@index([transaction_id], name: "idx_crypto_monitoring_transaction")
+  @@index([risk_score], name: "idx_crypto_monitoring_risk")
+  @@index([review_required], name: "idx_crypto_monitoring_review")
+}
+
+model CryptoWalletConfig {
+  id                     String            @id @default(uuid()) @db.Uuid
+  crypto_asset_id        String            @db.Uuid
+  network                BlockchainNetwork
+  hot_wallet_address     String?
+  cold_wallet_address    String?
+  hot_wallet_percentage  Decimal           @default(20) @db.Decimal(5, 2)
+  min_hot_wallet_balance Decimal           @default(0) @db.Decimal(30, 18)
+  max_hot_wallet_balance Decimal?          @db.Decimal(30, 18)
+  auto_sweep_enabled     Boolean           @default(true)
+  auto_sweep_threshold   Decimal?          @db.Decimal(30, 18)
+  gas_limit              String?
+  gas_price_multiplier   Decimal           @default(1.1) @db.Decimal(4, 2)
+  confirmation_blocks    Int               @default(12)
+  is_active              Boolean           @default(true)
+  metadata               Json              @default("{}")
+  created_at             DateTime          @default(now()) @db.Timestamptz(6)
+  updated_at             DateTime          @default(now()) @updatedAt @db.Timestamptz(6)
+
+  // Relations
+  crypto_asset CryptoAsset @relation(fields: [crypto_asset_id], references: [id], onDelete: Cascade)
+
+  @@unique([crypto_asset_id, network], name: "unique_wallet_config")
+  @@index([network], name: "idx_crypto_wallet_config_network")
+}
+
+model DashboardAnalytic {
+  id                String   @id @default(uuid()) @db.Uuid
+  metric_name       String
+  metric_value      Decimal  @db.Decimal(30, 8)
+  metric_type       String
+  dimension         String?
+  dimension_value   String?
+  period            String
+  period_start      DateTime @db.Timestamptz(6)
+  period_end        DateTime @db.Timestamptz(6)
+  comparison_value  Decimal? @db.Decimal(30, 8)
+  comparison_period String?
+  change_percentage Decimal? @db.Decimal(10, 2)
+  metadata          Json     @default("{}")
+  calculated_at     DateTime @default(now()) @db.Timestamptz(6)
+
+  @@unique([metric_name, dimension, dimension_value, period_start, period_end], name: "unique_dashboard_metric")
+  @@index([metric_name], name: "idx_dashboard_analytics_metric")
+  @@index([period_start], name: "idx_dashboard_analytics_period")
+}
+
+model DefiProtocol {
+  id               String            @id @default(uuid()) @db.Uuid
+  name             String            @unique
+  protocol_type    String
+  network          BlockchainNetwork
+  contract_address String?
+  tvl_usd          Decimal?          @db.Decimal(30, 2)
+  apr              Decimal?          @db.Decimal(6, 2)
+  apy              Decimal?          @db.Decimal(6, 2)
+  risk_score       Int               @default(50)
+  audit_status     String?
+  audit_firm       String?
+  is_active        Boolean           @default(true)
+  supported_assets String[]          @default([])
+  fees             Json              @default("{}")
+  metadata         Json              @default("{}")
+  created_at       DateTime          @default(now()) @db.Timestamptz(6)
+  updated_at       DateTime          @default(now()) @updatedAt @db.Timestamptz(6)
+
+  // Relations
+  yield_opportunities YieldOpportunity[]
+
+  @@index([protocol_type], name: "idx_defi_protocol_type")
+  @@index([network], name: "idx_defi_protocol_network")
+}
+
+model EmailDomain {
+  domain    String
+  testEmail String @map("test_email")
+
+  organization   Organization @relation(references: [id], fields: [organizationId])
+  organizationId String       @map("organization_id")
+
+  @@id([organizationId, domain])
+}
+
+model EmergencyPauseEvent {
+  id String @id @default(uuid()) @db.Uuid
+
+  // Pause target
+  paused_entity_type String
+  paused_entity_id   String
+
+  // Pause details
+  pause_reason String
+  severity     String
+
+  // Authorization
+  paused_by       String
+  pause_signature String? @db.VarChar(500)
+
+  // Duration
+  paused_at      DateTime  @default(now()) @db.Timestamptz(6)
+  resumed_at     DateTime? @db.Timestamptz(6)
+  auto_resume_at DateTime? @db.Timestamptz(6)
+
+  // Resume details
+  resumed_by       String?
+  resume_reason    String?
+  resume_signature String? @db.VarChar(500)
+
+  // Impact
+  affected_users Int?
+  affected_value Decimal? @db.Decimal(30, 2)
+
+  metadata   Json     @default("{}")
+  created_at DateTime @default(now()) @db.Timestamptz(6)
+
+  @@index([paused_entity_type, paused_entity_id], name: "idx_emergency_pause_entity")
+  @@index([resumed_at], name: "idx_emergency_pause_active")
+}
+
+model EncryptionKey {
+  id String @id @default(cuid())
+
+  key String
+  iv  String
+}
+
+model Faq {
+  id                String   @id @default(uuid()) @db.Uuid
+  question          String
+  answer            String
+  category          String
+  order_index       Int      @default(0)
+  is_featured       Boolean  @default(false)
+  is_published      Boolean  @default(true)
+  view_count        Int      @default(0)
+  helpful_count     Int      @default(0)
+  not_helpful_count Int      @default(0)
+  metadata          Json     @default("{}")
+  created_at        DateTime @default(now()) @db.Timestamptz(6)
+  updated_at        DateTime @default(now()) @updatedAt @db.Timestamptz(6)
+
+  @@index([category], name: "idx_faqs_category")
+  @@index([is_published], name: "idx_faqs_published")
+  @@index([order_index], name: "idx_faqs_order")
+}
+
+model Fee {
+  name        String
+  description String?
+  amount      Float
+
+  service        Service       @relation(fields: [serviceId], references: [id])
+  serviceId      String        @map("service_id")
+  feeStructure   FeeStructure? @relation(fields: [feeStructureId], references: [id])
+  feeStructureId String?       @map("fee_structure_id")
+
+  id String @id @default(cuid())
+}
+
+model FeeStructure {
+  interval    TimeInterval?
+  minQuantity Float?        @default(0)
+  maxQuantity Float?
+  structure   Json          @default("{}")
+
+  service   Service @relation(fields: [serviceId], references: [id])
+  serviceId String  @map("service_id")
+
+  fees Fee[]
+
+  id String @id @default(cuid())
+}
+
+model GpsUser {
+  orgUser   OrgUser @relation(fields: [orgUserId], references: [userId])
+  orgUserId String  @unique @map("org_user_id")
+
+  encPassword      String @map("enc_password")
+  enckey           String
+  iv               String
+  maxAuthorization Int    @default(1000000000) // this should be the max volume allowed per tx in GPS
+
+  // bearer token and bearer token expiration
+  // token should be valid for up to 1 month
+  token         String?
+  tokenExpiryAt DateTime @map("token_expiry_at")
+
+  gpsId String @id @unique @map("gps_id")
+}
+
+model IdentityClaim {
+  id           String      @id @default(uuid()) @db.Uuid
+  identity_id  String      @db.Uuid
+  claim_type   ClaimType
+  claim_value  String
+  claim_status ClaimStatus @default(pending)
+
+  // Claim details
+  issuer_id  String? @db.Uuid
+  signature  String? @db.VarChar(500)
+  claim_hash String?
+
+  // Validity
+  issued_at         DateTime  @default(now()) @db.Timestamptz(6)
+  expires_at        DateTime? @db.Timestamptz(6)
+  revoked_at        DateTime? @db.Timestamptz(6)
+  revocation_reason String?
+
+  // Verification
+  verified_at        DateTime? @db.Timestamptz(6)
+  verified_by        String?
+  verification_proof String?
+
+  metadata   Json     @default("{}")
+  created_at DateTime @default(now()) @db.Timestamptz(6)
+  updated_at DateTime @default(now()) @updatedAt @db.Timestamptz(6)
+
+  // Relations
+  identity IdentityRegistry    @relation(fields: [identity_id], references: [id], onDelete: Cascade)
+  issuer   TrustedClaimIssuer? @relation(fields: [issuer_id], references: [id])
+
+  @@index([identity_id], name: "idx_identity_claims_identity")
+  @@index([claim_type], name: "idx_identity_claims_type")
+  @@index([claim_status], name: "idx_identity_claims_status")
+}
+
+model IdentityRegistry {
+  id                 String            @id @default(uuid()) @db.Uuid
+  user_id            String            @db.Uuid
+  blockchain_network BlockchainNetwork
+  identity_address   String?
+  identity_contract  String?
+
+  // Identity data
+  country_code       String? @db.VarChar(2)
+  is_verified        Boolean @default(false)
+  verification_level Int     @default(0)
+
+  // Compliance flags
+  is_sanctioned Boolean @default(false)
+  is_pep        Boolean @default(false)
+  is_restricted Boolean @default(false)
+
+  // Registry management
+  added_by   String?
+  removed_by String?
+  added_at   DateTime  @default(now()) @db.Timestamptz(6)
+  removed_at DateTime? @db.Timestamptz(6)
+
+  metadata   Json     @default("{}")
+  created_at DateTime @default(now()) @db.Timestamptz(6)
+  updated_at DateTime @default(now()) @updatedAt @db.Timestamptz(6)
+
+  // Relations
+  user            User            @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  identity_claims IdentityClaim[]
+
+  @@unique([user_id, blockchain_network], name: "unique_user_network_identity")
+  @@index([user_id], name: "idx_identity_registry_user")
+  @@index([blockchain_network], name: "idx_identity_registry_network")
+  @@index([is_verified], name: "idx_identity_registry_verified")
+}
+
+model Industry {
+  type        String
+  description String?
+  special     Boolean @default(false)
+  hidden      Boolean @default(false)
+
+  associatedServices Service[]
+
+  code String @id @unique
+}
+
+model Invoice {
+  id                String             @id @default(uuid()) @db.Uuid
+  account_id        String             @db.Uuid
+  invoice_number    String             @unique
+  customer_name     String
+  customer_email    String
+  customer_address  Json?
+  amount            Decimal            @db.Decimal(20, 2)
+  tax_amount        Decimal            @default(0) @db.Decimal(20, 2)
+  total_amount      Decimal            @db.Decimal(20, 2)
+  currency          String             @default("USD")
+  status            String             @default("draft")
+  due_date          DateTime           @db.Date
+  paid_at           DateTime?          @db.Timestamptz(6)
+  payment_method    PaymentMethodType?
+  payment_reference String?
+  line_items        Json
+  notes             String?
+  metadata          Json               @default("{}")
+  created_at        DateTime           @default(now()) @db.Timestamptz(6)
+  updated_at        DateTime           @default(now()) @updatedAt @db.Timestamptz(6)
+  sent_at           DateTime?          @db.Timestamptz(6)
+
+  // Relations
+  account Account @relation(fields: [account_id], references: [id], onDelete: Cascade)
+
+  @@index([account_id], name: "idx_invoices_account")
+  @@index([status], name: "idx_invoices_status")
+  @@index([due_date], name: "idx_invoices_due_date")
+}
+
+model KybDocument {
+  // business information
+  merchantName   String?         @map("merchant_name") //business-legal-name   //use - fin-info (US)
+  subMerchantDba String?         @map("sub_merchant_dba") //
+  website        String?
+  taxId          String?         @map("tax_id")
+  phone          String?
+  phoneType      DbaContactType? @default(MOBILE)
+  linkedinUrl    String?         @map("linkedin_url")
+  facebookUrl    String?         @map("url_facebook")
+  twitterUrl     String?         @map("url_twitter")
+  instagramUrl   String?         @map("url_instagram")
+  overview       String?
+  //business address
+  address        Address?        @relation(fields: [addressId], references: [id], name: "kybAddress")
+  addressId      String?         @map("address_id")
+
+  // other information
+  productDescription String?          @map("product_description")
+  primaryBusiness    String?          @map("primary_business") //use- other-info(US), fin-info(US), primary line of the business
+  firstYearSalesVol  Float?           @map("first_year_sales_vol") //use-other-info(US)
+  averageTxAmt       Float?           @map("average_tx_amt") //use- other-info(US)
+  posType            FulfillmentType? @map("order_processing_type") //use - other-info(US)
+  posPct             Float?           @map("pos_pct") //use- other-info (US)
+
+  // financial documentation
+  businessType        BusinessType? @map("business_type") //use - fin-info(US)
+  productsAndServices String?       @map("products_and_services") //use - fin-info(US)
+  backgroundInfo      String?       @map("background_info") //linkedin or other url, use - fin-info(US)
+  backgroundInfoUrl   String?       @map("background_info_url") //if doc is uploaded then only, use-US fin_doc
+  // these are s3 keys to uploaded pdfs
+  // s3 url format will be bucket.s3.region.com/organizations/{ORG_ID}/{KEY}
+  // where KEY is what is stored below
+  resumeUrl           String?       @map("resume_url")
+  corpOverviewUrl     String?       @map("corporate_overview_url")
+  statementUrl        String?       @map("statement_url")
+  statementInterimUrl String?       @map("statement_interim_url")
+  depositoryInfoUrl   String?       @map("depository_info_url")
+  merchProcessingUrl  String?       @map("merchant_processing_url")
+  profitLossUrl       String?       @map("profit_loss_url")
+
+  // boarding form info
+  feeModel             FeeModel?       @default(ABSORPTION)
+  locationCount        Int?            @map("location_count") //used in contact
+  incorporationDate    DateTime?       @map("incorporation_date")
+  incorporationState   String?         @map("stat-inc")
+  taxIdType            TaxIdType?      @map("tax_id_type")
+  taxName              String?         @map("tax_name") //Company's name registered in Internal Revenue Service (IRS) for the administration of tax laws.
+  dbaName              String?         @map("dba_name") //use - boarding(US),
+  dbaNumber            String?         @map("dba_number") // use - boarding(US),
+  dbaContactName       String?         @map("dba_contact_name") //use - boarding(US),
+  dbaContactType       DbaContactType? @map("dba_contact_type")
+  retailDescriptor     String?         @map("retail_descriptor") //use - boarding(US),
+  customerServiceNum   String?         @map("customer_service_number")
+  customerServiceEmail String?         @map("customer_service_email")
+  billToName           String?         @map("bill_to_name") //use - boarding(US),
+  billToContactName    String?         @map("bill_to_contact_name") //use - boarding(US),
+  billToPhone          String?         @map("bill_to_phone")
+  billToAddress        Address?        @relation(fields: [billToAddressId], references: [id], name: "billToKybAddress")
+  billToAddressId      String?         @map("bill_to_address_id")
+  companyFax           String?         @map("company_fax")
+  companyFaxCCC        String?         @map("company_fac_ccc")
+  companySignUrl       String?         @map("company_signature")
+  companyLogoUrl       String?         @map("company_logo")
+
+  organization   Organization @relation(references: [id], fields: [organizationId])
+  organizationId String       @unique @map("organization_id")
+
+  localeData KybLocaleData?
+
+  owners        KybOwner[] //contact form
+  //Name, title and, profile of people having authority and responsibility for planning, directing, and controlling the activities of the company, either directly or indirectly.
+  keyManagement KybManager[] //list of key mgmt
+
+  //bank details
+  bankRoutingNum String? @map("bank_routing_number") //IFSC Code
+  bankAccNum     String? @map("bank_account_number")
+  bankAccType    String? @map("account_type")
+  checkType      String? @map("check_type")
+  checkNum       String? @map("check_number")
+
+  deletedAt DateTime? @map("deleted_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+  createdAt DateTime  @default(now()) @map("created_at")
+
+  id String @id @default(uuid())
+}
+
+model KybLocale {
+  localeFields Json @map("locale_fields")
+
+  locale     Locale @relation(fields: [localeCode], references: [code])
+  localeCode String @map("locale_code")
+
+  localeData KybLocaleData[]
+
+  @@id([localeCode])
+}
+
+model KybLocaleData {
+  kybDocument   KybDocument @relation(fields: [kybDocumentId], references: [id])
+  kybDocumentId String      @map("kyb_document_id")
+
+  kybLocaleIndia KybLocaleIndia?
+  kybLocaleUs    KybLocaleUs?
+
+  kybLocale  KybLocale @relation(fields: [localeCode], references: [localeCode])
+  localeCode String    @map("locale_code")
+
+  localeData Json
+
+  @@id([kybDocumentId])
+}
+
+model KybLocaleIndia {
+  kybLocaleData KybLocaleData @relation(fields: [kybDocumentId], references: [kybDocumentId])
+  kybDocumentId String
+
+  locale     Locale @relation(fields: [localeCode], references: [code])
+  localeCode String @default("hi-IN")
+
+  @@id([kybDocumentId])
+}
+
+model KybLocaleUs {
+  kybLocaleData KybLocaleData @relation(fields: [kybDocumentId], references: [kybDocumentId])
+  kybDocumentId String
+
+  // add-financial documentation => with ticker symbol
+  isTicker     Boolean? @default(false)
+  tickerSymbol String?
+
+  // add-financial documentation => without ticker symbol
+  backgroundInfoUrl String? @map("background_info") //background info url on principal eg-linkedin/resume/bio link
+  // businessDicription
+
+  isAuthorisedCb Boolean @map("is_authorised_cb")
+
+  //list of key mgmt
+
+  locale     Locale @relation(fields: [localeCode], references: [code])
+  localeCode String @default("en-US")
+
+  @@id([kybDocumentId])
+}
+
+model KybManager {
+  name        String
+  title       String
+  linkedinUrl String? @map("linkedin_url") // this is required in GPS
+  resumeUrl   String? @map("resume_url") //s3 url of resume
+
+  kybDoc   KybDocument @relation(fields: [kybDocId], references: [id])
+  kybDocId String      @map("kyb_doc_id")
+
+  updatedAt DateTime @updatedAt @map("updated_at")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  id String @id @default(uuid())
+}
+
+model KybOwner {
+  name           String?
+  dob            DateTime?
+  title          String?
+  ownershipPct   Float?    @map("ownership_pct")
+  pii            String? // instead of SSN
+  piiType        PiiType?  @map("pii_type")
+  piiUpload1     String?   @map("pii_upload_1") // url of uploaded PII
+  piiUpload2     String?   @map("pii_upload_2") // url of uploaded PII if theres a second submissions
+  piiUploadType  PiiType?  @map("pii_upload_type")
+  piiUploadName1 String?   @map("pii_upload_name_1")
+  piiUploadName2 String?   @map("pii_upload_name_2")
+  email          String?
+  mobile         String?
+
+  kybDoc    KybDocument @relation(fields: [kybDocId], references: [id])
+  kybDocId  String      @map("kyb_doc_id")
+  address   Address?    @relation(fields: [addressId], references: [id])
+  addressId String?     @map("address_id")
+
+  updatedAt DateTime @updatedAt @map("updated_at")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  id String @id @default(uuid())
+}
+
+model KycDocument {
+  id                  String    @id @default(uuid()) @db.Uuid
+  user_id             String    @db.Uuid
+  document_type       String
+  document_number     String?
+  document_url        String?
+  document_hash       String?
+  issuing_country     String?
+  issue_date          DateTime? @db.Date
+  expiry_date         DateTime? @db.Date
+  verification_status KycStatus @default(pending)
+  verified_by         String?
+  verification_notes  String?
+  verification_score  Decimal?  @db.Decimal(3, 2)
+  is_primary          Boolean   @default(false)
+  metadata            Json      @default("{}")
+  created_at          DateTime  @default(now()) @db.Timestamptz(6)
+  updated_at          DateTime  @default(now()) @updatedAt @db.Timestamptz(6)
+
+  // Relations
+  user User @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@unique([user_id, document_type, is_primary], name: "unique_primary_doc_per_user")
+  @@index([user_id], name: "idx_kyc_documents_user")
+  @@index([verification_status], name: "idx_kyc_documents_status")
+}
+
+model LegacyAccount {
+  accountId   String  @map("account_id") // source id, we differentiate because these are not necessarily unique (chances for collisions are low but still possible technically)
+  description String?
+  status      Status  @default(ACTIVE)
+
+  biller                 Biller            @relation(fields: [billerId], references: [id])
+  billerId               String            @map("biller_id")
+  subscriber             Subscriber        @relation(fields: [subscriberId], references: [id])
+  subscriberId           String            @map("subscriber_id")
+  defaultPaymentMethod   OrgPaymentMethod? @relation(fields: [defaultPaymentMethodId], references: [id])
+  defaultPaymentMethodId String?           @map("default_payment_method_id")
+
+  meta     LegacyAccountMeta?
+  contract Contract?
+
+  invoices      LegacyInvoice[]
+  assignedUsers LegacyUserAssignment[]
+
+  startedAt DateTime? @map("started_at")
+  deletedAt DateTime? @map("deleted_at")
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @default(now()) @updatedAt @map("updated_at")
+
+  id String @id @default(cuid())
+
+  @@unique([accountId, billerId, subscriberId])
+}
+
+model LegacyAccountMeta {
+  billerColor           String? @map("biller_color")
+  billerNotes           String? @map("biller_notes")
+  billerDescription     String? @map("biller_description")
+  subscriberColor       String? @map("subscriber_color")
+  subscriberNotes       String? @map("subscriber_notes")
+  subscriberDescription String? @map("subscriber_description")
+
+  subscriberApprovalStructure Json @default("{}") @map("subscriber_approval_structure")
+
+  accountId String        @unique @map("account_id")
+  account   LegacyAccount @relation(fields: [accountId], references: [id])
+
+  @@id([accountId])
+}
+
+model LegacyFaq {
+  url      String?
+  tags     String[]
+  question String
+  answer   String
+  jsonData Json     @map("json_data")
+
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+  deletedAt DateTime? @map("deleted_at")
+
+  id String @id @default(cuid())
+}
+
+model LegacyInvoice {
+  invoiceNum  String        @map("invoice_num") // FROM ERP
+  amount      Float
+  invoiceDate DateTime      @map("invoice_date")
+  dueDate     DateTime      @map("due_date")
+  pdfUrl      String?       @map("pdf_url")
+  description String?
+  status      InvoiceStatus @default(UNPAID)
+
+  account            LegacyAccount     @relation(fields: [accountId], references: [id])
+  accountId          String            @map("account_id")
+  paymentMethodUsed  OrgPaymentMethod? @relation(fields: [orgPaymentMethodId], references: [id])
+  orgPaymentMethodId String?           @map("org_payment_method_id")
+  paymentTerm        PaymentTerm?      @relation(fields: [paymentTermId], references: [id])
+  paymentTermId      String?           @map("payment_term_id")
+
+  items        LegacyInvoiceItem[]
+  approvals    LegacyInvoiceApproval[]
+  complaints   LegacyInvoiceComplaint[]
+  transactions LegacyTransaction[]
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  id String @id @default(cuid())
+}
+
+model LegacyInvoiceApproval {
+  status        InvoiceApprovalStatus @default(PENDING)
+  note          String?
+  rejectionNote String?               @map("rejection_note")
+
+  invoice   LegacyInvoice        @relation(fields: [invoiceId], references: [id])
+  invoiceId String               @map("invoice_id")
+  userId    String               @map("user_id")
+  accountId String               @map("account_id")
+  user      LegacyUserAssignment @relation(references: [userId, accountId], fields: [userId, accountId])
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  id String @id @default(cuid())
+}
+
+model LegacyInvoiceComplaint {
+  complaintId    String            @map("compaint_id") //default like COMP-x-digin num or num+alpha_char
+  status         ComplaintStatus
+  priority       ComplaintPriority @default(NO_PRIORITY)
+  complainText   String            @map("complain_text")
+  resolutionText String?           @map("resolution_text")
+
+  invoiceId        String        @map("invoice_id")
+  invoice          LegacyInvoice @relation(fields: [invoiceId], references: [id])
+  complainantId    String        @map("complainant_id")
+  complainant      LegacyUser    @relation("complainant_user", references: [id], fields: [complainantId])
+  assignedToUserId String        @map("assigned_to_user_id")
+  assignedTo       LegacyUser    @relation("resolver_user", references: [id], fields: [assignedToUserId])
+
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+  deletedAt DateTime?
+
+  id String @id @default(cuid())
+
+  @@unique([complaintId, invoiceId])
+}
+
+model LegacyInvoiceItem {
+  lineItem Int     @map("line_item")
+  name     String?
+  quantity Float?
+  amount   Float?
+
+  invoice   LegacyInvoice @relation(fields: [invoiceId], references: [id])
+  invoiceId String        @map("invoice_id")
+
+  @@id([lineItem, invoiceId])
+}
+
+model LegacyPaymentMethod {
+  type     PaymentType
+  display  String // last 4/5 digits
+  display2 String? // CC issuer / Bank
+  display3 String? // not sure
+
+  associatedOrgs OrgPaymentMethod[]
+
+  expiresAt DateTime? @map("expires_at")
+  deletedAt DateTime? @map("deleted_at")
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+
+  transactions LegacyTransaction[]
+
+  token String @id @unique
+}
+
+model LegacyTransaction {
+  gpsId  String  @unique @map("gps_id")
+  amount Decimal
+
+  invoiceId String              @map("invoice_id")
+  invoice   LegacyInvoice       @relation(references: [id], fields: [invoiceId])
+  token     String
+  method    LegacyPaymentMethod @relation(fields: [token], references: [token])
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  id String @id @default(cuid())
+}
+
+model LegacyUser {
+  email  String  @unique
+  name   String
+  phone  String?
+  image  String?
+  authId String?
+
+  deactivationReason DeactivationReason? @map("deactivation_reason")
+
+  role           LegacyUserRole @relation(fields: [roleId, organizationId], references: [role, organizationId])
+  roleId         String         @map("role_id")
+  organization   Organization   @relation(fields: [organizationId], references: [id])
+  organizationId String         @map("organization_id")
+
+  orgUser    OrgUser?
+  flags      LegacyUserFlags?
+  prefs      LegacyUserPrefs?
+  nudgePrefs LegacyUserNudgePrefs?
+
+  devices     LegacyUserDevice[]
+  contactInfo LegacyUserContact[] // FIXME: find a better name for this. contacts is also bad imo
+  nudges      Nudge[]
+  complainant LegacyInvoiceComplaint[] @relation("complainant_user")
+  assignedTo  LegacyInvoiceComplaint[] @relation("resolver_user")
+
+  activities  Activity[]
+  assignments LegacyUserAssignment[]
+  reportsTo   LegacyUserReport[]     @relation("reports_to")
+  reports     LegacyUserReport[]     @relation("reports_from")
+
+  deactivatedAt DateTime? @map("deactivated_at")
+  createdAt     DateTime  @default(now()) @map("created_at")
+  updatedAt     DateTime  @updatedAt @map("updated_at")
+
+  id String @id @default(cuid())
+}
+
+model LegacyUserAssignment {
+  subscribed       Boolean @default(true)
+  approvalRequired Boolean @default(true)
+
+  user      LegacyUser    @relation(fields: [userId], references: [id])
+  userId    String        @map("user_id")
+  account   LegacyAccount @relation(fields: [accountId], references: [id])
+  accountId String        @map("account_id")
+
+  approvals LegacyInvoiceApproval[]
+
+  @@unique([userId, accountId])
+}
+
+model LegacyUserContact {
+  isPrimary Boolean @default(false) @map("is_primary")
+
+  user      LegacyUser @relation(fields: [userId], references: [id])
+  userId    String     @map("user_id")
+  contact   Contact    @relation(fields: [contactId], references: [id])
+  contactId String     @unique @map("contact_id")
+
+  @@id([userId, contactId])
+  @@unique([isPrimary, userId, contactId])
+}
+
+model LegacyUserControl {
+  role           LegacyUserRole @relation(fields: [roleCode, organizationId], references: [role, organizationId])
+  roleCode       String         @unique @map("role_id")
+  organizationId String         @map("organization_id")
+
+  organization  Access @default(READ)
+  users         Access @default(READ)
+  userInvite    Access @default(NONE)
+  nudges        Access @default(NONE)
+  payments      Access @default(NONE)
+  maxPayment    Int    @default(0)
+  billers       Access @default(NONE)
+  bills         Access @default(NONE)
+  invoices      Access @default(NONE)
+  subscribers   Access @default(NONE)
+  subscriptions Access @default(NONE)
+  permissions   Access @default(READ)
+  kyb           Access @default(NONE)
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@id([roleCode, organizationId])
+}
+
+model LegacyUserDevice {
+  os          String
+  appVersion  String     @map("app_version")
+  lastIp      String     @map("last_ip")
+  timezone    String
+  fingerprint String
+  type        DeviceType
+  shouldFlush Boolean    @default(false) @map("should_flush")
+  active      Boolean    @default(true)
+
+  user   LegacyUser @relation(fields: [userId], references: [id])
+  userId String     @unique @map("user_id")
+
+  deactivatedAt DateTime? @map("deactivated_at")
+  deletedAt     DateTime? @map("deleted_at")
+  createdAt     DateTime  @default(now()) @map("created_at")
+  updatedAt     DateTime  @updatedAt @map("updated_at")
+
+  id String @id // convert from fingerprint into some id format
+
+  @@unique([userId, id])
+}
+
+model LegacyUserFlags {
+  user   LegacyUser @relation(references: [id], fields: [userId])
+  userId String     @unique @map("user_id")
+
+  raw                Json    @default("{}")
+  onboardingTime     Float?  @map("onboarding_time")
+  onboardingComplete Boolean @default(false) @map("onboarding_complete")
+
+  @@id([userId])
+}
+
+model LegacyUserInvite {
+  email String
+
+  role           LegacyUserRole @relation(fields: [roleId, organizationId], references: [role, organizationId])
+  roleId         String         @map("role_id")
+  organization   Organization   @relation(fields: [organizationId], references: [id])
+  organizationId String         @map("organization_id")
+
+  id String @id @default(cuid())
+
+  @@unique([organizationId, email])
+}
+
+model LegacyUserNudgePrefs {
+  user   LegacyUser @relation(references: [id], fields: [userId])
+  userId String     @unique @map("user_id")
+
+  unsubAll Boolean @default(false)
+
+  @@id([userId])
+}
+
+model LegacyUserPrefs {
+  user   LegacyUser @relation(references: [id], fields: [userId])
+  userId String     @unique @map("user_id")
+
+  theme Theme @default(USER)
+
+  @@id([userId])
+}
+
+model LegacyUserReport {
+  user   LegacyUser @relation("reports_to", fields: [userId], references: [id])
+  userId String     @map("user_id")
+
+  reportsToUser   LegacyUser @relation("reports_from", fields: [reportsToUserId], references: [id])
+  reportsToUserId String     @map("reports_to_user_id")
+
+  @@unique([userId, reportsToUserId])
+}
+
+model LegacyUserRole {
+  role               String
+  description        String?
+  isDefault          Boolean @default(false) @map("is_default")
+  isWhitelistDefault Boolean @default(false) @map("is_whitelist_default")
+  reportLevel        Int     @default(0) @map("report_level")
+
+  organization   Organization @relation(fields: [organizationId], references: [id])
+  organizationId String       @map("organization_id")
+
+  accessControl LegacyUserControl?
+
+  users   LegacyUser[]
+  invites LegacyUserInvite[]
+
+  deletedAt DateTime? @map("deleted_at")
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+
+  @@id([role, organizationId])
+  @@unique([reportLevel, organizationId])
+}
+
+model Locale {
+  name             String
+  debugDescription String @map("debug_description")
+
+  countries  Country[]
+  appInputs  ApplicationInput[]
+  indianKybs KybLocaleIndia[]
+  usKybs     KybLocaleUs[]
+  kybLocales KybLocale[]
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  code String @id @unique
+}
+
+model MediaDocument {
+  id                  String    @id @default(uuid()) @db.Uuid
+  user_id             String    @db.Uuid
+  document_type       String
+  file_name           String
+  file_size           Int
+  mime_type           String
+  storage_path        String
+  storage_provider    String    @default("s3")
+  is_public           Boolean   @default(false)
+  is_verified         Boolean   @default(false)
+  verification_status String?
+  hash_sha256         String?
+  metadata            Json      @default("{}")
+  uploaded_at         DateTime  @default(now()) @db.Timestamptz(6)
+  expires_at          DateTime? @db.Timestamptz(6)
+
+  // Relations
+  user User @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@index([user_id], name: "idx_media_documents_user")
+  @@index([document_type], name: "idx_media_documents_type")
+}
+
+model MediaRepo {
+  documentName     String
+  front            String
+  documentBackName String?
+  documentBack     String?
+  documentType     String
+
+  updatedAt DateTime @updatedAt @map("updated_at")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  id String @unique
+}
+
+model MultiSigTransaction {
+  id        String @id @default(uuid()) @db.Uuid
+  wallet_id String @db.Uuid
+
+  // Transaction details
+  nonce      BigInt
+  to_address String
+  value      Decimal @db.Decimal(30, 18)
+  data       String?
+
+  // Signatures
+  required_signatures Int
+  current_signatures  Int      @default(0)
+  signer_addresses    String[] @default([])
+  signatures          Json     @default("{}")
+
+  // Status
+  status         MultiSigStatus @default(pending)
+  executed_at    DateTime?      @db.Timestamptz(6)
+  execution_hash String?
+
+  // Timing
+  expires_at DateTime? @db.Timestamptz(6)
+
+  // Proposer
+  proposed_by     String
+  proposal_reason String?
+
+  metadata   Json     @default("{}")
+  created_at DateTime @default(now()) @db.Timestamptz(6)
+  updated_at DateTime @default(now()) @updatedAt @db.Timestamptz(6)
+
+  // Relations
+  wallet MultiSigWallet @relation(fields: [wallet_id], references: [id], onDelete: Cascade)
+
+  @@unique([wallet_id, nonce], name: "unique_wallet_nonce")
+  @@index([wallet_id], name: "idx_multi_sig_transactions_wallet")
+  @@index([status], name: "idx_multi_sig_transactions_status")
+}
+
+model MultiSigWallet {
+  id                 String            @id @default(uuid()) @db.Uuid
+  wallet_address     String            @unique
+  blockchain_network BlockchainNetwork
+
+  // Configuration
+  threshold     Int
+  total_signers Int
+  wallet_type   String @default("standard")
+
+  // Signers
+  signer_addresses String[]
+  signer_weights   Int[]
+
+  // Limits
+  daily_limit           Decimal? @db.Decimal(30, 18)
+  transaction_limit     Decimal? @db.Decimal(30, 18)
+  whitelist_only        Boolean  @default(false)
+  whitelisted_addresses String[]
+
+  // Status
+  is_active    Boolean   @default(true)
+  is_locked    Boolean   @default(false)
+  locked_until DateTime? @db.Timestamptz(6)
+
+  // Stats
+  total_transactions Int     @default(0)
+  total_volume       Decimal @default(0) @db.Decimal(30, 18)
+
+  metadata   Json     @default("{}")
+  created_at DateTime @default(now()) @db.Timestamptz(6)
+  updated_at DateTime @default(now()) @updatedAt @db.Timestamptz(6)
+
+  // Relations
+  multi_sig_transactions MultiSigTransaction[]
+
+  @@index([blockchain_network], name: "idx_multi_sig_wallets_network")
+  @@index([is_active], name: "idx_multi_sig_wallets_active")
+}
+
+model Notification {
+  id          String    @id @default(uuid()) @db.Uuid
+  user_id     String    @db.Uuid
+  title       String
+  message     String
+  type        String    @default("info")
+  priority    String    @default("normal")
+  is_read     Boolean   @default(false)
+  read_at     DateTime? @db.Timestamptz(6)
+  action_url  String?
+  action_data Json?
+  expires_at  DateTime? @db.Timestamptz(6)
+  metadata    Json      @default("{}")
+  created_at  DateTime  @default(now()) @db.Timestamptz(6)
+  updated_at  DateTime  @default(now()) @updatedAt @db.Timestamptz(6)
+
+  // Relations
+  user User @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@index([user_id], name: "idx_notifications_user")
+  @@index([is_read], name: "idx_notifications_read")
+  @@index([created_at], name: "idx_notifications_created")
+}
+
+model Nudge {
+  data         Json
+  customHeader String? @map("custom_header")
+  customBody   String? @map("custom_body")
+
+  user           LegacyUser?   @relation(fields: [userId], references: [id])
+  userId         String?       @map("user_id")
+  organization   Organization? @relation(fields: [organizationId], references: [id])
+  organizationId String?       @map("organization_id")
+  type           NudgeType     @relation(fields: [typeId], references: [id])
+  typeId         String        @map("type_id")
+  variant        NudgeVariant? @relation(fields: [variantId], references: [id])
+  variantId      String?       @map("variant_id")
+
+  channels Channel[]
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  id String @id @default(cuid())
+}
+
+model NudgeType {
+  header    String
+  body      String
+  mergeTags Json     @map("merge_tags")
+  uri       String
+  tags      String[]
+
+  variants NudgeVariant[]
+  nudges   Nudge[]
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  id String @id @unique
+
+  @@unique([header, body])
+}
+
+model NudgeVariant {
+  type   NudgeType @relation(fields: [typeId], references: [id])
+  typeId String    @map("type_id")
+
+  header String?
+  body   String
+  uri    String?
+
+  nudges Nudge[]
+
+  id String @id @default(cuid())
+
+  @@unique([typeId, body])
+}
+
+model OrgExpected {
+  domain       String
+  organization String
+  email        String?
+
+  subscriberUnits Subscriber[]
+  billerUnits     Biller[]
+
+  @@id([domain, organization])
+}
+
+model OrgPaymentMethod {
+  isPrimary Boolean @default(false)
+
+  method         LegacyPaymentMethod @relation(fields: [token], references: [token])
+  token          String
+  organization   Organization        @relation(fields: [organizationId], references: [id])
+  organizationId String              @map("organization_id")
+
+  accountsUsingAsDefault LegacyAccount[]
+  invoicesUsedOn         LegacyInvoice[]
+
+  id String @id @default(cuid())
+
+  @@unique([token, organizationId])
+}
+
+model OrgUser {
+  user    LegacyUser @relation(fields: [userId], references: [id])
+  userId  String     @unique @map("user_id")
+  gpsUser GpsUser?
+  gpsId   String?    @map("gps_id")
+
+  organization   Organization @relation(fields: [organizationId], references: [id])
+  organizationId String       @unique @map("organization_id")
+
+  @@id([userId])
+}
+
+model Organization {
+  id                String    @id @default(uuid()) @db.Uuid
+  name              String    @unique
+  legal_name        String?
+  tax_id            String?
+  organization_type String?
+  domain            String?   @unique
+  logo_url          String?
+  website           String?
+  kyb_status        KycStatus @default(not_started)
+  kyb_verified_at   DateTime? @db.Timestamptz(6)
+  daily_limit       Decimal   @default(1000000) @db.Decimal(20, 2)
+  monthly_limit     Decimal   @default(10000000) @db.Decimal(20, 2)
+  is_active         Boolean   @default(true)
+  settings          Json      @default("{}")
+  metadata          Json      @default("{}")
+  created_at        DateTime  @default(now()) @db.Timestamptz(6)
+  updated_at        DateTime  @default(now()) @updatedAt @db.Timestamptz(6)
+
+  // Relations
+  users             User[]
+  tokens            Token[]
+  treasury_accounts TreasuryAccount[]
+  transactions      Transaction[]
+  settings_entries  Settings[]
+  Address           Address?           @relation(fields: [addressId], references: [id])
+  addressId         String?
+  Biller            Biller[]
+  EmailDomain       EmailDomain[]
+  KybDocument       KybDocument?
+  LegacyUser        LegacyUser[]
+  LegacyUserInvite  LegacyUserInvite[]
+  LegacyUserRole    LegacyUserRole[]
+  Nudge             Nudge[]
+  OrgPaymentMethod  OrgPaymentMethod[]
+  OrgUser           OrgUser?
+  Submerchant       Submerchant[]
+  Subscriber        Subscriber[]
+}
+
+model PaymentMethod {
+  id                   String            @id @default(uuid()) @db.Uuid
+  user_id              String            @db.Uuid
+  type                 PaymentMethodType
+  provider             String?
+  account_number_last4 String?
+  account_holder_name  String?
+  billing_address      Json?
+  is_default           Boolean           @default(false)
+  is_active            Boolean           @default(true)
+  verified             Boolean           @default(false)
+  verification_date    DateTime?         @db.Timestamptz(6)
+  metadata             Json              @default("{}")
+  created_at           DateTime          @default(now()) @db.Timestamptz(6)
+  updated_at           DateTime          @default(now()) @updatedAt @db.Timestamptz(6)
+
+  // Relations
+  user User @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@index([user_id], name: "idx_payment_methods_user")
+  @@index([type], name: "idx_payment_methods_type")
+}
+
+model PaymentRequest {
+  id             String    @id @default(uuid()) @db.Uuid
+  requester_id   String    @db.Uuid
+  payer_id       String    @db.Uuid
+  amount         Decimal   @db.Decimal(20, 2)
+  currency       String    @default("USD")
+  message        String?
+  status         String    @default("pending")
+  decline_reason String?
+  transaction_id String?   @db.Uuid
+  paid_at        DateTime? @db.Timestamptz(6)
+  due_date       DateTime? @db.Timestamptz(6)
+  expires_at     DateTime? @db.Timestamptz(6)
+  metadata       Json      @default("{}")
+  created_at     DateTime  @default(now()) @db.Timestamptz(6)
+  updated_at     DateTime  @default(now()) @updatedAt @db.Timestamptz(6)
+
+  // Relations
+  requester   User         @relation("PaymentRequestSender", fields: [requester_id], references: [id], onDelete: Cascade)
+  payer       User         @relation("PaymentRequestPayer", fields: [payer_id], references: [id], onDelete: Cascade)
+  transaction Transaction? @relation(fields: [transaction_id], references: [id])
+
+  @@index([requester_id], name: "idx_payment_requests_requester")
+  @@index([payer_id], name: "idx_payment_requests_payer")
+  @@index([status], name: "idx_payment_requests_status")
+  @@index([created_at], name: "idx_payment_requests_created")
+}
+
+model PaymentTerm {
+  interval    TimeInterval?
+  description String?
+
+  contract   Contract @relation(fields: [contractId, accountId], references: [id, accountId])
+  contractId String   @map("contract_id")
+  accountId  String   @map("account_id")
+
+  prices   Price[]
+  invoices LegacyInvoice[]
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  id String @id @default(cuid())
+}
+
+model Price {
+  name        String
+  description String?
+  amount      Float
+  startDate   DateTime? @map("start_date")
+  endDate     DateTime? @map("end_date")
+  scaleFrom   String?   @map("scale_from")
+  scaleTo     String?   @map("scale_to")
+  blockFrom   String?   @map("block_from")
+  blockTo     String?   @map("block_to")
+
+  type          PriceType   @relation(fields: [typeId], references: [code])
+  typeId        String      @map("type_id")
+  paymentTerm   PaymentTerm @relation(fields: [paymentTermId], references: [id])
+  paymentTermId String      @map("payment_term_id")
+
+  id String @id @default(cuid())
+
+  @@unique([startDate, endDate, paymentTermId])
+  @@unique([scaleFrom, scaleTo, blockFrom, blockTo, paymentTermId])
+}
+
+model PriceType {
+  description String
+  unit        String
+  currency    String?
+  hidden      Boolean @default(false)
+
+  associatedPrices Price[]
+
+  code String @id @unique
+}
+
+model RecurringPayment {
+  id                String    @id @default(uuid()) @db.Uuid
+  user_id           String    @db.Uuid
+  recipient_id      String?   @db.Uuid
+  recipient_address String?
+  amount            Decimal   @db.Decimal(20, 2)
+  currency          String    @default("USD")
+  frequency         String
+  day_of_month      Int?
+  day_of_week       Int?
+  next_payment_date DateTime  @db.Date
+  last_payment_date DateTime? @db.Date
+  total_payments    Int       @default(0)
+  max_payments      Int?
+  status            String    @default("active")
+  failure_count     Int       @default(0)
+  metadata          Json      @default("{}")
+  created_at        DateTime  @default(now()) @db.Timestamptz(6)
+  updated_at        DateTime  @default(now()) @updatedAt @db.Timestamptz(6)
+  cancelled_at      DateTime? @db.Timestamptz(6)
+
+  // Relations
+  user User @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@index([user_id], name: "idx_recurring_payments_user")
+  @@index([status], name: "idx_recurring_payments_status")
+  @@index([next_payment_date], name: "idx_recurring_payments_next")
+}
+
+model Service {
+  serviceId   String  @map("service_id")
+  description String?
+
+  type         ServiceTypeModel @relation(fields: [typeCode], references: [code])
+  typeCode     String           @map("type_code")
+  industry     Industry         @relation(fields: [industryCode], references: [code])
+  industryCode String           @map("industry_code")
+  contract     Contract         @relation(fields: [contractId, accountId], references: [id, accountId])
+  contractId   String           @map("contract_id")
+  accountId    String           @map("account_id")
+
+  fees          Fee[]
+  feeStructures FeeStructure[]
+
+  id String @id @default(cuid())
+
+  @@unique([serviceId, contractId, accountId])
+}
+
+model ServiceTypeModel {
+  name        String
+  description String?
+  primaryUnit String  @map("primary_unit") // UNIT OF MEASUREMENT OF THIS SERVICE TYPE
+  hidden      Boolean @default(false)
+
+  associatedServices Service[]
+
+  code String @id @unique
+}
+
+model Settings {
+  id              String   @id @default(uuid()) @db.Uuid
+  organization_id String?  @db.Uuid
+  user_id         String?  @db.Uuid
+  category        String
+  key             String
+  value           Json
+  is_encrypted    Boolean  @default(false)
+  is_public       Boolean  @default(false)
+  metadata        Json     @default("{}")
+  created_at      DateTime @default(now()) @db.Timestamptz(6)
+  updated_at      DateTime @default(now()) @updatedAt @db.Timestamptz(6)
+
+  // Relations
+  organization Organization? @relation(fields: [organization_id], references: [id], onDelete: Cascade)
+  user         User?         @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@unique([organization_id, user_id, category, key], name: "unique_setting_key")
+  @@index([category], name: "idx_settings_category")
+}
+
+model SmartContract {
+  id                   String            @id @default(uuid()) @db.Uuid
+  name                 String
+  contract_type        String
+  network              BlockchainNetwork
+  address              String
+  abi                  Json
+  bytecode             String?
+  source_code          String?
+  compiler_version     String?
+  optimization_enabled Boolean           @default(true)
+  is_verified          Boolean           @default(false)
+  is_audited           Boolean           @default(false)
+  audit_report_url     String?
+  deployed_by          String?
+  deployed_at          DateTime?         @db.Timestamptz(6)
+  last_interaction     DateTime?         @db.Timestamptz(6)
+  transaction_count    Int               @default(0)
+  is_active            Boolean           @default(true)
+  metadata             Json              @default("{}")
+  created_at           DateTime          @default(now()) @db.Timestamptz(6)
+  updated_at           DateTime          @default(now()) @updatedAt @db.Timestamptz(6)
+
+  @@unique([address, network], name: "unique_contract_address")
+  @@index([contract_type], name: "idx_smart_contracts_type")
+  @@index([network], name: "idx_smart_contracts_network")
+  @@index([is_active], name: "idx_smart_contracts_active")
+}
+
+model SolanaProgram {
+  id           String            @id @default(uuid()) @db.Uuid
+  program_id   String            @unique
+  program_type SolanaProgramType
+  program_name String?
+
+  // Deployment info
+  deployed_at          DateTime? @db.Timestamptz(6)
+  deployed_by          String?
+  deployment_slot      BigInt?
+  deployment_signature String?
+
+  // Authority
+  upgrade_authority String?
+  freeze_authority  String?
+  mint_authority    String?
+
+  // IDL and metadata
+  idl_definition  Json?
+  program_version String? @db.VarChar(50)
+  source_code_url String? @db.VarChar(500)
+  verified        Boolean @default(false)
+
+  // Performance
+  execution_count   BigInt    @default(0)
+  last_execution    DateTime? @db.Timestamptz(6)
+  avg_compute_units Int?
+
+  is_active  Boolean  @default(true)
+  metadata   Json     @default("{}")
+  created_at DateTime @default(now()) @db.Timestamptz(6)
+  updated_at DateTime @default(now()) @updatedAt @db.Timestamptz(6)
+
+  @@index([program_type], name: "idx_solana_programs_type")
+  @@index([is_active], name: "idx_solana_programs_active")
+}
+
+model SolanaTransactionDetail {
+  id             String @id @default(uuid()) @db.Uuid
+  transaction_id String @db.Uuid
+
+  // Solana-specific fields
+  slot             BigInt
+  signature        String  @unique
+  recent_blockhash String?
+
+  // Fee details (in lamports)
+  fee_lamports           BigInt?
+  compute_units_consumed BigInt?
+  priority_fee_lamports  BigInt?
+
+  // Program interactions
+  program_ids        String[]
+  instruction_count  Int?
+  inner_instructions Json?
+
+  // Account changes
+  account_keys        String[]
+  pre_balances        BigInt[]
+  post_balances       BigInt[]
+  pre_token_balances  Json?
+  post_token_balances Json?
+
+  // Status
+  err_code     String?
+  log_messages String[]
+
+  metadata   Json     @default("{}")
+  created_at DateTime @default(now()) @db.Timestamptz(6)
+
+  // Relations
+  transaction Transaction @relation(fields: [transaction_id], references: [id], onDelete: Cascade)
+
+  @@index([transaction_id], name: "idx_solana_tx_details_transaction")
+  @@index([slot], name: "idx_solana_tx_details_slot")
+  @@index([signature], name: "idx_solana_tx_details_signature")
+}
+
+model SpendLimit {
+  id                    String   @id @default(uuid()) @db.Uuid
+  user_id               String   @db.Uuid
+  limit_type            String
+  amount                Decimal  @db.Decimal(20, 2)
+  period                String
+  category              String?
+  merchant_category     String?
+  current_spend         Decimal  @default(0) @db.Decimal(20, 2)
+  reset_at              DateTime @db.Timestamptz(6)
+  is_active             Boolean  @default(true)
+  notifications_enabled Boolean  @default(true)
+  notify_at_percentage  Int      @default(80)
+  metadata              Json     @default("{}")
+  created_at            DateTime @default(now()) @db.Timestamptz(6)
+  updated_at            DateTime @default(now()) @updatedAt @db.Timestamptz(6)
+
+  // Relations
+  user User @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@index([user_id], name: "idx_spend_limits_user")
+  @@index([limit_type], name: "idx_spend_limits_type")
+  @@index([is_active], name: "idx_spend_limits_active")
+}
+
+model StablecoinConfig {
+  id                      String            @id @default(uuid()) @db.Uuid
+  crypto_asset_id         String            @unique @db.Uuid
+  backing_type            StablecoinBacking
+  peg_type                StablecoinPeg
+  peg_value               Decimal           @default(1) @db.Decimal(10, 6)
+  collateralization_ratio Decimal           @default(100) @db.Decimal(6, 2)
+  min_collateral_ratio    Decimal           @default(100) @db.Decimal(6, 2)
+  liquidation_threshold   Decimal?          @db.Decimal(6, 2)
+  stability_fee           Decimal           @default(0) @db.Decimal(6, 4)
+  redemption_fee          Decimal           @default(0) @db.Decimal(6, 4)
+  minting_fee             Decimal           @default(0) @db.Decimal(6, 4)
+  issuer_name             String?
+  issuer_address          String?
+  reserve_address         String?
+  auditor_name            String?
+  last_audit_date         DateTime?         @db.Date
+  next_audit_date         DateTime?         @db.Date
+  proof_of_reserves_url   String?
+  regulatory_status       String?
+  regulatory_jurisdiction String?
+  blacklist_enabled       Boolean           @default(false)
+  pause_enabled           Boolean           @default(false)
+  is_regulated            Boolean           @default(false)
+  metadata                Json              @default("{}")
+  created_at              DateTime          @default(now()) @db.Timestamptz(6)
+  updated_at              DateTime          @default(now()) @updatedAt @db.Timestamptz(6)
+
+  // Relations
+  crypto_asset CryptoAsset         @relation(fields: [crypto_asset_id], references: [id], onDelete: Cascade)
+  reserves     StablecoinReserve[]
+
+  @@index([backing_type], name: "idx_stablecoin_backing")
+  @@index([peg_type], name: "idx_stablecoin_peg")
+}
+
+model StablecoinReserve {
+  id                     String    @id @default(uuid()) @db.Uuid
+  stablecoin_config_id   String    @db.Uuid
+  asset_id               String    @db.Uuid
+  asset_type             String
+  amount                 Decimal   @db.Decimal(30, 18)
+  value_usd              Decimal   @db.Decimal(30, 2)
+  percentage_of_reserves Decimal   @db.Decimal(5, 2)
+  custody_location       String?
+  last_audit_date        DateTime? @db.Date
+  metadata               Json      @default("{}")
+  created_at             DateTime  @default(now()) @db.Timestamptz(6)
+  updated_at             DateTime  @default(now()) @updatedAt @db.Timestamptz(6)
+
+  // Relations
+  stablecoin_config StablecoinConfig @relation(fields: [stablecoin_config_id], references: [id], onDelete: Cascade)
+  asset             CryptoAsset      @relation(fields: [asset_id], references: [id])
+
+  @@index([stablecoin_config_id], name: "idx_reserves_config")
+}
+
+model Submerchant {
+  name        String
+  description String
+  type        String
+
+  organization   Organization @relation(fields: [organizationId], references: [id])
+  organizationId String       @map("organization_id")
+
+  deletedAt DateTime? @map("deleted_at")
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+
+  id String @unique
+}
+
+model Subscriber {
+  name         String?
+  subscriberId String?       @map("subscriber_id") // XDEX buyer code
+  companyCode  String?       @map("company_code")
+  image        String?
+  description  String?
+  source       VendorSource?
+
+  organization      Organization? @relation(fields: [organizationId], references: [id])
+  organizationId    String?       @map("organization_id")
+  orgExpected       OrgExpected?  @relation(fields: [orgExpectedDomain, orgExpectedId], references: [domain, organization])
+  orgExpectedDomain String?
+  orgExpectedId     String?
+
+  accounts    LegacyAccount[]
+  contactInfo SubscriberContact[]
+
+  deletedAt DateTime? @map("deleted_at")
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+
+  id String @id @default(cuid())
+
+  @@unique([subscriberId, source])
+}
+
+model SubscriberContact {
+  isPrimary Boolean @default(true) @map("is_primary")
+
+  subscriber   Subscriber @relation(fields: [subscriberId], references: [id])
+  subscriberId String     @map("subscriber_id")
+  contact      Contact    @relation(fields: [contactId], references: [id])
+  contactId    String     @unique @map("contact_id")
+
+  @@id([subscriberId, contactId])
+}
+
+model TimeLockedOperation {
+  id             String @id @default(uuid()) @db.Uuid
+  operation_type String
+
+  // Operation details
+  target_address String?
+  operation_data Json
+
+  // Timing
+  lock_duration Int
+  executable_at DateTime  @db.Timestamptz(6)
+  expires_at    DateTime? @db.Timestamptz(6)
+
+  // Execution
+  is_executed    Boolean   @default(false)
+  executed_at    DateTime? @db.Timestamptz(6)
+  execution_hash String?
+
+  // Cancellation
+  is_cancelled        Boolean   @default(false)
+  cancelled_at        DateTime? @db.Timestamptz(6)
+  cancelled_by        String?
+  cancellation_reason String?
+
+  // Authorization
+  initiated_by String
+  approved_by  String[]
+
+  metadata   Json     @default("{}")
+  created_at DateTime @default(now()) @db.Timestamptz(6)
+  updated_at DateTime @default(now()) @updatedAt @db.Timestamptz(6)
+
+  @@index([operation_type], name: "idx_time_locked_ops_type")
+  @@index([executable_at], name: "idx_time_locked_ops_executable")
+  @@index([is_executed], name: "idx_time_locked_ops_executed")
+}
+
+model Token {
+  id                 String            @id @default(uuid()) @db.Uuid
+  organization_id    String            @db.Uuid
+  name               String
+  symbol             String
+  standard           TokenStandard
+  contract_address   String?
+  network            BlockchainNetwork
+  decimals           Int               @default(18)
+  total_supply       Decimal           @db.Decimal(30, 0)
+  circulating_supply Decimal           @db.Decimal(30, 0)
+  max_supply         Decimal?          @db.Decimal(30, 0)
+  is_mintable        Boolean           @default(true)
+  is_burnable        Boolean           @default(true)
+  is_pausable        Boolean           @default(true)
+  is_compliant       Boolean           @default(false)
+  compliance_rules   Json              @default("{}")
+  logo_url           String?
+  website            String?
+  whitepaper_url     String?
+  metadata           Json              @default("{}")
+  deployed_at        DateTime?         @db.Timestamptz(6)
+  created_at         DateTime          @default(now()) @db.Timestamptz(6)
+  updated_at         DateTime          @default(now()) @updatedAt @db.Timestamptz(6)
+
+  // Relations
+  organization            Organization            @relation(fields: [organization_id], references: [id], onDelete: Cascade)
+  transactions            Transaction[]
+  transfer_restrictions   TransferRestriction[]
+  compliance_attestations ComplianceAttestation[]
+  token_2022_extensions   Token2022Extension[]
+  token_deployments       TokenDeployment[]
+
+  @@unique([symbol, network], name: "unique_token_symbol")
+  @@index([organization_id], name: "idx_tokens_organization")
+  @@index([network], name: "idx_tokens_network")
+}
+
+model Token2022Extension {
+  id             String             @id @default(uuid()) @db.Uuid
+  token_id       String             @db.Uuid
+  mint_address   String
+  extension_type TokenExtensionType
+
+  // Extension configuration
+  is_enabled    Boolean @default(true)
+  configuration Json    @default("{}")
+
+  // Extension state
+  initialization_data Json?
+  current_state       Json?
+  last_updated_slot   BigInt?
+
+  metadata   Json     @default("{}")
+  created_at DateTime @default(now()) @db.Timestamptz(6)
+  updated_at DateTime @default(now()) @updatedAt @db.Timestamptz(6)
+
+  // Relations
+  token Token @relation(fields: [token_id], references: [id], onDelete: Cascade)
+
+  @@unique([token_id, mint_address, extension_type], name: "unique_token_extension")
+  @@index([token_id], name: "idx_token_2022_extensions_token")
+  @@index([extension_type], name: "idx_token_2022_extensions_type")
+}
+
+model TokenDeployment {
+  id          String  @id @default(uuid()) @db.Uuid
+  token_id    String  @db.Uuid
+  template_id String? @db.Uuid
+
+  // Deployment details
+  deployment_status String   @default("pending")
+  deployment_hash   String?
+  deployment_block  BigInt?
+  deployment_cost   Decimal? @db.Decimal(30, 18)
+
+  // Configuration used
+  deployment_config Json?
+
+  // Verification
+  is_verified      Boolean   @default(false)
+  verified_at      DateTime? @db.Timestamptz(6)
+  verification_url String?   @db.VarChar(500)
+
+  // Deployment authorization
+  deployed_by          String?
+  deployment_signature String? @db.VarChar(500)
+
+  metadata   Json     @default("{}")
+  created_at DateTime @default(now()) @db.Timestamptz(6)
+  updated_at DateTime @default(now()) @updatedAt @db.Timestamptz(6)
+
+  // Relations
+  token    Token                    @relation(fields: [token_id], references: [id], onDelete: Cascade)
+  template TokenDeploymentTemplate? @relation(fields: [template_id], references: [id])
+
+  @@index([token_id], name: "idx_token_deployments_token")
+  @@index([deployment_status], name: "idx_token_deployments_status")
+}
+
+model TokenDeploymentTemplate {
+  id            String @id @default(uuid()) @db.Uuid
+  template_name String @unique
+  template_type String
+
+  // Configuration
+  blockchain_network BlockchainNetwork
+  token_standard     TokenStandard
+
+  // Default parameters
+  default_config Json
+
+  // Compliance settings
+  compliance_rules   Json?
+  required_kyc_level KycLevel?
+
+  // Smart contract references
+  contract_template_address String?
+  contract_bytecode         String?
+  contract_abi              Json?
+
+  // Usage
+  times_used Int       @default(0)
+  last_used  DateTime? @db.Timestamptz(6)
+
+  is_active  Boolean  @default(true)
+  metadata   Json     @default("{}")
+  created_at DateTime @default(now()) @db.Timestamptz(6)
+  updated_at DateTime @default(now()) @updatedAt @db.Timestamptz(6)
+
+  // Relations
+  token_deployments TokenDeployment[]
+
+  @@index([template_type], name: "idx_token_templates_type")
+  @@index([blockchain_network], name: "idx_token_templates_network")
+}
+
+model Transaction {
+  id                    String             @id @default(uuid()) @db.Uuid
+  sender_id             String?            @db.Uuid
+  receiver_id           String?            @db.Uuid
+  organization_id       String?            @db.Uuid
+  token_id              String?            @db.Uuid
+  crypto_asset_id       String?            @db.Uuid
+  parent_transaction_id String?            @db.Uuid
+  transaction_type      TransactionType
+  amount                Decimal            @db.Decimal(30, 18)
+  fee_amount            Decimal            @default(0) @db.Decimal(20, 8)
+  gas_fee               Decimal?           @db.Decimal(20, 18)
+  network               BlockchainNetwork?
+  from_address          String?
+  to_address            String?
+  transaction_hash      String?            @unique
+  block_number          String?
+  confirmations         Int                @default(0)
+  status                TransactionStatus  @default(pending)
+  error_message         String?
+  metadata              Json               @default("{}")
+  initiated_at          DateTime           @default(now()) @db.Timestamptz(6)
+  confirmed_at          DateTime?          @db.Timestamptz(6)
+  created_at            DateTime           @default(now()) @db.Timestamptz(6)
+  updated_at            DateTime           @default(now()) @updatedAt @db.Timestamptz(6)
+
+  // Relations
+  sender                     User?                         @relation("SenderTransactions", fields: [sender_id], references: [id])
+  receiver                   User?                         @relation("ReceiverTransactions", fields: [receiver_id], references: [id])
+  organization               Organization?                 @relation(fields: [organization_id], references: [id])
+  token                      Token?                        @relation(fields: [token_id], references: [id])
+  crypto_asset               CryptoAsset?                  @relation(fields: [crypto_asset_id], references: [id])
+  parent_transaction         Transaction?                  @relation("TransactionHierarchy", fields: [parent_transaction_id], references: [id])
+  child_transactions         Transaction[]                 @relation("TransactionHierarchy")
+  monitoring                 CryptoTransactionMonitoring[]
+  payment_requests           PaymentRequest[]
+  compliance_attestations    ComplianceAttestation[]
+  solana_transaction_details SolanaTransactionDetail[]
+
+  @@index([sender_id], name: "idx_transactions_sender")
+  @@index([receiver_id], name: "idx_transactions_receiver")
+  @@index([status], name: "idx_transactions_status")
+  @@index([created_at], name: "idx_transactions_created")
+  @@index([crypto_asset_id], name: "idx_transactions_crypto_asset")
+}
+
+model TransferRestriction {
+  id               String          @id @default(uuid()) @db.Uuid
+  token_id         String          @db.Uuid
+  restriction_type RestrictionType
+
+  // Restriction details
+  restriction_code String? @unique
+  restriction_name String?
+  description      String?
+
+  // Restriction parameters
+  parameters Json @default("{}")
+
+  // Status
+  is_active Boolean @default(true)
+  priority  Int     @default(0)
+
+  // Enforcement
+  enforcement_level String         @default("strict")
+  bypass_roles      UserRoleType[]
+
+  metadata   Json     @default("{}")
+  created_at DateTime @default(now()) @db.Timestamptz(6)
+  updated_at DateTime @default(now()) @updatedAt @db.Timestamptz(6)
+
+  // Relations
+  token Token @relation(fields: [token_id], references: [id], onDelete: Cascade)
+
+  @@index([token_id], name: "idx_transfer_restrictions_token")
+  @@index([restriction_type], name: "idx_transfer_restrictions_type")
+  @@index([is_active], name: "idx_transfer_restrictions_active")
+}
+
+model TreasuryAccount {
+  id                  String            @id @default(uuid()) @db.Uuid
+  organization_id     String            @db.Uuid
+  name                String
+  account_type        String            @default("operational")
+  network             BlockchainNetwork
+  address             String?
+  balance_stable      Decimal           @default(0) @db.Decimal(30, 2)
+  balance_crypto      Decimal           @default(0) @db.Decimal(30, 18)
+  reserved_balance    Decimal           @default(0) @db.Decimal(30, 2)
+  daily_inflow        Decimal           @default(0) @db.Decimal(30, 2)
+  daily_outflow       Decimal           @default(0) @db.Decimal(30, 2)
+  is_active           Boolean           @default(true)
+  last_reconciliation DateTime?         @db.Timestamptz(6)
+  metadata            Json              @default("{}")
+  created_at          DateTime          @default(now()) @db.Timestamptz(6)
+  updated_at          DateTime          @default(now()) @updatedAt @db.Timestamptz(6)
+
+  // Relations
+  organization      Organization    @relation(fields: [organization_id], references: [id], onDelete: Cascade)
+  source_swaps      CrossRailSwap[] @relation("SourceAccount")
+  destination_swaps CrossRailSwap[] @relation("DestinationAccount")
+
+  @@index([organization_id], name: "idx_treasury_accounts_org")
+  @@index([network], name: "idx_treasury_accounts_network")
+}
+
+model TreasuryReconciliation {
+  id String @id @default(uuid()) @db.Uuid
+
+  // Period
+  reconciliation_date DateTime @db.Date
+  start_timestamp     DateTime @db.Timestamptz(6)
+  end_timestamp       DateTime @db.Timestamptz(6)
+
+  // Balances
+  enterprise_rail_balance Decimal? @db.Decimal(30, 18)
+  consumer_rail_balance   Decimal? @db.Decimal(30, 18)
+  treasury_balance        Decimal? @db.Decimal(30, 18)
+
+  // Transactions
+  cross_rail_volume Decimal? @db.Decimal(30, 18)
+  swap_count        Int?
+
+  // Discrepancies
+  discrepancy_found   Boolean  @default(false)
+  discrepancy_amount  Decimal? @db.Decimal(30, 18)
+  discrepancy_details Json?
+
+  // Resolution
+  resolved         Boolean   @default(false)
+  resolved_by      String?
+  resolved_at      DateTime? @db.Timestamptz(6)
+  resolution_notes String?
+
+  metadata   Json     @default("{}")
+  created_at DateTime @default(now()) @db.Timestamptz(6)
+
+  @@index([reconciliation_date], name: "idx_treasury_reconciliation_date")
+  @@index([discrepancy_found], name: "idx_treasury_reconciliation_discrepancy")
+}
+
+model TrustedClaimIssuer {
+  id             String  @id @default(uuid()) @db.Uuid
+  name           String
+  issuer_address String? @unique
+  issuer_type    String?
+
+  // Trust management
+  trust_level Int     @default(1)
+  is_active   Boolean @default(true)
+  is_trusted  Boolean @default(true)
+
+  // Capabilities
+  supported_claim_types ClaimType[]
+  supported_networks    BlockchainNetwork[]
+
+  // Verification
+  public_key   String?
+  api_endpoint String? @db.VarChar(500)
+  webhook_url  String? @db.VarChar(500)
+
+  metadata   Json     @default("{}")
+  created_at DateTime @default(now()) @db.Timestamptz(6)
+  updated_at DateTime @default(now()) @updatedAt @db.Timestamptz(6)
+
+  // Relations
+  identity_claims IdentityClaim[]
+
+  @@index([is_active], name: "idx_trusted_issuers_active")
+}
+
+model User {
+  id                      String       @id @default(uuid()) @db.Uuid
+  organization_id         String?      @db.Uuid
+  email                   String       @unique
+  phone                   String?      @unique
+  first_name              String?
+  last_name               String?
+  username                String?      @unique
+  password_hash           String?
+  avatar_url              String?
+  role                    UserRoleType @default(basic_consumer)
+  status                  UserStatus   @default(pending_verification)
+  kyc_status              KycStatus    @default(not_started)
+  kyc_level               KycLevel?
+  kyc_provider            KycProvider?
+  kyc_verified_at         DateTime?    @db.Timestamptz(6)
+  kyc_data                Json         @default("{}")
+  daily_limit             Decimal      @default(1000) @db.Decimal(20, 2)
+  monthly_limit           Decimal      @default(10000) @db.Decimal(20, 2)
+  total_volume_transacted Decimal      @default(0) @db.Decimal(30, 2)
+  two_factor_enabled      Boolean      @default(false)
+  two_factor_secret       String?
+  email_verified          Boolean      @default(false)
+  phone_verified          Boolean      @default(false)
+  last_login              DateTime?    @db.Timestamptz(6)
+  failed_login_attempts   Int          @default(0)
+  locked_until            DateTime?    @db.Timestamptz(6)
+  metadata                Json         @default("{}")
+  created_at              DateTime     @default(now()) @db.Timestamptz(6)
+  updated_at              DateTime     @default(now()) @updatedAt @db.Timestamptz(6)
+  deleted_at              DateTime?    @db.Timestamptz(6)
+
+  // Relations
+  organization              Organization?                 @relation(fields: [organization_id], references: [id], onDelete: Cascade)
+  kyc_documents             KycDocument[]
+  blockchain_wallets        BlockchainWallet[]
+  transactions_sent         Transaction[]                 @relation("SenderTransactions")
+  transactions_received     Transaction[]                 @relation("ReceiverTransactions")
+  payment_methods           PaymentMethod[]
+  user_cards                UserCard[]
+  notifications             Notification[]
+  activity_logs             ActivityLog[]
+  settings                  Settings[]
+  payment_requests_sent     PaymentRequest[]              @relation("PaymentRequestSender")
+  payment_requests_received PaymentRequest[]              @relation("PaymentRequestPayer")
+  recurring_payments        RecurringPayment[]
+  parent_relationships      ChildParentRelationship[]     @relation("ChildUser")
+  child_relationships       ChildParentRelationship[]     @relation("ParentUser")
+  user_devices              UserDevice[]
+  user_bank_accounts        UserBankAccount[]
+  mobile_change_history     ChangeMobileHistory[]
+  media_documents           MediaDocument[]
+  referred_users            UserReferral[]                @relation("ReferredUser")
+  referrer                  UserReferral[]                @relation("ReferrerUser")
+  user_blocks_blocker       UserBlock[]                   @relation("BlockerUser")
+  user_blocks_blocked       UserBlock[]                   @relation("BlockedUser")
+  business_rule_violations  BusinessRuleViolation[]
+  business_rule_assignments UserBusinessRuleAssignment[]
+  spend_limits              SpendLimit[]
+  crypto_monitoring         CryptoTransactionMonitoring[]
+  admin_action_logs         AdminActionLog[]
+  identity_registry         IdentityRegistry[]
+  compliance_attestations   ComplianceAttestation[]
+}
+
+model UserBankAccount {
+  id                  String    @id @default(uuid()) @db.Uuid
+  user_id             String    @db.Uuid
+  account_holder_name String
+  account_number      String
+  routing_number      String
+  account_type        String
+  bank_name           String?
+  is_verified         Boolean   @default(false)
+  is_primary          Boolean   @default(false)
+  is_active           Boolean   @default(true)
+  verified_at         DateTime? @db.Timestamptz(6)
+  metadata            Json      @default("{}")
+  created_at          DateTime  @default(now()) @db.Timestamptz(6)
+  updated_at          DateTime  @default(now()) @updatedAt @db.Timestamptz(6)
+
+  // Relations
+  user User @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@unique([user_id, account_number, routing_number], name: "unique_bank_account")
+  @@index([user_id], name: "idx_user_bank_accounts_user")
+  @@index([is_verified], name: "idx_user_bank_accounts_verified")
+}
+
+model UserBlock {
+  id           String    @id @default(uuid()) @db.Uuid
+  blocker_id   String    @db.Uuid
+  blocked_id   String    @db.Uuid
+  reason       String?
+  blocked_at   DateTime  @default(now()) @db.Timestamptz(6)
+  unblocked_at DateTime? @db.Timestamptz(6)
+  is_active    Boolean   @default(true)
+  metadata     Json      @default("{}")
+
+  // Relations
+  blocker User @relation("BlockerUser", fields: [blocker_id], references: [id], onDelete: Cascade)
+  blocked User @relation("BlockedUser", fields: [blocked_id], references: [id], onDelete: Cascade)
+
+  @@unique([blocker_id, blocked_id], name: "unique_user_block")
+  @@index([is_active], name: "idx_user_blocks_active")
+}
+
+model UserBusinessRuleAssignment {
+  id              String    @id @default(uuid()) @db.Uuid
+  user_id         String    @db.Uuid
+  rule_id         String    @db.Uuid
+  assigned_by     String?
+  reason          String?
+  is_active       Boolean   @default(true)
+  effective_from  DateTime  @default(now()) @db.Timestamptz(6)
+  effective_until DateTime? @db.Timestamptz(6)
+  metadata        Json      @default("{}")
+  created_at      DateTime  @default(now()) @db.Timestamptz(6)
+  updated_at      DateTime  @default(now()) @updatedAt @db.Timestamptz(6)
+
+  // Relations
+  user User         @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  rule BusinessRule @relation(fields: [rule_id], references: [id])
+
+  @@unique([user_id, rule_id], name: "unique_user_rule_assignment")
+  @@index([is_active], name: "idx_user_rule_assignments_active")
+}
+
+model UserCard {
+  id                    String      @id @default(uuid()) @db.Uuid
+  user_id               String      @db.Uuid
+  card_type             CardType
+  card_network          CardNetwork
+  card_number_last4     String
+  cardholder_name       String
+  expiry_month          Int
+  expiry_year           Int
+  status                String      @default("active")
+  daily_limit           Decimal     @default(1000) @db.Decimal(20, 2)
+  monthly_limit         Decimal     @default(10000) @db.Decimal(20, 2)
+  total_spent           Decimal     @default(0) @db.Decimal(20, 2)
+  is_locked             Boolean     @default(false)
+  locked_reason         String?
+  pin_set               Boolean     @default(false)
+  contactless_enabled   Boolean     @default(true)
+  international_enabled Boolean     @default(true)
+  online_enabled        Boolean     @default(true)
+  atm_enabled           Boolean     @default(true)
+  metadata              Json        @default("{}")
+  created_at            DateTime    @default(now()) @db.Timestamptz(6)
+  updated_at            DateTime    @default(now()) @updatedAt @db.Timestamptz(6)
+  activated_at          DateTime?   @db.Timestamptz(6)
+
+  // Relations
+  user User @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@index([user_id], name: "idx_user_cards_user")
+  @@index([status], name: "idx_user_cards_status")
+}
+
+model UserDevice {
+  id               String   @id @default(uuid()) @db.Uuid
+  user_id          String   @db.Uuid
+  device_id        String   @unique
+  device_name      String?
+  device_type      String
+  device_model     String?
+  operating_system String?
+  os_version       String?
+  app_version      String?
+  push_token       String?
+  is_primary       Boolean  @default(false)
+  is_trusted       Boolean  @default(false)
+  last_active      DateTime @default(now()) @db.Timestamptz(6)
+  location         Json?
+  metadata         Json     @default("{}")
+  created_at       DateTime @default(now()) @db.Timestamptz(6)
+  updated_at       DateTime @default(now()) @updatedAt @db.Timestamptz(6)
+
+  // Relations
+  user User @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@index([user_id], name: "idx_user_devices_user")
+  @@index([is_trusted], name: "idx_user_devices_trusted")
+}
+
+model UserReferral {
+  id               String    @id @default(uuid()) @db.Uuid
+  referrer_id      String    @db.Uuid
+  referred_user_id String?   @db.Uuid
+  referral_code    String    @unique
+  referral_link    String?
+  qr_code_url      String?
+  status           String    @default("pending")
+  reward_amount    Decimal?  @db.Decimal(20, 2)
+  reward_paid      Boolean   @default(false)
+  reward_paid_at   DateTime? @db.Timestamptz(6)
+  clicked_at       DateTime? @db.Timestamptz(6)
+  signed_up_at     DateTime? @db.Timestamptz(6)
+  metadata         Json      @default("{}")
+  created_at       DateTime  @default(now()) @db.Timestamptz(6)
+  updated_at       DateTime  @default(now()) @updatedAt @db.Timestamptz(6)
+
+  // Relations
+  referrer      User  @relation("ReferrerUser", fields: [referrer_id], references: [id], onDelete: Cascade)
+  referred_user User? @relation("ReferredUser", fields: [referred_user_id], references: [id], onDelete: SetNull)
+
+  @@index([referrer_id], name: "idx_user_referrals_referrer")
+  @@index([referred_user_id], name: "idx_user_referrals_referred")
+  @@index([status], name: "idx_user_referrals_status")
+}
+
+model WalletCustody {
+  id                      String    @id @default(uuid()) @db.Uuid
+  wallet_address          String    @unique
+  custody_type            String
+  custody_provider        String?
+  multi_sig_threshold     Int?
+  signers                 String[]  @default([])
+  time_lock_hours         Int?
+  withdrawal_whitelist    String[]  @default([])
+  daily_withdrawal_limit  Decimal?  @db.Decimal(30, 18)
+  requires_2fa            Boolean   @default(true)
+  requires_email_confirm  Boolean   @default(true)
+  cold_storage_percentage Int       @default(80)
+  insurance_coverage      Decimal?  @db.Decimal(20, 2)
+  last_security_audit     DateTime? @db.Date
+  risk_score              Int       @default(50)
+  is_active               Boolean   @default(true)
+  metadata                Json      @default("{}")
+  created_at              DateTime  @default(now()) @db.Timestamptz(6)
+  updated_at              DateTime  @default(now()) @updatedAt @db.Timestamptz(6)
+
+  @@index([custody_type], name: "idx_wallet_custody_type")
+  @@index([is_active], name: "idx_wallet_custody_active")
+}
+
+model YieldOpportunity {
+  id               String   @id @default(uuid()) @db.Uuid
+  protocol_id      String   @db.Uuid
+  opportunity_type String
+  asset_symbol     String
+  apr              Decimal  @db.Decimal(6, 2)
+  apy              Decimal  @db.Decimal(6, 2)
+  tvl_usd          Decimal? @db.Decimal(30, 2)
+  min_amount       Decimal? @db.Decimal(30, 18)
+  lock_period_days Int      @default(0)
+  risk_score       Int      @default(50)
+  is_active        Boolean  @default(true)
+  metadata         Json     @default("{}")
+  created_at       DateTime @default(now()) @db.Timestamptz(6)
+  updated_at       DateTime @default(now()) @updatedAt @db.Timestamptz(6)
+
+  // Relations
+  protocol DefiProtocol @relation(fields: [protocol_id], references: [id], onDelete: Cascade)
+
+  @@index([opportunity_type], name: "idx_yield_opportunity_type")
+  @@index([asset_symbol], name: "idx_yield_opportunity_asset")
+}
