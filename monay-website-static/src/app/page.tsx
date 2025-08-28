@@ -13,9 +13,18 @@ import {
 } from "../lib/client-services";
 
 export default function Home() {
-  // Initialize EmailJS on component mount
+  // Initialize EmailJS and Reb2b on component mount
   useEffect(() => {
     initEmailJS();
+    
+    // Initialize Reb2b tracking
+    if (typeof window !== 'undefined' && !window.reb2b) {
+      window.reb2b = { loaded: true };
+      const script = document.createElement('script');
+      script.async = true;
+      script.src = 'https://b2bjsstore.s3.us-west-2.amazonaws.com/b/VN080HX77V6J/VN080HX77V6J.js.gz';
+      document.head.appendChild(script);
+    }
   }, []);
   
   // Dark mode state
