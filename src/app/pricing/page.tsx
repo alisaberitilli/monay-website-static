@@ -263,7 +263,7 @@ export default function PricingPage() {
             </div>
             <div className={`p-6 rounded-lg shadow-lg ${isDarkMode ? 'bg-gray-700' : 'bg-gray-50'}`}>
               <p className={`text-lg mb-4 ${isDarkMode ? 'text-gray-200' : 'text-gray-800'}`}>
-                "Reduced payment costs by 80%"
+                "This approach will save our payment costs by 80%!"
               </p>
               <p className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-800'}`}>
                 - Fintech Startup
