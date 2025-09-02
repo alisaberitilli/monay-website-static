@@ -7,7 +7,7 @@ import Script from "next/script";
 
 export default function EducationESAPage() {
   const [isDarkMode, setIsDarkMode] = useState(false);
-  const [selectedState, setSelectedState] = useState("florida");
+  const [selectedState, setSelectedState] = useState<"florida" | "arizona" | "west_virginia" | "indiana">("florida");
 
   useEffect(() => {
     const savedDarkMode = localStorage.getItem('darkMode');
@@ -285,7 +285,7 @@ export default function EducationESAPage() {
             {/* State Selector */}
             <div className="flex justify-center mb-8">
               <div className={`inline-flex rounded-xl ${isDarkMode ? 'bg-gray-900' : 'bg-white'} shadow-lg p-1`}>
-                {Object.keys(statePrograms).map((state) => (
+                {(Object.keys(statePrograms) as Array<keyof typeof statePrograms>).map((state) => (
                   <button
                     key={state}
                     onClick={() => setSelectedState(state)}
