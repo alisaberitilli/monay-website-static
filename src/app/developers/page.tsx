@@ -71,7 +71,7 @@ export default function DevelopersPage() {
                     <h4 className={`text-lg font-semibold mb-2 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>1. Get Your API Keys</h4>
                     <div className={`${isDarkMode ? 'bg-gray-900' : 'bg-gray-100'} p-4 rounded-lg font-mono text-sm`}>
                       <p className="text-green-600"># Sign up for a developer account</p>
-                      <p className={isDarkMode ? 'text-gray-300' : 'text-gray-800'}>Visit http://localhost:3000/signup</p>
+                      <p className={isDarkMode ? 'text-gray-300' : 'text-gray-800'}>Visit https://monay.com/signup</p>
                       <p className="mt-2 text-green-600"># Get your API keys from the dashboard</p>
                       <p className={isDarkMode ? 'text-gray-300' : 'text-gray-800'}>Dashboard → Settings → API Keys</p>
                     </div>
