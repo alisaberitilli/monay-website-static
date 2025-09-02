@@ -1,6 +1,8 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
+import { useState, useEffect, useRef } from "react";
 import { openCalendly } from "../lib/client-services";
 
 interface NavigationProps {
@@ -9,36 +11,110 @@ interface NavigationProps {
 }
 
 export default function Navigation({ isDarkMode, setIsDarkMode }: NavigationProps) {
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setIsDropdownOpen(false);
+      }
+    }
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
+
   return (
     <nav className={`${isDarkMode ? 'bg-gray-800/90 border-gray-700' : 'bg-white/80 border-gray-200'} backdrop-blur-md border-b sticky top-0 z-50 transition-colors duration-300`}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-20">
           <div className="flex items-center">
-            <a href="/">
+            <Link href="/" prefetch={false}>
               <Image
                 src="/Monay.svg"
                 alt="MONAY Logo"
                 width={240}
                 height={80}
-                className="h-20 w-auto logo-image"
+                className="h-20 w-auto logo-image cursor-pointer"
                 priority
               />
-            </a>
+            </Link>
           </div>
           <div className="hidden md:block">
             <div className="ml-10 flex items-baseline space-x-4">
-              <a href="/" className={`${isDarkMode ? 'text-gray-300 hover:text-blue-400' : 'text-gray-700 hover:text-blue-600'} px-3 py-2 rounded-md text-sm font-medium transition-colors`}>Home</a>
-              <a href="/pricing" className={`${isDarkMode ? 'text-gray-300 hover:text-blue-400' : 'text-gray-700 hover:text-blue-600'} px-3 py-2 rounded-md text-sm font-medium transition-colors`}>Pricing</a>
-              <a href="/why-monay" className={`${isDarkMode ? 'text-gray-300 hover:text-blue-400' : 'text-gray-700 hover:text-blue-600'} px-3 py-2 rounded-md text-sm font-medium transition-colors`}>Why Monay?</a>
-              <a href="/developers" className={`${isDarkMode ? 'text-gray-300 hover:text-blue-400' : 'text-gray-700 hover:text-blue-600'} px-3 py-2 rounded-md text-sm font-medium transition-colors`}>Developers</a>
-              <a href="/investors" className={`${isDarkMode ? 'text-gray-300 hover:text-blue-400' : 'text-gray-700 hover:text-blue-600'} px-3 py-2 rounded-md text-sm font-medium transition-colors`}>Investors</a>
-              <a href="/#pilot-program" className={`${isDarkMode ? 'text-gray-300 hover:text-blue-400' : 'text-gray-700 hover:text-blue-600'} px-3 py-2 rounded-md text-sm font-medium transition-colors`}>Pilot Program</a>
-              <a href="/#contact" className={`${isDarkMode ? 'text-gray-300 hover:text-blue-400' : 'text-gray-700 hover:text-blue-600'} px-3 py-2 rounded-md text-sm font-medium transition-colors`}>Contact</a>
+              <Link href="/" className={`${isDarkMode ? 'text-gray-300 hover:text-blue-400' : 'text-gray-700 hover:text-blue-600'} px-3 py-2 rounded-md text-sm font-medium transition-colors`}>Home</Link>
+              
+              {/* Solutions Dropdown */}
+              <div className="relative" ref={dropdownRef}>
+                <button
+                  onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                  className={`${isDarkMode ? 'text-gray-300 hover:text-blue-400' : 'text-gray-700 hover:text-blue-600'} px-3 py-2 rounded-md text-sm font-medium transition-colors flex items-center`}
+                >
+                  Solutions
+                  <svg className="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                  </svg>
+                </button>
+                
+                {isDropdownOpen && (
+                  <div className={`absolute left-0 mt-1 w-64 rounded-md shadow-lg z-50 ${isDarkMode ? 'bg-gray-800 border border-gray-700' : 'bg-white border border-gray-200'}`}>
+                    <div className="py-1">
+                      <div className={`px-4 py-2 text-xs font-semibold uppercase tracking-wide ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                        Enterprise Solutions
+                      </div>
+                      <Link href="/enterprise-stablecoin" className={`block px-4 py-2 text-sm ${isDarkMode ? 'text-gray-300 hover:bg-gray-700' : 'text-gray-700 hover:bg-gray-100'} transition-colors`}>
+                        Enterprise Stablecoin Platform
+                      </Link>
+                      <Link href="/solutions/banking-fintech" className={`block px-4 py-2 text-sm ${isDarkMode ? 'text-gray-300 hover:bg-gray-700' : 'text-gray-700 hover:bg-gray-100'} transition-colors`}>
+                        Banking & Fintech
+                      </Link>
+                      <Link href="/solutions/cross-border-payments" className={`block px-4 py-2 text-sm ${isDarkMode ? 'text-gray-300 hover:bg-gray-700' : 'text-gray-700 hover:bg-gray-100'} transition-colors`}>
+                        Cross-Border Payments
+                      </Link>
+                      
+                      <div className={`px-4 py-2 text-xs font-semibold uppercase tracking-wide mt-2 ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                        Government Solutions
+                      </div>
+                      <Link href="/government-rfp" className={`block px-4 py-2 text-sm ${isDarkMode ? 'text-gray-300 hover:bg-gray-700' : 'text-gray-700 hover:bg-gray-100'} transition-colors`}>
+                        Government RFP Solutions
+                      </Link>
+                      <Link href="/education-esa" className={`block px-4 py-2 text-sm ${isDarkMode ? 'text-gray-300 hover:bg-gray-700' : 'text-gray-700 hover:bg-gray-100'} transition-colors`}>
+                        Education Savings Account
+                      </Link>
+                      <Link href="/snap-modernization" className={`block px-4 py-2 text-sm ${isDarkMode ? 'text-gray-300 hover:bg-gray-700' : 'text-gray-700 hover:bg-gray-100'} transition-colors`}>
+                        SNAP Modernization
+                      </Link>
+                      <Link href="/disaster-relief" className={`block px-4 py-2 text-sm ${isDarkMode ? 'text-gray-300 hover:bg-gray-700' : 'text-gray-700 hover:bg-gray-100'} transition-colors`}>
+                        Disaster Relief Programs
+                      </Link>
+                      <Link href="/solutions/government-programs" className={`block px-4 py-2 text-sm ${isDarkMode ? 'text-gray-300 hover:bg-gray-700' : 'text-gray-700 hover:bg-gray-100'} transition-colors`}>
+                        All Government Programs
+                      </Link>
+                      
+                      <div className={`px-4 py-2 text-xs font-semibold uppercase tracking-wide mt-2 ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                        Compliance
+                      </div>
+                      <Link href="/solutions/compliance-brf" className={`block px-4 py-2 text-sm ${isDarkMode ? 'text-gray-300 hover:bg-gray-700' : 'text-gray-700 hover:bg-gray-100'} transition-colors`}>
+                        Business Rule Framework
+                      </Link>
+                    </div>
+                  </div>
+                )}
+              </div>
+              
+              <Link href="/pricing" className={`${isDarkMode ? 'text-gray-300 hover:text-blue-400' : 'text-gray-700 hover:text-blue-600'} px-3 py-2 rounded-md text-sm font-medium transition-colors`}>Pricing</Link>
+              <Link href="/why-monay" className={`${isDarkMode ? 'text-gray-300 hover:text-blue-400' : 'text-gray-700 hover:text-blue-600'} px-3 py-2 rounded-md text-sm font-medium transition-colors`}>Why Monay?</Link>
+              <Link href="/developers" className={`${isDarkMode ? 'text-gray-300 hover:text-blue-400' : 'text-gray-700 hover:text-blue-600'} px-3 py-2 rounded-md text-sm font-medium transition-colors`}>Developers</Link>
+              <Link href="/investors" className={`${isDarkMode ? 'text-gray-300 hover:text-blue-400' : 'text-gray-700 hover:text-blue-600'} px-3 py-2 rounded-md text-sm font-medium transition-colors`}>Investors</Link>
             </div>
           </div>
           <div className="flex items-center space-x-4">
             {/* Sign Up Button */}
-            <a 
+            <Link 
               href="/signup"
               className={`px-5 py-2 rounded-lg font-medium transition-all duration-200 ${
                 isDarkMode 
@@ -47,7 +123,7 @@ export default function Navigation({ isDarkMode, setIsDarkMode }: NavigationProp
               }`}
             >
               Sign Up
-            </a>
+            </Link>
             
             {/* Dark mode toggle */}
             <button

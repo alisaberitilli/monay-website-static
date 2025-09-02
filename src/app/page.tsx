@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import { useState, useEffect } from "react";
 import Navigation from "../components/Navigation";
 import Footer from "../components/Footer";
@@ -1270,7 +1271,10 @@ export default function Home() {
                   </svg>
                 </div>
                 <h4 className={`font-semibold mb-2 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Education & Savings</h4>
-                <p className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-800'}`}>ESA programs, custodial accounts, controlled spend</p>
+                <p className={`text-sm mb-3 ${isDarkMode ? 'text-gray-300' : 'text-gray-800'}`}>ESA programs, custodial accounts, controlled spend</p>
+                <Link href="/education-esa" className="inline-block px-4 py-2 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+                  Learn More
+                </Link>
               </div>
               
               <div className="text-center">
@@ -1280,7 +1284,10 @@ export default function Home() {
                   </svg>
                 </div>
                 <h4 className={`font-semibold mb-2 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Government Programs</h4>
-                <p className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-800'}`}>FEMA, IRS, military stipends, federal disbursements</p>
+                <p className={`text-sm mb-3 ${isDarkMode ? 'text-gray-300' : 'text-gray-800'}`}>FEMA, IRS, military stipends, federal disbursements</p>
+                <Link href="/government-rfp" className="inline-block px-4 py-2 text-sm bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors">
+                  View RFP Solutions
+                </Link>
               </div>
               
               <div className="text-center">
@@ -1290,7 +1297,60 @@ export default function Home() {
                   </svg>
                 </div>
                 <h4 className={`font-semibold mb-2 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>B2B & Cross-Border</h4>
-                <p className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-800'}`}>Invoice settlement, FX conversions, compliance</p>
+                <p className={`text-sm mb-3 ${isDarkMode ? 'text-gray-300' : 'text-gray-800'}`}>Invoice settlement, FX conversions, compliance</p>
+                <Link href="/solutions/cross-border-payments" className="inline-block px-4 py-2 text-sm bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors">
+                  Explore Solutions
+                </Link>
+              </div>
+            </div>
+            
+            {/* Additional Government Solutions */}
+            <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="text-center p-4 bg-opacity-50 rounded-lg">
+                <h5 className={`font-semibold mb-2 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>SNAP Modernization</h5>
+                <p className={`text-sm mb-3 ${isDarkMode ? 'text-gray-300' : 'text-gray-800'}`}>Modern SNAP benefits distribution system</p>
+                <Link href="/snap-modernization" className="text-blue-600 hover:text-blue-800 text-sm font-medium">
+                  Learn More →
+                </Link>
+              </div>
+              <div className="text-center p-4 bg-opacity-50 rounded-lg">
+                <h5 className={`font-semibold mb-2 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Disaster Relief</h5>
+                <p className={`text-sm mb-3 ${isDarkMode ? 'text-gray-300' : 'text-gray-800'}`}>Rapid emergency aid distribution</p>
+                <Link href="/disaster-relief" className="text-blue-600 hover:text-blue-800 text-sm font-medium">
+                  Learn More →
+                </Link>
+              </div>
+            </div>
+          </div>
+          
+          {/* Enterprise Solutions */}
+          <div className={`${isDarkMode ? 'bg-gradient-to-r from-gray-700 to-gray-600' : 'bg-gradient-to-r from-blue-50 to-indigo-50'} p-8 rounded-2xl transition-colors duration-300 mt-8`}>
+            <h3 className={`text-2xl font-bold mb-6 text-center ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Enterprise Solutions</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="text-center">
+                <div className="w-12 h-12 bg-indigo-600 rounded-lg flex items-center justify-center mx-auto mb-4">
+                  <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
+                  </svg>
+                </div>
+                <h4 className={`font-semibold mb-2 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Enterprise Stablecoin Platform</h4>
+                <p className={`text-sm mb-3 ${isDarkMode ? 'text-gray-300' : 'text-gray-800'}`}>Custom stablecoin issuance with dual-rail architecture</p>
+                <Link href="/enterprise-stablecoin" className="inline-block px-4 py-2 text-sm bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors">
+                  Explore Platform
+                </Link>
+              </div>
+              
+              <div className="text-center">
+                <div className="w-12 h-12 bg-teal-600 rounded-lg flex items-center justify-center mx-auto mb-4">
+                  <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                </div>
+                <h4 className={`font-semibold mb-2 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Banking & Fintech</h4>
+                <p className={`text-sm mb-3 ${isDarkMode ? 'text-gray-300' : 'text-gray-800'}`}>Regulatory-compliant payment infrastructure</p>
+                <Link href="/solutions/banking-fintech" className="inline-block px-4 py-2 text-sm bg-teal-600 text-white rounded-lg hover:bg-teal-700 transition-colors">
+                  View Solutions
+                </Link>
               </div>
             </div>
           </div>

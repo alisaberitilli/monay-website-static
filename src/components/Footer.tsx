@@ -57,8 +57,28 @@ export default function Footer({ isDarkMode }: FooterProps) {
             <h3 className={`font-semibold mb-4 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Solutions</h3>
             <ul className="space-y-2">
               <li>
-                <a href="/solutions/government-programs" className={`text-sm ${isDarkMode ? 'text-gray-400 hover:text-blue-400' : 'text-gray-600 hover:text-blue-600'} transition-colors`}>
-                  Government Programs
+                <a href="/enterprise-stablecoin" className={`text-sm ${isDarkMode ? 'text-gray-400 hover:text-blue-400' : 'text-gray-600 hover:text-blue-600'} transition-colors`}>
+                  Enterprise Stablecoin
+                </a>
+              </li>
+              <li>
+                <a href="/government-rfp" className={`text-sm ${isDarkMode ? 'text-gray-400 hover:text-blue-400' : 'text-gray-600 hover:text-blue-600'} transition-colors`}>
+                  Government RFP
+                </a>
+              </li>
+              <li>
+                <a href="/education-esa" className={`text-sm ${isDarkMode ? 'text-gray-400 hover:text-blue-400' : 'text-gray-600 hover:text-blue-600'} transition-colors`}>
+                  Education ESA
+                </a>
+              </li>
+              <li>
+                <a href="/snap-modernization" className={`text-sm ${isDarkMode ? 'text-gray-400 hover:text-blue-400' : 'text-gray-600 hover:text-blue-600'} transition-colors`}>
+                  SNAP Modernization
+                </a>
+              </li>
+              <li>
+                <a href="/disaster-relief" className={`text-sm ${isDarkMode ? 'text-gray-400 hover:text-blue-400' : 'text-gray-600 hover:text-blue-600'} transition-colors`}>
+                  Disaster Relief
                 </a>
               </li>
               <li>
@@ -69,11 +89,6 @@ export default function Footer({ isDarkMode }: FooterProps) {
               <li>
                 <a href="/solutions/cross-border-payments" className={`text-sm ${isDarkMode ? 'text-gray-400 hover:text-blue-400' : 'text-gray-600 hover:text-blue-600'} transition-colors`}>
                   Cross-Border Payments
-                </a>
-              </li>
-              <li>
-                <a href="/solutions/compliance-brf" className={`text-sm ${isDarkMode ? 'text-gray-400 hover:text-blue-400' : 'text-gray-600 hover:text-blue-600'} transition-colors`}>
-                  Compliance & BRF
                 </a>
               </li>
             </ul>
@@ -101,6 +116,11 @@ export default function Footer({ isDarkMode }: FooterProps) {
               <li>
                 <a href="/#pilot-program" className={`text-sm ${isDarkMode ? 'text-gray-400 hover:text-blue-400' : 'text-gray-600 hover:text-blue-600'} transition-colors`}>
                   Pilot Program
+                </a>
+              </li>
+              <li>
+                <a href="/#contact" className={`text-sm ${isDarkMode ? 'text-gray-400 hover:text-blue-400' : 'text-gray-600 hover:text-blue-600'} transition-colors`}>
+                  Contact Us
                 </a>
               </li>
             </ul>

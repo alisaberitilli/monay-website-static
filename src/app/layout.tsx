@@ -14,9 +14,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "MONAY - Coin-as-a-Service & Wallet-as-a-Service Platform",
-  description: "Monay Wallet is a branded, white-label stablecoin and digital wallet platform for banks, fintech, and government agencies. Powered by USDM with interoperability across all stablecoins.",
-  keywords: ["stablecoin", "digital wallet", "blockchain", "fintech", "CaaS", "WaaS", "USDM", "payment platform", "cryptocurrency", "digital banking"],
+  title: "Monay - Enterprise Stablecoin Platform | CaaS & WaaS Solutions | GENIUS Act Compliant",
+  description: "Monay is the first unified platform for enterprise stablecoin issuance, consumer payments, and compliance orchestration. $250B TAM. GENIUS Act compliant. Dual-rail blockchain (Base L2 + Solana). White-label solutions for banks, government, and enterprises. Pre-Series A funding.",
+  keywords: ["stablecoin platform", "GENIUS Act", "programmable money", "digital wallet", "blockchain payments", "fintech infrastructure", "CaaS", "WaaS", "enterprise stablecoin", "government payments", "Base L2", "Solana", "compliant stablecoin", "treasury management", "payment rails", "financial infrastructure", "digital disbursements", "public sector payments", "bank modernization", "API-first fintech"],
   authors: [{ name: "Monay" }],
   creator: "Monay",
   publisher: "Monay",
@@ -35,8 +35,8 @@ export const metadata: Metadata = {
     type: 'website',
     locale: 'en_US',
     url: 'https://monay.com',
-    title: 'MONAY - Coin-as-a-Service & Wallet-as-a-Service Platform',
-    description: 'Monay Wallet is a branded, white-label stablecoin and digital wallet platform for banks, fintech, and government agencies.',
+    title: 'Monay - Enterprise Stablecoin Platform | CaaS & WaaS | GENIUS Act Compliant',
+    description: 'First unified platform for enterprise stablecoin issuance & compliance. $250B TAM by 2028. Serving 932K global financial institutions. GENIUS Act compliant infrastructure for banks, government, and enterprises.',
     siteName: 'Monay',
     images: [
       {
@@ -49,8 +49,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'MONAY - Coin-as-a-Service & Wallet-as-a-Service Platform',
-    description: 'Monay Wallet is a branded, white-label stablecoin and digital wallet platform.',
+    title: 'Monay - Enterprise Stablecoin Platform | Pre-Series A | $6.5M Raise',
+    description: 'Revolutionary dual-rail blockchain platform (Base L2 + Solana) for programmable money. White-label CaaS & WaaS solutions. Active RFPs in education, relief & B2B automation.',
     images: ['https://monay.com/twitter-image.png'],
     creator: '@monay',
   },
@@ -81,7 +81,7 @@ export default function RootLayout({
               "@context": "https://schema.org",
               "@type": "Organization",
               "name": "Monay",
-              "description": "Digital money platform providing Coin-as-a-Service and Wallet-as-a-Service for government programs, banking, and enterprise",
+              "description": "First unified platform for enterprise stablecoin issuance, consumer payments, and compliance orchestration. GENIUS Act compliant. Dual-rail blockchain architecture. $250B TAM by 2028.",
               "url": "https://monay.com",
               "logo": "https://monay.com/Monay.svg",
               "sameAs": [
@@ -96,8 +96,8 @@ export default function RootLayout({
               "contactPoint": {
                 "@type": "ContactPoint",
                 "telephone": "+1-888-MONAY",
-                "contactType": "sales",
-                "email": "sales@monay.com",
+                "contactType": "investor relations",
+                "email": "investors@monay.com",
                 "availableLanguage": ["English"]
               },
               "offers": {
@@ -108,19 +108,19 @@ export default function RootLayout({
                   {
                     "@type": "Offer",
                     "name": "Monay CaaS - Coin-as-a-Service",
-                    "description": "Enterprise stablecoin issuance platform with compliance",
+                    "description": "GENIUS Act compliant enterprise stablecoin issuance platform with built-in Business Rules Framework. Base L2 + Solana dual-rail architecture.",
                     "url": "https://monay.com/products/monay-caas"
                   },
                   {
                     "@type": "Offer",
                     "name": "Monay WaaS - Wallet-as-a-Service",
-                    "description": "White-label digital wallet solution",
+                    "description": "White-label digital wallet with cards, ATM access, and real-world payment rails. Instant settlement, programmable controls.",
                     "url": "https://monay.com/products/monay-waas"
                   },
                   {
                     "@type": "Offer",
                     "name": "Monay Government Solutions",
-                    "description": "Digital payment infrastructure for government benefit programs including SNAP, WIC, TANF, and unemployment benefits",
+                    "description": "Programmable wallets for government disbursements: grants, disaster relief, education savings, subsidies. $500B SAM in public sector flows.",
                     "url": "https://monay.com/solutions/government-programs"
                   }
                 ]

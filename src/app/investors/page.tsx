@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import Navigation from "@/components/Navigation";
 import BuildStatus from "@/components/BuildStatus";
 import FeatureAvailability from "@/components/FeatureAvailability";
+import Script from "next/script";
 
 export default function InvestorsPage() {
   const [isDarkMode, setIsDarkMode] = useState(false);
@@ -23,8 +24,8 @@ export default function InvestorsPage() {
   const traction = [
     { metric: '3', label: 'Pipeline Pilot Programs', sublabel: 'Government & Enterprise' },
     { metric: '$5M+', label: 'Pipeline Value', sublabel: 'Q1 2026' },
-    { metric: '150K', label: 'Target Users', sublabel: 'Year 1' },
-    { metric: '$500M', label: 'TAM', sublabel: 'US Market' },
+    { metric: '932K', label: 'Target Institutions', sublabel: 'Global Banks & FIs' },
+    { metric: '$250B', label: 'TAM', sublabel: 'By 2028' },
   ];
 
   const differentiators = [
@@ -43,8 +44,34 @@ export default function InvestorsPage() {
   ];
 
   return (
-    <div className={`min-h-screen ${isDarkMode ? 'bg-gray-900 text-white' : 'bg-gray-50 text-gray-900'}`}>
-      <Navigation isDarkMode={isDarkMode} setIsDarkMode={setIsDarkMode} />
+    <>
+      <Script
+        id="investor-structured-data"
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "InvestmentFund",
+            "name": "Monay Pre-Series A Round",
+            "description": "Monay is raising $6.5M Pre-Series A to build the first unified platform for enterprise stablecoin issuance and compliance orchestration",
+            "url": "https://www.monay.com/investors",
+            "seeks": {
+              "@type": "Investment",
+              "amount": "$6,500,000",
+              "investmentType": "Pre-Series A",
+              "currency": "USD"
+            },
+            "industry": "Financial Technology",
+            "keywords": "stablecoin, GENIUS Act, blockchain, fintech, enterprise payments",
+            "foundingDate": "2020",
+            "addressableMarket": "$250B by 2028",
+            "targetMarket": "932K global financial institutions",
+            "competitiveAdvantage": "First GENIUS Act compliant dual-rail blockchain platform"
+          })
+        }}
+      />
+      <div className={`min-h-screen ${isDarkMode ? 'bg-gray-900 text-white' : 'bg-gray-50 text-gray-900'}`}>
+        <Navigation isDarkMode={isDarkMode} setIsDarkMode={setIsDarkMode} />
       
       {/* Hero Section */}
       <section className="relative overflow-hidden">
@@ -62,7 +89,7 @@ export default function InvestorsPage() {
                 <svg className="w-5 h-5 text-green-400" fill="currentColor" viewBox="0 0 20 20">
                   <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                 </svg>
-                <span className="text-white font-medium">Series A Fundraising</span>
+                <span className="text-white font-medium">$6.5M Series A - Q1 2026</span>
               </div>
               
               <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold text-white mb-6">
@@ -73,8 +100,8 @@ export default function InvestorsPage() {
               </h1>
               
               <p className="text-xl md:text-2xl text-white/90 mb-8 max-w-3xl mx-auto leading-relaxed">
-                Enterprise-grade stablecoin infrastructure with built-in compliance, 
-                real-world payment rails, and instant global settlement
+                First unified platform for enterprise stablecoin issuance, consumer payments, 
+                and compliance orchestration—enabled by the GENIUS Act (July 2025)
               </p>
               
               {/* CTA Buttons */}
@@ -378,20 +405,20 @@ export default function InvestorsPage() {
                   <div className="space-y-4">
                     <div className={`p-4 rounded-lg ${isDarkMode ? 'bg-gray-700' : 'bg-gray-100'}`}>
                       <div className="flex justify-between items-center">
-                        <span>US Digital Payments</span>
-                        <span className="font-bold text-2xl">$12T</span>
+                        <span>Global Digital Payments</span>
+                        <span className="font-bold text-2xl">$9T+</span>
                       </div>
                     </div>
                     <div className={`p-4 rounded-lg ${isDarkMode ? 'bg-gray-700' : 'bg-gray-100'}`}>
                       <div className="flex justify-between items-center">
-                        <span>Stablecoin Market</span>
-                        <span className="font-bold text-2xl">$180B</span>
+                        <span>Stablecoin TAM (2028)</span>
+                        <span className="font-bold text-2xl">$250B</span>
                       </div>
                     </div>
                     <div className={`p-4 rounded-lg ${isDarkMode ? 'bg-gray-700' : 'bg-gray-100'}`}>
                       <div className="flex justify-between items-center">
-                        <span>Enterprise Blockchain</span>
-                        <span className="font-bold text-2xl">$67B</span>
+                        <span>Public Sector SAM</span>
+                        <span className="font-bold text-2xl">$500B</span>
                       </div>
                     </div>
                   </div>
@@ -404,25 +431,25 @@ export default function InvestorsPage() {
                       <svg className="w-5 h-5 text-green-500 mr-2 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
                         <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                       </svg>
-                      <span>Government digital currency initiatives</span>
+                      <span>GENIUS Act passage (July 2025) enabling stablecoin payments</span>
                     </li>
                     <li className="flex items-start">
                       <svg className="w-5 h-5 text-green-500 mr-2 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
                         <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                       </svg>
-                      <span>Enterprise blockchain adoption</span>
+                      <span>932K global financial institutions seeking modernization</span>
                     </li>
                     <li className="flex items-start">
                       <svg className="w-5 h-5 text-green-500 mr-2 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
                         <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                       </svg>
-                      <span>Cross-border payment modernization</span>
+                      <span>Government RFPs for programmable disbursements</span>
                     </li>
                     <li className="flex items-start">
                       <svg className="w-5 h-5 text-green-500 mr-2 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
                         <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                       </svg>
-                      <span>Regulatory clarity on digital assets</span>
+                      <span>API-first infrastructure demand from FinTechs</span>
                     </li>
                   </ul>
                 </div>
@@ -436,10 +463,10 @@ export default function InvestorsPage() {
           <div className="max-w-6xl mx-auto space-y-12">
             <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
               {[
-                { metric: '3', label: 'Pipeline Pilot Programs', detail: 'Government & Enterprise' },
-                { metric: '15K', label: 'Waitlist Users', detail: 'Organic growth' },
+                { metric: '3', label: 'Active RFPs', detail: 'Gov, Education, B2B' },
+                { metric: '932K', label: 'Target FIs', detail: 'Global Banks & Credit Unions' },
                 { metric: '$5M+', label: 'Pipeline', detail: 'Q1 2026' },
-                { metric: '8', label: 'Team Members', detail: 'Ex-Stripe, Coinbase' }
+                { metric: '$6.5M', label: 'Series A', detail: '18-month runway' }
               ].map((item, index) => (
                 <div key={index} className={`p-6 rounded-xl ${isDarkMode ? 'bg-gray-800' : 'bg-white'} shadow-lg text-center`}>
                   <div className="text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600">
@@ -461,7 +488,7 @@ export default function InvestorsPage() {
               <div className="space-y-4">
                 {[
                   { date: 'Q4 2020', milestone: 'Consumer Wallet launch halted - pivoted to enterprise focus' },
-                  { date: 'Q3 2025', milestone: 'Complete MVP with initial pilot programs' },
+                  { date: 'Q4 2025', milestone: 'Complete MVP ready for pilot programs' },
                   { date: 'Q1 2026', milestone: 'Achieve regulatory compliance & certifications' },
                   { date: 'Q3 2026', milestone: 'Scale to 50K users across enterprise clients' },
                   { date: 'Q1 2027', milestone: 'Launch CaaS platform for institutional clients' },
@@ -486,27 +513,15 @@ export default function InvestorsPage() {
               <div className="grid md:grid-cols-2 gap-8">
                 {[
                   {
-                    name: 'John Smith',
-                    role: 'CEO & Co-Founder',
-                    background: 'Former VP Product at Stripe, 15+ years in fintech',
+                    name: 'Ali Saberi',
+                    role: 'Founder CEO/CTO',
+                    background: '30 years of enterprise and public sector, 15+ years in fintech',
                     linkedin: '#'
                   },
                   {
-                    name: 'Sarah Johnson',
-                    role: 'CTO & Co-Founder',
-                    background: 'Ex-Coinbase, Built scalable blockchain infrastructure',
-                    linkedin: '#'
-                  },
-                  {
-                    name: 'Michael Chen',
-                    role: 'Head of Compliance',
-                    background: 'Former Director at OCC, Expert in digital asset regulation',
-                    linkedin: '#'
-                  },
-                  {
-                    name: 'Emily Davis',
-                    role: 'Head of Engineering',
-                    background: 'Ex-Google, Led payments infrastructure team',
+                    name: 'Shabbir Gilani',
+                    role: 'CRO',
+                    background: 'Seasoned GTM Strategist, 25+ years, Ex-Citi, ACI Worldwide',
                     linkedin: '#'
                   }
                 ].map((member, index) => (
@@ -520,7 +535,7 @@ export default function InvestorsPage() {
               
               <div className={`mt-8 p-4 rounded-lg ${isDarkMode ? 'bg-blue-900/20' : 'bg-blue-50'} border ${isDarkMode ? 'border-blue-800' : 'border-blue-200'}`}>
                 <p className={`text-sm ${isDarkMode ? 'text-blue-200' : 'text-blue-800'}`}>
-                  <strong>Advisory Board:</strong> Includes former executives from Federal Reserve, PayPal, Circle, and leading blockchain protocols
+                  <strong>Advisory Board:</strong> Seeking advisory board members from Federal Reserve, Fiserv, PayPal, Circle, Ring Labs, & Anchorage
                 </p>
               </div>
             </div>
@@ -598,6 +613,7 @@ export default function InvestorsPage() {
           </div>
         </div>
       </footer>
-    </div>
+      </div>
+    </>
   );
 }
