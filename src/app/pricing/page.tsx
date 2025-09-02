@@ -271,7 +271,7 @@ export default function PricingPage() {
             </div>
             <div className={`p-6 rounded-lg shadow-lg ${isDarkMode ? 'bg-gray-700' : 'bg-gray-50'}`}>
               <p className={`text-lg mb-4 ${isDarkMode ? 'text-gray-200' : 'text-gray-800'}`}>
-                "Cut development time by 6 months"
+                "This is already cutting our development time by 8 months"
               </p>
               <p className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-800'}`}>
                 - Digital Bank
