@@ -100,6 +100,11 @@ export class VtigerIntegration {
     this.userId = data.result.userId;
     console.log('Vtiger: Successfully logged in with session:', this.sessionId);
     console.log('Vtiger: User ID:', this.userId);
+    
+    if (!this.sessionId) {
+      throw new Error('Vtiger login succeeded but no session ID was returned');
+    }
+    
     return this.sessionId;
   }
 
