@@ -1069,18 +1069,6 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Platform Build Status - Moved before Partners */}
-      <section className={`py-16 transition-colors duration-300 ${isDarkMode ? 'bg-gray-900' : 'bg-gray-50'}`}>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="max-w-3xl mx-auto">
-            <BuildStatus isDarkMode={isDarkMode} />
-            <p className={`text-sm italic text-center mt-6 ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>
-              <strong>Core rails:</strong> Base L2 + Solana. <strong>Optional:</strong> additional L2s (e.g., Polygon zkEVM) for specific pilots.
-            </p>
-          </div>
-        </div>
-      </section>
-
       {/* Partners & Integrations */}
       <section id="partners" className={`py-24 transition-colors duration-300 ${isDarkMode ? 'bg-gray-800' : 'bg-white'}`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -1695,11 +1683,21 @@ export default function Home() {
 
     {/* Status Messages */}
     {pilotSubmitStatus === "success" && (
-      <div className="bg-green-50 border border-green-200 rounded-lg p-4">
-        <p className="text-green-800 text-sm">
-          Application submitted successfully! We'll contact you at ali@monay.com soon.
-        </p>
-      </div>
+      <>
+        <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+          <p className="text-green-800 text-sm">
+            Application submitted successfully! We'll contact you at ali@monay.com soon.
+          </p>
+        </div>
+        
+        {/* Platform Build Status - Shows after successful submission */}
+        <div className="mt-8 p-6 bg-gray-50 rounded-xl border border-gray-200">
+          <BuildStatus isDarkMode={false} />
+          <p className="text-sm italic text-center mt-4 text-gray-600">
+            <strong>Core rails:</strong> Base L2 + Solana. <strong>Optional:</strong> additional L2s (e.g., Polygon zkEVM) for specific pilots.
+          </p>
+        </div>
+      </>
     )}
     {pilotSubmitStatus === "error" && (
       <div className="bg-red-50 border border-red-200 rounded-lg p-4">
