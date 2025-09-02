@@ -470,20 +470,8 @@ export default function Home() {
 
       if (success) {
         setPilotSubmitStatus("success");
-        // Clear form after successful submission
-        setPilotFormData({
-          email: "",
-          firstName: "",
-          lastName: "",
-          mobileNumber: "",
-          companyType: "",
-          tokenVolume: "",
-          technicalRequirements: [],
-          timeline: "",
-          userId: ""
-        });
-        // Reset form after 3 seconds
-        setTimeout(() => setPilotSubmitStatus("idle"), 3000);
+        // Form stays submitted - requires page refresh to submit again
+        // Don't clear form data or reset status
       } else {
         setPilotSubmitStatus("error");
       }
