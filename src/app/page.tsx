@@ -4,6 +4,7 @@ import Image from "next/image";
 import { useState, useEffect } from "react";
 import Navigation from "../components/Navigation";
 import Footer from "../components/Footer";
+import BuildStatus from "../components/BuildStatus";
 import {
   handleContactForm,
   submitPilotProgram,
@@ -511,17 +512,18 @@ export default function Home() {
             <h1 className={`text-4xl md:text-6xl font-bold mb-6 ${
               isDarkMode ? 'text-white' : 'text-gray-900'
             }`}>
-              The Future of{" "}
+              Building the{" "}
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600">
-                Digital Finance
-              </span>
-              , Today
+                Programmable Money Stack
+              </span>{" "}
+              for the Real World
             </h1>
             <p className={`text-xl md:text-2xl mb-8 max-w-4xl mx-auto ${
               isDarkMode ? 'text-gray-300' : 'text-gray-800'
             }`}>
-              Enterprise-grade blockchain infrastructure meets consumer-friendly payment experiences. 
-              Authentication, stablecoin issuance, and wallet infrastructure - all in one platform.
+              We're <strong>building</strong> a single platform where institutions can issue a branded stablecoin 
+              and run controlled wallets that work in everyday contexts (tap-to-pay, e-commerce, and planned cash access) 
+              — with policy, compliance, and identity tied to every transaction.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center mb-8">
               {/* Primary CTA - Gradient with shadow */}
@@ -545,6 +547,16 @@ export default function Home() {
               </a>
             </div>
             
+            {/* Build Status Ribbon */}
+            <div className="max-w-3xl mx-auto mb-8">
+              <BuildStatus isDarkMode={isDarkMode} />
+            </div>
+            
+            {/* Rails Note */}
+            <p className={`text-sm italic mb-8 ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+              <strong>Core rails:</strong> Base L2 + Solana. <strong>Optional:</strong> additional L2s (e.g., Polygon zkEVM) for specific pilots.
+            </p>
+            
             {/* Three Core Products */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto mt-12">
               <div className={`${isDarkMode ? 'bg-gray-800/60 border-gray-600' : 'bg-white/60 border-gray-200'} backdrop-blur-sm p-6 rounded-xl border transition-all duration-300 hover:shadow-xl hover:scale-105`}>
@@ -553,8 +565,8 @@ export default function Home() {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" />
                   </svg>
                 </div>
-                <h3 className={`text-lg font-semibold mb-2 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Monay ID</h3>
-                <p className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-800'} mb-3`}>Revolutionary authentication with voice biometrics and custodian recovery</p>
+                <h3 className={`text-lg font-semibold mb-2 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Monay ID <span className="text-xs text-green-600 ml-2">~78%</span></h3>
+                <p className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-800'} mb-3`}>WebAuthn/passkeys, multi-modal biometrics (where device capabilities permit), custodian-assisted recovery</p>
                 <a href="/products/monay-id" className="inline-flex items-center text-blue-600 hover:text-blue-700 text-sm font-semibold group transition-all duration-200">
                   Learn more 
                   <svg className="w-4 h-4 ml-1 transform group-hover:translate-x-1 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -569,8 +581,8 @@ export default function Home() {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
                   </svg>
                 </div>
-                <h3 className={`text-lg font-semibold mb-2 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Monay CaaS</h3>
-                <p className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-800'} mb-3`}>Launch your branded stablecoin with dual-rail blockchain architecture</p>
+                <h3 className={`text-lg font-semibold mb-2 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Monay CaaS <span className="text-xs text-blue-600 ml-2">~48%</span></h3>
+                <p className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-800'} mb-3`}>Branded coin issuance, treasury segregation, conversion, cross-rail rebalancing (prototype)</p>
                 <a href="/products/monay-caas" className="inline-flex items-center text-purple-600 hover:text-purple-700 text-sm font-semibold group transition-all duration-200">
                   Learn more 
                   <svg className="w-4 h-4 ml-1 transform group-hover:translate-x-1 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -585,8 +597,8 @@ export default function Home() {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
                   </svg>
                 </div>
-                <h3 className={`text-lg font-semibold mb-2 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Monay WaaS</h3>
-                <p className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-800'} mb-3`}>Complete wallet infrastructure with cards, ATM, and payment rails</p>
+                <h3 className={`text-lg font-semibold mb-2 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Monay WaaS <span className="text-xs text-purple-600 ml-2">~66%</span></h3>
+                <p className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-800'} mb-3`}>Policy engine, refunds/returns, multi-role wallets. Card issuing & planned cardless ATM support</p>
                 <a href="/products/monay-waas" className="inline-flex items-center text-green-600 hover:text-green-700 text-sm font-semibold group transition-all duration-200">
                   Learn more 
                   <svg className="w-4 h-4 ml-1 transform group-hover:translate-x-1 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
