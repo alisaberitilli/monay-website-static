@@ -255,7 +255,7 @@ export default function PricingPage() {
           <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
             <div className={`p-6 rounded-lg shadow-lg ${isDarkMode ? 'bg-gray-700' : 'bg-gray-50'}`}>
               <p className={`text-lg mb-4 ${isDarkMode ? 'text-gray-200' : 'text-gray-800'}`}>
-                "Saved $500K annually switching from Auth0"
+                "Looking forward to saving $500K annually switching from Auth0"
               </p>
               <p className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-800'}`}>
                 - Enterprise SaaS Company
