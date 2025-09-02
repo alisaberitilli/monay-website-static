@@ -7,7 +7,7 @@ import Script from "next/script";
 
 export default function SNAPModernizationPage() {
   const [isDarkMode, setIsDarkMode] = useState(false);
-  const [selectedFeature, setSelectedFeature] = useState("restrictions");
+  const [selectedFeature, setSelectedFeature] = useState<"restrictions" | "analytics" | "integration">("restrictions");
 
   useEffect(() => {
     const savedDarkMode = localStorage.getItem('darkMode');
