@@ -21,7 +21,7 @@ export default function InvestorsPage() {
   const buildStatusData = [
     { name: 'Monay ID', progress: 78, status: 'Passkeys/WebAuthn, MFA, custodian recovery core', color: 'bg-green-600' },
     { name: 'CaaS', progress: 48, status: 'Treasury + interoperability design', color: 'bg-blue-600' },
-    { name: 'WaaS (MVP)', progress: 66, status: 'Policy engine, refunds/returns, multi-role wallets', color: 'bg-purple-600' },
+    { name: 'WaaS', progress: 66, status: 'Policy engine, refunds/returns, multi-role wallets', color: 'bg-purple-600' },
   ];
 
   const useCases = [
@@ -93,7 +93,7 @@ export default function InvestorsPage() {
           <div className={`flex items-start gap-3 ${isDarkMode ? 'text-yellow-200' : 'text-yellow-800'}`}>
             <span className="text-xl">⚠️</span>
             <p className="text-sm">
-              <strong>Status Disclosure (Sept 2, 2025):</strong> Monay ID ~78% complete; CaaS ~48% complete; WaaS (MVP) ~66% complete. 
+              <strong>Status Disclosure MVP (Sept 2, 2025):</strong> Monay ID ~78% complete; CaaS ~48% complete; WaaS ~66% complete. 
               Audits, certifications/registrations, partner integrations, and regression testing are pending. Feature availability varies by program, tier, and region.
             </p>
           </div>
