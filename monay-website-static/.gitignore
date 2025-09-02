@@ -39,3 +39,6 @@ next-env.d.ts
 .idea/
 *.swp
 *.swo
+
+# Include package-lock.json for Vercel
+!package-lock.json
