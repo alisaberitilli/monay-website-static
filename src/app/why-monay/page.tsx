@@ -81,7 +81,7 @@ export default function WhyMonayPage() {
       <section className="bg-gradient-to-r from-blue-600 to-purple-600 text-white py-20">
         <div className="container mx-auto px-4">
           <h1 className="text-5xl font-bold text-center mb-4">
-            Why Leading Companies Choose Monay
+            Why Leading Companies & Innovative Public Sectors Must Choose Monay
           </h1>
           <p className="text-xl text-center opacity-90 max-w-3xl mx-auto">
             See how we deliver more value, better technology, and lower costs than traditional providers
