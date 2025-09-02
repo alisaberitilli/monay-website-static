@@ -17,7 +17,7 @@ export default function MonayWaaSSignupPage() {
     phone: '',
     walletCount: '',
     transactionVolume: '',
-    features: [],
+    features: [] as string[],
     message: ''
   });
 
