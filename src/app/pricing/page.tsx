@@ -250,7 +250,7 @@ export default function PricingPage() {
       <section className={`py-16 ${isDarkMode ? 'bg-gray-800' : 'bg-white'}`}>
         <div className="container mx-auto px-4">
           <h2 className={`text-3xl font-bold text-center mb-12 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
-            What Our Customers Save
+            What Our Angel Customers are Saving
           </h2>
           <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
             <div className={`p-6 rounded-lg shadow-lg ${isDarkMode ? 'bg-gray-700' : 'bg-gray-50'}`}>
