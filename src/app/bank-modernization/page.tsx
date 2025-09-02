@@ -7,7 +7,7 @@ import Script from "next/script";
 
 export default function BankModernizationPage() {
   const [isDarkMode, setIsDarkMode] = useState(false);
-  const [selectedTab, setSelectedTab] = useState<'overview' | 'features' | 'integration'>('overview');
+  const [selectedTab, setSelectedTab] = useState<'overview' | 'capabilities' | 'comparison' | 'integration' | 'pricing' | 'contact'>('overview');
 
   useEffect(() => {
     const savedDarkMode = localStorage.getItem('darkMode');
@@ -169,14 +169,14 @@ export default function BankModernizationPage() {
         <section className={`sticky top-0 z-40 ${isDarkMode ? 'bg-gray-900/95' : 'bg-white/95'} backdrop-blur-lg border-b ${isDarkMode ? 'border-gray-800' : 'border-gray-200'}`}>
           <div className="container mx-auto px-4">
             <div className="flex overflow-x-auto scrollbar-hide">
-              {[
+              {([
                 { id: 'overview', label: 'Overview' },
                 { id: 'capabilities', label: 'Capabilities' },
                 { id: 'comparison', label: 'Comparison' },
                 { id: 'integration', label: 'Integration' },
                 { id: 'pricing', label: 'Pricing' },
                 { id: 'contact', label: 'Contact' }
-              ].map((tab) => (
+              ] as const).map((tab) => (
                 <button
                   key={tab.id}
                   onClick={() => setSelectedTab(tab.id)}
