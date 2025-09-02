@@ -7,7 +7,6 @@ import Script from "next/script";
 
 export default function EnterpriseStablecoinPage() {
   const [isDarkMode, setIsDarkMode] = useState(false);
-  const [activeTab, setActiveTab] = useState("overview");
 
   useEffect(() => {
     const savedDarkMode = localStorage.getItem('darkMode');

@@ -7,7 +7,7 @@ import Script from "next/script";
 
 export default function BankModernizationPage() {
   const [isDarkMode, setIsDarkMode] = useState(false);
-  const [selectedTab, setSelectedTab] = useState('overview');
+  const [selectedTab, setSelectedTab] = useState<'overview' | 'features' | 'integration'>('overview');
 
   useEffect(() => {
     const savedDarkMode = localStorage.getItem('darkMode');
