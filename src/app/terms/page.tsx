@@ -211,7 +211,7 @@ export default function TermsOfServicePage() {
                 <li>Automatic holds on unusual transaction patterns pending review</li>
               </ul>
               
-              <h2 className={`text-2xl font-bold mt-8 mb-4 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>9. Intellectual Property
+              <h2 className={`text-2xl font-bold mt-8 mb-4 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>9. Intellectual Property</h2>
               <p className={`mb-4 ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>
                 All content, features, and functionality of the Monay platform, including but not limited to text, graphics, logos, icons, images, audio clips, digital downloads, data compilations, and software, are the exclusive property of Utilli, LLC or its licensors and are protected by international copyright, trademark, patent, trade secret, and other intellectual property laws.
               </p>
@@ -298,7 +298,7 @@ export default function TermsOfServicePage() {
                 We shall not be liable for any failure or delay in performance due to circumstances beyond our reasonable control, including but not limited to acts of God, natural disasters, war, terrorism, riots, embargoes, acts of civil or military authorities, fire, floods, pandemic, accidents, network infrastructure failures, strikes, or shortages of transportation facilities, fuel, energy, labor, or materials.
               </p>
               
-              <h2 className={`text-2xl font-bold mt-8 mb-4 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>20. Changes to Terms
+              <h2 className={`text-2xl font-bold mt-8 mb-4 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>20. Changes to Terms</h2>
               <p className={`mb-4 ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>
                 We reserve the right to modify these Terms at any time. We will provide notice of material changes by posting the updated Terms on our website and updating the "Last Updated" date. Your continued use of the services after such modifications constitutes your acceptance of the updated Terms.
               </p>
