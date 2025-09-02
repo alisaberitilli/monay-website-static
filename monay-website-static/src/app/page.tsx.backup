@@ -2,8 +2,6 @@
 
 import Image from "next/image";
 import { useState, useEffect } from "react";
-import Navigation from "../components/Navigation";
-import Footer from "../components/Footer";
 import {
   handleContactForm,
   submitPilotProgram,
@@ -13,7 +11,6 @@ import {
   sendEmailJS,
   initEmailJS
 } from "../lib/client-services";
-import { sendFormEmail } from "../lib/send-form-email";
 
 export default function Home() {
   // Initialize EmailJS and Reb2b on component mount
@@ -21,8 +18,8 @@ export default function Home() {
     initEmailJS();
     
     // Initialize Reb2b tracking
-    if (typeof window !== 'undefined' && !(window as any).reb2b) {
-      (window as any).reb2b = { loaded: true };
+    if (typeof window !== 'undefined' && !window.reb2b) {
+      window.reb2b = { loaded: true };
       const script = document.createElement('script');
       script.async = true;
       script.src = 'https://b2bjsstore.s3.us-west-2.amazonaws.com/b/VN080HX77V6J/VN080HX77V6J.js.gz';
@@ -172,7 +169,7 @@ export default function Home() {
     setSubmitStatus("idle");
 
     try {
-      // Send to both our API and the existing client-side service
+      // Use client-side service instead of API
       const userData = {
         email: formData.email,
         firstName: formData.firstName,
@@ -181,19 +178,10 @@ export default function Home() {
         signupDate: new Date().toISOString()
       };
       
-      // Send to our API (which handles email to ali@monay.com and Vtiger)
-      const apiPromise = sendFormEmail(userData, 'Homepage Contact Form');
-      
-      // Also use existing client-side service
-      const clientPromise = handleContactForm(userData);
-      
-      // Wait for both to complete
-      const [apiResult, clientResult] = await Promise.allSettled([apiPromise, clientPromise]);
-      
-      // Consider success if at least one succeeded
-      const success = apiResult.status === 'fulfilled' || clientResult.status === 'fulfilled';
+      const success = await handleContactForm(userData);
 
       if (success) {
+
         setSubmitStatus("success");
         setFormData({
           email: "",
@@ -502,7 +490,61 @@ export default function Home() {
         : 'bg-gradient-to-br from-slate-50 to-blue-50 text-gray-900'
     }`}>
       {/* Navigation */}
-      <Navigation isDarkMode={isDarkMode} setIsDarkMode={setIsDarkMode} />
+      <nav className={`${isDarkMode ? 'bg-gray-800/90 border-gray-700' : 'bg-white/80 border-gray-200'} backdrop-blur-md border-b sticky top-0 z-50 transition-colors duration-300`}>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-center h-20">
+            <div className="flex items-center">
+              <Image
+                src="/Monay.svg"
+                alt="MONAY Logo"
+                width={240}
+                height={80}
+                className="h-20 w-auto logo-image"
+                priority
+              />
+            </div>
+            <div className="hidden md:block">
+              <div className="ml-10 flex items-baseline space-x-4">
+                <a href="#home" className={`${isDarkMode ? 'text-gray-300 hover:text-blue-400' : 'text-gray-700 hover:text-blue-600'} px-3 py-2 rounded-md text-sm font-medium transition-colors`}>Home</a>
+                <a href="#services" className={`${isDarkMode ? 'text-gray-300 hover:text-blue-400' : 'text-gray-700 hover:text-blue-600'} px-3 py-2 rounded-md text-sm font-medium transition-colors`}>Services</a>
+                <a href="#platform" className={`${isDarkMode ? 'text-gray-300 hover:text-blue-400' : 'text-gray-700 hover:text-blue-600'} px-3 py-2 rounded-md text-sm font-medium transition-colors`}>Platform</a>
+                <a href="#pilot-program" className={`${isDarkMode ? 'text-gray-300 hover:text-blue-400' : 'text-gray-700 hover:text-blue-600'} px-3 py-2 rounded-md text-sm font-medium transition-colors`}>Pilot Program</a>
+                <a href="#partners" className={`${isDarkMode ? 'text-gray-300 hover:text-blue-400' : 'text-gray-700 hover:text-blue-600'} px-3 py-2 rounded-md text-sm font-medium transition-colors`}>Partners</a>
+                <a href="#contact" className={`${isDarkMode ? 'text-gray-300 hover:text-blue-400' : 'text-gray-700 hover:text-blue-600'} px-3 py-2 rounded-md text-sm font-medium transition-colors`}>Contact</a>
+              </div>
+            </div>
+            <div className="flex items-center space-x-4">
+              {/* Dark mode toggle */}
+              <button
+                onClick={() => setIsDarkMode(!isDarkMode)}
+                className={`p-2 rounded-lg transition-colors duration-200 ${
+                  isDarkMode 
+                    ? 'bg-gray-700 text-yellow-400 hover:bg-gray-600' 
+                    : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                }`}
+                aria-label="Toggle dark mode"
+              >
+                {isDarkMode ? (
+                  <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" clipRule="evenodd" />
+                  </svg>
+                ) : (
+                  <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z" />
+                  </svg>
+                )}
+              </button>
+              
+              <button 
+                onClick={() => openCalendly()}
+                className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg transition-colors duration-200"
+              >
+                Book Demo
+              </button>
+            </div>
+          </div>
+        </div>
+      </nav>
 
       {/* Hero Section */}
       <section id="home" className="relative overflow-hidden">
@@ -511,88 +553,56 @@ export default function Home() {
             <h1 className={`text-4xl md:text-6xl font-bold mb-6 ${
               isDarkMode ? 'text-white' : 'text-gray-900'
             }`}>
-              The Future of{" "}
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600">
-                Digital Finance
+                Coin-as-a-Service
+              </span>{" "}
+              &{" "}
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-blue-600">
+                Wallet-as-a-Service
               </span>
-              , Today
             </h1>
             <p className={`text-xl md:text-2xl mb-8 max-w-4xl mx-auto ${
-              isDarkMode ? 'text-gray-300' : 'text-gray-800'
+              isDarkMode ? 'text-gray-300' : 'text-gray-600'
             }`}>
-              Enterprise-grade blockchain infrastructure meets consumer-friendly payment experiences. 
-              Authentication, stablecoin issuance, and wallet infrastructure - all in one platform.
+              Monay Wallet is a branded, white-label stablecoin and digital wallet platform designed for banks, 
+              fintech, and government agencies. Powered by USDM with interoperability across all stablecoins and fiat on-ramp/off-ramp.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center mb-8">
-              {/* Primary CTA - Gradient with shadow */}
-              <a href="#pilot-program" className="group relative inline-flex items-center justify-center px-8 py-3.5 font-semibold text-white transition-all duration-200 bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl hover:from-blue-700 hover:to-purple-700 transform hover:-translate-y-0.5 hover:shadow-xl">
-                <span className="relative">Join Pilot Coin Program</span>
-                <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-blue-600 to-purple-600 opacity-0 group-hover:opacity-100 blur-xl transition-opacity duration-200"></div>
-              </a>
-              
-              {/* Secondary CTA - Outlined with hover fill */}
-              <button onClick={() => openCalendly()} className="group relative inline-flex items-center justify-center px-8 py-3.5 font-semibold border-2 border-blue-600 text-blue-600 rounded-xl transition-all duration-200 hover:bg-blue-600 hover:text-white hover:border-blue-700 transform hover:-translate-y-0.5 hover:shadow-lg">
-                <span className="relative">Book Demo</span>
-              </button>
-              
-              {/* Tertiary CTA - Subtle with border */}
-              <a href="/signup" className={`group relative inline-flex items-center justify-center px-8 py-3.5 font-semibold rounded-xl transition-all duration-200 transform hover:-translate-y-0.5 hover:shadow-lg ${
-                isDarkMode 
-                  ? 'bg-gray-800 text-gray-200 border-2 border-gray-700 hover:bg-gray-700 hover:border-gray-600' 
-                  : 'bg-white text-gray-800 border-2 border-gray-300 hover:bg-gray-50 hover:border-gray-400'
-              }`}>
-                <span className="relative">Sign Up Free</span>
+              <a href="#pilot-program" className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-8 rounded-lg transition-colors duration-200 inline-block">
+                Start Pilot Coin
               </a>
             </div>
             
-            {/* Three Core Products */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto mt-12">
-              <div className={`${isDarkMode ? 'bg-gray-800/60 border-gray-600' : 'bg-white/60 border-gray-200'} backdrop-blur-sm p-6 rounded-xl border transition-all duration-300 hover:shadow-xl hover:scale-105`}>
+            {/* Key Features Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto">
+              <div className={`${isDarkMode ? 'bg-gray-800/60 border-gray-600' : 'bg-white/60 border-gray-200'} backdrop-blur-sm p-6 rounded-xl border transition-colors duration-300`}>
                 <div className="w-12 h-12 bg-blue-600 rounded-lg flex items-center justify-center mx-auto mb-4">
-                  <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" />
-                  </svg>
-                </div>
-                <h3 className={`text-lg font-semibold mb-2 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Monay ID</h3>
-                <p className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-800'} mb-3`}>Revolutionary authentication with voice biometrics and custodian recovery</p>
-                <a href="/products/monay-id" className="inline-flex items-center text-blue-600 hover:text-blue-700 text-sm font-semibold group transition-all duration-200">
-                  Learn more 
-                  <svg className="w-4 h-4 ml-1 transform group-hover:translate-x-1 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                  </svg>
-                </a>
-              </div>
-              
-              <div className={`${isDarkMode ? 'bg-gray-800/60 border-gray-600' : 'bg-white/60 border-gray-200'} backdrop-blur-sm p-6 rounded-xl border transition-all duration-300 hover:shadow-xl hover:scale-105`}>
-                <div className="w-12 h-12 bg-purple-600 rounded-lg flex items-center justify-center mx-auto mb-4">
                   <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
                   </svg>
                 </div>
-                <h3 className={`text-lg font-semibold mb-2 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Monay CaaS</h3>
-                <p className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-800'} mb-3`}>Launch your branded stablecoin with dual-rail blockchain architecture</p>
-                <a href="/products/monay-caas" className="inline-flex items-center text-purple-600 hover:text-purple-700 text-sm font-semibold group transition-all duration-200">
-                  Learn more 
-                  <svg className="w-4 h-4 ml-1 transform group-hover:translate-x-1 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                  </svg>
-                </a>
+                <h3 className={`text-lg font-semibold mb-2 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>USDM Stablecoin</h3>
+                <p className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>Native stablecoin with cross-chain interoperability</p>
               </div>
               
-              <div className={`${isDarkMode ? 'bg-gray-800/60 border-gray-600' : 'bg-white/60 border-gray-200'} backdrop-blur-sm p-6 rounded-xl border transition-all duration-300 hover:shadow-xl hover:scale-105`}>
-                <div className="w-12 h-12 bg-green-600 rounded-lg flex items-center justify-center mx-auto mb-4">
+              <div className={`${isDarkMode ? 'bg-gray-800/60 border-gray-600' : 'bg-white/60 border-gray-200'} backdrop-blur-sm p-6 rounded-xl border transition-colors duration-300`}>
+                <div className="w-12 h-12 bg-purple-600 rounded-lg flex items-center justify-center mx-auto mb-4">
                   <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
                   </svg>
                 </div>
-                <h3 className={`text-lg font-semibold mb-2 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Monay WaaS</h3>
-                <p className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-800'} mb-3`}>Complete wallet infrastructure with cards, ATM, and payment rails</p>
-                <a href="/products/monay-waas" className="inline-flex items-center text-green-600 hover:text-green-700 text-sm font-semibold group transition-all duration-200">
-                  Learn more 
-                  <svg className="w-4 h-4 ml-1 transform group-hover:translate-x-1 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                <h3 className={`text-lg font-semibold mb-2 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Virtual Cards</h3>
+                <p className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>Visa/Mastercard/Amex POS NFC support</p>
+              </div>
+              
+              <div className={`${isDarkMode ? 'bg-gray-800/60 border-gray-600' : 'bg-white/60 border-gray-200'} backdrop-blur-sm p-6 rounded-xl border transition-colors duration-300`}>
+                <div className="w-12 h-12 bg-green-600 rounded-lg flex items-center justify-center mx-auto mb-4">
+                  <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
                   </svg>
-                </a>
+                </div>
+                <h3 className={`text-lg font-semibold mb-2 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Cardless ATM</h3>
+                <p className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>AllPoint network cash withdrawals</p>
               </div>
             </div>
           </div>
@@ -603,254 +613,6 @@ export default function Home() {
         <div className="absolute bottom-20 right-10 w-32 h-32 bg-purple-200 rounded-full opacity-20 animate-pulse delay-1000"></div>
       </section>
 
-      {/* Federal Initiative Alignment Section */}
-      <section className={`py-20 transition-colors duration-300 ${isDarkMode ? 'bg-gray-800/50' : 'bg-blue-50'}`}>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
-            <span className="inline-block px-4 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white text-sm font-semibold rounded-full mb-4">
-              ALIGNED WITH 2025 EXECUTIVE ORDERS
-            </span>
-            <h2 className={`text-3xl md:text-4xl font-bold mb-4 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
-              Powering Federal Digital Finance Initiatives
-            </h2>
-            <p className={`text-xl max-w-3xl mx-auto ${isDarkMode ? 'text-gray-300' : 'text-gray-800'}`}>
-              Monay's platform directly supports Trump Administration's digital asset and education freedom executive orders
-            </p>
-          </div>
-          
-          <div className="grid md:grid-cols-3 gap-6 max-w-6xl mx-auto">
-            {/* Digital Financial Technology EO */}
-            <div className={`${isDarkMode ? 'bg-gray-900 border-gray-700' : 'bg-white border-gray-200'} p-6 rounded-xl border hover:shadow-xl transition-all duration-300`}>
-              <div className="flex items-center mb-4">
-                <div className="w-10 h-10 bg-gradient-to-r from-orange-500 to-yellow-500 rounded-lg flex items-center justify-center mr-3">
-                  <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
-                  </svg>
-                </div>
-                <div>
-                  <h3 className={`font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Digital Asset Leadership</h3>
-                  <p className={`text-xs ${isDarkMode ? 'text-blue-400' : 'text-blue-600'}`}>EO: Jan 23, 2025</p>
-                </div>
-              </div>
-              <ul className={`space-y-2 text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>
-                <li className="flex items-start">
-                  <svg className="w-4 h-4 text-green-500 mr-2 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                  </svg>
-                  USD-backed stablecoins (GENIUS Act)
-                </li>
-                <li className="flex items-start">
-                  <svg className="w-4 h-4 text-green-500 mr-2 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                  </svg>
-                  Strategic Bitcoin Reserve support
-                </li>
-                <li className="flex items-start">
-                  <svg className="w-4 h-4 text-green-500 mr-2 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                  </svg>
-                  Banking access restored
-                </li>
-              </ul>
-              <a href="/solutions/government-programs#digital-financial-leadership" className="inline-flex items-center text-orange-600 hover:text-orange-700 text-sm font-semibold group transition-all duration-200 mt-4">
-                Learn more 
-                <svg className="w-4 h-4 ml-1 transform group-hover:translate-x-1 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                </svg>
-              </a>
-            </div>
-
-            {/* Education Freedom EO */}
-            <div className={`${isDarkMode ? 'bg-gray-900 border-gray-700' : 'bg-white border-gray-200'} p-6 rounded-xl border hover:shadow-xl transition-all duration-300`}>
-              <div className="flex items-center mb-4">
-                <div className="w-10 h-10 bg-gradient-to-r from-purple-500 to-indigo-500 rounded-lg flex items-center justify-center mr-3">
-                  <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 14l9-5-9-5-9 5 9 5z" />
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z" />
-                  </svg>
-                </div>
-                <div>
-                  <h3 className={`font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Education Freedom</h3>
-                  <p className={`text-xs ${isDarkMode ? 'text-blue-400' : 'text-blue-600'}`}>EO: Jan 29, 2025</p>
-                </div>
-              </div>
-              <ul className={`space-y-2 text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>
-                <li className="flex items-start">
-                  <svg className="w-4 h-4 text-green-500 mr-2 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                  </svg>
-                  $10K/year education savings
-                </li>
-                <li className="flex items-start">
-                  <svg className="w-4 h-4 text-green-500 mr-2 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                  </svg>
-                  Private school vouchers
-                </li>
-                <li className="flex items-start">
-                  <svg className="w-4 h-4 text-green-500 mr-2 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                  </svg>
-                  Title I funding flexibility
-                </li>
-              </ul>
-              <a href="/solutions/government-programs#education-freedom" className="inline-flex items-center text-purple-600 hover:text-purple-700 text-sm font-semibold group transition-all duration-200 mt-4">
-                Learn more 
-                <svg className="w-4 h-4 ml-1 transform group-hover:translate-x-1 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                </svg>
-              </a>
-            </div>
-
-            {/* How Monay Delivers */}
-            <div className={`${isDarkMode ? 'bg-gradient-to-br from-blue-900 to-indigo-900 border-blue-700' : 'bg-gradient-to-br from-blue-50 to-indigo-50 border-blue-200'} p-6 rounded-xl border hover:shadow-xl transition-all duration-300`}>
-              <div className="flex items-center mb-4">
-                <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-lg flex items-center justify-center mr-3">
-                  <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-                  </svg>
-                </div>
-                <div>
-                  <h3 className={`font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Monay Delivers</h3>
-                  <p className={`text-xs ${isDarkMode ? 'text-green-400' : 'text-green-600'}`}>Ready Today</p>
-                </div>
-              </div>
-              <ul className={`space-y-2 text-sm ${isDarkMode ? 'text-gray-200' : 'text-gray-700'}`}>
-                <li className="flex items-start">
-                  <svg className="w-4 h-4 text-green-500 mr-2 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                  </svg>
-                  ERC-3643 compliant tokens
-                </li>
-                <li className="flex items-start">
-                  <svg className="w-4 h-4 text-green-500 mr-2 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                  </svg>
-                  MCC spending controls
-                </li>
-                <li className="flex items-start">
-                  <svg className="w-4 h-4 text-green-500 mr-2 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                  </svg>
-                  FedRAMP ready infrastructure
-                </li>
-              </ul>
-              <a href="/signup" className="inline-block w-full text-center bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white text-sm font-semibold py-2 px-4 rounded-lg transition-all duration-200 mt-4">
-                Get Started
-              </a>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Coming Soon Programs Section */}
-      <section className={`py-20 transition-colors duration-300 ${isDarkMode ? 'bg-gray-900' : 'bg-gray-50'}`}>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
-            <h2 className={`text-3xl md:text-4xl font-bold mb-4 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
-              Expanding Our Technology Platform
-            </h2>
-            <p className={`text-xl max-w-3xl mx-auto ${isDarkMode ? 'text-gray-300' : 'text-gray-800'}`}>
-              New programs launching in 2025 to enhance our ecosystem
-            </p>
-          </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto">
-            {/* Professional Custodian Services */}
-            <div className={`${isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'} p-8 rounded-xl border-2 hover:shadow-xl transition-all duration-300`}>
-              <div className="flex items-start mb-4">
-                <div className="w-12 h-12 bg-blue-600 rounded-lg flex items-center justify-center mr-4 flex-shrink-0">
-                  <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-                  </svg>
-                </div>
-                <div className="flex-1">
-                  <h3 className={`text-xl font-semibold mb-2 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
-                    Professional Custodian Services
-                  </h3>
-                  <span className="inline-block px-3 py-1 bg-blue-100 text-blue-800 text-sm rounded-full mb-3">Coming Q2 2025</span>
-                </div>
-              </div>
-              <ul className={`space-y-2 ${isDarkMode ? 'text-gray-300' : 'text-gray-800'}`}>
-                <li className="flex items-start">
-                  <svg className="w-5 h-5 text-green-500 mr-2 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                  </svg>
-                  24/7 support with 4-hour SLA
-                </li>
-                <li className="flex items-start">
-                  <svg className="w-5 h-5 text-green-500 mr-2 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                  </svg>
-                  $10M liability insurance per account
-                </li>
-                <li className="flex items-start">
-                  <svg className="w-5 h-5 text-green-500 mr-2 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                  </svg>
-                  Video verification & biometric matching
-                </li>
-                <li className="flex items-start">
-                  <svg className="w-5 h-5 text-green-500 mr-2 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                  </svg>
-                  Available in 150+ countries
-                </li>
-              </ul>
-              <button className="mt-6 w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold py-3 px-6 rounded-xl transition-all duration-200 transform hover:-translate-y-0.5 hover:shadow-lg">
-                Join Waitlist
-              </button>
-            </div>
-
-            {/* PPSIs Program */}
-            <div className={`${isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'} p-8 rounded-xl border-2 hover:shadow-xl transition-all duration-300`}>
-              <div className="flex items-start mb-4">
-                <div className="w-12 h-12 bg-purple-600 rounded-lg flex items-center justify-center mr-4 flex-shrink-0">
-                  <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-                  </svg>
-                </div>
-                <div className="flex-1">
-                  <h3 className={`text-xl font-semibold mb-2 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
-                    Permitted Payment Stablecoin Issuers
-                  </h3>
-                  <span className="inline-block px-3 py-1 bg-purple-100 text-purple-800 text-sm rounded-full mb-3">Coming Q3 2025</span>
-                </div>
-              </div>
-              <ul className={`space-y-2 ${isDarkMode ? 'text-gray-300' : 'text-gray-800'}`}>
-                <li className="flex items-start">
-                  <svg className="w-5 h-5 text-green-500 mr-2 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                  </svg>
-                  Fully regulated stablecoin issuance
-                </li>
-                <li className="flex items-start">
-                  <svg className="w-5 h-5 text-green-500 mr-2 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                  </svg>
-                  Central bank & regulator integration
-                </li>
-                <li className="flex items-start">
-                  <svg className="w-5 h-5 text-green-500 mr-2 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                  </svg>
-                  Automated reporting & audit trails
-                </li>
-                <li className="flex items-start">
-                  <svg className="w-5 h-5 text-green-500 mr-2 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                  </svg>
-                  Reserve management & attestation
-                </li>
-              </ul>
-              <button className="mt-6 w-full bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white font-semibold py-3 px-6 rounded-xl transition-all duration-200 transform hover:-translate-y-0.5 hover:shadow-lg">
-                Contact Partnership Team
-              </button>
-            </div>
-          </div>
-        </div>
-      </section>
-
       {/* Services Section */}
       <section id="services" className={`py-24 transition-colors duration-300 ${isDarkMode ? 'bg-gray-800' : 'bg-white'}`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -858,7 +620,7 @@ export default function Home() {
             <h2 className={`text-3xl md:text-4xl font-bold mb-4 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
               White-Label Financial Infrastructure
             </h2>
-            <p className={`text-xl max-w-3xl mx-auto ${isDarkMode ? 'text-gray-300' : 'text-gray-800'}`}>
+            <p className={`text-xl max-w-3xl mx-auto ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>
               Enable banks, fintech, and government agencies to quickly deploy branded stablecoins and wallets 
               without building new infrastructure from scratch.
             </p>
@@ -873,7 +635,7 @@ export default function Home() {
                 </svg>
               </div>
               <h3 className={`text-xl font-semibold mb-4 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Stablecoin-as-a-Service</h3>
-              <p className={`${isDarkMode ? 'text-gray-300' : 'text-gray-800'}`}>Issue branded stablecoins (USDM) with native support on Monay Wallet, integrated with global settlement networks.</p>
+              <p className={`${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>Issue branded stablecoins (USDM) with native support on Monay Wallet, integrated with global settlement networks.</p>
             </div>
 
             {/* Service 2 */}
@@ -884,7 +646,7 @@ export default function Home() {
                 </svg>
               </div>
               <h3 className={`text-xl font-semibold mb-4 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Wallet-as-a-Service</h3>
-              <p className={`${isDarkMode ? 'text-gray-300' : 'text-gray-800'}`}>Deploy branded digital wallets with seamless integration to multiple stablecoin rails and fiat on-ramps.</p>
+              <p className={`${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>Deploy branded digital wallets with seamless integration to multiple stablecoin rails and fiat on-ramps.</p>
             </div>
 
             {/* Service 3 */}
@@ -895,7 +657,7 @@ export default function Home() {
                 </svg>
               </div>
               <h3 className={`text-xl font-semibold mb-4 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Business Rule Framework</h3>
-              <p className={`${isDarkMode ? 'text-gray-300' : 'text-gray-800'}`}>Low-code engine for KYC, verification, fraud prevention, and compliance across all payment flows.</p>
+              <p className={`${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>Low-code engine for KYC, verification, fraud prevention, and compliance across all payment flows.</p>
             </div>
           </div>
         </div>
@@ -908,7 +670,7 @@ export default function Home() {
             <h2 className={`text-3xl md:text-4xl font-bold mb-4 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
               Advanced Platform Capabilities
             </h2>
-            <p className={`text-xl max-w-3xl mx-auto ${isDarkMode ? 'text-gray-300' : 'text-gray-800'}`}>
+            <p className={`text-xl max-w-3xl mx-auto ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>
               Orchestrate multiple stablecoin rails with advanced compliance, POS integration, and comprehensive payment solutions.
             </p>
           </div>
@@ -929,7 +691,7 @@ export default function Home() {
                       <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                     </svg>
                   </div>
-                  <span className={`${isDarkMode ? 'text-gray-300' : 'text-gray-800'}`}>Cross-chain stablecoin interoperability</span>
+                  <span className={`${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>Cross-chain stablecoin interoperability</span>
                 </li>
                 <li className="flex items-center gap-3">
                   <div className="w-5 h-5 bg-blue-600 rounded-full flex items-center justify-center">
@@ -937,7 +699,7 @@ export default function Home() {
                       <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                     </svg>
                   </div>
-                  <span className={`${isDarkMode ? 'text-gray-300' : 'text-gray-800'}`}>Global settlement network integration</span>
+                  <span className={`${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>Global settlement network integration</span>
                 </li>
                 <li className="flex items-center gap-3">
                   <div className="w-5 h-5 bg-blue-600 rounded-full flex items-center justify-center">
@@ -945,7 +707,7 @@ export default function Home() {
                       <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                     </svg>
                   </div>
-                  <span className={`${isDarkMode ? 'text-gray-300' : 'text-gray-800'}`}>Advanced compliance and program controls</span>
+                  <span className={`${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>Advanced compliance and program controls</span>
                 </li>
               </ul>
             </div>
@@ -981,8 +743,8 @@ export default function Home() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             <div className={`${isDarkMode ? 'bg-gray-800 border-gray-600' : 'bg-white border-gray-200'} p-8 rounded-xl border transition-colors duration-300`}>
               <h3 className={`text-xl font-bold mb-4 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Business Rule Framework (BRF)</h3>
-              <p className={`mb-4 ${isDarkMode ? 'text-gray-300' : 'text-gray-800'}`}>Low-code engine for intelligent eligibility, KYC/KYB, spend controls, fraud prevention, and compliance.</p>
-              <ul className={`space-y-2 text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-800'}`}>
+              <p className={`mb-4 ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>Low-code engine for intelligent eligibility, KYC/KYB, spend controls, fraud prevention, and compliance.</p>
+              <ul className={`space-y-2 text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>
                 <li>• Government disbursement programs (ESA, FEMA, IRS, EIP)</li>
                 <li>• Cross-border settlement and compliance</li>
                 <li>• Enterprise spend controls and fraud prevention</li>
@@ -992,75 +754,13 @@ export default function Home() {
             
             <div className={`${isDarkMode ? 'bg-gray-800 border-gray-600' : 'bg-white border-gray-200'} p-8 rounded-xl border transition-colors duration-300`}>
               <h3 className={`text-xl font-bold mb-4 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>On/Off-Ramps & Custody</h3>
-              <p className={`mb-4 ${isDarkMode ? 'text-gray-300' : 'text-gray-800'}`}>Seamless integrations with leading platforms for fiat conversion and secure custody.</p>
-              <ul className={`space-y-2 text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-800'}`}>
+              <p className={`mb-4 ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>Seamless integrations with leading platforms for fiat conversion and secure custody.</p>
+              <ul className={`space-y-2 text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>
                 <li>• Circle, Tether, Paxos, PayPal integration</li>
                 <li>• Fireblocks, Anchorage, Fidelity custody</li>
                 <li>• Coinbase, BitGo, Zero Hash support</li>
                 <li>• FX engine for cross-currency conversions</li>
               </ul>
-            </div>
-          </div>
-
-          {/* Invoice First - Advanced Platform Capability */}
-          <div className={`mt-8 ${isDarkMode ? 'bg-gradient-to-r from-purple-900 to-blue-900' : 'bg-gradient-to-r from-purple-50 to-blue-50'} p-8 rounded-xl border-2 ${isDarkMode ? 'border-purple-700' : 'border-purple-200'}`}>
-            <div className="flex items-center gap-3 mb-4">
-              <div className="w-12 h-12 bg-purple-600 rounded-lg flex items-center justify-center">
-                <svg className="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 6a1 1 0 011-1h6a1 1 0 110 2H7a1 1 0 01-1-1zm1 3a1 1 0 100 2h6a1 1 0 100-2H7z" clipRule="evenodd" />
-                </svg>
-              </div>
-              <h3 className={`text-2xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Invoice First™ - Enterprise Transaction Platform</h3>
-            </div>
-            
-            <p className={`text-lg mb-6 ${isDarkMode ? 'text-gray-200' : 'text-gray-800'}`}>
-              Every enterprise transaction is backed by a verified invoice, creating an immutable audit trail and enabling intelligent payment automation across your entire financial ecosystem.
-            </p>
-            
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <div className={`${isDarkMode ? 'bg-gray-800/50' : 'bg-white'} p-6 rounded-lg`}>
-                <h4 className={`font-bold mb-3 ${isDarkMode ? 'text-purple-400' : 'text-purple-600'}`}>ERP Integration</h4>
-                <ul className={`space-y-2 text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-800'}`}>
-                  <li>• SAP, Oracle, Microsoft Dynamics</li>
-                  <li>• Real-time invoice synchronization</li>
-                  <li>• Automated payment reconciliation</li>
-                  <li>• Smart contract execution</li>
-                </ul>
-              </div>
-              
-              <div className={`${isDarkMode ? 'bg-gray-800/50' : 'bg-white'} p-6 rounded-lg`}>
-                <h4 className={`font-bold mb-3 ${isDarkMode ? 'text-purple-400' : 'text-purple-600'}`}>Bill Aggregator Network</h4>
-                <ul className={`space-y-2 text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-800'}`}>
-                  <li>• Bill.com, Coupa, Ariba integration</li>
-                  <li>• Automated 3-way matching</li>
-                  <li>• Dynamic discounting engine</li>
-                  <li>• Supply chain financing</li>
-                </ul>
-              </div>
-              
-              <div className={`${isDarkMode ? 'bg-gray-800/50' : 'bg-white'} p-6 rounded-lg`}>
-                <h4 className={`font-bold mb-3 ${isDarkMode ? 'text-purple-400' : 'text-purple-600'}`}>Banking & Core Systems</h4>
-                <ul className={`space-y-2 text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-800'}`}>
-                  <li>• Direct bank API connections</li>
-                  <li>• Core banking integration (FIS, Fiserv)</li>
-                  <li>• Customer Information Systems (CIS)</li>
-                  <li>• Automated cash management</li>
-                </ul>
-              </div>
-            </div>
-            
-            <div className={`mt-6 p-4 ${isDarkMode ? 'bg-purple-800/30' : 'bg-purple-100'} rounded-lg`}>
-              <p className={`text-sm ${isDarkMode ? 'text-purple-200' : 'text-purple-700'} font-semibold mb-2`}>
-                Key Benefits:
-              </p>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-                <span className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-800'}`}>✓ 100% transaction auditability</span>
-                <span className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-800'}`}>✓ 70% reduction in payment disputes</span>
-                <span className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-800'}`}>✓ Real-time fraud prevention</span>
-                <span className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-800'}`}>✓ Automated tax compliance</span>
-                <span className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-800'}`}>✓ Instant payment verification</span>
-                <span className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-800'}`}>✓ Working capital optimization</span>
-              </div>
             </div>
           </div>
         </div>
@@ -1073,7 +773,7 @@ export default function Home() {
             <h2 className={`text-3xl md:text-4xl font-bold mb-4 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
               Trusted Partners & Integrations
             </h2>
-            <p className={`text-xl max-w-3xl mx-auto ${isDarkMode ? 'text-gray-300' : 'text-gray-800'}`}>
+            <p className={`text-xl max-w-3xl mx-auto ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>
               Built on proven infrastructure with leading payment networks, stablecoin issuers, and custody providers.
             </p>
           </div>
@@ -1084,7 +784,7 @@ export default function Home() {
                 <span className="text-blue-600 font-bold text-lg">V/M/A</span>
               </div>
               <h3 className={`font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Payment Networks</h3>
-              <p className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-800'}`}>Visa, Mastercard, American Express</p>
+              <p className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>Visa, Mastercard, American Express</p>
             </div>
             
             <div className="text-center">
@@ -1092,7 +792,7 @@ export default function Home() {
                 <span className="text-green-600 font-bold text-lg">AP</span>
               </div>
               <h3 className={`font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>ATM Network</h3>
-              <p className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-800'}`}>AllPoint Network</p>
+              <p className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>AllPoint Network</p>
             </div>
             
             <div className="text-center">
@@ -1100,7 +800,7 @@ export default function Home() {
                 <span className="text-purple-600 font-bold text-lg">SC</span>
               </div>
               <h3 className={`font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Stablecoins</h3>
-              <p className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-800'}`}>USDC, USDT, USDP</p>
+              <p className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>USDC, USDT, USDP</p>
             </div>
             
             <div className="text-center">
@@ -1108,148 +808,13 @@ export default function Home() {
                 <span className="text-orange-600 font-bold text-lg">CD</span>
               </div>
               <h3 className={`font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Custody</h3>
-              <p className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-800'}`}>Fireblocks, Anchorage, Fidelity</p>
+              <p className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>Fireblocks, Anchorage, Fidelity</p>
             </div>
           </div>
 
-          {/* Second row of partners */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-16">
-            <div className="text-center">
-              <div className={`w-16 h-16 rounded-lg flex items-center justify-center mx-auto mb-4 ${isDarkMode ? 'bg-gray-700' : 'bg-indigo-100'}`}>
-                <span className="text-indigo-600 font-bold text-lg">BA</span>
-              </div>
-              <h3 className={`font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Bill Aggregators</h3>
-              <p className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-800'}`}>Bill.com, Coupa, Ariba</p>
-            </div>
-            
-            <div className="text-center">
-              <div className={`w-16 h-16 rounded-lg flex items-center justify-center mx-auto mb-4 ${isDarkMode ? 'bg-gray-700' : 'bg-red-100'}`}>
-                <span className="text-red-600 font-bold text-lg">ERP</span>
-              </div>
-              <h3 className={`font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Enterprise Systems</h3>
-              <p className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-800'}`}>SAP, Oracle, Microsoft</p>
-            </div>
-            
-            <div className="text-center">
-              <div className={`w-16 h-16 rounded-lg flex items-center justify-center mx-auto mb-4 ${isDarkMode ? 'bg-gray-700' : 'bg-teal-100'}`}>
-                <span className="text-teal-600 font-bold text-lg">CBS</span>
-              </div>
-              <h3 className={`font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Core Banking</h3>
-              <p className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-800'}`}>FIS, Fiserv, Jack Henry</p>
-            </div>
-            
-            <div className="text-center">
-              <div className={`w-16 h-16 rounded-lg flex items-center justify-center mx-auto mb-4 ${isDarkMode ? 'bg-gray-700' : 'bg-yellow-100'}`}>
-                <span className="text-yellow-600 font-bold text-lg">KYC</span>
-              </div>
-              <h3 className={`font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Compliance</h3>
-              <p className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-800'}`}>Persona, Alloy, Onfido</p>
-            </div>
-          </div>
-
-          {/* Comprehensive Use Cases Section */}
-          <div className="mb-16">
-            <h3 className={`text-2xl font-bold mb-8 text-center ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
-              Transforming Industries with Monay Technology
-            </h3>
-            
-            {/* Monay ID Use Cases */}
-            <div className={`${isDarkMode ? 'bg-gray-800' : 'bg-blue-50'} p-8 rounded-2xl mb-6`}>
-              <h4 className="text-xl font-bold mb-4 text-blue-600">Monay ID - Authentication Use Cases</h4>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div>
-                  <h5 className="font-semibold mb-2">Healthcare</h5>
-                  <p className="text-sm">HIPAA-compliant voice authentication for patient portals and telehealth</p>
-                </div>
-                <div>
-                  <h5 className="font-semibold mb-2">Banking</h5>
-                  <p className="text-sm">Voice-authenticated phone banking with custodian account recovery</p>
-                </div>
-                <div>
-                  <h5 className="font-semibold mb-2">Enterprise</h5>
-                  <p className="text-sm">Unified SSO across all corporate applications with biometric MFA</p>
-                </div>
-                <div>
-                  <h5 className="font-semibold mb-2">E-commerce</h5>
-                  <p className="text-sm">Passwordless checkout increasing conversion by 35%</p>
-                </div>
-                <div>
-                  <h5 className="font-semibold mb-2">Government</h5>
-                  <p className="text-sm">Citizen identity verification for digital services and benefits</p>
-                </div>
-                <div>
-                  <h5 className="font-semibold mb-2">Education</h5>
-                  <p className="text-sm">Student authentication with parental custodian controls</p>
-                </div>
-              </div>
-            </div>
-
-            {/* Monay CaaS Use Cases */}
-            <div className={`${isDarkMode ? 'bg-gray-800' : 'bg-purple-50'} p-8 rounded-2xl mb-6`}>
-              <h4 className="text-xl font-bold mb-4 text-purple-600">Monay CaaS - Stablecoin Use Cases</h4>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div>
-                  <h5 className="font-semibold mb-2">Corporate Treasury</h5>
-                  <p className="text-sm">Internal settlements with 80% cost reduction on cross-border payments</p>
-                </div>
-                <div>
-                  <h5 className="font-semibold mb-2">Payroll & Benefits</h5>
-                  <p className="text-sm">Instant employee payments in branded tokens with spending controls</p>
-                </div>
-                <div>
-                  <h5 className="font-semibold mb-2">Supply Chain</h5>
-                  <p className="text-sm">Vendor payments with automated smart contract settlements</p>
-                </div>
-                <div>
-                  <h5 className="font-semibold mb-2">Loyalty Programs</h5>
-                  <p className="text-sm">Tokenized rewards with instant redemption and transferability</p>
-                </div>
-                <div>
-                  <h5 className="font-semibold mb-2">Municipal Currency</h5>
-                  <p className="text-sm">City-issued tokens for local economic stimulus and services</p>
-                </div>
-                <div>
-                  <h5 className="font-semibold mb-2">Insurance</h5>
-                  <p className="text-sm">Instant claim settlements with programmable disbursements</p>
-                </div>
-              </div>
-            </div>
-
-            {/* Monay WaaS Use Cases */}
-            <div className={`${isDarkMode ? 'bg-gray-800' : 'bg-green-50'} p-8 rounded-2xl mb-6`}>
-              <h4 className="text-xl font-bold mb-4 text-green-600">Monay WaaS - Wallet Use Cases</h4>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div>
-                  <h5 className="font-semibold mb-2">Neobanks</h5>
-                  <p className="text-sm">Launch full banking services in 6 weeks with cards and ATM access</p>
-                </div>
-                <div>
-                  <h5 className="font-semibold mb-2">Gig Economy</h5>
-                  <p className="text-sm">Instant driver/contractor payouts with virtual cards</p>
-                </div>
-                <div>
-                  <h5 className="font-semibold mb-2">Remittance</h5>
-                  <p className="text-sm">Cross-border transfers under $1 with instant settlement</p>
-                </div>
-                <div>
-                  <h5 className="font-semibold mb-2">Gaming</h5>
-                  <p className="text-sm">In-game wallets with real money withdrawals to cards</p>
-                </div>
-                <div>
-                  <h5 className="font-semibold mb-2">Expense Management</h5>
-                  <p className="text-sm">Corporate cards with programmable spending rules and limits</p>
-                </div>
-                <div>
-                  <h5 className="font-semibold mb-2">Social Payments</h5>
-                  <p className="text-sm">P2P transfers with social features and split payments</p>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Original Government Use Cases */}
-          <div className={`${isDarkMode ? 'bg-gradient-to-r from-gray-700 to-gray-600' : 'bg-gradient-to-r from-gray-100 to-gray-50'} p-8 rounded-2xl transition-colors duration-300`}>
-            <h3 className={`text-2xl font-bold mb-6 text-center ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Government & Public Sector</h3>
+          {/* Use Cases */}
+          <div className={`${isDarkMode ? 'bg-gradient-to-r from-gray-700 to-gray-600' : 'bg-gradient-to-r from-blue-50 to-purple-50'} p-8 rounded-2xl transition-colors duration-300`}>
+            <h3 className={`text-2xl font-bold mb-6 text-center ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Government & Enterprise Use Cases</h3>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <div className="text-center">
                 <div className="w-12 h-12 bg-blue-600 rounded-lg flex items-center justify-center mx-auto mb-4">
@@ -1258,7 +823,7 @@ export default function Home() {
                   </svg>
                 </div>
                 <h4 className={`font-semibold mb-2 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Education & Savings</h4>
-                <p className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-800'}`}>ESA programs, custodial accounts, controlled spend</p>
+                <p className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>ESA programs, custodial accounts, controlled spend</p>
               </div>
               
               <div className="text-center">
@@ -1268,7 +833,7 @@ export default function Home() {
                   </svg>
                 </div>
                 <h4 className={`font-semibold mb-2 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Government Programs</h4>
-                <p className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-800'}`}>FEMA, IRS, military stipends, federal disbursements</p>
+                <p className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>FEMA, IRS, military stipends, federal disbursements</p>
               </div>
               
               <div className="text-center">
@@ -1278,7 +843,7 @@ export default function Home() {
                   </svg>
                 </div>
                 <h4 className={`font-semibold mb-2 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>B2B & Cross-Border</h4>
-                <p className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-800'}`}>Invoice settlement, FX conversions, compliance</p>
+                <p className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>Invoice settlement, FX conversions, compliance</p>
               </div>
             </div>
           </div>
@@ -1286,45 +851,17 @@ export default function Home() {
       </section>
 
       {/* Pilot Program Section */}
-      <section id="pilot-program" className={`py-24 transition-colors duration-300 ${isDarkMode ? 'bg-gradient-to-br from-gray-800 to-gray-900' : 'bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50'}`}>
+      <section id="pilot-program" className={`py-24 transition-colors duration-300 ${isDarkMode ? 'bg-gray-800' : 'bg-gradient-to-r from-blue-50 to-purple-50'}`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          {/* Limited Time Badge */}
-          <div className="text-center mb-8">
-            <span className="inline-block px-4 py-2 bg-gradient-to-r from-red-500 to-orange-500 text-white text-sm font-bold rounded-full animate-pulse">
-              🎉 LIMITED SPOTS AVAILABLE - 75% OFF FIRST YEAR
-            </span>
-          </div>
-          
           <div className="text-center mb-16">
             <h2 className={`text-4xl md:text-5xl font-bold mb-6 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
-              Be Among the First to Launch Your
-              <span className="block text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600 mt-2">
-                Digital Currency with Monay
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600">
+                Pilot Coin Program: Coin-as-a-Service
               </span>
             </h2>
-            <p className={`text-xl max-w-3xl mx-auto mb-8 ${isDarkMode ? 'text-gray-300' : 'text-gray-800'}`}>
-              Join our exclusive Pilot Coin Program and save $50,000+ while getting white-glove support to launch your branded stablecoin on our dual-rail blockchain platform.
+            <p className={`text-xl max-w-3xl mx-auto ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>
+              Join our exclusive pilot program to build and deploy your branded stablecoin with full KYC/KYB compliance and business rule framework on EVM L2.
             </p>
-            
-            {/* Value Props */}
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4 max-w-4xl mx-auto mb-8">
-              <div className={`p-4 rounded-lg ${isDarkMode ? 'bg-gray-700' : 'bg-white'} shadow-md`}>
-                <div className="text-2xl font-bold text-blue-600">75%</div>
-                <div className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-800'}`}>Discount</div>
-              </div>
-              <div className={`p-4 rounded-lg ${isDarkMode ? 'bg-gray-700' : 'bg-white'} shadow-md`}>
-                <div className="text-2xl font-bold text-green-600">$0</div>
-                <div className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-800'}`}>Setup Fees</div>
-              </div>
-              <div className={`p-4 rounded-lg ${isDarkMode ? 'bg-gray-700' : 'bg-white'} shadow-md`}>
-                <div className="text-2xl font-bold text-purple-600">100hrs</div>
-                <div className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-800'}`}>Free Support</div>
-              </div>
-              <div className={`p-4 rounded-lg ${isDarkMode ? 'bg-gray-700' : 'bg-white'} shadow-md`}>
-                <div className="text-2xl font-bold text-orange-600">Direct</div>
-                <div className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-800'}`}>Founder Access</div>
-              </div>
-            </div>
           </div>
 
           {/* Program Phases */}
@@ -1336,7 +873,7 @@ export default function Home() {
                 </div>
                 <h3 className={`text-xl font-semibold mb-4 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>KYC/KYB Onboarding</h3>
               </div>
-              <ul className={`space-y-3 ${isDarkMode ? 'text-gray-300' : 'text-gray-800'}`}>
+              <ul className={`space-y-3 ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>
                 <li className="flex items-start">
                   <svg className="w-5 h-5 text-green-500 mr-3 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
                     <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
@@ -1365,7 +902,7 @@ export default function Home() {
                 </div>
                 <h3 className={`text-xl font-semibold mb-4 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Business Rules Engine</h3>
               </div>
-              <ul className={`space-y-3 ${isDarkMode ? 'text-gray-300' : 'text-gray-800'}`}>
+              <ul className={`space-y-3 ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>
                 <li className="flex items-start">
                   <svg className="w-5 h-5 text-green-500 mr-3 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
                     <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
@@ -1394,7 +931,7 @@ export default function Home() {
                 </div>
                 <h3 className={`text-xl font-semibold mb-4 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>L2 Deployment</h3>
               </div>
-              <ul className={`space-y-3 ${isDarkMode ? 'text-gray-300' : 'text-gray-800'}`}>
+              <ul className={`space-y-3 ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>
                 <li className="flex items-start">
                   <svg className="w-5 h-5 text-green-500 mr-3 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
                     <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
@@ -1424,7 +961,7 @@ export default function Home() {
             <div className="grid md:grid-cols-2 gap-8">
               <div>
                 <h4 className={`text-xl font-semibold mb-4 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Blockchain Infrastructure</h4>
-                <ul className={`space-y-2 ${isDarkMode ? 'text-gray-300' : 'text-gray-800'}`}>
+                <ul className={`space-y-2 ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>
                   <li>• EVM L2: Base or Polygon zkEVM</li>
                   <li>• ERC-3643: Security token standard</li>
                   <li>• Multi-signature wallet integration</li>
@@ -1434,7 +971,7 @@ export default function Home() {
               
               <div>
                 <h4 className={`text-xl font-semibold mb-4 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Compliance & Security</h4>
-                <ul className={`space-y-2 ${isDarkMode ? 'text-gray-300' : 'text-gray-800'}`}>
+                <ul className={`space-y-2 ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>
                   <li>• Automated KYC/KYB verification</li>
                   <li>• Business rule engine (BRE)</li>
                   <li>• Regulatory reporting & audit trails</li>
@@ -1455,7 +992,7 @@ export default function Home() {
     {/* Name Fields */}
     <div className="grid md:grid-cols-2 gap-4">
       <div>
-        <label className={`block text-sm font-medium mb-2 ${isDarkMode ? 'text-gray-300' : 'text-gray-800'}`}>
+        <label className={`block text-sm font-medium mb-2 ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>
           First Name *
         </label>
         <input
@@ -1468,7 +1005,7 @@ export default function Home() {
         />
       </div>
       <div>
-        <label className={`block text-sm font-medium mb-2 ${isDarkMode ? 'text-gray-300' : 'text-gray-800'}`}>
+        <label className={`block text-sm font-medium mb-2 ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>
           Last Name *
         </label>
         <input
@@ -1485,7 +1022,7 @@ export default function Home() {
     {/* Contact Fields */}
     <div className="grid md:grid-cols-2 gap-4">
       <div>
-        <label className={`block text-sm font-medium mb-2 ${isDarkMode ? 'text-gray-300' : 'text-gray-800'}`}>
+        <label className={`block text-sm font-medium mb-2 ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>
           Email Address *
         </label>
         <input
@@ -1498,7 +1035,7 @@ export default function Home() {
         />
       </div>
       <div>
-        <label className={`block text-sm font-medium mb-2 ${isDarkMode ? 'text-gray-300' : 'text-gray-800'}`}>
+        <label className={`block text-sm font-medium mb-2 ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>
           Mobile Number
         </label>
         <input
@@ -1514,7 +1051,7 @@ export default function Home() {
     {/* Business Fields */}
     <div className="grid md:grid-cols-2 gap-4">
       <div>
-        <label className={`block text-sm font-medium mb-2 ${isDarkMode ? 'text-gray-300' : 'text-gray-800'}`}>
+        <label className={`block text-sm font-medium mb-2 ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>
           Company Type *
         </label>
         <div className="relative">
@@ -1536,14 +1073,14 @@ export default function Home() {
             <option value="other">Other</option>
           </select>
           <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
-            <svg className={`w-5 h-5 ${isDarkMode ? 'text-gray-400' : 'text-gray-700'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className={`w-5 h-5 ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
             </svg>
           </div>
         </div>
       </div>
       <div>
-        <label className={`block text-sm font-medium mb-2 ${isDarkMode ? 'text-gray-300' : 'text-gray-800'}`}>
+        <label className={`block text-sm font-medium mb-2 ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>
           Expected Token Volume *
         </label>
         <div className="relative">
@@ -1564,7 +1101,7 @@ export default function Home() {
             <option value=">10m">More than $10M</option>
           </select>
           <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
-            <svg className={`w-5 h-5 ${isDarkMode ? 'text-gray-400' : 'text-gray-700'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className={`w-5 h-5 ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
             </svg>
           </div>
@@ -1574,7 +1111,7 @@ export default function Home() {
 
     {/* Timeline */}
     <div>
-      <label className={`block text-sm font-medium mb-2 ${isDarkMode ? 'text-gray-300' : 'text-gray-800'}`}>
+      <label className={`block text-sm font-medium mb-2 ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>
         Implementation Timeline *
       </label>
       <div className="relative">
@@ -1595,7 +1132,7 @@ export default function Home() {
           <option value="year">This Year</option>
         </select>
         <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
-          <svg className={`w-5 h-5 ${isDarkMode ? 'text-gray-400' : 'text-gray-700'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg className={`w-5 h-5 ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
           </svg>
         </div>
@@ -1607,15 +1144,13 @@ export default function Home() {
       <button
         type="submit"
         disabled={isSubmittingPilot || pilotSubmitStatus === "success"}
-        className={`group relative inline-flex items-center justify-center px-8 py-4 font-semibold text-white transition-all duration-200 rounded-xl transform ${
+        className={`px-8 py-4 rounded-xl font-medium transition-all duration-200 ${
           isSubmittingPilot || pilotSubmitStatus === "success"
-            ? 'bg-gray-400 cursor-not-allowed'
-            : 'bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 hover:-translate-y-0.5 hover:shadow-xl'
+            ? 'bg-gray-400 text-gray-300 cursor-not-allowed'
+            : 'bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white hover:shadow-lg'
         }`}
       >
-        <span className="relative">
-          {isSubmittingPilot ? "Submitting..." : pilotSubmitStatus === "success" ? "Application Submitted ✓" : "Submit Application"}
-        </span>
+        {isSubmittingPilot ? "Submitting..." : pilotSubmitStatus === "success" ? "Application Submitted ✓" : "Submit Application"}
       </button>
     </div>
 
@@ -1645,28 +1180,15 @@ export default function Home() {
           <h2 className={`text-3xl md:text-4xl font-bold mb-6 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
             Ready to Transform Your Financial Infrastructure?
           </h2>
-          <p className={`text-xl mb-12 ${isDarkMode ? 'text-gray-300' : 'text-gray-800'}`}>
+          <p className={`text-xl mb-12 ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>
             Join banks, fintech, and government agencies already using Monay to power their stablecoin and wallet programs.
           </p>
           
           <div className={`${isDarkMode ? 'bg-gray-800' : 'bg-white'} p-8 rounded-2xl shadow-lg transition-colors duration-300`}>
-            <h3 className={`text-2xl font-bold mb-6 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Get Started Today</h3>
-            <p className={`text-lg mb-6 ${isDarkMode ? 'text-gray-300' : 'text-gray-800'}`}>
-              Ready to transform your financial infrastructure? Sign up for free or contact our team to discuss your specific needs.
+            <h3 className={`text-2xl font-bold mb-6 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Contact Us</h3>
+            <p className={`text-lg mb-6 ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>
+              Ready to get started? Contact our team to discuss your specific needs.
             </p>
-            
-            {/* Sign Up CTA */}
-            <div className="mb-8 text-center">
-              <a 
-                href="/signup"
-                className="inline-flex items-center justify-center px-8 py-3.5 font-semibold text-white transition-all duration-200 bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl hover:from-blue-700 hover:to-purple-700 transform hover:-translate-y-0.5 hover:shadow-xl"
-              >
-                <span>Sign Up Free - Choose Your Product</span>
-              </a>
-              <p className={`mt-3 text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>
-                No credit card required • Start in minutes • 75% off with Pilot Program
-              </p>
-            </div>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
               <button 
@@ -1679,7 +1201,7 @@ export default function Home() {
                   </svg>
                 </div>
                 <h4 className={`font-semibold mb-2 group-hover:text-blue-600 transition-colors ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Book a Demo</h4>
-                <p className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-800'}`}>See the platform in action</p>
+                <p className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>See the platform in action</p>
               </button>
               
               <button 
@@ -1692,7 +1214,7 @@ export default function Home() {
                   </svg>
                 </div>
                 <h4 className={`font-semibold mb-2 group-hover:text-purple-600 transition-colors ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Contact Sales</h4>
-                <p className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-800'}`}>Discuss your specific needs</p>
+                <p className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>Discuss your specific needs</p>
               </button>
             </div>
           </div>
@@ -1715,7 +1237,7 @@ export default function Home() {
                   </svg>
                 </button>
               </div>
-              <p className={`mt-2 ${isDarkMode ? 'text-gray-300' : 'text-gray-800'}`}>Book a personalized demo of the Monay platform with Ali from Tilli.pro</p>
+              <p className={`mt-2 ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>Book a personalized demo of the Monay platform with Ali from Tilli.pro</p>
             </div>
 
             <form onSubmit={handleScheduleAppointment} className="p-6">
@@ -1891,20 +1413,16 @@ export default function Home() {
                 <button
                   type="submit"
                   disabled={isScheduling || !selectedDate || !selectedTime}
-                  className="flex-1 group relative inline-flex items-center justify-center px-8 py-3.5 font-semibold text-white transition-all duration-200 bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl hover:from-blue-700 hover:to-purple-700 transform hover:-translate-y-0.5 hover:shadow-xl disabled:from-gray-400 disabled:to-gray-500 disabled:hover:translate-y-0 disabled:cursor-not-allowed"
+                  className="flex-1 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white font-semibold py-3 px-8 rounded-lg transition-colors duration-200"
                 >
                   {isScheduling ? "Scheduling..." : "Schedule Demo"}
                 </button>
                 <button
                   type="button"
                   onClick={() => setShowScheduler(false)}
-                  className={`group relative inline-flex items-center justify-center px-8 py-3.5 font-semibold rounded-xl transition-all duration-200 transform hover:-translate-y-0.5 hover:shadow-lg ${
-                    isDarkMode 
-                      ? 'bg-gray-800 text-gray-200 border-2 border-gray-700 hover:bg-gray-700 hover:border-gray-600' 
-                      : 'bg-white text-gray-800 border-2 border-gray-300 hover:bg-gray-50 hover:border-gray-400'
-                  }`}
+                  className="px-8 py-3 border border-gray-300 text-gray-700 font-semibold rounded-lg hover:bg-gray-50 transition-colors duration-200"
                 >
-                  <span className="relative">Cancel</span>
+                  Cancel
                 </button>
               </div>
             </form>
@@ -2037,22 +1555,16 @@ export default function Home() {
                 <button
                   type="submit"
                   disabled={isSubmittingContact}
-                  className="flex-1 group relative inline-flex items-center justify-center px-8 py-3.5 font-semibold text-white transition-all duration-200 bg-gradient-to-r from-purple-600 to-pink-600 rounded-xl hover:from-purple-700 hover:to-pink-700 transform hover:-translate-y-0.5 hover:shadow-xl disabled:from-gray-400 disabled:to-gray-500 disabled:hover:translate-y-0 disabled:cursor-not-allowed"
+                  className="flex-1 bg-purple-600 hover:bg-purple-700 disabled:bg-purple-400 text-white font-semibold py-3 px-8 rounded-lg transition-colors duration-200"
                 >
-                  <span className="relative">
-                    {isSubmittingContact ? "Sending..." : "Send Message"}
-                  </span>
+                  {isSubmittingContact ? "Sending..." : "Send Message"}
                 </button>
                 <button
                   type="button"
                   onClick={() => setShowContactForm(false)}
-                  className={`group relative inline-flex items-center justify-center px-8 py-3.5 font-semibold rounded-xl transition-all duration-200 transform hover:-translate-y-0.5 hover:shadow-lg ${
-                    isDarkMode 
-                      ? 'bg-gray-800 text-gray-200 border-2 border-gray-700 hover:bg-gray-700 hover:border-gray-600' 
-                      : 'bg-white text-gray-800 border-2 border-gray-300 hover:bg-gray-50 hover:border-gray-400'
-                  }`}
+                  className="px-8 py-3 border border-gray-300 text-gray-700 font-semibold rounded-lg hover:bg-gray-50 transition-colors duration-200"
                 >
-                  <span className="relative">Cancel</span>
+                  Cancel
                 </button>
               </div>
             </form>
@@ -2061,7 +1573,61 @@ export default function Home() {
       )}
 
       {/* Footer */}
-      <Footer isDarkMode={isDarkMode} />
+      <footer className={`${isDarkMode ? 'bg-gray-950' : 'bg-gray-900'} text-white py-12 transition-colors duration-300`}>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+            <div>
+              <div className="flex items-center gap-2 mb-4">
+                <Image
+                  src="/Monay.svg"
+                  alt="MONAY Logo"
+                  width={200}
+                  height={64}
+                  className="h-16 w-auto logo-image"
+                />
+              </div>
+              <p className="text-gray-400">
+                Infrastructure for the next wave of regulated digital payments. 
+                Coin-as-a-Service and Wallet-as-a-Service for banks, fintech, and government agencies.
+              </p>
+            </div>
+            
+            <div>
+              <h4 className="text-lg font-semibold mb-4">Platform</h4>
+              <ul className="space-y-2 text-gray-400">
+                <li><a href="#services" className="hover:text-white transition-colors">Stablecoin Services</a></li>
+                <li><a href="#platform" className="hover:text-white transition-colors">Wallet Infrastructure</a></li>
+                <li><a href="#partners" className="hover:text-white transition-colors">Integrations</a></li>
+                <li><a href="#contact" className="hover:text-white transition-colors">Pilot Programs</a></li>
+              </ul>
+            </div>
+            
+            <div>
+              <h4 className="text-lg font-semibold mb-4">Solutions</h4>
+              <ul className="space-y-2 text-gray-400">
+                <li>Government Programs</li>
+                <li>Banking & Fintech</li>
+                <li>Cross-Border Payments</li>
+                <li>Compliance & BRF</li>
+              </ul>
+            </div>
+            
+            <div>
+              <h4 className="text-lg font-semibold mb-4">Company</h4>
+              <ul className="space-y-2 text-gray-400">
+                <li>About</li>
+                <li>Careers</li>
+                <li>Press</li>
+                <li>Contact</li>
+              </ul>
+            </div>
+          </div>
+          
+          <div className={`border-t mt-8 pt-8 text-center text-gray-400 ${isDarkMode ? 'border-gray-800' : 'border-gray-800'}`}>
+            <p>&copy; 2024 MONAY. All rights reserved. | Coin-as-a-Service & Wallet-as-a-Service Platform</p>
+          </div>
+        </div>
+      </footer>
     </div>
   );
 }
