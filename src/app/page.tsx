@@ -548,16 +548,6 @@ export default function Home() {
               </a>
             </div>
             
-            {/* Build Status Ribbon */}
-            <div className="max-w-3xl mx-auto mb-8">
-              <BuildStatus isDarkMode={isDarkMode} />
-            </div>
-            
-            {/* Rails Note */}
-            <p className={`text-sm italic mb-8 ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>
-              <strong>Core rails:</strong> Base L2 + Solana. <strong>Optional:</strong> additional L2s (e.g., Polygon zkEVM) for specific pilots.
-            </p>
-            
             {/* Three Core Products */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto mt-12">
               <div className={`${isDarkMode ? 'bg-gray-800/60 border-gray-600' : 'bg-white/60 border-gray-200'} backdrop-blur-sm p-6 rounded-xl border transition-all duration-300 hover:shadow-xl hover:scale-105`}>
@@ -608,6 +598,16 @@ export default function Home() {
                 </a>
               </div>
             </div>
+            
+            {/* Build Status Ribbon - Moved after products */}
+            <div className="max-w-3xl mx-auto mt-12 mb-8">
+              <BuildStatus isDarkMode={isDarkMode} />
+            </div>
+            
+            {/* Rails Note - Moved after products */}
+            <p className={`text-sm italic text-center ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+              <strong>Core rails:</strong> Base L2 + Solana. <strong>Optional:</strong> additional L2s (e.g., Polygon zkEVM) for specific pilots.
+            </p>
           </div>
         </div>
         
