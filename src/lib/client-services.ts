@@ -69,16 +69,19 @@ export const sendEmailJS = async (templateParams: any) => {
       console.log('EmailJS Response:', response);
       
       if (response.status === 200) {
-        alert(`✅ Email successfully sent to ali@monay.com!\n\nFrom: ${emailData.from_email}\nSubject: ${emailData.subject || 'Form Submission'}\n\nCheck your spam folder if you don't see it.`);
+        // Email sent successfully - no popup
+        console.log('Email sent successfully to ali@monay.com');
         return true;
       } else {
         console.error('EmailJS returned non-200 status:', response);
-        alert(`⚠️ Email service returned status ${response.status}. The email may not have been sent. Please check EmailJS dashboard or contact ali@monay.com directly.`);
+        // Log error but don't show popup
+        console.error(`Email service returned status ${response.status}`);
         return false;
       }
     } catch (error: any) {
       console.error('EmailJS error details:', error);
-      alert(`⚠️ Email service error: ${error?.text || error?.message || 'Unknown error'}\n\nPlease contact directly at ali@monay.com\n\nError details logged to console.`);
+      // Log error but don't show popup
+      console.error(`Email service error: ${error?.text || error?.message || 'Unknown error'}`);
       return false;
     }
   } else {
