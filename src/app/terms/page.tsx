@@ -185,7 +185,7 @@ export default function TermsOfServicePage() {
                 </ul>
               </div>
               
-              <h2 className={`text-2xl font-bold mt-8 mb-4 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>7. Fees and Payment
+              <h2 className={`text-2xl font-bold mt-8 mb-4 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>7. Fees and Payment</h2>
               <p className={`mb-4 ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>
                 Our fee structure is outlined on our pricing page and includes:
               </p>
@@ -244,7 +244,7 @@ export default function TermsOfServicePage() {
                 <li>Create multiple accounts to circumvent limits or restrictions</li>
               </ul>
               
-              <h2 className={`text-2xl font-bold mt-8 mb-4 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>12. Disclaimer of Warranties
+              <h2 className={`text-2xl font-bold mt-8 mb-4 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>12. Disclaimer of Warranties</h2>
               <p className={`mb-4 ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>
                 THE SERVICES ARE PROVIDED "AS IS" AND "AS AVAILABLE" WITHOUT WARRANTIES OF ANY KIND, WHETHER EXPRESS OR IMPLIED. TO THE FULLEST EXTENT PERMITTED BY LAW, WE DISCLAIM ALL WARRANTIES, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO IMPLIED WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, AND NON-INFRINGEMENT.
               </p>
@@ -313,7 +313,7 @@ export default function TermsOfServicePage() {
                 These Terms, together with our Privacy Policy, Anti-Money Laundering Policy, and any other policies referenced herein, constitute the entire agreement between you and Utilli, LLC regarding the use of the Monay platform and supersede all prior agreements and understandings.
               </p>
               
-              <h2 className={`text-2xl font-bold mt-8 mb-4 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>23. Contact Information
+              <h2 className={`text-2xl font-bold mt-8 mb-4 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>23. Contact Information</h2>
               <p className={`mb-4 ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>
                 If you have any questions about these Terms, please contact us at:
               </p>
