@@ -318,21 +318,29 @@ export default function ContactForm({ isDarkMode }: ContactFormProps) {
               <label htmlFor="preferredContactMethod" className={`block text-sm font-medium mb-2 ${isDarkMode ? 'text-gray-200' : 'text-gray-700'}`}>
                 Preferred Contact Method
               </label>
-              <select
-                id="preferredContactMethod"
-                name="preferredContactMethod"
-                value={formData.preferredContactMethod}
-                onChange={handleInputChange}
-                className={`w-full px-4 py-3 rounded-lg border ${
-                  isDarkMode 
-                    ? 'bg-gray-700 border-gray-600 text-white' 
-                    : 'bg-white border-gray-300 text-gray-900'
-                } focus:outline-none focus:ring-2 focus:ring-blue-500`}
-              >
-                <option value="email">Email</option>
-                <option value="phone">Phone</option>
-                <option value="either">Either</option>
-              </select>
+              <div className="relative">
+                <select
+                  id="preferredContactMethod"
+                  name="preferredContactMethod"
+                  value={formData.preferredContactMethod}
+                  onChange={handleInputChange}
+                  className={`w-full px-4 py-3 pr-10 rounded-lg border appearance-none ${
+                    isDarkMode 
+                      ? 'bg-gray-700 border-gray-600 text-white' 
+                      : 'bg-white border-gray-300 text-gray-900'
+                  } focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer`}
+                  style={{ backgroundImage: 'none' }}
+                >
+                  <option value="email">Email</option>
+                  <option value="phone">Phone</option>
+                  <option value="either">Either</option>
+                </select>
+                <div className="absolute inset-y-0 right-0 flex items-center px-3 pointer-events-none">
+                  <svg className={`w-5 h-5 ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                  </svg>
+                </div>
+              </div>
             </div>
           </VtigerFormWrapperV3>
         </div>
