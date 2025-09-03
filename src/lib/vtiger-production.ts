@@ -69,6 +69,6 @@ export async function sendToVtigerProduction(formData: any, formType: string): P
     // No fallback - API must be available for form submission
     // This ensures security by preventing direct client-side Vtiger calls
     
-    return { success: false, error: error.message };
+    return { success: false, error: error instanceof Error ? error.message : 'Unknown error' };
   }
 }
