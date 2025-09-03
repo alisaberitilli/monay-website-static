@@ -113,7 +113,7 @@ export const detectBotPatterns = (): { isBot: boolean; reason?: string } => {
   }
   
   // Check for missing window properties that real browsers have
-  if (!window.chrome && !window.safari && !window.firefox) {
+  if (!(window as any).chrome && !(window as any).safari && !(window as any).firefox) {
     // Could be a bot, but also could be Edge or other browsers
   }
   
@@ -123,7 +123,7 @@ export const detectBotPatterns = (): { isBot: boolean; reason?: string } => {
   }
   
   // Check for automation tools
-  if (window.document.documentElement.getAttribute('webdriver')) {
+  if (window.document.documentElement.getAttribute('webdriver') === 'true') {
     return { isBot: true, reason: 'Automation tool detected' };
   }
   
