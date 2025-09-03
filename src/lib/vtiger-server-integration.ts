@@ -48,6 +48,6 @@ export async function sendToVtigerServer(formData: any, formType: string): Promi
     console.error('❌ Error calling Vtiger API:', error);
     console.error('Full error details:', error);
     // Don't throw - we want form to succeed even if CRM fails
-    return { success: false, error: error.message };
+    return { success: false, error: error instanceof Error ? error.message : 'Unknown error' };
   }
 }
