@@ -1,68 +1,85 @@
 # cPanel Deployment Guide for Monay Website
 
+## Overview
+This guide explains how to deploy the Monay website to cPanel hosting while keeping the API on Vercel for processing form submissions and Vtiger CRM integration.
+
+## Architecture
+- **Static Website**: Hosted on cPanel (https://monay.com)
+- **API Backend**: Hosted on Vercel (handles form processing, Vtiger integration)
+- **Vtiger CRM**: Production instance at utilliadmin.com
+
 ## Prerequisites
 - Access to cPanel hosting account
-- Node.js support on your hosting (if available)
-- FTP/File Manager access
+- FTP client (FileZilla) or cPanel File Manager access
+- Node.js installed locally for building
+- Git repository access
 
-## Static Export Deployment (Recommended for cPanel)
+## Quick Deployment
 
-### Step 1: Build Static Version
+### Option 1: Automated Script (Recommended)
 ```bash
-# Build the static version
+# Make the script executable
+chmod +x deploy-cpanel.sh
+
+# Run the deployment script
+./deploy-cpanel.sh
+```
+
+This script will:
+1. Set up environment variables
+2. Build the static export
+3. Create proper .htaccess file
+4. Generate a deployment package (zip file)
+
+### Option 2: Manual Build
+```bash
+# Set environment variables
+echo "NEXT_PUBLIC_API_URL=https://monay.com" > .env.local
+echo "NEXT_PUBLIC_RECAPTCHA_SITE_KEY=6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI" >> .env.local
+
+# Install dependencies
+npm install
+
+# Build static export
 npm run build:cpanel
 ```
 
-This creates an `out` directory with static HTML/CSS/JS files.
+## Upload to cPanel
 
-### Step 2: Configure API Endpoint
-Since cPanel hosts static files, the API needs to be hosted separately (Vercel).
+### Method 1: Using cPanel File Manager (Easiest)
+1. Login to your cPanel account
+2. Open **File Manager**
+3. Navigate to `public_html` directory
+4. **Delete or backup** existing files if needed
+5. Click **Upload** button
+6. Either:
+   - Upload the generated `monay-cpanel-deploy-*.zip` and extract it
+   - Upload all files from `out` folder individually
+7. Ensure `.htaccess` file is uploaded (may be hidden - enable "Show Hidden Files")
 
-Edit `.env.local` before building:
-```
-NEXT_PUBLIC_API_URL=https://monay-api.vercel.app
-```
-
-### Step 3: Upload to cPanel
-
-#### Option A: Using cPanel File Manager
-1. Login to cPanel
-2. Navigate to File Manager
-3. Go to `public_html` directory
-4. Upload contents of `out` folder (not the folder itself)
-5. Ensure `.htaccess` file is uploaded
-
-#### Option B: Using FTP
+### Method 2: Using FTP (FileZilla)
 ```bash
-# Connect via FTP client (FileZilla, etc.)
-Server: your-domain.com
+# FTP Connection Details
+Server: ftp.monay.com (or your cPanel server)
 Username: your-cpanel-username
 Password: your-cpanel-password
 Port: 21
+Protocol: FTP or SFTP
 
-# Upload contents of 'out' folder to public_html
+# Steps:
+1. Connect to server
+2. Navigate to /public_html
+3. Upload all contents from 'out' folder
+4. Ensure .htaccess is uploaded
 ```
 
-### Step 4: Configure .htaccess
-Create/update `.htaccess` in public_html:
-```apache
-# Enable URL rewriting
-RewriteEngine On
+### Method 3: Using Command Line (Advanced)
+```bash
+# Using rsync (if SSH access available)
+rsync -avz --delete out/ username@monay.com:~/public_html/
 
-# Redirect all requests to index.html for client-side routing
-RewriteCond %{REQUEST_FILENAME} !-f
-RewriteCond %{REQUEST_FILENAME} !-d
-RewriteRule ^(.*)$ /index.html [L]
-
-# Security headers
-Header set X-Frame-Options "SAMEORIGIN"
-Header set X-Content-Type-Options "nosniff"
-Header set X-XSS-Protection "1; mode=block"
-
-# Cache control for static assets
-<FilesMatch "\.(jpg|jpeg|png|gif|ico|css|js)$">
-Header set Cache-Control "max-age=31536000, public"
-</FilesMatch>
+# Using lftp
+lftp ftp://username:password@monay.com -e "mirror -R out/ /public_html; quit"
 ```
 
 ## API Endpoint Architecture
@@ -112,20 +129,57 @@ RECAPTCHA_SECRET_KEY=6LeIxAcTAAAAAGG-vFI1TnRWxMZNFuojJ4WifJWe
 - Forms should work without visible CAPTCHA
 - Bot-like behavior should be blocked
 
+## Verification Checklist
+
+After deployment, verify:
+
+- [ ] Website loads at https://monay.com
+- [ ] All pages navigate correctly
+- [ ] Forms display properly
+- [ ] Submit a test form on /signup/monay-id
+- [ ] Check Vtiger CRM for new lead
+- [ ] Verify rate limiting works (try submitting twice)
+- [ ] Check browser console for any errors
+- [ ] Test on mobile devices
+
 ## Troubleshooting
 
 ### Issue: Forms not submitting
-- Check browser console for errors
-- Verify API URL is correct in page source
-- Ensure Vercel API is running
+```bash
+# Check if API is accessible
+curl https://monay.com/api/health
 
-### Issue: CORS errors
-- Vercel API already configured with proper CORS headers
-- No additional configuration needed
+# Check browser console for:
+- Network errors
+- CORS issues
+- 404/500 errors
+```
+
+**Solutions:**
+- Verify Vercel deployment is running
+- Check environment variables in Vercel dashboard
+- Ensure API URL is correct in built files
 
 ### Issue: 404 errors on page refresh
-- Ensure .htaccess rewrite rules are in place
-- Check that index.html exists in root
+**Solution:** Ensure .htaccess file is properly uploaded with rewrite rules
+
+### Issue: CORS errors
+**Solution:** Vercel API already has CORS configured. If issues persist, check:
+- API URL matches exactly (no trailing slash)
+- HTTPS is being used
+
+### Issue: Rate limiting too aggressive
+**Solution:** Forms have 5-minute cooldown. Clear browser localStorage to reset:
+```javascript
+localStorage.clear()
+sessionStorage.clear()
+```
+
+### Issue: reCAPTCHA not working
+**Solution:** Current keys are test keys. For production:
+1. Go to https://www.google.com/recaptcha/admin
+2. Register domain: monay.com
+3. Get new keys and update in Vercel dashboard
 
 ## Rollback Plan
 

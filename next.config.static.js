@@ -1,6 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // Enable static HTML export
+  // Enable static HTML export (Next.js 13+)
   output: 'export',
   
   // Disable image optimization (not supported in static export)

@@ -6,9 +6,8 @@
   "scripts": {
     "dev": "next dev -p 3000",
     "build": "next build",
-    "build:static": "next build",
-    "export": "next export",
-    "build:cpanel": "npm run build:static && npm run export",
+    "build:static": "NEXT_CONFIG=static next build",
+    "build:cpanel": "NEXT_CONFIG=static next build",
     "start": "next start -p 3000",
     "lint": "next lint",
     "type-check": "tsc --noEmit",

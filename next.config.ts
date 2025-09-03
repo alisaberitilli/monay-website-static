@@ -1,8 +1,10 @@
 import type { NextConfig } from "next";
 
+const isStaticExport = process.env.NEXT_CONFIG === 'static';
+
 const nextConfig: NextConfig = {
-  // Remove static export for Vercel - let Vercel handle the build
-  // output: 'export',
+  // Enable static export only for cPanel builds
+  output: isStaticExport ? 'export' : undefined,
   reactStrictMode: true,
   
   // Performance Optimizations
@@ -11,7 +13,7 @@ const nextConfig: NextConfig = {
   
   // Image Optimization
   images: {
-    unoptimized: false,
+    unoptimized: isStaticExport ? true : false,
     domains: ['monay.com'],
   },
 
