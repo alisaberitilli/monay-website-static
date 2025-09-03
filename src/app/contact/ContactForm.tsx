@@ -28,7 +28,8 @@ export default function ContactForm({ isDarkMode }: ContactFormProps) {
     department: department,
     message: '',
     preferredContactMethod: 'email',
-    referrerPage: referrer
+    referrerPage: referrer,
+    pageUrl: typeof window !== 'undefined' ? window.location.href : 'https://www.monay.com/contact'
   });
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
@@ -52,7 +53,8 @@ export default function ContactForm({ isDarkMode }: ContactFormProps) {
       department: department,
       message: '',
       preferredContactMethod: 'email',
-      referrerPage: referrer
+      referrerPage: referrer,
+      pageUrl: typeof window !== 'undefined' ? window.location.href : 'https://www.monay.com/contact'
     });
   };
 
