@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { sendToVtiger } from '@/lib/vtiger-integration';
 
 export async function POST(request: NextRequest) {
   try {
@@ -15,9 +14,6 @@ export async function POST(request: NextRequest) {
     console.log(emailContent);
     console.log('=====================================');
     
-    // Send to Vtiger CRM (runs in parallel with email)
-    const vtigerPromise = sendToVtiger(data, data.formType || 'Form Submission');
-    
     // In production, you would send the actual email here:
     // await sendEmail({
     //   to: 'ali@monay.com',
@@ -25,10 +21,7 @@ export async function POST(request: NextRequest) {
     //   html: emailContent
     // });
     
-    // Wait for Vtiger integration to complete (but don't fail if it errors)
-    await vtigerPromise.catch(error => {
-      console.error('Vtiger integration failed:', error);
-    });
+    // Note: Vtiger integration is now handled separately via /api/vtiger
     
     return NextResponse.json({ 
       success: true, 

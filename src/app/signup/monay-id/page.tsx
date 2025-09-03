@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import Navigation from "@/components/Navigation";
 import { sendFormEmail } from "@/lib/send-form-email";
+import { sendToVtigerServer } from "@/lib/vtiger-server-integration";
 
 export default function MonayIDSignupPage() {
   const [isDarkMode, setIsDarkMode] = useState(false);
@@ -46,6 +47,14 @@ export default function MonayIDSignupPage() {
     try {
       // Send email to ali@monay.com
       await sendFormEmail(formData, 'Monay ID Signup');
+      
+      // Send to Vtiger CRM via server-side API (only one call now!)
+      console.log('Sending to Vtiger CRM via server API...');
+      const vtigerResult = await sendToVtigerServer(formData, 'Monay ID Signup');
+      if (vtigerResult.success) {
+        console.log('✅ Successfully created lead in Vtiger CRM');
+        console.log('Lead No:', vtigerResult.leadNo);
+      }
       
       setShowSuccess(true);
       

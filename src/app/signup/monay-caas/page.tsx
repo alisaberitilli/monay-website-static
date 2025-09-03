@@ -2,12 +2,10 @@
 
 import { useState, useEffect } from "react";
 import Navigation from "@/components/Navigation";
-import { sendFormEmail } from "@/lib/send-form-email";
+import VtigerFormWrapperV3 from "@/components/VtigerFormWrapperV3";
 
 export default function MonayCaaSSignupPage() {
   const [isDarkMode, setIsDarkMode] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [showSuccess, setShowSuccess] = useState(false);
   const [formData, setFormData] = useState({
     email: '',
     firstName: '',
@@ -40,38 +38,19 @@ export default function MonayCaaSSignupPage() {
     }));
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsSubmitting(true);
-    
-    try {
-      // Send email to ali@monay.com
-      await sendFormEmail(formData, 'Monay CaaS Signup');
-      
-      setShowSuccess(true);
-      
-      // Reset form after 3 seconds
-      setTimeout(() => {
-        setFormData({
-          email: '',
-          firstName: '',
-          lastName: '',
-          company: '',
-          country: 'United States',
-          phone: '',
-          tokenVolume: '',
-          useCase: '',
-          compliance: '',
-          message: ''
-        });
-        setShowSuccess(false);
-      }, 3000);
-    } catch (error) {
-      console.error('Error submitting form:', error);
-      alert('Failed to submit form. Please try again.');
-    } finally {
-      setIsSubmitting(false);
-    }
+  const resetFormData = () => {
+    setFormData({
+      email: '',
+      firstName: '',
+      lastName: '',
+      company: '',
+      country: 'United States',
+      phone: '',
+      tokenVolume: '',
+      useCase: '',
+      compliance: '',
+      message: ''
+    });
   };
 
   return (
@@ -145,7 +124,13 @@ export default function MonayCaaSSignupPage() {
             </div>
 
             {/* Sign Up Form */}
-            <form onSubmit={handleSubmit}>
+            <VtigerFormWrapperV3
+              formData={formData}
+              formType="Monay CaaS Signup"
+              resetFormData={resetFormData}
+              successMessage="Thank you! Our enterprise team will contact you within 24 hours to discuss your stablecoin requirements."
+              submitButtonText="Apply for Pilot Program"
+            >
               <h2 className={`text-2xl font-bold mb-6 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Join the Pilot Program</h2>
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
@@ -363,21 +348,7 @@ export default function MonayCaaSSignupPage() {
                   placeholder="Describe your token economics, target market, and timeline..."
                 />
               </div>
-              
-              <button
-                type="submit"
-                disabled={isSubmitting}
-                className="w-full bg-gradient-to-r from-purple-600 to-blue-600 text-white py-4 rounded-lg font-semibold hover:from-purple-700 hover:to-blue-700 transition-all duration-200 transform hover:-translate-y-0.5 hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                {isSubmitting ? 'Submitting...' : 'Apply for Pilot Program'}
-              </button>
-              
-              {showSuccess && (
-                <div className="mt-4 p-4 bg-green-100 border border-green-400 text-green-700 rounded-lg">
-                  Thank you! Our enterprise team will contact you within 24 hours to discuss your stablecoin requirements.
-                </div>
-              )}
-            </form>
+            </VtigerFormWrapperV3>
             
             <p className={`mt-6 text-sm text-center ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>
               By submitting, you agree to our Terms of Service and Privacy Policy

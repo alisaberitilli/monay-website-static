@@ -35,9 +35,9 @@ export class VtigerIntegration {
 
   constructor(config?: VtigerConfig) {
     this.config = config || {
-      url: process.env.VTIGER_URL || '',
-      username: process.env.VTIGER_USERNAME || '',
-      accessKey: process.env.VTIGER_ACCESS_KEY || ''
+      url: process.env.NEXT_PUBLIC_VTIGER_URL || 'http://localhost:8000',
+      username: process.env.NEXT_PUBLIC_VTIGER_USERNAME || 'admin',
+      accessKey: process.env.NEXT_PUBLIC_VTIGER_ACCESS_KEY || 'crsogur4p4yvzyur'
     };
   }
 
@@ -122,31 +122,38 @@ export class VtigerIntegration {
       }
 
       // Map form data to Vtiger lead format
-      const lead: VtigerLead = {
-        firstname: formData.firstName || 'Not Provided',
-        lastname: formData.lastName || 'Not Provided',
+      const lead: any = {
+        // Required fields
+        lastname: formData.lastName || formData.lastname || 'Unknown',
+        assigned_user_id: this.userId || '19x1',
+        
+        // Required custom fields - MUST have values
+        cf_913: '1', // Contract Term in Years (minimum 1)
+        cf_915: '10000', // TCV - Total Contract Value (set default)
+        cf_917: '5000', // 1st Year Annual Contract Value (set default)
+        cf_919: '5000', // Annual Contract Value ACV (set default)
+        
+        // Optional fields
+        firstname: formData.firstName || formData.firstname || '',
         email: formData.email || '',
         phone: formData.phone || '',
-        company: formData.company || formData.organizationName || 'Not Provided',
+        company: formData.company || formData.organizationName || formData.companyName || '',
         designation: formData.role || formData.jobTitle || '',
-        leadsource: 'Website',
+        leadsource: `Monay Website - ${formType}`,
         description: this.buildDescription(formData, formType),
         industry: formData.industry || '',
-        annualrevenue: this.mapRevenue(formData),
-        noofemployees: this.mapEmployees(formData),
-        assigned_user_id: this.userId || '19x1' // Use the logged-in user ID
+        annualrevenue: this.mapRevenue(formData) || '0',
+        noofemployees: this.mapEmployees(formData) || '0'
       };
 
       console.log('Vtiger: Mapped lead data:', lead);
 
-      // Create the lead
+      // Create the lead - elementType must be OUTSIDE the element object
       const formDataToSend = new URLSearchParams();
       formDataToSend.append('operation', 'create');
       formDataToSend.append('sessionName', this.sessionId!);
-      formDataToSend.append('element', JSON.stringify({
-        ...lead,
-        elementType: 'Leads'
-      }));
+      formDataToSend.append('elementType', 'Leads');
+      formDataToSend.append('element', JSON.stringify(lead));
 
       console.log('Vtiger: Sending create request to:', `${this.config.url}/webservice.php`);
       
@@ -162,6 +169,8 @@ export class VtigerIntegration {
       console.log('Vtiger create lead response:', data);
       
       if (!data.success) {
+        console.error('Vtiger API Error:', data.error);
+        console.error('Failed lead data:', lead);
         throw new Error(`Failed to create lead: ${data.error?.message || JSON.stringify(data)}`);
       }
 
@@ -274,14 +283,17 @@ export class VtigerIntegration {
  */
 export async function sendToVtiger(formData: any, formType: string): Promise<void> {
   console.log('=== VTIGER INTEGRATION START ===');
+  console.log('Form Type:', formType);
+  console.log('Form Data Received:', formData);
   console.log('Environment check:');
-  console.log('VTIGER_URL:', process.env.VTIGER_URL ? 'Set' : 'Not set');
-  console.log('VTIGER_USERNAME:', process.env.VTIGER_USERNAME ? 'Set' : 'Not set');
-  console.log('VTIGER_ACCESS_KEY:', process.env.VTIGER_ACCESS_KEY ? 'Set (hidden)' : 'Not set');
+  console.log('NEXT_PUBLIC_VTIGER_URL:', process.env.NEXT_PUBLIC_VTIGER_URL ? 'Set' : 'Not set');
+  console.log('NEXT_PUBLIC_VTIGER_USERNAME:', process.env.NEXT_PUBLIC_VTIGER_USERNAME ? 'Set' : 'Not set');
+  console.log('NEXT_PUBLIC_VTIGER_ACCESS_KEY:', process.env.NEXT_PUBLIC_VTIGER_ACCESS_KEY ? 'Set (hidden)' : 'Not set');
   
   // Only proceed if Vtiger is configured
-  if (!process.env.VTIGER_URL || !process.env.VTIGER_USERNAME || !process.env.VTIGER_ACCESS_KEY) {
+  if (!process.env.NEXT_PUBLIC_VTIGER_URL || !process.env.NEXT_PUBLIC_VTIGER_USERNAME || !process.env.NEXT_PUBLIC_VTIGER_ACCESS_KEY) {
     console.log('Vtiger not configured - skipping CRM integration');
+    console.log('Please check your .env.local file - variables need NEXT_PUBLIC_ prefix');
     return;
   }
 

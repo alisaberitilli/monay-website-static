@@ -6,6 +6,7 @@ import { useState, useEffect } from "react";
 import Navigation from "../components/Navigation";
 import Footer from "../components/Footer";
 import BuildStatus from "../components/BuildStatus";
+import MainPageFormWrapper from "../components/MainPageFormWrapper";
 import {
   handleContactForm,
   submitPilotProgram,
@@ -16,6 +17,7 @@ import {
   initEmailJS
 } from "../lib/client-services";
 import { sendFormEmail } from "../lib/send-form-email";
+import { sendToVtigerServer } from "../lib/vtiger-server-integration";
 
 export default function Home() {
   // Initialize EmailJS and Reb2b on component mount
@@ -307,6 +309,27 @@ export default function Home() {
           console.warn("Backup meeting scheduling failed:", backupError);
         }
 
+        // Also send to Vtiger CRM (non-blocking)
+        try {
+          console.log('Sending Schedule Appointment to Vtiger CRM...');
+          const vtigerData = {
+            ...schedulingData,
+            selectedDate: selectedDate.toISOString(),
+            selectedTime,
+            meetingLink
+          };
+          const vtigerResult = await sendToVtigerServer(vtigerData, 'Demo Schedule Request');
+          
+          if (vtigerResult.success) {
+            console.log('✅ Successfully created lead in Vtiger CRM');
+            console.log('Lead No:', vtigerResult.leadNo);
+          } else {
+            console.warn('⚠️ Vtiger submission failed but form continues:', vtigerResult.error);
+          }
+        } catch (vtigerError) {
+          console.warn('Vtiger integration error (non-critical):', vtigerError);
+        }
+
         setScheduleStatus("success");
         setSchedulingData({
           name: "",
@@ -420,6 +443,21 @@ export default function Home() {
           console.warn("Backup contact submission failed:", backupError);
         }
 
+        // Also send to Vtiger CRM (non-blocking)
+        try {
+          console.log('Sending Contact Sales form to Vtiger CRM...');
+          const vtigerResult = await sendToVtigerServer(contactData, 'Contact Sales Request');
+          
+          if (vtigerResult.success) {
+            console.log('✅ Successfully created lead in Vtiger CRM');
+            console.log('Lead No:', vtigerResult.leadNo);
+          } else {
+            console.warn('⚠️ Vtiger submission failed but form continues:', vtigerResult.error);
+          }
+        } catch (vtigerError) {
+          console.warn('Vtiger integration error (non-critical):', vtigerError);
+        }
+
         setContactStatus("success");
         setContactData({
           email: "",
@@ -469,6 +507,21 @@ export default function Home() {
       const success = await submitPilotProgram(pilotFormData);
 
       if (success) {
+        // Also send to Vtiger CRM (non-blocking)
+        try {
+          console.log('Sending Pilot Program Application to Vtiger CRM...');
+          const vtigerResult = await sendToVtigerServer(pilotFormData, 'Pilot Program Application');
+          
+          if (vtigerResult.success) {
+            console.log('✅ Successfully created lead in Vtiger CRM');
+            console.log('Lead No:', vtigerResult.leadNo);
+          } else {
+            console.warn('⚠️ Vtiger submission failed but form continues:', vtigerResult.error);
+          }
+        } catch (vtigerError) {
+          console.warn('Vtiger integration error (non-critical):', vtigerError);
+        }
+        
         setPilotSubmitStatus("success");
         // Form stays submitted - requires page refresh to submit again
         // Don't clear form data or reset status

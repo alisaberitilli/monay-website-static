@@ -5,6 +5,8 @@ import Navigation from "@/components/Navigation";
 import BuildStatus from "@/components/BuildStatus";
 import FeatureAvailability from "@/components/FeatureAvailability";
 import Script from "next/script";
+import Link from "next/link";
+import { openCalendly } from "@/lib/client-services";
 
 export default function InvestorsPage() {
   const [isDarkMode, setIsDarkMode] = useState(false);
@@ -106,18 +108,18 @@ export default function InvestorsPage() {
               
               {/* CTA Buttons */}
               <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
-                <a href="#contact" className="inline-flex items-center justify-center px-8 py-4 font-semibold text-blue-900 bg-white rounded-xl hover:bg-gray-100 transform hover:-translate-y-0.5 hover:shadow-xl transition-all duration-200">
+                <button onClick={() => openCalendly()} className="inline-flex items-center justify-center px-8 py-4 font-semibold text-blue-900 bg-white rounded-xl hover:bg-gray-100 transform hover:-translate-y-0.5 hover:shadow-xl transition-all duration-200">
                   <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
                   </svg>
                   Schedule Meeting
-                </a>
-                <a href="/pitch-deck.pdf" className="inline-flex items-center justify-center px-8 py-4 font-semibold text-white bg-white/10 backdrop-blur-lg border border-white/20 rounded-xl hover:bg-white/20 transform hover:-translate-y-0.5 hover:shadow-xl transition-all duration-200">
+                </button>
+                <Link href="/pitch-deck.pdf" className="inline-flex items-center justify-center px-8 py-4 font-semibold text-white bg-white/10 backdrop-blur-lg border border-white/20 rounded-xl hover:bg-white/20 transform hover:-translate-y-0.5 hover:shadow-xl transition-all duration-200">
                   <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                   </svg>
                   Download Deck
-                </a>
+                </Link>
               </div>
               
               {/* Key Metrics */}
@@ -570,12 +572,12 @@ export default function InvestorsPage() {
                     <p className={`mb-4 ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>
                       Book a 30-minute call with our founding team.
                     </p>
-                    <a href="https://calendly.com/monay-investors" className="inline-flex items-center text-blue-600 hover:text-blue-700 font-medium">
+                    <button onClick={() => openCalendly()} className="inline-flex items-center text-blue-600 hover:text-blue-700 font-medium">
                       <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                       </svg>
                       Schedule Call
-                    </a>
+                    </button>
                   </div>
                 </div>
               </div>
