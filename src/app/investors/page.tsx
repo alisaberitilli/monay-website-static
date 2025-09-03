@@ -7,10 +7,12 @@ import FeatureAvailability from "@/components/FeatureAvailability";
 import Script from "next/script";
 import Link from "next/link";
 import { openCalendly } from "@/lib/client-services";
+import { useIsClient } from "@/hooks/useIsClient";
 
 export default function InvestorsPage() {
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [selectedTab, setSelectedTab] = useState('overview');
+  const isClient = useIsClient();
 
   useEffect(() => {
     const savedDarkMode = localStorage.getItem('darkMode');
@@ -168,7 +170,12 @@ export default function InvestorsPage() {
             ].map((tab) => (
               <button
                 key={tab.id}
-                onClick={() => setSelectedTab(tab.id)}
+                onClick={(e) => {
+                  if (!isClient) return;
+                  e.preventDefault();
+                  e.stopPropagation();
+                  setSelectedTab(tab.id);
+                }}
                 className={`flex items-center gap-2 px-6 py-4 whitespace-nowrap transition-all duration-200 ${
                   selectedTab === tab.id
                     ? `border-b-3 border-blue-600 ${isDarkMode ? 'text-white bg-blue-600/10' : 'text-blue-600 bg-blue-50'} font-semibold`

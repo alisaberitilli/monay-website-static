@@ -4,10 +4,12 @@ import { useState, useEffect } from "react";
 import Navigation from "@/components/Navigation";
 import Link from "next/link";
 import Script from "next/script";
+import { useIsClient } from "@/hooks/useIsClient";
 
 export default function DisasterReliefPage() {
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [activeTab, setActiveTab] = useState<"response" | "recovery">("response");
+  const isClient = useIsClient();
 
   useEffect(() => {
     const savedDarkMode = localStorage.getItem('darkMode');
@@ -354,7 +356,12 @@ export default function DisasterReliefPage() {
             <div className="flex justify-center mb-8">
               <div className={`inline-flex rounded-xl ${isDarkMode ? 'bg-gray-800' : 'bg-white'} shadow-lg p-1`}>
                 <button
-                  onClick={() => setActiveTab("response")}
+                  onClick={(e) => {
+                    if (!isClient) return;
+                    e.preventDefault();
+                    e.stopPropagation();
+                    setActiveTab("response");
+                  }}
                   className={`px-6 py-3 rounded-lg font-semibold transition-all duration-200 ${
                     activeTab === "response"
                       ? 'bg-gradient-to-r from-red-600 to-orange-600 text-white'
@@ -364,7 +371,12 @@ export default function DisasterReliefPage() {
                   Emergency Response
                 </button>
                 <button
-                  onClick={() => setActiveTab("recovery")}
+                  onClick={(e) => {
+                    if (!isClient) return;
+                    e.preventDefault();
+                    e.stopPropagation();
+                    setActiveTab("recovery");
+                  }}
                   className={`px-6 py-3 rounded-lg font-semibold transition-all duration-200 ${
                     activeTab === "recovery"
                       ? 'bg-gradient-to-r from-red-600 to-orange-600 text-white'

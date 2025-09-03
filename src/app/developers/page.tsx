@@ -2,10 +2,12 @@
 
 import { useState, useEffect } from "react";
 import Navigation from "../../components/Navigation";
+import { useIsClient } from "@/hooks/useIsClient";
 
 export default function DevelopersPage() {
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [activeTab, setActiveTab] = useState('quickstart');
+  const isClient = useIsClient();
 
   useEffect(() => {
     const savedDarkMode = localStorage.getItem('darkMode');
@@ -41,7 +43,12 @@ export default function DevelopersPage() {
             {['quickstart', 'api', 'sdks', 'webhooks', 'testing'].map((tab) => (
               <button
                 key={tab}
-                onClick={() => setActiveTab(tab)}
+                onClick={(e) => {
+                  if (!isClient) return;
+                  e.preventDefault();
+                  e.stopPropagation();
+                  setActiveTab(tab);
+                }}
                 className={`py-4 px-2 border-b-2 font-semibold capitalize whitespace-nowrap ${
                   activeTab === tab
                     ? 'border-blue-500 text-blue-600'
