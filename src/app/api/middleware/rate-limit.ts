@@ -99,7 +99,7 @@ function getDefaultKey(req: NextRequest): string {
 }
 
 // Specific rate limits for different form types
-export const FORM_RATE_LIMITS = {
+export const FORM_RATE_LIMITS: Record<string, RateLimitConfig> = {
   'vtiger': {
     windowMs: 60000, // 1 minute
     maxRequests: 3,
