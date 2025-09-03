@@ -268,13 +268,13 @@ export default function PitchDeckPage() {
                 </button>
                 
                 <Link 
-                  href="/investors"
+                  href="/contact?dept=Investors"
                   className={`inline-flex items-center justify-center px-6 py-3 text-sm font-semibold ${isDarkMode ? 'text-white bg-gray-700 hover:bg-gray-600' : 'text-gray-900 bg-gray-200 hover:bg-gray-300'} rounded-xl transform hover:-translate-y-0.5 hover:shadow-xl transition-all duration-200`}
                 >
                   <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
                   </svg>
-                  View Investor Page
+                  Contact Investor Relations
                 </Link>
               </div>
               

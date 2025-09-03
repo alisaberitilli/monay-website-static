@@ -110,10 +110,10 @@ export default function GeniusActPage() {
               
               <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
                 <Link 
-                  href="/investors" 
+                  href="/contact?dept=Investors" 
                   className="inline-flex items-center justify-center px-8 py-4 font-semibold text-blue-600 bg-white rounded-xl hover:bg-gray-100 transform hover:-translate-y-0.5 hover:shadow-xl transition-all duration-200"
                 >
-                  Learn About Investment
+                  Contact Investor Relations
                 </Link>
                 <Link 
                   href="/signup" 
@@ -461,7 +461,7 @@ export default function GeniusActPage() {
                 <Link href="/terms" className={`text-sm ${isDarkMode ? 'text-gray-400 hover:text-white' : 'text-gray-600 hover:text-gray-900'}`}>
                   Terms of Service
                 </Link>
-                <Link href="/investors" className={`text-sm ${isDarkMode ? 'text-gray-400 hover:text-white' : 'text-gray-600 hover:text-gray-900'}`}>
+                <Link href="/contact?dept=Investors" className={`text-sm ${isDarkMode ? 'text-gray-400 hover:text-white' : 'text-gray-600 hover:text-gray-900'}`}>
                   Investors
                 </Link>
               </div>

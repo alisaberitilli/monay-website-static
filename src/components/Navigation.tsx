@@ -109,7 +109,9 @@ export default function Navigation({ isDarkMode, setIsDarkMode }: NavigationProp
               <Link href="/pricing" className={`${isDarkMode ? 'text-gray-300 hover:text-blue-400' : 'text-gray-700 hover:text-blue-600'} px-3 py-2 rounded-md text-sm font-medium transition-colors`}>Pricing</Link>
               <Link href="/why-monay" className={`${isDarkMode ? 'text-gray-300 hover:text-blue-400' : 'text-gray-700 hover:text-blue-600'} px-3 py-2 rounded-md text-sm font-medium transition-colors`}>Why Monay?</Link>
               <Link href="/developers" className={`${isDarkMode ? 'text-gray-300 hover:text-blue-400' : 'text-gray-700 hover:text-blue-600'} px-3 py-2 rounded-md text-sm font-medium transition-colors`}>Developers</Link>
+              {/* Temporarily disabled - Investor page
               <Link href="/investors" className={`${isDarkMode ? 'text-gray-300 hover:text-blue-400' : 'text-gray-700 hover:text-blue-600'} px-3 py-2 rounded-md text-sm font-medium transition-colors`}>Investors</Link>
+              */}
             </div>
           </div>
           <div className="flex items-center space-x-4">
