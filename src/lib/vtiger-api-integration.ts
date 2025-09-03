@@ -300,7 +300,7 @@ export class VtigerApiIntegration {
  * Simple function to send form data to Vtiger CRM
  * This can be called from any form submission handler
  */
-export async function sendToVtigerAPI(formData: any, formType: string): Promise<void> {
+export async function sendToVtigerAPI(formData: any, formType: string): Promise<any> {
   const vtiger = new VtigerApiIntegration();
   const result = await vtiger.submitToCRM(formData, formType);
   
