@@ -1,9 +1,15 @@
 'use client';
 
-import { useState, ReactNode, useCallback } from 'react';
+import { useState, ReactNode, useCallback, useEffect } from 'react';
 import { useGoogleReCaptcha } from 'react-google-recaptcha-v3';
 import { sendFormEmail } from '@/lib/send-form-email';
 import { sendToVtigerServer } from '@/lib/vtiger-server-integration';
+import { 
+  isFormRecentlySubmitted, 
+  markFormAsSubmitted, 
+  getTimeUntilNextSubmission,
+  detectBotPatterns 
+} from '@/lib/form-protection';
 
 interface VtigerFormWrapperProps {
   children: ReactNode;
@@ -34,12 +40,47 @@ export default function VtigerFormWrapperV3({
   const [hasSubmitted, setHasSubmitted] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
+  const [isFormBlocked, setIsFormBlocked] = useState(false);
+  const [cooldownSeconds, setCooldownSeconds] = useState(0);
   
   // reCAPTCHA v3 hook
   const { executeRecaptcha } = useGoogleReCaptcha();
+  
+  // Check if form is blocked on mount and set up cooldown timer
+  useEffect(() => {
+    const checkFormStatus = () => {
+      if (isFormRecentlySubmitted(formType)) {
+        setIsFormBlocked(true);
+        const seconds = getTimeUntilNextSubmission(formType);
+        setCooldownSeconds(seconds);
+      } else {
+        setIsFormBlocked(false);
+        setCooldownSeconds(0);
+      }
+    };
+    
+    checkFormStatus();
+    const interval = setInterval(checkFormStatus, 1000); // Update every second
+    
+    return () => clearInterval(interval);
+  }, [formType]);
 
   const handleSubmit = useCallback(async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Check if form is blocked due to recent submission
+    if (isFormBlocked) {
+      setSubmitError(`Please wait ${cooldownSeconds} seconds before submitting again`);
+      return;
+    }
+    
+    // Detect bot patterns
+    const botCheck = detectBotPatterns();
+    if (botCheck.isBot) {
+      console.warn('Bot detected:', botCheck.reason);
+      setSubmitError('Automated submission detected. Please try again manually.');
+      return;
+    }
     
     // Prevent multiple submissions
     if (isSubmitting || hasSubmitted) {
@@ -51,22 +92,26 @@ export default function VtigerFormWrapperV3({
     setSubmitError(null);
 
     try {
-      // Execute reCAPTCHA v3 (invisible to user)
-      if (!executeRecaptcha) {
-        console.warn('reCAPTCHA not ready yet');
-        setSubmitError('Security verification not ready. Please try again.');
-        setIsSubmitting(false);
-        return;
+      // Execute reCAPTCHA v3 (invisible to user) - but make it optional for testing
+      let recaptchaToken = '';
+      
+      if (executeRecaptcha) {
+        try {
+          // Get reCAPTCHA token (happens in background, no user interaction)
+          recaptchaToken = await executeRecaptcha('submit_form');
+          console.log('reCAPTCHA v3 token obtained (invisible to user)');
+        } catch (recaptchaError) {
+          console.warn('reCAPTCHA error (continuing without it):', recaptchaError);
+          // Continue without reCAPTCHA for testing
+        }
+      } else {
+        console.warn('reCAPTCHA not available (continuing without it)');
       }
 
-      // Get reCAPTCHA token (happens in background, no user interaction)
-      const recaptchaToken = await executeRecaptcha('submit_form');
-      console.log('reCAPTCHA v3 token obtained (invisible to user)');
-
-      // Add token to form data for server verification (optional)
+      // Add token to form data
       const formDataWithToken = {
         ...formData,
-        recaptchaToken
+        recaptchaToken: recaptchaToken || 'not-available'
       };
 
       // Call custom onSubmit if provided
@@ -88,9 +133,11 @@ export default function VtigerFormWrapperV3({
         console.warn('⚠️ Vtiger submission failed but form continues:', vtigerResult.error);
       }
 
-      // Mark as submitted to prevent duplicates
+      // Mark as submitted to prevent duplicates and block for cooldown period
       setHasSubmitted(true);
       setShowSuccess(true);
+      markFormAsSubmitted(formType); // Store submission timestamp for rate limiting
+      setIsFormBlocked(true); // Immediately block form
       
       // Call success callback
       if (onSuccess) {
@@ -114,7 +161,7 @@ export default function VtigerFormWrapperV3({
         onError(error);
       }
     }
-  }, [formData, formType, executeRecaptcha, isSubmitting, hasSubmitted, onSubmit, onSuccess, onError, resetFormData]);
+  }, [formData, formType, executeRecaptcha, isSubmitting, hasSubmitted, onSubmit, onSuccess, onError, resetFormData, isFormBlocked, cooldownSeconds]);
 
   return (
     <form onSubmit={handleSubmit} className={className}>

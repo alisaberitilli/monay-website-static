@@ -156,8 +156,8 @@ export default function MonayWaaSSignupPage() {
                     required
                     className={`w-full px-4 py-3 rounded-lg border transition-all duration-200 ${
                       isDarkMode 
-                        ? 'bg-gray-700 border-gray-600 text-white focus:border-purple-500' 
-                        : 'bg-white border-gray-300 text-gray-900 focus:border-purple-500'
+                        ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400 focus:border-purple-500' 
+                        : 'bg-white border-gray-300 text-gray-900 placeholder-gray-500 focus:border-purple-500'
                     } focus:outline-none focus:ring-2 focus:ring-purple-500/20`}
                     placeholder="you@company.com"
                   />
@@ -176,8 +176,8 @@ export default function MonayWaaSSignupPage() {
                     required
                     className={`w-full px-4 py-3 rounded-lg border transition-all duration-200 ${
                       isDarkMode 
-                        ? 'bg-gray-700 border-gray-600 text-white focus:border-purple-500' 
-                        : 'bg-white border-gray-300 text-gray-900 focus:border-purple-500'
+                        ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400 focus:border-purple-500' 
+                        : 'bg-white border-gray-300 text-gray-900 placeholder-gray-500 focus:border-purple-500'
                     } focus:outline-none focus:ring-2 focus:ring-purple-500/20`}
                     placeholder="Your Company"
                   />
@@ -196,8 +196,8 @@ export default function MonayWaaSSignupPage() {
                     required
                     className={`w-full px-4 py-3 rounded-lg border transition-all duration-200 ${
                       isDarkMode 
-                        ? 'bg-gray-700 border-gray-600 text-white focus:border-purple-500' 
-                        : 'bg-white border-gray-300 text-gray-900 focus:border-purple-500'
+                        ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400 focus:border-purple-500' 
+                        : 'bg-white border-gray-300 text-gray-900 placeholder-gray-500 focus:border-purple-500'
                     } focus:outline-none focus:ring-2 focus:ring-purple-500/20`}
                     placeholder="John"
                   />
@@ -216,8 +216,8 @@ export default function MonayWaaSSignupPage() {
                     required
                     className={`w-full px-4 py-3 rounded-lg border transition-all duration-200 ${
                       isDarkMode 
-                        ? 'bg-gray-700 border-gray-600 text-white focus:border-purple-500' 
-                        : 'bg-white border-gray-300 text-gray-900 focus:border-purple-500'
+                        ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400 focus:border-purple-500' 
+                        : 'bg-white border-gray-300 text-gray-900 placeholder-gray-500 focus:border-purple-500'
                     } focus:outline-none focus:ring-2 focus:ring-purple-500/20`}
                     placeholder="Doe"
                   />
@@ -333,8 +333,8 @@ export default function MonayWaaSSignupPage() {
                   rows={4}
                   className={`w-full px-4 py-3 rounded-lg border transition-all duration-200 ${
                     isDarkMode 
-                      ? 'bg-gray-700 border-gray-600 text-white focus:border-purple-500' 
-                      : 'bg-white border-gray-300 text-gray-900 focus:border-purple-500'
+                      ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400 focus:border-purple-500' 
+                      : 'bg-white border-gray-300 text-gray-900 placeholder-gray-500 focus:border-purple-500'
                   } focus:outline-none focus:ring-2 focus:ring-purple-500/20`}
                   placeholder="Describe your wallet infrastructure needs and target users..."
                 />

@@ -17,7 +17,8 @@ export async function sendToVtigerServer(formData: any, formType: string): Promi
       },
       body: JSON.stringify({
         ...formData,
-        formType
+        formType,
+        pageUrl: typeof window !== 'undefined' ? window.location.href : ''
       })
     });
     

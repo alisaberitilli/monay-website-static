@@ -6,6 +6,9 @@
   "scripts": {
     "dev": "next dev -p 3000",
     "build": "next build",
+    "build:static": "next build",
+    "export": "next export",
+    "build:cpanel": "npm run build:static && npm run export",
     "start": "next start -p 3000",
     "lint": "next lint",
     "type-check": "tsc --noEmit",
@@ -14,7 +17,8 @@
     "test:coverage": "jest --coverage",
     "test:otp": "node test-otp-system.js",
     "test:user-db": "node test-user-database.js",
-    "analyze": "ANALYZE=true npm run build"
+    "analyze": "ANALYZE=true npm run build",
+    "preview:static": "npx serve out"
   },
   "dependencies": {
     "@emailjs/browser": "^4.4.1",

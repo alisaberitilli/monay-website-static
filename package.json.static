@@ -1,0 +1,13 @@
+{
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "build:static": "next build --config next.config.static.js",
+    "export": "next export",
+    "build:cpanel": "npm run build:static && next export",
+    "start": "next start",
+    "lint": "next lint",
+    "preview:static": "npx serve out",
+    "deploy:cpanel": "npm run build:cpanel && echo 'Upload the \"out\" folder to your cPanel public_html directory'"
+  }
+}

@@ -1727,7 +1727,7 @@ export default function Home() {
       <>
         <div className="bg-green-50 border border-green-200 rounded-lg p-4">
           <p className="text-green-800 text-sm">
-            Application submitted successfully! We'll contact you at ali@monay.com soon.
+            Application submitted successfully! Someone from our Pilot Program Team will contact you soon.
           </p>
         </div>
         

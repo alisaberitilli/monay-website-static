@@ -14,17 +14,10 @@ export default function RecaptchaProvider({ children }: RecaptchaProviderProps) 
     <GoogleReCaptchaProvider
       reCaptchaKey={RECAPTCHA_SITE_KEY}
       scriptProps={{
-        async: true,
-        defer: true,
+        async: false,
+        defer: false,
         appendTo: 'head',
         nonce: undefined,
-      }}
-      container={{
-        element: 'recaptcha-badge',
-        parameters: {
-          badge: 'bottomright', // or 'inline' to hide it
-          theme: 'light'
-        }
       }}
     >
       {children}

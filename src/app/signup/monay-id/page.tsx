@@ -2,13 +2,10 @@
 
 import { useState, useEffect } from "react";
 import Navigation from "@/components/Navigation";
-import { sendFormEmail } from "@/lib/send-form-email";
-import { sendToVtigerServer } from "@/lib/vtiger-server-integration";
+import VtigerFormWrapperV3 from "@/components/VtigerFormWrapperV3";
 
 export default function MonayIDSignupPage() {
   const [isDarkMode, setIsDarkMode] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [showSuccess, setShowSuccess] = useState(false);
   const [formData, setFormData] = useState({
     email: '',
     firstName: '',
@@ -40,45 +37,18 @@ export default function MonayIDSignupPage() {
     }));
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsSubmitting(true);
-    
-    try {
-      // Send email to ali@monay.com
-      await sendFormEmail(formData, 'Monay ID Signup');
-      
-      // Send to Vtiger CRM via server-side API (only one call now!)
-      console.log('Sending to Vtiger CRM via server API...');
-      const vtigerResult = await sendToVtigerServer(formData, 'Monay ID Signup');
-      if (vtigerResult.success) {
-        console.log('✅ Successfully created lead in Vtiger CRM');
-        console.log('Lead No:', vtigerResult.leadNo);
-      }
-      
-      setShowSuccess(true);
-      
-      // Reset form after 3 seconds
-      setTimeout(() => {
-        setFormData({
-          email: '',
-          firstName: '',
-          lastName: '',
-          company: '',
-          country: 'United States',
-          phone: '',
-          monthlyActiveUsers: '',
-          useCase: '',
-          message: ''
-        });
-        setShowSuccess(false);
-      }, 3000);
-    } catch (error) {
-      console.error('Error submitting form:', error);
-      alert('Failed to submit form. Please try again.');
-    } finally {
-      setIsSubmitting(false);
-    }
+  const resetFormData = () => {
+    setFormData({
+      email: '',
+      firstName: '',
+      lastName: '',
+      company: '',
+      country: 'United States',
+      phone: '',
+      monthlyActiveUsers: '',
+      useCase: '',
+      message: ''
+    });
   };
 
   return (
@@ -152,7 +122,13 @@ export default function MonayIDSignupPage() {
             </div>
 
             {/* Sign Up Form */}
-            <form onSubmit={handleSubmit}>
+            <VtigerFormWrapperV3
+              formData={formData}
+              formType="Monay ID Signup"
+              resetFormData={resetFormData}
+              successMessage="Thank you! We'll contact you within 24 hours to set up your Monay ID account."
+              submitButtonText="Start Free Trial"
+            >
               <h2 className={`text-2xl font-bold mb-6 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Start Your Free Trial</h2>
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
@@ -169,8 +145,8 @@ export default function MonayIDSignupPage() {
                     required
                     className={`w-full px-4 py-3 rounded-lg border transition-all duration-200 ${
                       isDarkMode 
-                        ? 'bg-gray-700 border-gray-600 text-white focus:border-purple-500' 
-                        : 'bg-white border-gray-300 text-gray-900 focus:border-purple-500'
+                        ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400 focus:border-purple-500' 
+                        : 'bg-white border-gray-300 text-gray-900 placeholder-gray-500 focus:border-purple-500'
                     } focus:outline-none focus:ring-2 focus:ring-purple-500/20`}
                     placeholder="you@company.com"
                   />
@@ -189,8 +165,8 @@ export default function MonayIDSignupPage() {
                     required
                     className={`w-full px-4 py-3 rounded-lg border transition-all duration-200 ${
                       isDarkMode 
-                        ? 'bg-gray-700 border-gray-600 text-white focus:border-purple-500' 
-                        : 'bg-white border-gray-300 text-gray-900 focus:border-purple-500'
+                        ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400 focus:border-purple-500' 
+                        : 'bg-white border-gray-300 text-gray-900 placeholder-gray-500 focus:border-purple-500'
                     } focus:outline-none focus:ring-2 focus:ring-purple-500/20`}
                     placeholder="Your Company"
                   />
@@ -209,8 +185,8 @@ export default function MonayIDSignupPage() {
                     required
                     className={`w-full px-4 py-3 rounded-lg border transition-all duration-200 ${
                       isDarkMode 
-                        ? 'bg-gray-700 border-gray-600 text-white focus:border-purple-500' 
-                        : 'bg-white border-gray-300 text-gray-900 focus:border-purple-500'
+                        ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400 focus:border-purple-500' 
+                        : 'bg-white border-gray-300 text-gray-900 placeholder-gray-500 focus:border-purple-500'
                     } focus:outline-none focus:ring-2 focus:ring-purple-500/20`}
                     placeholder="John"
                   />
@@ -229,8 +205,8 @@ export default function MonayIDSignupPage() {
                     required
                     className={`w-full px-4 py-3 rounded-lg border transition-all duration-200 ${
                       isDarkMode 
-                        ? 'bg-gray-700 border-gray-600 text-white focus:border-purple-500' 
-                        : 'bg-white border-gray-300 text-gray-900 focus:border-purple-500'
+                        ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400 focus:border-purple-500' 
+                        : 'bg-white border-gray-300 text-gray-900 placeholder-gray-500 focus:border-purple-500'
                     } focus:outline-none focus:ring-2 focus:ring-purple-500/20`}
                     placeholder="Doe"
                   />
@@ -248,8 +224,8 @@ export default function MonayIDSignupPage() {
                     onChange={handleInputChange}
                     className={`w-full px-4 py-3 rounded-lg border transition-all duration-200 ${
                       isDarkMode 
-                        ? 'bg-gray-700 border-gray-600 text-white focus:border-purple-500' 
-                        : 'bg-white border-gray-300 text-gray-900 focus:border-purple-500'
+                        ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400 focus:border-purple-500' 
+                        : 'bg-white border-gray-300 text-gray-900 placeholder-gray-500 focus:border-purple-500'
                     } focus:outline-none focus:ring-2 focus:ring-purple-500/20`}
                     placeholder="+1 (555) 000-0000"
                   />
@@ -333,27 +309,13 @@ export default function MonayIDSignupPage() {
                   rows={4}
                   className={`w-full px-4 py-3 rounded-lg border transition-all duration-200 ${
                     isDarkMode 
-                      ? 'bg-gray-700 border-gray-600 text-white focus:border-purple-500' 
-                      : 'bg-white border-gray-300 text-gray-900 focus:border-purple-500'
+                      ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400 focus:border-purple-500' 
+                      : 'bg-white border-gray-300 text-gray-900 placeholder-gray-500 focus:border-purple-500'
                   } focus:outline-none focus:ring-2 focus:ring-purple-500/20`}
                   placeholder="Tell us about your authentication needs..."
                 />
               </div>
-              
-              <button
-                type="submit"
-                disabled={isSubmitting}
-                className="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white py-4 rounded-lg font-semibold hover:from-blue-700 hover:to-purple-700 transition-all duration-200 transform hover:-translate-y-0.5 hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                {isSubmitting ? 'Submitting...' : 'Start Free Trial'}
-              </button>
-              
-              {showSuccess && (
-                <div className="mt-4 p-4 bg-green-100 border border-green-400 text-green-700 rounded-lg">
-                  Thank you! We'll contact you within 24 hours to set up your Monay ID account.
-                </div>
-              )}
-            </form>
+            </VtigerFormWrapperV3>
             
             <p className={`mt-6 text-sm text-center ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>
               By submitting, you agree to our Terms of Service and Privacy Policy

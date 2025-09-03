@@ -1,8 +1,15 @@
 import { NextResponse } from 'next/server';
 import crypto from 'crypto';
+import { rateLimit, getFormRateLimit } from '../middleware/rate-limit';
 
 export async function POST(request: Request) {
   console.log('=== VTIGER API ROUTE CALLED ===');
+  
+  // Apply rate limiting
+  const rateLimitResult = await rateLimit(request as any, getFormRateLimit('vtiger'));
+  if (rateLimitResult instanceof NextResponse) {
+    return rateLimitResult; // Rate limit exceeded
+  }
   
   try {
     const formData = await request.json();
@@ -65,6 +72,7 @@ export async function POST(request: Request) {
         '=== FORM SUBMISSION DETAILS ===',
         `Form Type: ${data.formType || 'Unknown'}`,
         `Submission Date: ${new Date().toLocaleString()}`,
+        `Source URL: ${data.pageUrl || 'https://www.monay.com'}`,
         '',
         '--- CONTACT INFORMATION ---'
       ];
