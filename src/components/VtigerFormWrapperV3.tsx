@@ -164,7 +164,7 @@ export default function VtigerFormWrapperV3({
   }, [formData, formType, executeRecaptcha, isSubmitting, hasSubmitted, onSubmit, onSuccess, onError, resetFormData, isFormBlocked, cooldownSeconds]);
 
   return (
-    <form onSubmit={handleSubmit} className={className}>
+    <form onSubmit={handleSubmit} className={className} autoComplete="on">
       {children}
       
       {/* Submit Button with Multiple States */}

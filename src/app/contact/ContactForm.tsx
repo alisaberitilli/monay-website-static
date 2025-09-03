@@ -146,15 +146,17 @@ export default function ContactForm({ isDarkMode }: ContactFormProps) {
             {/* Contact Info */}
             <div className="grid md:grid-cols-2 gap-6 mb-6">
               <div>
-                <label className={`block text-sm font-medium mb-2 ${isDarkMode ? 'text-gray-200' : 'text-gray-700'}`}>
+                <label htmlFor="firstName" className={`block text-sm font-medium mb-2 ${isDarkMode ? 'text-gray-200' : 'text-gray-700'}`}>
                   First Name *
                 </label>
                 <input
                   type="text"
+                  id="firstName"
                   name="firstName"
                   value={formData.firstName}
                   onChange={handleInputChange}
                   required
+                  autoComplete="given-name"
                   className={`w-full px-4 py-3 rounded-lg border ${
                     isDarkMode 
                       ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400' 
@@ -164,15 +166,17 @@ export default function ContactForm({ isDarkMode }: ContactFormProps) {
                 />
               </div>
               <div>
-                <label className={`block text-sm font-medium mb-2 ${isDarkMode ? 'text-gray-200' : 'text-gray-700'}`}>
+                <label htmlFor="lastName" className={`block text-sm font-medium mb-2 ${isDarkMode ? 'text-gray-200' : 'text-gray-700'}`}>
                   Last Name *
                 </label>
                 <input
                   type="text"
+                  id="lastName"
                   name="lastName"
                   value={formData.lastName}
                   onChange={handleInputChange}
                   required
+                  autoComplete="family-name"
                   className={`w-full px-4 py-3 rounded-lg border ${
                     isDarkMode 
                       ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400' 
@@ -185,15 +189,17 @@ export default function ContactForm({ isDarkMode }: ContactFormProps) {
 
             <div className="grid md:grid-cols-2 gap-6 mb-6">
               <div>
-                <label className={`block text-sm font-medium mb-2 ${isDarkMode ? 'text-gray-200' : 'text-gray-700'}`}>
+                <label htmlFor="email" className={`block text-sm font-medium mb-2 ${isDarkMode ? 'text-gray-200' : 'text-gray-700'}`}>
                   Email *
                 </label>
                 <input
                   type="email"
+                  id="email"
                   name="email"
                   value={formData.email}
                   onChange={handleInputChange}
                   required
+                  autoComplete="email"
                   className={`w-full px-4 py-3 rounded-lg border ${
                     isDarkMode 
                       ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400' 
@@ -203,14 +209,16 @@ export default function ContactForm({ isDarkMode }: ContactFormProps) {
                 />
               </div>
               <div>
-                <label className={`block text-sm font-medium mb-2 ${isDarkMode ? 'text-gray-200' : 'text-gray-700'}`}>
+                <label htmlFor="phone" className={`block text-sm font-medium mb-2 ${isDarkMode ? 'text-gray-200' : 'text-gray-700'}`}>
                   Phone
                 </label>
                 <input
                   type="tel"
+                  id="phone"
                   name="phone"
                   value={formData.phone}
                   onChange={handleInputChange}
+                  autoComplete="tel"
                   className={`w-full px-4 py-3 rounded-lg border ${
                     isDarkMode 
                       ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400' 
@@ -224,14 +232,16 @@ export default function ContactForm({ isDarkMode }: ContactFormProps) {
             {/* Company Info */}
             <div className="grid md:grid-cols-2 gap-6 mb-6">
               <div>
-                <label className={`block text-sm font-medium mb-2 ${isDarkMode ? 'text-gray-200' : 'text-gray-700'}`}>
+                <label htmlFor="company" className={`block text-sm font-medium mb-2 ${isDarkMode ? 'text-gray-200' : 'text-gray-700'}`}>
                   Company
                 </label>
                 <input
                   type="text"
+                  id="company"
                   name="company"
                   value={formData.company}
                   onChange={handleInputChange}
+                  autoComplete="organization"
                   className={`w-full px-4 py-3 rounded-lg border ${
                     isDarkMode 
                       ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400' 
@@ -241,14 +251,16 @@ export default function ContactForm({ isDarkMode }: ContactFormProps) {
                 />
               </div>
               <div>
-                <label className={`block text-sm font-medium mb-2 ${isDarkMode ? 'text-gray-200' : 'text-gray-700'}`}>
+                <label htmlFor="role" className={`block text-sm font-medium mb-2 ${isDarkMode ? 'text-gray-200' : 'text-gray-700'}`}>
                   Role/Title
                 </label>
                 <input
                   type="text"
+                  id="role"
                   name="role"
                   value={formData.role}
                   onChange={handleInputChange}
+                  autoComplete="organization-title"
                   className={`w-full px-4 py-3 rounded-lg border ${
                     isDarkMode 
                       ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400' 
@@ -261,11 +273,12 @@ export default function ContactForm({ isDarkMode }: ContactFormProps) {
 
             {/* Subject */}
             <div className="mb-6">
-              <label className={`block text-sm font-medium mb-2 ${isDarkMode ? 'text-gray-200' : 'text-gray-700'}`}>
+              <label htmlFor="subject" className={`block text-sm font-medium mb-2 ${isDarkMode ? 'text-gray-200' : 'text-gray-700'}`}>
                 Subject *
               </label>
               <input
                 type="text"
+                id="subject"
                 name="subject"
                 value={formData.subject}
                 onChange={handleInputChange}
@@ -281,10 +294,11 @@ export default function ContactForm({ isDarkMode }: ContactFormProps) {
 
             {/* Message */}
             <div className="mb-6">
-              <label className={`block text-sm font-medium mb-2 ${isDarkMode ? 'text-gray-200' : 'text-gray-700'}`}>
+              <label htmlFor="message" className={`block text-sm font-medium mb-2 ${isDarkMode ? 'text-gray-200' : 'text-gray-700'}`}>
                 Message *
               </label>
               <textarea
+                id="message"
                 name="message"
                 value={formData.message}
                 onChange={handleInputChange}
@@ -301,10 +315,11 @@ export default function ContactForm({ isDarkMode }: ContactFormProps) {
 
             {/* Preferred Contact Method */}
             <div className="mb-6">
-              <label className={`block text-sm font-medium mb-2 ${isDarkMode ? 'text-gray-200' : 'text-gray-700'}`}>
+              <label htmlFor="preferredContactMethod" className={`block text-sm font-medium mb-2 ${isDarkMode ? 'text-gray-200' : 'text-gray-700'}`}>
                 Preferred Contact Method
               </label>
               <select
+                id="preferredContactMethod"
                 name="preferredContactMethod"
                 value={formData.preferredContactMethod}
                 onChange={handleInputChange}
