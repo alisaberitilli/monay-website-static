@@ -207,7 +207,7 @@ export default function EducationESAPage() {
                   Deploy ESA Program
                 </Link>
                 <a 
-                  href="mailto:education@monay.com" 
+                  href="/contact?dept=Education" 
                   className="inline-flex items-center justify-center px-8 py-4 font-semibold text-white bg-white/20 backdrop-blur border border-white/30 rounded-xl hover:bg-white/30 transform hover:-translate-y-0.5 hover:shadow-xl transition-all duration-200"
                 >
                   Schedule Demo
@@ -489,7 +489,7 @@ export default function EducationESAPage() {
                   View RFP Solutions
                 </Link>
                 <a 
-                  href="mailto:education@monay.com?subject=ESA Program Inquiry" 
+                  href="/contact?dept=Education&subject=ESA%20Program%20Inquiry" 
                   className="inline-flex items-center justify-center px-8 py-4 font-semibold text-white bg-white/20 backdrop-blur border border-white/30 rounded-xl hover:bg-white/30 transform hover:-translate-y-0.5 hover:shadow-xl transition-all duration-200"
                 >
                   Contact Education Team

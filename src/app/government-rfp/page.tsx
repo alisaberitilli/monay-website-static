@@ -121,7 +121,7 @@ export default function GovernmentRFPPage() {
               
               <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
                 <a 
-                  href="mailto:government@monay.com?subject=RFP Response Request" 
+                  href="/contact?dept=Government&subject=RFP%20Response%20Request" 
                   className="inline-flex items-center justify-center px-8 py-4 font-semibold text-blue-600 bg-white rounded-xl hover:bg-gray-100 transform hover:-translate-y-0.5 hover:shadow-xl transition-all duration-200"
                 >
                   Request RFP Response
@@ -401,7 +401,7 @@ export default function GovernmentRFPPage() {
                 <div className={`p-4 rounded-lg ${isDarkMode ? 'bg-gray-700' : 'bg-gray-100'}`}>
                   <h3 className="font-bold mb-2">Government Contact</h3>
                   <p className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>
-                    Email: government@monay.com<br/>
+                    Email: Contact Government Team<br/>
                     Phone: 1-888-MONAY-GOV<br/>
                     CAGE Code: [Pending]
                   </p>
@@ -419,7 +419,7 @@ export default function GovernmentRFPPage() {
               
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <a 
-                  href="mailto:government@monay.com?subject=RFP Response Request" 
+                  href="/contact?dept=Government&subject=RFP%20Response%20Request" 
                   className="inline-flex items-center justify-center px-8 py-4 font-semibold text-white bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl hover:from-blue-700 hover:to-purple-700 transform hover:-translate-y-0.5 hover:shadow-xl transition-all duration-200"
                 >
                   Submit RFP for Response

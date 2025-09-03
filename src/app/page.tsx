@@ -145,7 +145,7 @@ export default function Home() {
     timeline: "",
     userId: "" // Will be populated after user is saved to database
   });
-  // Removed OTP-related state variables - forms now send directly to ali@monay.com
+  // Removed OTP-related state variables - forms now send directly to our team
   const [isSubmittingPilot, setIsSubmittingPilot] = useState(false);
   const [pilotSubmitStatus, setPilotSubmitStatus] = useState<"idle" | "success" | "error">("idle");
 
@@ -185,7 +185,7 @@ export default function Home() {
         signupDate: new Date().toISOString()
       };
       
-      // Send to our API (which handles email to ali@monay.com and Vtiger)
+      // Send to our API (which handles email to our team and Vtiger)
       const apiPromise = sendFormEmail(userData, 'Homepage Contact Form');
       
       // Also use existing client-side service
@@ -434,7 +434,7 @@ export default function Home() {
             },
             body: JSON.stringify({
               ...contactData,
-              to: "ali@monay.com",
+              to: "our team",
               subject: "New Sales Contact Request",
               message: `New contact request from ${contactData.firstName} ${contactData.lastName} at ${contactData.company}`
             }),
@@ -479,7 +479,7 @@ export default function Home() {
   };
 
   // Email verification functions for pilot program
-  // Removed OTP functions - forms now send directly to ali@monay.com
+  // Removed OTP functions - forms now send directly to our team
 
 
 
@@ -503,7 +503,7 @@ export default function Home() {
     setPilotSubmitStatus("idle");
 
     try {
-      // Send pilot application directly to ali@monay.com
+      // Send pilot application directly to our team
       const success = await submitPilotProgram(pilotFormData);
 
       if (success) {
@@ -1553,7 +1553,7 @@ export default function Home() {
     Pilot Coin Program Application
   </h3>
   
-  {/* Application Form - Sends directly to ali@monay.com */}
+  {/* Application Form - Sends directly to our team */}
   <form onSubmit={handlePilotSubmit} className="space-y-6">
     {/* Name Fields */}
     <div className="grid md:grid-cols-2 gap-4">

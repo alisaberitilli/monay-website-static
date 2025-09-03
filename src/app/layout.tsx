@@ -98,7 +98,7 @@ export default function RootLayout({
                 "@type": "ContactPoint",
                 "telephone": "+1-888-MONAY",
                 "contactType": "investor relations",
-                "email": "investors@monay.com",
+                "contactPoint": {"@type": "ContactPoint", "contactType": "investor relations", "url": "https://monay.com/contact?dept=Investors"},
                 "availableLanguage": ["English"]
               },
               "offers": {

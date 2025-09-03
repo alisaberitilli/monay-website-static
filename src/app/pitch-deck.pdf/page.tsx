@@ -66,7 +66,7 @@ export default function PitchDeckPage() {
             
             <div className="flex flex-col sm:flex-row gap-3 justify-center">
               <button 
-                onClick={() => window.location.href = 'mailto:investors@monay.com?subject=Pitch Deck Request'}
+                onClick={() => window.location.href = '/contact?dept=Investors&subject=Pitch%20Deck%20Request'}
                 className="inline-flex items-center justify-center px-6 py-3 text-sm font-semibold text-blue-900 bg-white rounded-xl hover:bg-gray-100 transform hover:-translate-y-0.5 hover:shadow-xl transition-all duration-200"
               >
                 <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -258,13 +258,13 @@ export default function PitchDeckPage() {
               
               <div className="flex flex-col sm:flex-row gap-3 justify-center">
                 <button 
-                  onClick={() => window.location.href = 'mailto:investors@monay.com?subject=Pitch Deck Request'}
+                  onClick={() => window.location.href = '/contact?dept=Investors&subject=Pitch%20Deck%20Request'}
                   className="inline-flex items-center justify-center px-6 py-3 text-sm font-semibold text-white bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl hover:from-blue-700 hover:to-purple-700 transform hover:-translate-y-0.5 hover:shadow-xl transition-all duration-200"
                 >
                   <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                   </svg>
-                  Email: investors@monay.com
+                  <a href="/contact?dept=Investors">Contact Investor Relations</a>
                 </button>
                 
                 <Link 

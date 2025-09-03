@@ -319,9 +319,9 @@ export default function TermsOfServicePage() {
               </p>
               <div className={`pl-6 mb-4 ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>
                 <p><strong>Utilli, LLC (dba Tilli)</strong></p>
-                <p>Email: legal@monay.com</p>
-                <p>Compliance Inquiries: compliance@monay.com</p>
-                <p>Privacy Officer: privacy@monay.com</p>
+                <p><a href="/contact?dept=Legal">Contact Legal Team</a></p>
+                <p>Compliance Inquiries: <a href="/contact?dept=Compliance">Contact Compliance</a></p>
+                <p>Privacy Officer: <a href="/contact?dept=Privacy">Contact Privacy Officer</a></p>
                 <p>Registered Agent: Maryland Registered Agent Service</p>
                 <p>Address: 1997 Annapolis Exchange Parkway, Suite 300, Annapolis, MD 21401</p>
                 <p>FinCEN MSB Registration Number: [Pending]</p>

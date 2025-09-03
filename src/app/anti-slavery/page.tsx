@@ -352,7 +352,7 @@ export default function AntiSlavery() {
               <li>Compliance Officer</li>
               <li>Anonymous ethics hotline: 1-800-XXX-XXXX</li>
               <li>Secure online reporting portal</li>
-              <li>Email: compliance@monay.com</li>
+              <li><a href="/contact?dept=Compliance">Contact Compliance Team</a></li>
               <li>Written reports to designated mailbox</li>
             </ul>
 
@@ -566,7 +566,7 @@ export default function AntiSlavery() {
               <p className={`${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>1997 Annapolis Exchange Parkway, Suite 300</p>
               <p className={`${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>Annapolis, MD 21401</p>
               <p className={`${isDarkMode ? 'text-gray-300' : 'text-gray-700'} mt-2`}>
-                <strong>Compliance Officer:</strong> compliance@monay.com
+                <strong>Compliance Officer:</strong> <a href="/contact?dept=Compliance">Contact Compliance</a>
               </p>
               <p className={`${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>
                 <strong>Ethics Hotline:</strong> 1-800-XXX-XXXX (24/7, Anonymous)

@@ -337,7 +337,7 @@ export default function GeniusActPage() {
                     View Investment Deck
                   </Link>
                   <a 
-                    href="mailto:investors@monay.com?subject=GENIUS Act Platform Inquiry" 
+                    href="/contact?dept=Government&subject=GENIUS%20Act%20Platform%20Inquiry" 
                     className={`inline-flex items-center justify-center px-8 py-4 font-semibold ${isDarkMode ? 'text-white bg-gray-700 hover:bg-gray-600' : 'text-gray-900 bg-gray-200 hover:bg-gray-300'} rounded-xl transform hover:-translate-y-0.5 hover:shadow-xl transition-all duration-200`}
                   >
                     Contact Us

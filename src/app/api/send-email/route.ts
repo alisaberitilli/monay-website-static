@@ -9,14 +9,14 @@ export async function POST(request: NextRequest) {
     
     // For now, we'll log the data. In production, you would integrate with an email service
     // like SendGrid, AWS SES, or Nodemailer
-    console.log('Form submission received for ali@monay.com:');
+    console.log('Form submission received for our team:');
     console.log('=====================================');
     console.log(emailContent);
     console.log('=====================================');
     
     // In production, you would send the actual email here:
     // await sendEmail({
-    //   to: 'ali@monay.com',
+    //   to: 'our team',
     //   subject: `New ${data.formType || 'Form'} Submission`,
     //   html: emailContent
     // });

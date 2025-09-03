@@ -266,7 +266,7 @@ export default function SNAPModernizationPage() {
                   Request RFP Response
                 </Link>
                 <a 
-                  href="mailto:snap@monay.com" 
+                  href="/contact?dept=SNAP" 
                   className="inline-flex items-center justify-center px-8 py-4 font-semibold text-white bg-white/20 backdrop-blur border border-white/30 rounded-xl hover:bg-white/30 transform hover:-translate-y-0.5 hover:shadow-xl transition-all duration-200"
                 >
                   Schedule Demo
@@ -550,7 +550,7 @@ export default function SNAPModernizationPage() {
                   Request RFP Package
                 </Link>
                 <a 
-                  href="mailto:snap@monay.com?subject=SNAP Modernization Inquiry" 
+                  href="/contact?dept=SNAP&subject=SNAP%20Modernization%20Inquiry" 
                   className="inline-flex items-center justify-center px-8 py-4 font-semibold text-white bg-white/20 backdrop-blur border border-white/30 rounded-xl hover:bg-white/30 transform hover:-translate-y-0.5 hover:shadow-xl transition-all duration-200"
                 >
                   Contact SNAP Team

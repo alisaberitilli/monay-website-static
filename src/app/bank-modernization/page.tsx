@@ -131,7 +131,7 @@ export default function BankModernizationPage() {
                 
                 <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
                   <a 
-                    href="mailto:banks@monay.com?subject=Bank Modernization Inquiry" 
+                    href="/contact?dept=Banks&subject=Bank%20Modernization%20Inquiry" 
                     className="inline-flex items-center justify-center px-8 py-4 font-semibold text-blue-900 bg-white rounded-xl hover:bg-gray-100 transform hover:-translate-y-0.5 hover:shadow-xl transition-all duration-200"
                   >
                     <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -589,11 +589,11 @@ export default function BankModernizationPage() {
                       <p className={`mb-4 ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>
                         Join the 932K banks worldwide that need modernization. Be among the first to offer GENIUS Act compliant stablecoins.
                       </p>
-                      <a href="mailto:banks@monay.com" className="inline-flex items-center text-blue-600 hover:text-blue-700 font-medium">
+                      <a href="/contact?dept=Banks" className="inline-flex items-center text-blue-600 hover:text-blue-700 font-medium">
                         <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                         </svg>
-                        banks@monay.com
+                        Contact Banking Team
                       </a>
                     </div>
                   </div>

@@ -35,17 +35,17 @@ export const submitToFormspree = async (formData: any, formId?: string) => {
   }
 };
 
-// EmailJS integration for sending real emails to ali@monay.com
+// EmailJS integration for sending real emails to our CRM system
 export const sendEmailJS = async (templateParams: any) => {
-  // Always send to ali@monay.com
+  // Always send to our CRM system
   const emailData = {
     ...templateParams,
-    to_email: 'ali@monay.com',
+    to_email: 'our CRM system',
     to_name: 'Ali Monay',
   };
   
   // Log for debugging
-  console.log('Sending email to ali@monay.com:', emailData);
+  console.log('Sending email to our CRM system:', emailData);
   
   // Check if EmailJS is configured
   const isConfigured = EMAILJS_CONFIG.PUBLIC_KEY !== 'YOUR_EMAILJS_PUBLIC_KEY' &&
@@ -70,7 +70,7 @@ export const sendEmailJS = async (templateParams: any) => {
       
       if (response.status === 200) {
         // Email sent successfully - no popup
-        console.log('Email sent successfully to ali@monay.com');
+        console.log('Email sent successfully to our CRM system');
         return true;
       } else {
         console.error('EmailJS returned non-200 status:', response);
@@ -87,7 +87,7 @@ export const sendEmailJS = async (templateParams: any) => {
   } else {
     // Fallback: Show configuration instructions
     console.warn('EmailJS not configured. Please set up your credentials in emailjs-config.ts');
-    alert(`📧 EmailJS Setup Required!\n\nTo enable real email delivery:\n1. Sign up at emailjs.com (free)\n2. Create a service & template\n3. Update emailjs-config.ts with your credentials\n\nFor now, here's what would be sent to ali@monay.com:\n\nFrom: ${emailData.from_email}\nSubject: ${emailData.subject || 'Form Submission'}\nMessage: ${emailData.message || 'Form submission'}`);
+    alert(`📧 EmailJS Setup Required!\n\nTo enable real email delivery:\n1. Sign up at emailjs.com (free)\n2. Create a service & template\n3. Update emailjs-config.ts with your credentials\n\nFor now, here's what would be sent to our CRM system:\n\nFrom: ${emailData.from_email}\nSubject: ${emailData.subject || 'Form Submission'}\nMessage: ${emailData.message || 'Form submission'}`);
     return true; // Return true for demo purposes
   }
 };
@@ -185,11 +185,11 @@ export const verifyOTP = (email: string, inputOtp: string) => {
   return false;
 };
 
-// Contact form handler - sends all forms to ali@monay.com
+// Contact form handler - sends all forms to our CRM system
 export const handleContactForm = async (formData: any) => {
-  // Send email to ali@monay.com
+  // Send email to our CRM system
   const emailSent = await sendEmailJS({
-    to_email: 'ali@monay.com',
+    to_email: 'our CRM system',
     from_name: formData.firstName ? `${formData.firstName} ${formData.lastName}` : formData.name,
     from_email: formData.email,
     subject: `Monay Website Form: ${formData.type || 'Contact'}`,
@@ -204,7 +204,7 @@ export const handleContactForm = async (formData: any) => {
   return emailSent;
 };
 
-// Pilot program submission - sends to ali@monay.com
+// Pilot program submission - sends to our CRM system
 export const submitPilotProgram = async (formData: any) => {
   const enhancedData = {
     ...formData,
@@ -213,9 +213,9 @@ export const submitPilotProgram = async (formData: any) => {
     type: 'Pilot Program Application'
   };
   
-  // Send detailed pilot application to ali@monay.com
+  // Send detailed pilot application to our CRM system
   const emailSent = await sendEmailJS({
-    to_email: 'ali@monay.com',
+    to_email: 'our CRM system',
     subject: 'Monay Pilot Program Application',
     from_name: formData.contactName || formData.companyName,
     from_email: formData.email,
@@ -244,9 +244,9 @@ Time: ${meetingData.time}
 Notes: ${meetingData.notes || 'None'}
   `;
   
-  // Send notification email to ali@monay.com
+  // Send notification email to our CRM system
   const emailParams = {
-    to_email: 'ali@monay.com',
+    to_email: 'our CRM system',
     subject: `Meeting Request: ${meetingData.meetingType} - ${meetingData.company}`,
     from_name: meetingData.name,
     from_email: meetingData.email,
@@ -255,12 +255,12 @@ Notes: ${meetingData.notes || 'None'}
   };
   
   // Log the meeting request
-  console.log('=== Meeting Request for ali@monay.com ===');
+  console.log('=== Meeting Request for our CRM system ===');
   console.log(formattedDetails);
   console.log('=========================================');
   
   // Show user confirmation
-  alert(`Meeting request submitted!\n\nDetails sent to ali@monay.com:\n${formattedDetails}\n\nYou will receive a confirmation email shortly.`);
+  alert(`Meeting request submitted!\n\nDetails sent to our CRM system:\n${formattedDetails}\n\nYou will receive a confirmation email shortly.`);
   
   // Save locally
   saveUserLocally({

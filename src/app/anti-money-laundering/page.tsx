@@ -567,7 +567,7 @@ export default function AntiMoneyLaundering() {
             <div className={`${isDarkMode ? 'bg-gray-800' : 'bg-gray-100'} p-4 rounded mb-4`}>
               <p className={`${isDarkMode ? 'text-gray-300' : 'text-gray-700'} font-semibold mb-2`}>Internal Reporting Channels:</p>
               <ul className={`list-disc pl-6 ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>
-                <li>AML Compliance Officer: compliance@monay.com</li>
+                <li>AML Compliance Officer: <a href="/contact?dept=Compliance">Contact AML Officer</a></li>
                 <li>Anonymous Hotline: 1-800-XXX-XXXX</li>
                 <li>Secure Web Portal: compliance.monay.com</li>
                 <li>Direct Manager (unless involved)</li>
@@ -588,7 +588,7 @@ export default function AntiMoneyLaundering() {
               <p className={`${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>Utilli, LLC (dba Tilli)</p>
               <p className={`${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>1997 Annapolis Exchange Parkway, Suite 300</p>
               <p className={`${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>Annapolis, MD 21401</p>
-              <p className={`${isDarkMode ? 'text-gray-300' : 'text-gray-700'} mt-2`}>Email: compliance@monay.com</p>
+              <p className={`${isDarkMode ? 'text-gray-300' : 'text-gray-700'} mt-2`}><a href="/contact?dept=Compliance">Contact Compliance</a></p>
               <p className={`${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>Phone: 1-888-MONAY-00</p>
               <p className={`${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>24/7 Compliance Hotline: 1-800-XXX-XXXX</p>
               <p className={`${isDarkMode ? 'text-gray-300' : 'text-gray-700'} mt-2`}>FinCEN MSB Registration: [Registration Number]</p>

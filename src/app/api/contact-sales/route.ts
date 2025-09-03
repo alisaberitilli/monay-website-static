@@ -24,7 +24,7 @@ export async function POST(request: NextRequest) {
 
     // Prepare email content
     const emailContent = {
-      to: to || 'ali@monay.com',
+      to: to || 'our team',
       subject: subject || 'New Sales Contact Request',
       html: `
         <!DOCTYPE html>

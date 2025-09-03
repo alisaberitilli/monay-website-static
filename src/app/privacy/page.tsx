@@ -309,7 +309,7 @@ export default function PrivacyPolicy() {
               7.4 How to Exercise Your Rights
             </h3>
             <p className={`${isDarkMode ? 'text-gray-300' : 'text-gray-700'} mb-4`}>
-              To exercise any of these rights, please contact us at privacy@monay.com or through your account settings. We may need to verify your identity before processing your request. We will respond to your request within the timeframe required by applicable law (generally 30 days).
+              To exercise any of these rights, please contact us at Contact Privacy Team via our contact form or through your account settings. We may need to verify your identity before processing your request. We will respond to your request within the timeframe required by applicable law (generally 30 days).
             </p>
           </section>
 
@@ -425,8 +425,8 @@ export default function PrivacyPolicy() {
             <div className={`${isDarkMode ? 'bg-gray-800' : 'bg-gray-100'} p-4 rounded mb-4`}>
               <p className={`${isDarkMode ? 'text-gray-300' : 'text-gray-700'} font-semibold`}>Utilli, LLC (dba Tilli)</p>
               <p className={`${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>Data Protection Officer</p>
-              <p className={`${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>Email: privacy@monay.com</p>
-              <p className={`${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>Email (GDPR): dpo@monay.com</p>
+              <p className={`${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>Email: Contact Privacy Team via our contact form</p>
+              <p className={`${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>Email (GDPR): Contact Data Protection Officer</p>
               <p className={`${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>Phone: 1-888-MONAY-00</p>
               <p className={`${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>Address: 1997 Annapolis Exchange Parkway, Suite 300, Annapolis, MD 21401</p>
             </div>
@@ -434,13 +434,13 @@ export default function PrivacyPolicy() {
             <p className={`${isDarkMode ? 'text-gray-300' : 'text-gray-700'} mb-4`}>
               <strong>EU Representative:</strong><br/>
               [To be appointed]<br/>
-              Email: eu-privacy@monay.com
+              Email: eu-Contact Privacy Team via our contact form
             </p>
             
             <p className={`${isDarkMode ? 'text-gray-300' : 'text-gray-700'} mb-4`}>
               <strong>UK Representative:</strong><br/>
               [To be appointed]<br/>
-              Email: uk-privacy@monay.com
+              Email: uk-Contact Privacy Team via our contact form
             </p>
           </section>
 

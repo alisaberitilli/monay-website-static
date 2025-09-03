@@ -69,7 +69,7 @@ export const teamsConfig = {
   emailTemplates: {
     confirmation: {
       subject: 'Meeting Confirmed: Monay Platform Demo - {date}',
-      from: 'noreply@monay.com',
+      from: 'system notification',
       replyTo: 'ali@tilli.pro'
     },
     reminder: {

@@ -557,11 +557,11 @@ export default function InvestorsPage() {
                     <p className={`mb-4 ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>
                       We're raising our Series A to accelerate product development and market expansion.
                     </p>
-                    <a href="mailto:investors@monay.com" className="inline-flex items-center text-blue-600 hover:text-blue-700 font-medium">
+                    <a href="/contact?dept=Investors&subject=Investment%20Inquiry" className="inline-flex items-center text-blue-600 hover:text-blue-700 font-medium">
                       <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                       </svg>
-                      investors@monay.com
+                      Contact Investor Relations
                     </a>
                   </div>
                 </div>
@@ -587,8 +587,8 @@ export default function InvestorsPage() {
                 <p className={`mb-4 ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>
                   Interested in partnering with Monay? We're actively seeking strategic partners in banking, compliance, and enterprise distribution.
                 </p>
-                <a href="mailto:partnerships@monay.com" className="text-blue-600 hover:text-blue-700 font-medium">
-                  partnerships@monay.com
+                <a href="/contact?dept=Partnerships&subject=Partnership%20Opportunity" className="text-blue-600 hover:text-blue-700 font-medium">
+                  Contact Partnership Team
                 </a>
               </div>
             </div>

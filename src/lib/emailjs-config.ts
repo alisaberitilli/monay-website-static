@@ -1,6 +1,6 @@
 /**
  * EmailJS Configuration
- * Configured for ali@monay.com
+ * Configured for the designated recipient
  */
 
 export const EMAILJS_CONFIG = {
@@ -14,14 +14,14 @@ export const EMAILJS_CONFIG = {
   TEMPLATE_ID: 'template_l1hzdda',
   
   // Fixed recipient - all emails go here
-  TO_EMAIL: 'ali@monay.com'
+  TO_EMAIL: 'the designated recipient'
 };
 
 // Instructions to get these values:
 // 1. Sign up at https://www.emailjs.com/ (free)
 // 2. Add Gmail/Outlook service in Email Services
 // 3. Create template in Email Templates with:
-//    - To Email: {{to_email}} or ali@monay.com
+//    - To Email: {{to_email}} or the designated recipient
 //    - Subject: {{subject}}
 //    - Content: Your email template
 // 4. Copy your Public Key from Account settings

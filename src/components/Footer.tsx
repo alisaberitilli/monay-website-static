@@ -161,8 +161,8 @@ export default function Footer({ isDarkMode }: FooterProps) {
               Monay is a product of Utilli, LLC (dba Tilli)
             </div>
             <div className="flex space-x-6">
-              <a href="mailto:support@monay.com" className={`text-sm ${isDarkMode ? 'text-gray-400 hover:text-blue-400' : 'text-gray-600 hover:text-blue-600'} transition-colors`}>
-                support@monay.com
+              <a href="/contact?dept=Support" className={`text-sm ${isDarkMode ? 'text-gray-400 hover:text-blue-400' : 'text-gray-600 hover:text-blue-600'} transition-colors`}>
+                Contact Support
               </a>
               <a href="tel:+1-888-MONAY-00" className={`text-sm ${isDarkMode ? 'text-gray-400 hover:text-blue-400' : 'text-gray-600 hover:text-blue-600'} transition-colors`}>
                 1-888-MONAY-00

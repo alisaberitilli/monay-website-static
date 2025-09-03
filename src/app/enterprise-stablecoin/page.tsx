@@ -404,7 +404,7 @@ export default function EnterpriseStablecoinPage() {
                   Get Started
                 </Link>
                 <a 
-                  href="mailto:enterprise@monay.com" 
+                  href="/contact?dept=Enterprise&subject=Enterprise%20Stablecoin%20Inquiry" 
                   className="inline-flex items-center justify-center px-8 py-4 font-semibold text-white bg-white/20 backdrop-blur border border-white/30 rounded-xl hover:bg-white/30 transform hover:-translate-y-0.5 hover:shadow-xl transition-all duration-200"
                 >
                   Schedule Demo
