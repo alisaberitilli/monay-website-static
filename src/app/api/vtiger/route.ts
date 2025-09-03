@@ -157,12 +157,13 @@ export async function POST(request: Request) {
       cf_917: '5000', // 1st Year Annual Contract Value
       cf_919: '5000', // Annual Contract Value ACV
       
-      // Optional fields from form
-      firstname: formData.firstName || formData.firstname || '',
-      email: formData.email || '',
-      phone: formData.phone || '',
-      company: formData.company || formData.organizationName || '',
-      designation: formData.role || formData.jobTitle || '',
+      // Optional fields from form - ensure they have values and trim whitespace
+      firstname: (formData.firstName || formData.firstname || '').trim(),
+      email: (formData.email || '').trim(),
+      mobile: (formData.phone || '').trim(), // Mobile field for Vtiger
+      phone: (formData.phone || '').trim(), // Also populate phone field
+      company: (formData.company || formData.organizationName || '').trim(),
+      designation: (formData.role || formData.jobTitle || '').trim(),
       leadsource: `Monay Website - ${formData.formType || 'Unknown Form'}`,
       leadstatus: 'New',
       industry: formData.industry || '',
@@ -177,7 +178,12 @@ export async function POST(request: Request) {
       country: formData.country || ''
     };
     
-    console.log('Creating lead with data:', leadData);
+    console.log('Creating lead with data:');
+    console.log('- Email:', leadData.email);
+    console.log('- Mobile:', leadData.mobile);
+    console.log('- Phone:', leadData.phone);
+    console.log('- Company:', leadData.company);
+    console.log('Full lead data:', leadData);
     
     // IMPORTANT: elementType must be a separate parameter
     const createParams = new URLSearchParams();
@@ -201,7 +207,13 @@ export async function POST(request: Request) {
       throw new Error('Failed to create lead: ' + (createData.error?.message || JSON.stringify(createData)));
     }
     
-    console.log('Lead created successfully:', createData.result);
+    console.log('Lead created successfully:');
+    console.log('Result fields:', Object.keys(createData.result));
+    console.log('Email field value:', createData.result.email);
+    console.log('Mobile field value:', createData.result.mobile);
+    console.log('Phone field value:', createData.result.phone);
+    console.log('Company field value:', createData.result.company);
+    console.log('Full result:', createData.result);
     
     // Step 4: Logout
     const logoutParams = new URLSearchParams();
