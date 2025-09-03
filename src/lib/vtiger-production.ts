@@ -66,17 +66,8 @@ export async function sendToVtigerProduction(formData: any, formType: string): P
   } catch (error) {
     console.error('❌ Error calling Vtiger API:', error);
     
-    // Fallback to direct client-side integration if API fails
-    // This is less secure but ensures forms always work
-    if (process.env.NEXT_PUBLIC_VTIGER_URL && process.env.NEXT_PUBLIC_VTIGER_ACCESS_KEY) {
-      console.log('Attempting fallback to direct integration...');
-      try {
-        const { sendToVtigerDirect } = await import('./vtiger-client-direct');
-        return await sendToVtigerDirect(formData, formType);
-      } catch (fallbackError) {
-        console.error('Fallback also failed:', fallbackError);
-      }
-    }
+    // No fallback - API must be available for form submission
+    // This ensures security by preventing direct client-side Vtiger calls
     
     return { success: false, error: error.message };
   }
