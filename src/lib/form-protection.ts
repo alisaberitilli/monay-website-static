@@ -131,7 +131,7 @@ export const detectBotPatterns = (): { isBot: boolean; reason?: string } => {
 };
 
 // Rate limiting configuration per form type
-export const FORM_RATE_LIMITS = {
+export const FORM_RATE_LIMITS: Record<string, { cooldownMinutes: number; maxPerHour: number }> = {
   'Monay ID Signup': { cooldownMinutes: 5, maxPerHour: 3 },
   'Monay WaaS Signup': { cooldownMinutes: 5, maxPerHour: 3 },
   'Monay CaaS Signup': { cooldownMinutes: 5, maxPerHour: 3 },
