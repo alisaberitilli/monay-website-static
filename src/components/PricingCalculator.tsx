@@ -43,70 +43,70 @@ const pricingTiers = {
       firebase: {
         name: 'Firebase Auth',
         tiers: [
-          { min: 0, max: 50000, price: 0, perUnit: 0 },
-          { min: 50001, max: 100000, price: 0, perUnit: 0.0006 },
-          { min: 100001, max: Infinity, price: 0, perUnit: 0.0001 }
+          { min: 0, max: 50000, price: 0, perUnit: 0.0055 },
+          { min: 50001, max: 100000, price: 275, perUnit: 0.0045 },
+          { min: 100001, max: Infinity, price: 500, perUnit: 0.0025 }
         ]
       }
     }
   },
   monayCaaS: {
     tiers: [
-      { min: 0, max: 50000, price: 2499, perUnit: 0.05 },
-      { min: 50001, max: 500000, price: 9999, perUnit: 0.02 },
-      { min: 500001, max: Infinity, price: 24999, perUnit: 0.01 }
+      { min: 0, max: 50000, price: 2499, perUnit: 0 },
+      { min: 50001, max: 500000, price: 9999, perUnit: 0 },
+      { min: 500001, max: Infinity, price: 24999, perUnit: 0 }
     ],
     competitors: {
       circle: {
         name: 'Circle',
         tiers: [
-          { min: 0, max: 100000, price: 50000, perUnit: 0.5 },
-          { min: 100001, max: Infinity, price: 100000, perUnit: 0.25 }
+          { min: 0, max: 100000, price: 15000, perUnit: 0.02 },
+          { min: 100001, max: Infinity, price: 25000, perUnit: 0.01 }
         ]
       },
       fireblocks: {
         name: 'Fireblocks',
         tiers: [
-          { min: 0, max: Infinity, price: 150000 / 12, perUnit: 0.1 }
+          { min: 0, max: Infinity, price: 12500, perUnit: 0.015 }
         ]
       },
       paxos: {
         name: 'Paxos',
         tiers: [
-          { min: 0, max: Infinity, price: 75000, perUnit: 0.15 }
+          { min: 0, max: Infinity, price: 10000, perUnit: 0.02 }
         ]
       }
     }
   },
   monayWaaS: {
     tiers: [
-      { min: 0, max: 1000, price: 0, perUnit: 0.15 },
-      { min: 1001, max: 10000, price: 299, perUnit: 0.10 },
-      { min: 10001, max: 50000, price: 999, perUnit: 0.05 },
-      { min: 50001, max: Infinity, price: 2999, perUnit: 0.02 }
+      { min: 0, max: 1000, price: 0, perUnit: 0 },
+      { min: 1001, max: 10000, price: 299, perUnit: 0 },
+      { min: 10001, max: 50000, price: 999, perUnit: 0 },
+      { min: 50001, max: Infinity, price: 2999, perUnit: 0 }
     ],
     competitors: {
       synapse: {
         name: 'Synapse',
         tiers: [
-          { min: 0, max: 1000, price: 1500, perUnit: 0.50 },
-          { min: 1001, max: 10000, price: 5000, perUnit: 0.35 },
-          { min: 10001, max: Infinity, price: 10000, perUnit: 0.25 }
+          { min: 0, max: 1000, price: 1500, perUnit: 0.25 },
+          { min: 1001, max: 10000, price: 3000, perUnit: 0.15 },
+          { min: 10001, max: Infinity, price: 5000, perUnit: 0.10 }
         ]
       },
       marqeta: {
         name: 'Marqeta',
         tiers: [
-          { min: 0, max: 5000, price: 5000, perUnit: 0.45 },
-          { min: 5001, max: Infinity, price: 15000, perUnit: 0.30 }
+          { min: 0, max: 5000, price: 2500, perUnit: 0.20 },
+          { min: 5001, max: Infinity, price: 5000, perUnit: 0.15 }
         ]
       },
       unit: {
         name: 'Unit',
         tiers: [
-          { min: 0, max: 1000, price: 500, perUnit: 0.40 },
-          { min: 1001, max: 10000, price: 2500, perUnit: 0.35 },
-          { min: 10001, max: Infinity, price: 5000, perUnit: 0.30 }
+          { min: 0, max: 1000, price: 500, perUnit: 0.15 },
+          { min: 1001, max: 10000, price: 1500, perUnit: 0.10 },
+          { min: 10001, max: Infinity, price: 3000, perUnit: 0.08 }
         ]
       }
     }
@@ -129,6 +129,11 @@ function calculatePrice(product: string, volume: number, provider: string): numb
   
   for (const tier of tierData) {
     if (volume >= tier.min && volume <= tier.max) {
+      // For Firebase and similar per-unit pricing, calculate based on total volume
+      if (provider === 'firebase' && product === 'monayID') {
+        return volume * tier.perUnit;
+      }
+      
       const basePrice = tier.price;
       const additionalUnits = Math.max(0, volume - tier.min);
       const variablePrice = additionalUnits * tier.perUnit;

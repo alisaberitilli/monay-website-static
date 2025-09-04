@@ -205,21 +205,33 @@ export default function PricingPage() {
                     <th className={`px-6 py-4 text-left ${isDarkMode ? 'text-gray-200' : 'text-gray-900'}`}>Feature</th>
                     <th className={`px-6 py-4 text-center ${isDarkMode ? 'text-gray-200' : 'text-gray-900'}`}>Monay</th>
                     <th className={`px-6 py-4 text-center ${isDarkMode ? 'text-gray-200' : 'text-gray-900'}`}>Auth0</th>
-                    <th className={`px-6 py-4 text-center ${isDarkMode ? 'text-gray-200' : 'text-gray-900'}`}>Okta</th>
+                    <th className={`px-6 py-4 text-center ${isDarkMode ? 'text-gray-200' : 'text-gray-900'}`}>Firebase</th>
                   </tr>
                 </thead>
                 <tbody>
                   <tr className={`border-t ${isDarkMode ? 'border-gray-700' : 'border-gray-200'}`}>
-                    <td className={`px-6 py-4 ${isDarkMode ? 'text-gray-300' : 'text-gray-800'}`}>Starting Price</td>
-                    <td className="px-6 py-4 text-center font-bold text-green-600">Free</td>
-                    <td className={`px-6 py-4 text-center ${isDarkMode ? 'text-gray-300' : 'text-gray-800'}`}>$240/mo</td>
-                    <td className={`px-6 py-4 text-center ${isDarkMode ? 'text-gray-300' : 'text-gray-800'}`}>$1,500/mo</td>
+                    <td className={`px-6 py-4 ${isDarkMode ? 'text-gray-300' : 'text-gray-800'}`}>Free Tier</td>
+                    <td className="px-6 py-4 text-center font-bold text-green-600">2,500 MAU</td>
+                    <td className={`px-6 py-4 text-center ${isDarkMode ? 'text-gray-300' : 'text-gray-800'}`}>7,000 MAU</td>
+                    <td className={`px-6 py-4 text-center ${isDarkMode ? 'text-gray-300' : 'text-gray-800'}`}>None</td>
                   </tr>
                   <tr className={`border-t ${isDarkMode ? 'border-gray-700' : 'border-gray-200'}`}>
                     <td className={`px-6 py-4 ${isDarkMode ? 'text-gray-300' : 'text-gray-800'}`}>10K MAU Cost</td>
-                    <td className="px-6 py-4 text-center font-bold text-green-600">$149</td>
-                    <td className={`px-6 py-4 text-center ${isDarkMode ? 'text-gray-300' : 'text-gray-800'}`}>$240</td>
-                    <td className={`px-6 py-4 text-center ${isDarkMode ? 'text-gray-300' : 'text-gray-800'}`}>$3,000</td>
+                    <td className="px-6 py-4 text-center font-bold text-green-600">$149/mo</td>
+                    <td className={`px-6 py-4 text-center ${isDarkMode ? 'text-gray-300' : 'text-gray-800'}`}>$240/mo</td>
+                    <td className={`px-6 py-4 text-center ${isDarkMode ? 'text-gray-300' : 'text-gray-800'}`}>$55/mo</td>
+                  </tr>
+                  <tr className={`border-t ${isDarkMode ? 'border-gray-700' : 'border-gray-200'}`}>
+                    <td className={`px-6 py-4 ${isDarkMode ? 'text-gray-300' : 'text-gray-800'}`}>50K MAU Cost</td>
+                    <td className="px-6 py-4 text-center font-bold text-green-600">$499/mo</td>
+                    <td className={`px-6 py-4 text-center ${isDarkMode ? 'text-gray-300' : 'text-gray-800'}`}>$700/mo</td>
+                    <td className={`px-6 py-4 text-center ${isDarkMode ? 'text-gray-300' : 'text-gray-800'}`}>$275/mo</td>
+                  </tr>
+                  <tr className={`border-t ${isDarkMode ? 'border-gray-700' : 'border-gray-200'}`}>
+                    <td className={`px-6 py-4 ${isDarkMode ? 'text-gray-300' : 'text-gray-800'}`}>100K MAU Cost</td>
+                    <td className="px-6 py-4 text-center font-bold text-green-600">$499/mo</td>
+                    <td className={`px-6 py-4 text-center ${isDarkMode ? 'text-gray-300' : 'text-gray-800'}`}>$1,400/mo</td>
+                    <td className={`px-6 py-4 text-center ${isDarkMode ? 'text-gray-300' : 'text-gray-800'}`}>$500/mo</td>
                   </tr>
                   <tr className={`border-t ${isDarkMode ? 'border-gray-700' : 'border-gray-200'}`}>
                     <td className={`px-6 py-4 ${isDarkMode ? 'text-gray-300' : 'text-gray-800'}`}>Voice Biometrics</td>
@@ -237,7 +249,7 @@ export default function PricingPage() {
                     <td className={`px-6 py-4 ${isDarkMode ? 'text-gray-300' : 'text-gray-800'}`}>Setup Time</td>
                     <td className="px-6 py-4 text-center font-bold text-green-600">&lt;1 hour</td>
                     <td className={`px-6 py-4 text-center ${isDarkMode ? 'text-gray-300' : 'text-gray-800'}`}>2-4 hours</td>
-                    <td className={`px-6 py-4 text-center ${isDarkMode ? 'text-gray-300' : 'text-gray-800'}`}>1-2 days</td>
+                    <td className={`px-6 py-4 text-center ${isDarkMode ? 'text-gray-300' : 'text-gray-800'}`}>1-2 hours</td>
                   </tr>
                 </tbody>
               </table>
