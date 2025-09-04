@@ -120,7 +120,7 @@ export default function WhyMonayPage() {
               Aligned with 2025 Federal Initiatives
             </h2>
             <p className={`text-xl ${isDarkMode ? 'text-gray-400' : 'text-gray-700'} max-w-3xl mx-auto`}>
-              Monay is uniquely positioned to power the Trump Administration's digital finance and education freedom initiatives
+              Monay is uniquely positioned to power the US Federal Government's digital finance and education freedom initiatives
             </p>
           </div>
 

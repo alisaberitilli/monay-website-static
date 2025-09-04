@@ -541,7 +541,7 @@ export default function GovernmentPrograms() {
         </div>
       </section>
 
-      {/* Trump Administration Initiatives */}
+      {/* US Federal Government Initiatives */}
       <section className={`py-16 ${isDarkMode ? 'bg-gray-900/50' : 'bg-gray-50'}`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <h2 className={`text-3xl font-bold text-center mb-4 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>

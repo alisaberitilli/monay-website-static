@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Monay - Investor Deck Template</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', sans-serif;
+            background: #0f0f0f;
+            color: #fff;
+            overflow-x: hidden;
+        }
+        
+        .slide {
+            width: 1920px;
+            height: 1080px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 80px;
+            position: relative;
+            page-break-after: always;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            margin-bottom: 20px;
+        }
+        
+        .slide-title {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+        }
+        
+        .slide-white {
+            background: #ffffff;
+            color: #1a1a1a;
+        }
+        
+        .slide-dark {
+            background: #1a1a1a;
+            color: #ffffff;
+        }
+        
+        .slide-gradient-blue {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        .slide-gradient-purple {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        }
+        
+        h1 {
+            font-size: 72px;
+            font-weight: 800;
+            line-height: 1.2;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        
+        h2 {
+            font-size: 48px;
+            font-weight: 700;
+            margin-bottom: 40px;
+            text-align: center;
+        }
+        
+        h3 {
+            font-size: 36px;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+        
+        p {
+            font-size: 24px;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+        
+        .subtitle {
+            font-size: 32px;
+            opacity: 0.9;
+            margin-bottom: 40px;
+        }
+        
+        .logo {
+            position: absolute;
+            top: 60px;
+            left: 80px;
+            font-size: 36px;
+            font-weight: bold;
+        }
+        
+        .slide-number {
+            position: absolute;
+            bottom: 40px;
+            right: 60px;
+            font-size: 18px;
+            opacity: 0.6;
+        }
+        
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 40px;
+            width: 100%;
+            margin-top: 60px;
+        }
+        
+        .metric-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 40px;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .metric-value {
+            font-size: 64px;
+            font-weight: bold;
+            color: #ffd700;
+            margin-bottom: 10px;
+        }
+        
+        .metric-label {
+            font-size: 20px;
+            opacity: 0.9;
+        }
+        
+        .two-column {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 80px;
+            width: 100%;
+            align-items: center;
+        }
+        
+        .three-column {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 40px;
+            width: 100%;
+        }
+        
+        .card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 40px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .highlight {
+            color: #ffd700;
+            font-weight: bold;
+        }
+        
+        .list {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .list li {
+            font-size: 28px;
+            margin-bottom: 20px;
+            padding-left: 40px;
+            position: relative;
+        }
+        
+        .list li:before {
+            content: "▸";
+            position: absolute;
+            left: 0;
+            color: #ffd700;
+            font-size: 32px;
+        }
+        
+        .timeline {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            margin-top: 60px;
+            position: relative;
+        }
+        
+        .timeline::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.3);
+            z-index: 0;
+        }
+        
+        .timeline-item {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
+            text-align: center;
+            position: relative;
+            z-index: 1;
+            flex: 1;
+            margin: 0 20px;
+        }
+        
+        .cta-button {
+            background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
+            color: #1a1a1a;
+            padding: 30px 60px;
+            font-size: 28px;
+            font-weight: bold;
+            border-radius: 100px;
+            display: inline-block;
+            margin-top: 40px;
+            text-decoration: none;
+        }
+        
+        @media print {
+            .slide {
+                page-break-after: always;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<!-- Slide 1: Title Slide -->
+<div class="slide slide-title">
+    <div class="logo">MONAY</div>
+    <h1 style="font-size: 96px;">Building the Future of<br>Programmable Money</h1>
+    <p class="subtitle">Pre-Series A | $6.5M Raise | Q1 2026</p>
+    <div style="margin-top: 60px;">
+        <p style="font-size: 28px; opacity: 0.9;">Enterprise Stablecoin Infrastructure</p>
+        <p style="font-size: 24px; opacity: 0.7;">GENIUS Act Compliant • Dual-Rail Blockchain • White-Label Platform</p>
+    </div>
+    <div class="slide-number">1</div>
+</div>
+
+<!-- Slide 2: Executive Summary -->
+<div class="slide slide-dark">
+    <div class="logo">MONAY</div>
+    <h2>Executive Summary</h2>
+    <div class="metrics-grid">
+        <div class="metric-card">
+            <div class="metric-value">$250B</div>
+            <div class="metric-label">TAM by 2028</div>
+        </div>
+        <div class="metric-card">
+            <div class="metric-value">932K</div>
+            <div class="metric-label">Target Institutions</div>
+        </div>
+        <div class="metric-card">
+            <div class="metric-value">$5M+</div>
+            <div class="metric-label">Pipeline Value</div>
+        </div>
+        <div class="metric-card">
+            <div class="metric-value">3</div>
+            <div class="metric-label">Pilot Programs</div>
+        </div>
+    </div>
+    <div style="margin-top: 60px; text-align: center;">
+        <p style="font-size: 32px; line-height: 1.5;">
+            <span class="highlight">First unified platform</span> for enterprise stablecoin issuance<br>
+            and consumer wallet deployment with <span class="highlight">built-in compliance</span>
+        </p>
+    </div>
+    <div class="slide-number">2</div>
+</div>
+
+<!-- Slide 3: The Problem -->
+<div class="slide slide-gradient-purple">
+    <div class="logo">MONAY</div>
+    <h2>The $1 Trillion Problem</h2>
+    <div class="three-column" style="margin-top: 60px;">
+        <div class="card">
+            <h3 style="color: #ff6b6b;">Fragmented Infrastructure</h3>
+            <p>Organizations juggle 5-7 vendors for payments, compliance, identity, and treasury</p>
+            <p style="font-size: 36px; margin-top: 20px; color: #ffd700;">$150B waste</p>
+        </div>
+        <div class="card">
+            <h3 style="color: #ff6b6b;">Excessive Costs</h3>
+            <p>Legacy providers charge $500K+ setup fees with 12-18 month implementations</p>
+            <p style="font-size: 36px; margin-top: 20px; color: #ffd700;">90% overspend</p>
+        </div>
+        <div class="card">
+            <h3 style="color: #ff6b6b;">Poor User Experience</h3>
+            <p>Users must learn crypto concepts while missing basic features like cards</p>
+            <p style="font-size: 36px; margin-top: 20px; color: #ffd700;">78% abandon</p>
+        </div>
+    </div>
+    <div class="slide-number">3</div>
+</div>
+
+<!-- Slide 4: The Solution -->
+<div class="slide slide-white">
+    <div class="logo" style="color: #1a1a1a;">MONAY</div>
+    <h2 style="color: #1a1a1a;">The Monay Solution</h2>
+    <div class="two-column">
+        <div>
+            <h3 style="color: #667eea;">One Platform</h3>
+            <ul class="list">
+                <li style="color: #333;">Issue branded stablecoins</li>
+                <li style="color: #333;">Deploy controlled wallets</li>
+                <li style="color: #333;">Real-world acceptance (cards & ATMs)</li>
+                <li style="color: #333;">Built-in compliance orchestration</li>
+                <li style="color: #333;">Treasury automation</li>
+            </ul>
+        </div>
+        <div style="text-align: center;">
+            <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 30px; padding: 60px;">
+                <p style="font-size: 64px; font-weight: bold; color: white; margin-bottom: 20px;">90%</p>
+                <p style="font-size: 28px; color: white;">Cost Reduction</p>
+                <p style="font-size: 20px; color: rgba(255,255,255,0.8); margin-top: 20px;">vs. Traditional Infrastructure</p>
+            </div>
+        </div>
+    </div>
+    <div class="slide-number">4</div>
+</div>
+
+<!-- Slide 5: Product Suite -->
+<div class="slide slide-dark">
+    <div class="logo">MONAY</div>
+    <h2>Product Suite</h2>
+    <div class="three-column">
+        <div class="card">
+            <h3 style="color: #667eea;">Monay CaaS</h3>
+            <p style="font-size: 18px; margin-bottom: 30px;">Coin-as-a-Service</p>
+            <ul class="list">
+                <li style="font-size: 20px;">White-label stablecoin issuance</li>
+                <li style="font-size: 20px;">GENIUS Act compliant</li>
+                <li style="font-size: 20px;">Dual-rail: Base L2 + Solana</li>
+                <li style="font-size: 20px;">Business Rules Framework</li>
+            </ul>
+        </div>
+        <div class="card">
+            <h3 style="color: #764ba2;">Monay WaaS</h3>
+            <p style="font-size: 18px; margin-bottom: 30px;">Wallet-as-a-Service</p>
+            <ul class="list">
+                <li style="font-size: 20px;">Consumer wallet deployment</li>
+                <li style="font-size: 20px;">Physical & virtual cards</li>
+                <li style="font-size: 20px;">ATM network access</li>
+                <li style="font-size: 20px;">Programmable controls</li>
+            </ul>
+        </div>
+        <div class="card">
+            <h3 style="color: #f5576c;">Monay ID</h3>
+            <p style="font-size: 18px; margin-bottom: 30px;">Identity Infrastructure</p>
+            <ul class="list">
+                <li style="font-size: 20px;">KYC/AML built-in</li>
+                <li style="font-size: 20px;">SSO/SAML integration</li>
+                <li style="font-size: 20px;">Multi-stakeholder wallets</li>
+                <li style="font-size: 20px;">RBAC controls</li>
+            </ul>
+        </div>
+    </div>
+    <div class="slide-number">5</div>
+</div>
+
+<!-- Slide 6: Market Opportunity -->
+<div class="slide slide-gradient-blue">
+    <div class="logo">MONAY</div>
+    <h2>$250B Market Opportunity</h2>
+    <div class="two-column" style="margin-top: 60px;">
+        <div>
+            <h3>Target Segments</h3>
+            <ul class="list">
+                <li><span class="highlight">Banks & Credit Unions:</span> 4,700 US institutions</li>
+                <li><span class="highlight">Government Programs:</span> $500B in disbursements</li>
+                <li><span class="highlight">Enterprises:</span> Fortune 500 treasury needs</li>
+                <li><span class="highlight">Cross-Border:</span> $150T annual volume</li>
+            </ul>
+        </div>
+        <div style="text-align: center;">
+            <div style="background: rgba(255,255,255,0.1); border-radius: 30px; padding: 40px;">
+                <p style="font-size: 28px; margin-bottom: 30px;">Market Growth</p>
+                <p style="font-size: 72px; font-weight: bold; color: #ffd700;">47% CAGR</p>
+                <p style="font-size: 20px; margin-top: 20px;">2024-2028 Projected</p>
+            </div>
+        </div>
+    </div>
+    <div class="slide-number">6</div>
+</div>
+
+<!-- Slide 7: Traction -->
+<div class="slide slide-white">
+    <div class="logo" style="color: #1a1a1a;">MONAY</div>
+    <h2 style="color: #1a1a1a;">Traction & Pipeline</h2>
+    <div class="metrics-grid">
+        <div class="card" style="background: #f8f9fa; border: 1px solid #dee2e6;">
+            <h3 style="color: #667eea; font-size: 28px;">Government RFPs</h3>
+            <p style="color: #333; font-size: 48px; font-weight: bold; margin: 20px 0;">3 Active</p>
+            <p style="color: #666;">Education, SNAP, Relief</p>
+        </div>
+        <div class="card" style="background: #f8f9fa; border: 1px solid #dee2e6;">
+            <h3 style="color: #764ba2; font-size: 28px;">Enterprise Pilots</h3>
+            <p style="color: #333; font-size: 48px; font-weight: bold; margin: 20px 0;">$5M+</p>
+            <p style="color: #666;">Q1 2026 Pipeline</p>
+        </div>
+        <div class="card" style="background: #f8f9fa; border: 1px solid #dee2e6;">
+            <h3 style="color: #f5576c; font-size: 28px;">Bank Partners</h3>
+            <p style="color: #333; font-size: 48px; font-weight: bold; margin: 20px 0;">2 LOIs</p>
+            <p style="color: #666;">Regional Banks</p>
+        </div>
+        <div class="card" style="background: #f8f9fa; border: 1px solid #dee2e6;">
+            <h3 style="color: #4ecdc4; font-size: 28px;">Users Waitlist</h3>
+            <p style="color: #333; font-size: 48px; font-weight: bold; margin: 20px 0;">1,200+</p>
+            <p style="color: #666;">Pre-launch signups</p>
+        </div>
+    </div>
+    <div class="slide-number">7</div>
+</div>
+
+<!-- Slide 8: Competitive Advantage -->
+<div class="slide slide-dark">
+    <div class="logo">MONAY</div>
+    <h2>Why We Win</h2>
+    <div class="two-column">
+        <div>
+            <h3 style="color: #ffd700;">Unique Differentiators</h3>
+            <ul class="list">
+                <li>First GENIUS Act compliant platform</li>
+                <li>Dual-rail architecture (Base L2 + Solana)</li>
+                <li>Invoice First™ transaction model</li>
+                <li>Built-in compliance orchestration</li>
+                <li>90% lower costs than competitors</li>
+                <li>2-week deployment vs 12-18 months</li>
+            </ul>
+        </div>
+        <div>
+            <h3 style="color: #ffd700;">Defensible Moats</h3>
+            <ul class="list">
+                <li>Patent-pending BRF technology</li>
+                <li>Network effects from dual-rail</li>
+                <li>Government compliance expertise</li>
+                <li>Enterprise integration hooks</li>
+                <li>Banking partner relationships</li>
+                <li>First-mover in programmable money</li>
+            </ul>
+        </div>
+    </div>
+    <div class="slide-number">8</div>
+</div>
+
+<!-- Slide 9: Business Model -->
+<div class="slide slide-gradient-purple">
+    <div class="logo">MONAY</div>
+    <h2>Revenue Model</h2>
+    <div class="three-column">
+        <div class="card">
+            <h3>Platform Fees</h3>
+            <p style="font-size: 36px; color: #ffd700; margin: 20px 0;">$10K-50K</p>
+            <p>Monthly SaaS</p>
+            <ul class="list" style="margin-top: 20px;">
+                <li style="font-size: 20px;">White-label licensing</li>
+                <li style="font-size: 20px;">API access</li>
+                <li style="font-size: 20px;">Compliance tools</li>
+            </ul>
+        </div>
+        <div class="card">
+            <h3>Transaction Fees</h3>
+            <p style="font-size: 36px; color: #ffd700; margin: 20px 0;">0.3-0.5%</p>
+            <p>Per transaction</p>
+            <ul class="list" style="margin-top: 20px;">
+                <li style="font-size: 20px;">Payment processing</li>
+                <li style="font-size: 20px;">Cross-border transfers</li>
+                <li style="font-size: 20px;">Card swipes</li>
+            </ul>
+        </div>
+        <div class="card">
+            <h3>Treasury Services</h3>
+            <p style="font-size: 36px; color: #ffd700; margin: 20px 0;">5-15 bps</p>
+            <p>On deposits</p>
+            <ul class="list" style="margin-top: 20px;">
+                <li style="font-size: 20px;">Yield generation</li>
+                <li style="font-size: 20px;">Liquidity management</li>
+                <li style="font-size: 20px;">FX services</li>
+            </ul>
+        </div>
+    </div>
+    <div class="slide-number">9</div>
+</div>
+
+<!-- Slide 10: Team -->
+<div class="slide slide-white">
+    <div class="logo" style="color: #1a1a1a;">MONAY</div>
+    <h2 style="color: #1a1a1a;">Leadership Team</h2>
+    <div style="text-align: center; margin-top: 60px;">
+        <p style="font-size: 32px; color: #333; margin-bottom: 40px;">
+            Experienced team with proven track records in:
+        </p>
+        <div class="three-column">
+            <div class="card" style="background: #f8f9fa;">
+                <h3 style="color: #667eea;">Fintech Scale</h3>
+                <p style="color: #666;">Former executives from Stripe, Square, and PayPal</p>
+            </div>
+            <div class="card" style="background: #f8f9fa;">
+                <h3 style="color: #764ba2;">Blockchain Innovation</h3>
+                <p style="color: #666;">Early Coinbase, Circle, and Anchorage team members</p>
+            </div>
+            <div class="card" style="background: #f8f9fa;">
+                <h3 style="color: #f5576c;">Enterprise Sales</h3>
+                <p style="color: #666;">Combined $2B+ in enterprise software sales</p>
+            </div>
+        </div>
+    </div>
+    <div class="slide-number">10</div>
+</div>
+
+<!-- Slide 11: Roadmap -->
+<div class="slide slide-dark">
+    <div class="logo">MONAY</div>
+    <h2>Execution Roadmap</h2>
+    <div class="timeline">
+        <div class="timeline-item">
+            <h3 style="font-size: 24px; color: #667eea;">Q4 2025</h3>
+            <p style="font-size: 18px;">MVP Launch</p>
+            <p style="font-size: 16px; opacity: 0.8;">3 pilot programs</p>
+        </div>
+        <div class="timeline-item">
+            <h3 style="font-size: 24px; color: #764ba2;">Q1 2026</h3>
+            <p style="font-size: 18px;">Series A Close</p>
+            <p style="font-size: 16px; opacity: 0.8;">$6.5M raise</p>
+        </div>
+        <div class="timeline-item">
+            <h3 style="font-size: 24px; color: #f5576c;">Q2 2026</h3>
+            <p style="font-size: 18px;">Scale Launch</p>
+            <p style="font-size: 16px; opacity: 0.8;">25 customers</p>
+        </div>
+        <div class="timeline-item">
+            <h3 style="font-size: 24px; color: #4ecdc4;">Q4 2026</h3>
+            <p style="font-size: 18px;">Market Leader</p>
+            <p style="font-size: 16px; opacity: 0.8;">$10M ARR</p>
+        </div>
+    </div>
+    <div style="margin-top: 60px; text-align: center;">
+        <p style="font-size: 32px;">Path to <span class="highlight">$100M ARR by 2028</span></p>
+    </div>
+    <div class="slide-number">11</div>
+</div>
+
+<!-- Slide 12: The Ask -->
+<div class="slide slide-gradient-blue">
+    <div class="logo">MONAY</div>
+    <h2 style="font-size: 64px;">The Ask</h2>
+    <div style="text-align: center; margin-top: 60px;">
+        <p style="font-size: 72px; font-weight: bold; color: #ffd700; margin-bottom: 40px;">$6.5M Pre-Series A</p>
+        <div class="two-column">
+            <div class="card">
+                <h3>Use of Funds</h3>
+                <ul class="list">
+                    <li>Engineering team expansion (40%)</li>
+                    <li>Compliance & licensing (25%)</li>
+                    <li>Go-to-market (20%)</li>
+                    <li>Operations & infrastructure (15%)</li>
+                </ul>
+            </div>
+            <div class="card">
+                <h3>Milestones</h3>
+                <ul class="list">
+                    <li>Launch 3 government programs</li>
+                    <li>Onboard 25 enterprise customers</li>
+                    <li>Process $100M in volume</li>
+                    <li>Achieve $10M ARR run rate</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="slide-number">12</div>
+</div>
+
+<!-- Slide 13: Contact -->
+<div class="slide slide-title">
+    <div class="logo">MONAY</div>
+    <h1>Let's Build the Future Together</h1>
+    <div style="margin-top: 60px; text-align: center;">
+        <p style="font-size: 32px; margin-bottom: 40px;">Join us in revolutionizing programmable money</p>
+        <div class="cta-button">Schedule a Meeting</div>
+        <div style="margin-top: 60px;">
+            <p style="font-size: 24px; opacity: 0.9;">Contact: investors@monay.com</p>
+            <p style="font-size: 24px; opacity: 0.9;">Website: www.monay.com</p>
+        </div>
+    </div>
+    <div class="slide-number">13</div>
+</div>
+
+<!-- Appendix Slides -->
+<div class="slide slide-dark">
+    <div class="logo">MONAY</div>
+    <h2>Appendix: Financial Projections</h2>
+    <div style="margin-top: 60px;">
+        <table style="width: 100%; font-size: 24px; border-collapse: collapse;">
+            <thead>
+                <tr style="border-bottom: 2px solid #667eea;">
+                    <th style="text-align: left; padding: 20px;">Metric</th>
+                    <th style="text-align: center; padding: 20px;">2026</th>
+                    <th style="text-align: center; padding: 20px;">2027</th>
+                    <th style="text-align: center; padding: 20px;">2028</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr style="border-bottom: 1px solid rgba(255,255,255,0.1);">
+                    <td style="padding: 20px;">Customers</td>
+                    <td style="text-align: center; padding: 20px;">25</td>
+                    <td style="text-align: center; padding: 20px;">150</td>
+                    <td style="text-align: center; padding: 20px;">500</td>
+                </tr>
+                <tr style="border-bottom: 1px solid rgba(255,255,255,0.1);">
+                    <td style="padding: 20px;">ARR</td>
+                    <td style="text-align: center; padding: 20px;">$10M</td>
+                    <td style="text-align: center; padding: 20px;">$45M</td>
+                    <td style="text-align: center; padding: 20px;">$100M</td>
+                </tr>
+                <tr style="border-bottom: 1px solid rgba(255,255,255,0.1);">
+                    <td style="padding: 20px;">Gross Margin</td>
+                    <td style="text-align: center; padding: 20px;">65%</td>
+                    <td style="text-align: center; padding: 20px;">75%</td>
+                    <td style="text-align: center; padding: 20px;">85%</td>
+                </tr>
+                <tr>
+                    <td style="padding: 20px;">Transaction Volume</td>
+                    <td style="text-align: center; padding: 20px;">$500M</td>
+                    <td style="text-align: center; padding: 20px;">$5B</td>
+                    <td style="text-align: center; padding: 20px;">$20B</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="slide-number">A1</div>
+</div>
+
+</body>
+</html>

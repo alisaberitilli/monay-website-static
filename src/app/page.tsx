@@ -658,7 +658,7 @@ export default function Home() {
               Powering Federal Digital Finance Initiatives
             </h2>
             <p className={`text-xl max-w-3xl mx-auto ${isDarkMode ? 'text-gray-300' : 'text-gray-800'}`}>
-              Monay's platform directly supports Trump Administration's digital asset and education freedom executive orders
+              Monay's platform directly supports US Federal Government's digital asset and education freedom executive orders
             </p>
           </div>
           
