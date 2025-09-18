@@ -23,25 +23,25 @@ export default function GovernmentRFPPage() {
     {
       title: "SNAP/EBT Modernization",
       description: "Replace legacy EBT systems with programmable wallets",
-      color: "from-blue-500 to-indigo-500",
+      color: "gray-700",
       features: ["MCC restrictions", "Real-time fraud detection", "Instant issuance", "Mobile-first"]
     },
     {
       title: "Emergency Relief Distribution",
       description: "Deploy disaster relief payments in hours, not weeks",
-      color: "from-purple-500 to-pink-500",
+      color: "gray-700",
       features: ["Instant deployment", "Geo-targeted", "Usage tracking", "No bank required"]
     },
     {
       title: "Education Savings Accounts",
       description: "$10K ESA accounts with spending controls",
-      color: "from-green-500 to-emerald-500",
+      color: "gray-700",
       features: ["School verification", "Category controls", "Parent oversight", "Tax reporting"]
     },
     {
       title: "Housing Assistance",
       description: "Direct rent payments with landlord verification",
-      color: "from-orange-500 to-red-500",
+      color: "gray-700",
       features: ["Landlord portal", "Auto-disbursement", "Audit trails", "Compliance built-in"]
     }
   ];
@@ -100,35 +100,35 @@ export default function GovernmentRFPPage() {
         <Navigation isDarkMode={isDarkMode} setIsDarkMode={setIsDarkMode} />
         
         {/* Hero Section */}
-        <section className="bg-gradient-to-r from-blue-600 to-purple-600 text-white py-20">
+        <section className={`py-20 ${isDarkMode ? 'bg-gray-800 text-white' : 'bg-white text-gray-900 border-b border-gray-200'}`}>
           <div className="container mx-auto px-4">
             <div className="text-center">
-              <span className="inline-block px-4 py-2 bg-white/20 backdrop-blur text-white text-sm font-semibold rounded-full mb-4">
+              <span className={`inline-block px-4 py-2 text-sm font-semibold rounded-full mb-4 ${isDarkMode ? 'bg-gray-700 text-gray-200' : 'bg-gray-100 text-gray-700'}`}>
                 SAM.GOV REGISTERED • CAGE CODE: PENDING
               </span>
               
-              <h1 className="text-5xl font-bold mb-4">
+              <h1 className={`text-5xl font-bold mb-4 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
                 Government RFP Solutions
-                <span className="block text-yellow-300">
+                <span className={`block ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>
                   Digital Payments for Public Sector
                 </span>
               </h1>
               
-              <p className="text-xl opacity-90 max-w-3xl mx-auto mb-8">
+              <p className={`text-xl max-w-3xl mx-auto mb-8 ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>
                 GENIUS Act compliant platform for benefit distribution, emergency relief, 
                 and education savings accounts. Deploy in days, not months.
               </p>
               
               <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
-                <a 
-                  href="/contact?dept=Government&subject=RFP%20Response%20Request" 
-                  className="inline-flex items-center justify-center px-8 py-4 font-semibold text-blue-600 bg-white rounded-xl hover:bg-gray-100 transform hover:-translate-y-0.5 hover:shadow-xl transition-all duration-200"
+                <a
+                  href="/contact?dept=Government&subject=RFP%20Response%20Request"
+                  className={`inline-flex items-center justify-center px-8 py-4 font-semibold rounded-xl transform hover:-translate-y-0.5 hover:shadow-xl transition-all duration-200 ${isDarkMode ? 'text-white bg-gray-700 hover:bg-gray-600' : 'text-white bg-gray-900 hover:bg-gray-800'}`}
                 >
                   Request RFP Response
                 </a>
-                <Link 
-                  href="/solutions/government-programs" 
-                  className="inline-flex items-center justify-center px-8 py-4 font-semibold text-white bg-white/20 backdrop-blur border border-white/30 rounded-xl hover:bg-white/30 transform hover:-translate-y-0.5 hover:shadow-xl transition-all duration-200"
+                <Link
+                  href="/solutions/government-programs"
+                  className={`inline-flex items-center justify-center px-8 py-4 font-semibold rounded-xl transform hover:-translate-y-0.5 hover:shadow-xl transition-all duration-200 ${isDarkMode ? 'text-gray-300 bg-gray-600 hover:bg-gray-500 border border-gray-500' : 'text-gray-700 bg-gray-200 hover:bg-gray-300 border border-gray-300'}`}
                 >
                   View Capabilities
                 </Link>
@@ -158,10 +158,10 @@ export default function GovernmentRFPPage() {
         </section>
 
         {/* Active RFP Opportunities */}
-        <section className={`py-16 ${isDarkMode ? 'bg-gradient-to-br from-blue-900/20 to-indigo-900/20' : 'bg-gradient-to-br from-blue-50 to-indigo-50'}`}>
+        <section className={`py-16 ${isDarkMode ? 'bg-gray-800/50' : 'bg-gray-50'}`}>
           <div className="container mx-auto px-4">
             <div className="text-center mb-12">
-              <span className="inline-block px-4 py-2 bg-gradient-to-r from-green-600 to-emerald-600 text-white text-sm font-semibold rounded-full mb-4">
+              <span className={`inline-block px-4 py-2 text-sm font-semibold rounded-full mb-4 ${isDarkMode ? 'bg-gray-700 text-gray-200' : 'bg-gray-800 text-white'}`}>
                 ACTIVE OPPORTUNITIES
               </span>
               <h2 className={`text-3xl font-bold mb-4 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
@@ -208,7 +208,7 @@ export default function GovernmentRFPPage() {
                 {rfpCapabilities.map((capability, index) => (
                   <div key={index} className={`p-6 rounded-xl ${isDarkMode ? 'bg-gray-800 border border-gray-700' : 'bg-white border border-gray-200'} shadow-lg`}>
                     <div className="flex items-center mb-4">
-                      <div className={`w-12 h-12 bg-gradient-to-r ${capability.color} rounded-lg flex items-center justify-center mr-4`}>
+                      <div className={`w-12 h-12 bg-${capability.color} rounded-lg flex items-center justify-center mr-4`}>
                         <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                         </svg>
@@ -261,7 +261,7 @@ export default function GovernmentRFPPage() {
               </div>
 
               {/* Key Differentiators */}
-              <div className={`p-8 rounded-2xl ${isDarkMode ? 'bg-gradient-to-br from-blue-900/50 to-purple-900/50' : 'bg-gradient-to-br from-blue-50 to-purple-50'} border ${isDarkMode ? 'border-blue-700' : 'border-blue-200'}`}>
+              <div className={`p-8 rounded-2xl border ${isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'} shadow-lg`}>
                 <h3 className="text-2xl font-bold mb-6">Why Government Agencies Choose Monay</h3>
                 
                 <div className="grid md:grid-cols-2 gap-6">
@@ -388,7 +388,7 @@ export default function GovernmentRFPPage() {
         {/* Call to Action */}
         <section className="py-20">
           <div className="container mx-auto px-4">
-            <div className={`max-w-4xl mx-auto p-8 rounded-2xl ${isDarkMode ? 'bg-gradient-to-br from-gray-800 to-gray-900' : 'bg-gradient-to-br from-gray-50 to-white'} shadow-xl text-center`}>
+            <div className={`max-w-4xl mx-auto p-8 rounded-2xl shadow-xl text-center ${isDarkMode ? 'bg-gray-800' : 'bg-white border border-gray-200'}`}>
               <h2 className="text-3xl font-bold mb-4">
                 Ready to Modernize Your Payment Infrastructure?
               </h2>
@@ -418,9 +418,9 @@ export default function GovernmentRFPPage() {
               </div>
               
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <a 
-                  href="/contact?dept=Government&subject=RFP%20Response%20Request" 
-                  className="inline-flex items-center justify-center px-8 py-4 font-semibold text-white bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl hover:from-blue-700 hover:to-purple-700 transform hover:-translate-y-0.5 hover:shadow-xl transition-all duration-200"
+                <a
+                  href="/contact?dept=Government&subject=RFP%20Response%20Request"
+                  className={`inline-flex items-center justify-center px-8 py-4 font-semibold text-white rounded-xl transform hover:-translate-y-0.5 hover:shadow-xl transition-all duration-200 ${isDarkMode ? 'bg-gray-700 hover:bg-gray-600' : 'bg-gray-900 hover:bg-gray-800'}`}
                 >
                   Submit RFP for Response
                 </a>

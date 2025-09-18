@@ -78,12 +78,12 @@ export default function WhyMonayPage() {
       <Navigation isDarkMode={isDarkMode} setIsDarkMode={setIsDarkMode} />
       
       {/* Hero Section */}
-      <section className="bg-gradient-to-r from-blue-600 to-purple-600 text-white py-20">
+      <section className={`py-20 ${isDarkMode ? 'bg-gray-800 text-white' : 'bg-white text-gray-900 border-b border-gray-200'}`}>
         <div className="container mx-auto px-4">
-          <h1 className="text-5xl font-bold text-center mb-4">
+          <h1 className={`text-5xl font-bold text-center mb-4 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
             Why Leading Companies & Innovative Public Sectors Must Choose Monay
           </h1>
-          <p className="text-xl text-center opacity-90 max-w-3xl mx-auto">
+          <p className={`text-xl text-center max-w-3xl mx-auto ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>
             See how we deliver more value, better technology, and lower costs than traditional providers
           </p>
           
@@ -110,10 +110,10 @@ export default function WhyMonayPage() {
       </section>
 
       {/* Federal Initiative Alignment */}
-      <section className={`py-16 ${isDarkMode ? 'bg-gradient-to-br from-blue-900/20 to-indigo-900/20' : 'bg-gradient-to-br from-blue-50 to-indigo-50'}`}>
+      <section className={`py-16 ${isDarkMode ? 'bg-gray-800/50' : 'bg-gray-50'}`}>
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
-            <span className="inline-block px-4 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white text-sm font-semibold rounded-full mb-4">
+            <span className={`inline-block px-4 py-2 text-sm font-semibold rounded-full mb-4 ${isDarkMode ? 'bg-gray-700 text-gray-200' : 'bg-gray-800 text-white'}`}>
               EXECUTIVE ORDER COMPLIANT
             </span>
             <h2 className={`text-3xl font-bold mb-4 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
@@ -128,7 +128,7 @@ export default function WhyMonayPage() {
             {/* Digital Financial Technology */}
             <div className={`p-6 rounded-xl ${isDarkMode ? 'bg-gray-900/80 border border-gray-700' : 'bg-white border border-gray-200'}`}>
               <div className="flex items-center mb-4">
-                <div className="w-12 h-12 bg-gradient-to-r from-orange-500 to-yellow-500 rounded-lg flex items-center justify-center mr-4">
+                <div className="w-12 h-12 bg-gray-700 rounded-lg flex items-center justify-center mr-4">
                   <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                   </svg>
@@ -173,7 +173,7 @@ export default function WhyMonayPage() {
             {/* Education Freedom */}
             <div className={`p-6 rounded-xl ${isDarkMode ? 'bg-gray-900/80 border border-gray-700' : 'bg-white border border-gray-200'}`}>
               <div className="flex items-center mb-4">
-                <div className="w-12 h-12 bg-gradient-to-r from-purple-500 to-indigo-500 rounded-lg flex items-center justify-center mr-4">
+                <div className="w-12 h-12 bg-gray-700 rounded-lg flex items-center justify-center mr-4">
                   <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 14l9-5-9-5-9 5 9 5z" />
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z" />
@@ -218,7 +218,7 @@ export default function WhyMonayPage() {
           </div>
 
           <div className="text-center mt-8">
-            <a href="/solutions/government-programs" className="inline-flex items-center justify-center px-8 py-3 font-semibold text-white bg-gradient-to-r from-blue-600 to-indigo-600 rounded-xl hover:from-blue-700 hover:to-indigo-700 transform hover:-translate-y-0.5 hover:shadow-xl transition-all duration-200">
+            <a href="/solutions/government-programs" className={`inline-flex items-center justify-center px-8 py-3 font-semibold text-white rounded-xl transform hover:-translate-y-0.5 hover:shadow-xl transition-all duration-200 ${isDarkMode ? 'bg-gray-700 hover:bg-gray-600' : 'bg-gray-900 hover:bg-gray-800'}`}>
               Explore Government Solutions
               <svg className="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
@@ -239,8 +239,8 @@ export default function WhyMonayPage() {
               <button
                 onClick={() => setSelectedProduct('authentication')}
                 className={`px-6 py-3 rounded-l-lg font-medium transition-colors ${
-                  selectedProduct === 'authentication' 
-                    ? 'bg-blue-600 text-white' 
+                  selectedProduct === 'authentication'
+                    ? 'bg-gray-800 text-white'
                     : isDarkMode ? 'bg-gray-800 text-gray-300' : 'bg-white text-gray-800'
                 }`}
               >
@@ -249,8 +249,8 @@ export default function WhyMonayPage() {
               <button
                 onClick={() => setSelectedProduct('stablecoin')}
                 className={`px-6 py-3 font-medium transition-colors ${
-                  selectedProduct === 'stablecoin' 
-                    ? 'bg-purple-600 text-white' 
+                  selectedProduct === 'stablecoin'
+                    ? 'bg-gray-800 text-white'
                     : isDarkMode ? 'bg-gray-800 text-gray-300' : 'bg-white text-gray-800'
                 }`}
               >
@@ -259,8 +259,8 @@ export default function WhyMonayPage() {
               <button
                 onClick={() => setSelectedProduct('wallet')}
                 className={`px-6 py-3 rounded-r-lg font-medium transition-colors ${
-                  selectedProduct === 'wallet' 
-                    ? 'bg-green-600 text-white' 
+                  selectedProduct === 'wallet'
+                    ? 'bg-gray-800 text-white'
                     : isDarkMode ? 'bg-gray-800 text-gray-300' : 'bg-white text-gray-800'
                 }`}
               >
@@ -272,7 +272,7 @@ export default function WhyMonayPage() {
       {/* Comparison Table */}
           <div className="max-w-6xl mx-auto overflow-x-auto">
             <div className={`rounded-lg overflow-hidden ${isDarkMode ? 'bg-gray-800' : 'bg-white'} shadow-xl`}>
-              <h3 className="text-xl font-bold p-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white">
+              <h3 className={`text-xl font-bold p-4 ${isDarkMode ? 'bg-gray-700 text-white' : 'bg-gray-800 text-white'}`}>
                 {comparisonData[selectedProduct as keyof typeof comparisonData].title}
               </h3>
               <table className="w-full">
@@ -316,8 +316,8 @@ export default function WhyMonayPage() {
           
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
             {/* Unified WaaS + CaaS - 1st */}
-            <div className={`p-6 rounded-lg ${isDarkMode ? 'bg-gradient-to-br from-purple-900/50 to-blue-900/50 border border-purple-600' : 'bg-gradient-to-br from-purple-50 to-blue-50 border border-purple-200'}`}>
-              <div className="w-12 h-12 bg-gradient-to-r from-purple-600 to-blue-600 rounded-lg flex items-center justify-center mb-4">
+            <div className={`p-6 rounded-lg border ${isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'} shadow-lg`}>
+              <div className="w-12 h-12 bg-gray-700 rounded-lg flex items-center justify-center mb-4">
                 <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
                 </svg>
@@ -329,8 +329,8 @@ export default function WhyMonayPage() {
             </div>
 
             {/* Dual-Rail Blockchain - 2nd */}
-            <div className={`p-6 rounded-lg ${isDarkMode ? 'bg-gradient-to-br from-green-900/50 to-teal-900/50 border border-green-600' : 'bg-gradient-to-br from-green-50 to-teal-50 border border-green-200'}`}>
-              <div className="w-12 h-12 bg-gradient-to-r from-green-600 to-teal-600 rounded-lg flex items-center justify-center mb-4">
+            <div className={`p-6 rounded-lg border ${isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'} shadow-lg`}>
+              <div className="w-12 h-12 bg-gray-700 rounded-lg flex items-center justify-center mb-4">
                 <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
                 </svg>
@@ -342,8 +342,8 @@ export default function WhyMonayPage() {
             </div>
 
             {/* Real-World Spend Built-In - 3rd */}
-            <div className={`p-6 rounded-lg ${isDarkMode ? 'bg-gradient-to-br from-orange-900/50 to-red-900/50 border border-orange-600' : 'bg-gradient-to-br from-orange-50 to-red-50 border border-orange-200'}`}>
-              <div className="w-12 h-12 bg-gradient-to-r from-orange-600 to-red-600 rounded-lg flex items-center justify-center mb-4">
+            <div className={`p-6 rounded-lg border ${isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'} shadow-lg`}>
+              <div className="w-12 h-12 bg-gray-700 rounded-lg flex items-center justify-center mb-4">
                 <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
                 </svg>
@@ -355,8 +355,8 @@ export default function WhyMonayPage() {
             </div>
 
             {/* Invoice First™ Platform - 4th */}
-            <div className={`p-6 rounded-lg ${isDarkMode ? 'bg-gradient-to-br from-indigo-900/50 to-purple-900/50 border border-indigo-600' : 'bg-gradient-to-br from-indigo-50 to-purple-50 border border-indigo-200'}`}>
-              <div className="w-12 h-12 bg-gradient-to-r from-indigo-600 to-purple-600 rounded-lg flex items-center justify-center mb-4">
+            <div className={`p-6 rounded-lg border ${isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'} shadow-lg`}>
+              <div className="w-12 h-12 bg-gray-700 rounded-lg flex items-center justify-center mb-4">
                 <svg className="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 20 20">
                   <path fillRule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 6a1 1 0 011-1h6a1 1 0 110 2H7a1 1 0 01-1-1zm1 3a1 1 0 100 2h6a1 1 0 100-2H7z" clipRule="evenodd" />
                 </svg>
@@ -368,8 +368,8 @@ export default function WhyMonayPage() {
             </div>
 
             {/* Program-Grade BRF - 5th */}
-            <div className={`p-6 rounded-lg ${isDarkMode ? 'bg-gradient-to-br from-teal-900/50 to-cyan-900/50 border border-teal-600' : 'bg-gradient-to-br from-teal-50 to-cyan-50 border border-teal-200'}`}>
-              <div className="w-12 h-12 bg-gradient-to-r from-teal-600 to-cyan-600 rounded-lg flex items-center justify-center mb-4">
+            <div className={`p-6 rounded-lg border ${isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'} shadow-lg`}>
+              <div className="w-12 h-12 bg-gray-700 rounded-lg flex items-center justify-center mb-4">
                 <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -382,8 +382,8 @@ export default function WhyMonayPage() {
             </div>
 
             {/* Compliance-First - 6th */}
-            <div className={`p-6 rounded-lg ${isDarkMode ? 'bg-gradient-to-br from-blue-900/50 to-indigo-900/50 border border-blue-600' : 'bg-gradient-to-br from-blue-50 to-indigo-50 border border-blue-200'}`}>
-              <div className="w-12 h-12 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-lg flex items-center justify-center mb-4">
+            <div className={`p-6 rounded-lg border ${isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'} shadow-lg`}>
+              <div className="w-12 h-12 bg-gray-700 rounded-lg flex items-center justify-center mb-4">
                 <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
                 </svg>
@@ -395,8 +395,8 @@ export default function WhyMonayPage() {
             </div>
 
             {/* Treasury Automation - 7th */}
-            <div className={`p-6 rounded-lg ${isDarkMode ? 'bg-gradient-to-br from-pink-900/50 to-rose-900/50 border border-pink-600' : 'bg-gradient-to-br from-pink-50 to-rose-50 border border-pink-200'}`}>
-              <div className="w-12 h-12 bg-gradient-to-r from-pink-600 to-rose-600 rounded-lg flex items-center justify-center mb-4">
+            <div className={`p-6 rounded-lg border ${isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'} shadow-lg`}>
+              <div className="w-12 h-12 bg-gray-700 rounded-lg flex items-center justify-center mb-4">
                 <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
                 </svg>
@@ -408,8 +408,8 @@ export default function WhyMonayPage() {
             </div>
 
             {/* Enterprise & Public-Sector Readiness - 8th */}
-            <div className={`p-6 rounded-lg ${isDarkMode ? 'bg-gradient-to-br from-amber-900/50 to-yellow-900/50 border border-amber-600' : 'bg-gradient-to-br from-amber-50 to-yellow-50 border border-amber-200'}`}>
-              <div className="w-12 h-12 bg-gradient-to-r from-amber-600 to-yellow-600 rounded-lg flex items-center justify-center mb-4">
+            <div className={`p-6 rounded-lg border ${isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'} shadow-lg`}>
+              <div className="w-12 h-12 bg-gray-700 rounded-lg flex items-center justify-center mb-4">
                 <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
                 </svg>
@@ -421,8 +421,8 @@ export default function WhyMonayPage() {
             </div>
 
             {/* Multi-Stakeholder Wallets - 8th */}
-            <div className={`p-6 rounded-lg ${isDarkMode ? 'bg-gradient-to-br from-amber-900/50 to-orange-900/50 border border-amber-600' : 'bg-gradient-to-br from-amber-50 to-orange-50 border border-amber-200'}`}>
-              <div className="w-12 h-12 bg-gradient-to-r from-amber-600 to-orange-600 rounded-lg flex items-center justify-center mb-4">
+            <div className={`p-6 rounded-lg border ${isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'} shadow-lg`}>
+              <div className="w-12 h-12 bg-gray-700 rounded-lg flex items-center justify-center mb-4">
                 <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
                 </svg>
@@ -434,8 +434,8 @@ export default function WhyMonayPage() {
             </div>
 
             {/* One Contract, One API - 9th */}
-            <div className={`p-6 rounded-lg ${isDarkMode ? 'bg-gradient-to-br from-emerald-900/50 to-green-900/50 border border-emerald-600' : 'bg-gradient-to-br from-emerald-50 to-green-50 border border-emerald-200'}`}>
-              <div className="w-12 h-12 bg-gradient-to-r from-emerald-600 to-green-600 rounded-lg flex items-center justify-center mb-4">
+            <div className={`p-6 rounded-lg border ${isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'} shadow-lg`}>
+              <div className="w-12 h-12 bg-gray-700 rounded-lg flex items-center justify-center mb-4">
                 <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
@@ -447,8 +447,8 @@ export default function WhyMonayPage() {
             </div>
 
             {/* Custodian & Recovery Service - 10th */}
-            <div className={`p-6 rounded-lg ${isDarkMode ? 'bg-gradient-to-br from-slate-900/50 to-zinc-900/50 border border-slate-600' : 'bg-gradient-to-br from-slate-50 to-zinc-50 border border-slate-200'}`}>
-              <div className="w-12 h-12 bg-gradient-to-r from-slate-600 to-zinc-600 rounded-lg flex items-center justify-center mb-4">
+            <div className={`p-6 rounded-lg border ${isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'} shadow-lg`}>
+              <div className="w-12 h-12 bg-gray-700 rounded-lg flex items-center justify-center mb-4">
                 <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" />
                 </svg>
@@ -460,8 +460,8 @@ export default function WhyMonayPage() {
             </div>
 
             {/* Voice Biometric Authentication - 11th */}
-            <div className={`p-6 rounded-lg ${isDarkMode ? 'bg-gradient-to-br from-violet-900/50 to-purple-900/50 border border-violet-600' : 'bg-gradient-to-br from-violet-50 to-purple-50 border border-violet-200'}`}>
-              <div className="w-12 h-12 bg-gradient-to-r from-violet-600 to-purple-600 rounded-lg flex items-center justify-center mb-4">
+            <div className={`p-6 rounded-lg border ${isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'} shadow-lg`}>
+              <div className="w-12 h-12 bg-gray-700 rounded-lg flex items-center justify-center mb-4">
                 <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
                 </svg>
@@ -631,7 +631,7 @@ export default function WhyMonayPage() {
           <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
             {/* Architecture Advantages */}
             <div className={`p-6 rounded-lg ${isDarkMode ? 'bg-gray-800' : 'bg-white'} shadow-lg`}>
-              <div className="w-12 h-12 bg-gradient-to-r from-blue-600 to-cyan-600 rounded-lg flex items-center justify-center mb-4">
+              <div className="w-12 h-12 bg-gray-700 rounded-lg flex items-center justify-center mb-4">
                 <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" />
                 </svg>
@@ -663,7 +663,7 @@ export default function WhyMonayPage() {
 
             {/* Security Advantages */}
             <div className={`p-6 rounded-lg ${isDarkMode ? 'bg-gray-800' : 'bg-white'} shadow-lg`}>
-              <div className="w-12 h-12 bg-gradient-to-r from-purple-600 to-pink-600 rounded-lg flex items-center justify-center mb-4">
+              <div className="w-12 h-12 bg-gray-700 rounded-lg flex items-center justify-center mb-4">
                 <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
                 </svg>
@@ -695,7 +695,7 @@ export default function WhyMonayPage() {
 
             {/* Integration Advantages */}
             <div className={`p-6 rounded-lg ${isDarkMode ? 'bg-gray-800' : 'bg-white'} shadow-lg`}>
-              <div className="w-12 h-12 bg-gradient-to-r from-green-600 to-teal-600 rounded-lg flex items-center justify-center mb-4">
+              <div className="w-12 h-12 bg-gray-700 rounded-lg flex items-center justify-center mb-4">
                 <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                 </svg>
@@ -820,19 +820,19 @@ export default function WhyMonayPage() {
       </section>
 
       {/* CTA Section */}
-      <section className="py-20 bg-gradient-to-r from-purple-600 to-blue-600 text-white">
+      <section className={`py-20 ${isDarkMode ? 'bg-gray-800 text-white' : 'bg-white text-gray-900 border-t border-gray-200'}`}>
         <div className="container mx-auto px-4 text-center">
-          <h2 className="text-4xl font-bold mb-4">
+          <h2 className={`text-4xl font-bold mb-4 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
             Ready to Experience the Monay Difference?
           </h2>
-          <p className="text-xl mb-8">
+          <p className={`text-xl mb-8 ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>
             Join the Pilot Program today and save 75% on your first year
           </p>
           <div className="flex justify-center gap-4">
-            <a href="/pricing" className="bg-white text-blue-600 px-8 py-4 rounded-lg font-semibold hover:bg-gray-100 transition-colors">
+            <a href="/pricing" className={`px-8 py-4 rounded-lg font-semibold transition-colors ${isDarkMode ? 'bg-gray-700 text-white hover:bg-gray-600' : 'bg-gray-900 text-white hover:bg-gray-800'}`}>
               See Pricing Calculator
             </a>
-            <a href="/signup" className="bg-transparent border-2 border-white px-8 py-4 rounded-lg font-semibold hover:bg-white/10 transition-colors">
+            <a href="/signup" className={`px-8 py-4 rounded-lg font-semibold transition-colors border-2 ${isDarkMode ? 'border-gray-600 text-gray-300 hover:bg-gray-700' : 'border-gray-300 text-gray-700 hover:bg-gray-100'}`}>
               Sign Up Now
             </a>
           </div>

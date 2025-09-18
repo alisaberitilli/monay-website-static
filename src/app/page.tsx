@@ -580,13 +580,13 @@ export default function Home() {
               </button>
               
               {/* Tertiary CTA - Subtle with border */}
-              <a href="/signup" className={`group relative inline-flex items-center justify-center px-8 py-3.5 font-semibold rounded-xl transition-all duration-200 transform hover:-translate-y-0.5 hover:shadow-lg ${
-                isDarkMode 
-                  ? 'bg-gray-800 text-gray-200 border-2 border-gray-700 hover:bg-gray-700 hover:border-gray-600' 
+              <Link href="/signup" className={`group relative inline-flex items-center justify-center px-8 py-3.5 font-semibold rounded-xl transition-all duration-200 transform hover:-translate-y-0.5 hover:shadow-lg ${
+                isDarkMode
+                  ? 'bg-gray-800 text-gray-200 border-2 border-gray-700 hover:bg-gray-700 hover:border-gray-600'
                   : 'bg-white text-gray-800 border-2 border-gray-300 hover:bg-gray-50 hover:border-gray-400'
               }`}>
                 <span className="relative">Sign Up Free</span>
-              </a>
+              </Link>
             </div>
             
             {/* Three Core Products */}
@@ -779,9 +779,9 @@ export default function Home() {
                   FedRAMP ready infrastructure
                 </li>
               </ul>
-              <a href="/signup" className="inline-block w-full text-center bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white text-sm font-semibold py-2 px-4 rounded-lg transition-all duration-200 mt-4">
+              <Link href="/signup" className="inline-block w-full text-center bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white text-sm font-semibold py-2 px-4 rounded-lg transition-all duration-200 mt-4">
                 Get Started
-              </a>
+              </Link>
             </div>
           </div>
         </div>
@@ -1876,12 +1876,12 @@ export default function Home() {
             
             {/* Sign Up CTA */}
             <div className="mb-8 text-center">
-              <a 
+              <Link
                 href="/signup"
                 className="inline-flex items-center justify-center px-8 py-3.5 font-semibold text-white transition-all duration-200 bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl hover:from-blue-700 hover:to-purple-700 transform hover:-translate-y-0.5 hover:shadow-xl"
               >
                 <span>Sign Up Free - Choose Your Product</span>
-              </a>
+              </Link>
               <p className={`mt-3 text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>
                 No credit card required • Start in minutes • 75% off with Pilot Program
               </p>

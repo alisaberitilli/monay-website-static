@@ -3,6 +3,20 @@
 import { useState, useEffect } from "react";
 import Navigation from "../../components/Navigation";
 import { useIsClient } from "@/hooks/useIsClient";
+import {
+  Package,
+  Code2,
+  Hexagon,
+  Coffee,
+  Gem,
+  Atom,
+  Triangle,
+  Image,
+  Smartphone,
+  Bot,
+  Blocks,
+  Coins
+} from "lucide-react";
 
 export default function DevelopersPage() {
   const [isDarkMode, setIsDarkMode] = useState(false);
@@ -25,12 +39,12 @@ export default function DevelopersPage() {
       <Navigation isDarkMode={isDarkMode} setIsDarkMode={setIsDarkMode} />
       
       {/* Hero Section */}
-      <section className="bg-gradient-to-r from-purple-600 to-blue-600 text-white py-20">
+      <section className={`py-20 ${isDarkMode ? 'bg-gray-800 text-white' : 'bg-white text-gray-900 border-b border-gray-200'}`}>
         <div className="container mx-auto px-4">
-          <h1 className="text-5xl font-bold text-center mb-4">
+          <h1 className={`text-5xl font-bold text-center mb-4 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
             Developer Documentation
           </h1>
-          <p className="text-xl text-center opacity-90">
+          <p className={`text-xl text-center ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>
             Build on Monay's powerful APIs and SDKs
           </p>
         </div>
@@ -51,7 +65,7 @@ export default function DevelopersPage() {
                 }}
                 className={`py-4 px-2 border-b-2 font-semibold capitalize whitespace-nowrap ${
                   activeTab === tab
-                    ? 'border-blue-500 text-blue-600'
+                    ? 'border-gray-800 text-gray-800'
                     : isDarkMode ? 'border-transparent text-gray-300 hover:border-gray-300' : 'border-transparent text-gray-700 hover:border-gray-300'
                 }`}
               >
@@ -120,8 +134,8 @@ console.log('Wallet created:', wallet.id);`}</pre>
               </div>
 
               {/* Invoice First Integration */}
-              <div className={`${isDarkMode ? 'bg-purple-900/20' : 'bg-purple-50'} p-8 rounded-lg border-2 ${isDarkMode ? 'border-purple-700' : 'border-purple-200'}`}>
-                <h3 className="text-2xl font-bold mb-4 text-purple-600">Invoice First™ Integration</h3>
+              <div className={`p-8 rounded-lg border-2 ${isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-gray-50 border-gray-200'}`}>
+                <h3 className={`text-2xl font-bold mb-4 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Invoice First™ Integration</h3>
                 <p className={`mb-4 ${isDarkMode ? 'text-gray-300' : 'text-gray-800'}`}>
                   Enable invoice-backed transactions for complete auditability and automation.
                 </p>
@@ -253,35 +267,35 @@ const transaction = await client.transactions.create({
                   <h3 className={`text-xl font-bold mb-4 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Backend SDKs</h3>
                   <div className="space-y-3">
                     <a href="#" className={`flex items-center gap-3 hover:text-blue-600 ${isDarkMode ? 'text-gray-300' : 'text-gray-800'}`}>
-                      <span className="text-2xl">📦</span>
+                      <Package className="w-8 h-8" />
                       <div>
                         <div className={`font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Node.js / TypeScript</div>
                         <code className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-700'}`}>npm install @monay/sdk</code>
                       </div>
                     </a>
                     <a href="#" className={`flex items-center gap-3 hover:text-blue-600 ${isDarkMode ? 'text-gray-300' : 'text-gray-800'}`}>
-                      <span className="text-2xl">🐍</span>
+                      <Code2 className="w-8 h-8" />
                       <div>
                         <div className={`font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Python</div>
                         <code className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-700'}`}>pip install monay-sdk</code>
                       </div>
                     </a>
                     <a href="#" className={`flex items-center gap-3 hover:text-blue-600 ${isDarkMode ? 'text-gray-300' : 'text-gray-800'}`}>
-                      <span className="text-2xl">🔷</span>
+                      <Hexagon className="w-8 h-8" />
                       <div>
                         <div className={`font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Go</div>
                         <code className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-700'}`}>go get github.com/monay/sdk-go</code>
                       </div>
                     </a>
                     <a href="#" className={`flex items-center gap-3 hover:text-blue-600 ${isDarkMode ? 'text-gray-300' : 'text-gray-800'}`}>
-                      <span className="text-2xl">☕</span>
+                      <Coffee className="w-8 h-8" />
                       <div>
                         <div className={`font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Java</div>
                         <code className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-700'}`}>com.monay:monay-sdk:1.0.0</code>
                       </div>
                     </a>
                     <a href="#" className={`flex items-center gap-3 hover:text-blue-600 ${isDarkMode ? 'text-gray-300' : 'text-gray-800'}`}>
-                      <span className="text-2xl">💎</span>
+                      <Gem className="w-8 h-8" />
                       <div>
                         <div className={`font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Ruby</div>
                         <code className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-700'}`}>gem install monay</code>
@@ -294,35 +308,35 @@ const transaction = await client.transactions.create({
                   <h3 className={`text-xl font-bold mb-4 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Frontend SDKs</h3>
                   <div className="space-y-3">
                     <a href="#" className={`flex items-center gap-3 hover:text-blue-600 ${isDarkMode ? 'text-gray-300' : 'text-gray-800'}`}>
-                      <span className="text-2xl">⚛️</span>
+                      <Atom className="w-8 h-8" />
                       <div>
                         <div className={`font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>React</div>
                         <code className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-700'}`}>npm install @monay/react</code>
                       </div>
                     </a>
                     <a href="#" className={`flex items-center gap-3 hover:text-blue-600 ${isDarkMode ? 'text-gray-300' : 'text-gray-800'}`}>
-                      <span className="text-2xl">🅰️</span>
+                      <Triangle className="w-8 h-8" />
                       <div>
                         <div className={`font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Angular</div>
                         <code className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-700'}`}>npm install @monay/angular</code>
                       </div>
                     </a>
                     <a href="#" className={`flex items-center gap-3 hover:text-blue-600 ${isDarkMode ? 'text-gray-300' : 'text-gray-800'}`}>
-                      <span className="text-2xl">🖼️</span>
+                      <Image className="w-8 h-8" />
                       <div>
                         <div className={`font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Vue.js</div>
                         <code className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-700'}`}>npm install @monay/vue</code>
                       </div>
                     </a>
                     <a href="#" className={`flex items-center gap-3 hover:text-blue-600 ${isDarkMode ? 'text-gray-300' : 'text-gray-800'}`}>
-                      <span className="text-2xl">📱</span>
+                      <Smartphone className="w-8 h-8" />
                       <div>
                         <div className={`font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>iOS (Swift)</div>
                         <code className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-700'}`}>pod 'MonaySDK'</code>
                       </div>
                     </a>
                     <a href="#" className={`flex items-center gap-3 hover:text-blue-600 ${isDarkMode ? 'text-gray-300' : 'text-gray-800'}`}>
-                      <span className="text-2xl">🤖</span>
+                      <Bot className="w-8 h-8" />
                       <div>
                         <div className={`font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Android (Kotlin)</div>
                         <code className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-700'}`}>implementation 'com.monay:sdk'</code>
@@ -494,19 +508,19 @@ function verifyWebhook(payload, signature, secret) {
       </section>
 
       {/* CTA Section */}
-      <section className="py-20 bg-gradient-to-r from-blue-600 to-purple-600 text-white">
+      <section className={`py-20 ${isDarkMode ? 'bg-gray-800 text-white' : 'bg-white text-gray-900 border-t border-gray-200'}`}>
         <div className="container mx-auto px-4 text-center">
-          <h2 className="text-4xl font-bold mb-4">
+          <h2 className={`text-4xl font-bold mb-4 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
             Ready to Build?
           </h2>
-          <p className="text-xl mb-8">
+          <p className={`text-xl mb-8 ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>
             Join the Pilot Program and get 75% off plus dedicated support
           </p>
           <div className="flex justify-center gap-4">
-            <a href="/signup" className="bg-white text-blue-600 px-8 py-4 rounded-lg font-semibold hover:bg-gray-100 transition-colors">
+            <a href="/signup" className={`px-8 py-4 rounded-lg font-semibold transition-colors ${isDarkMode ? 'bg-gray-700 text-white hover:bg-gray-600' : 'bg-gray-900 text-white hover:bg-gray-800'}`}>
               Start Building
             </a>
-            <a href="/contact" className="bg-transparent border-2 border-white px-8 py-4 rounded-lg font-semibold hover:bg-white/10 transition-colors">
+            <a href="/contact" className={`px-8 py-4 rounded-lg font-semibold transition-colors border-2 ${isDarkMode ? 'border-gray-600 text-gray-300 hover:bg-gray-700' : 'border-gray-300 text-gray-700 hover:bg-gray-100'}`}>
               Contact Sales
             </a>
           </div>

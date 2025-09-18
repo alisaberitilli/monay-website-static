@@ -330,11 +330,11 @@ export default function GeniusActPage() {
                 </div>
                 
                 <div className="mt-8 flex flex-col sm:flex-row gap-4 justify-center">
-                  <Link 
-                    href="/pitch-deck.pdf" 
+                  <Link
+                    href="/why-monay"
                     className="inline-flex items-center justify-center px-8 py-4 font-semibold text-white bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl hover:from-blue-700 hover:to-purple-700 transform hover:-translate-y-0.5 hover:shadow-xl transition-all duration-200"
                   >
-                    View Investment Deck
+                    Learn More About Monay
                   </Link>
                   <a 
                     href="/contact?dept=Government&subject=GENIUS%20Act%20Platform%20Inquiry" 

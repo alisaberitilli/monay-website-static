@@ -28,7 +28,7 @@ export default function EnterpriseStablecoinPage() {
           <path d="M9 12L11 14L15 10M21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
         </svg>
       ),
-      color: "from-green-500 to-emerald-500"
+      color: "from-green-100 to-green-200"
     },
     {
       title: "Dual-Rail Architecture",
@@ -38,7 +38,7 @@ export default function EnterpriseStablecoinPage() {
           <path d="M8 7V3M16 7V3M3 11H21M5 7H19C20.1046 7 21 7.89543 21 9V19C21 20.1046 20.1046 21 19 21H5C3.89543 21 3 20.1046 3 19V9C3 7.89543 3.89543 7 5 7Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
         </svg>
       ),
-      color: "from-blue-500 to-indigo-500"
+      color: "from-sky-100 to-blue-200"
     },
     {
       title: "Treasury Management",
@@ -49,7 +49,7 @@ export default function EnterpriseStablecoinPage() {
           <path d="M8 9H16M8 12H13" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
         </svg>
       ),
-      color: "from-purple-500 to-pink-500"
+      color: "from-stone-100 to-stone-200"
     },
     {
       title: "Programmable Controls",
@@ -60,7 +60,7 @@ export default function EnterpriseStablecoinPage() {
           <circle cx="12" cy="12" r="3" stroke="currentColor" strokeWidth="2"/>
         </svg>
       ),
-      color: "from-orange-500 to-red-500"
+      color: "from-amber-100 to-orange-200"
     }
   ];
 
@@ -69,25 +69,25 @@ export default function EnterpriseStablecoinPage() {
       title: "Corporate Treasury",
       description: "Replace bank deposits with programmable stablecoins",
       metrics: ["95% cost reduction", "Instant settlement", "24/7 liquidity"],
-      gradient: "from-blue-600 to-cyan-600"
+      gradient: "from-slate-100 to-slate-200"
     },
     {
       title: "Payroll Distribution",
       description: "Pay global employees instantly with no intermediaries",
       metrics: ["180+ countries", "Same-day settlement", "0.1% fees"],
-      gradient: "from-purple-600 to-pink-600"
+      gradient: "from-stone-200 to-stone-300"
     },
     {
       title: "Supply Chain Finance",
       description: "Automated payments with smart contract escrow",
       metrics: ["30-day terms", "Auto-reconciliation", "Real-time tracking"],
-      gradient: "from-green-600 to-emerald-600"
+      gradient: "from-emerald-100 to-green-200"
     },
     {
       title: "Cross-Border Payments",
       description: "Eliminate correspondent banking delays and fees",
       metrics: ["$0.50 flat fee", "60-second settlement", "Full transparency"],
-      gradient: "from-orange-600 to-red-600"
+      gradient: "from-amber-200 to-amber-300"
     }
   ];
 
@@ -134,57 +134,57 @@ export default function EnterpriseStablecoinPage() {
         <Navigation isDarkMode={isDarkMode} setIsDarkMode={setIsDarkMode} />
         
         {/* Hero Section */}
-        <section className="bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 text-white py-20">
+        <section className="bg-gradient-to-r from-stone-100 via-amber-50 to-stone-100 border-b border-stone-200 py-20">
           <div className="container mx-auto px-4">
             <div className="text-center">
-              <span className="inline-block px-4 py-2 bg-white/20 backdrop-blur text-white text-sm font-semibold rounded-full mb-4">
+              <span className="inline-block px-4 py-2 bg-stone-200 text-stone-700 text-sm font-semibold rounded-full mb-4">
                 $250B TAM BY 2028 • ENTERPRISE STABLECOINS
               </span>
-              
-              <h1 className="text-5xl font-bold mb-4">
+
+              <h1 className="text-5xl font-bold mb-4 text-stone-800">
                 Enterprise Stablecoin Platform
-                <span className="block text-yellow-300">
+                <span className="block text-amber-600">
                   Issue Your Own Digital Dollar
                 </span>
               </h1>
-              
-              <p className="text-xl opacity-90 max-w-3xl mx-auto mb-8">
-                Deploy regulatory-compliant stablecoins with built-in treasury management, 
+
+              <p className="text-xl text-stone-600 max-w-3xl mx-auto mb-8">
+                Deploy regulatory-compliant stablecoins with built-in treasury management,
                 programmable controls, and instant global settlement.
               </p>
-              
+
               <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
-                <Link 
-                  href="/signup/monay-caas" 
-                  className="inline-flex items-center justify-center px-8 py-4 font-semibold text-indigo-600 bg-white rounded-xl hover:bg-gray-100 transform hover:-translate-y-0.5 hover:shadow-xl transition-all duration-200"
+                <Link
+                  href="/signup/monay-caas"
+                  className="inline-flex items-center justify-center px-8 py-4 font-semibold text-white bg-stone-700 rounded-xl hover:bg-stone-800 transform hover:-translate-y-0.5 hover:shadow-xl transition-all duration-200"
                 >
                   Start Issuing
                 </Link>
-                <a 
-                  href="/pitch-deck.pdf" 
-                  className="inline-flex items-center justify-center px-8 py-4 font-semibold text-white bg-white/20 backdrop-blur border border-white/30 rounded-xl hover:bg-white/30 transform hover:-translate-y-0.5 hover:shadow-xl transition-all duration-200"
+                <Link
+                  href="/pricing"
+                  className="inline-flex items-center justify-center px-8 py-4 font-semibold text-stone-700 bg-white border-2 border-stone-300 rounded-xl hover:bg-stone-50 transform hover:-translate-y-0.5 hover:shadow-xl transition-all duration-200"
                 >
-                  View Economics
-                </a>
+                  View Pricing
+                </Link>
               </div>
-              
+
               {/* Key Metrics */}
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-4xl mx-auto">
                 <div className="text-center">
-                  <div className="text-3xl font-bold">$10M+</div>
-                  <div className="text-sm opacity-90">Min Issuance</div>
+                  <div className="text-3xl font-bold text-stone-800">$10M+</div>
+                  <div className="text-sm text-stone-600">Min Issuance</div>
                 </div>
                 <div className="text-center">
-                  <div className="text-3xl font-bold">0.25%</div>
-                  <div className="text-sm opacity-90">Annual Fee</div>
+                  <div className="text-3xl font-bold text-stone-800">0.25%</div>
+                  <div className="text-sm text-stone-600">Annual Fee</div>
                 </div>
                 <div className="text-center">
-                  <div className="text-3xl font-bold">T+0</div>
-                  <div className="text-sm opacity-90">Settlement</div>
+                  <div className="text-3xl font-bold text-stone-800">T+0</div>
+                  <div className="text-sm text-stone-600">Settlement</div>
                 </div>
                 <div className="text-center">
-                  <div className="text-3xl font-bold">100%</div>
-                  <div className="text-sm opacity-90">Backed 1:1</div>
+                  <div className="text-3xl font-bold text-stone-800">100%</div>
+                  <div className="text-sm text-stone-600">Backed 1:1</div>
                 </div>
               </div>
             </div>
@@ -209,7 +209,7 @@ export default function EnterpriseStablecoinPage() {
                   key={index}
                   className={`rounded-2xl p-6 ${isDarkMode ? 'bg-gray-800' : 'bg-white'} shadow-xl hover:shadow-2xl transform hover:-translate-y-1 transition-all duration-300`}
                 >
-                  <div className={`w-20 h-20 rounded-xl bg-gradient-to-r ${feature.color} p-4 mb-4 text-white`}>
+                  <div className={`w-20 h-20 rounded-xl bg-gradient-to-r ${feature.color} p-4 mb-4 text-stone-700`}>
                     {feature.icon}
                   </div>
                   <h3 className={`text-xl font-bold mb-2 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
@@ -329,7 +329,7 @@ export default function EnterpriseStablecoinPage() {
             
             <div className="grid md:grid-cols-3 gap-8">
               <div className={`rounded-2xl p-8 ${isDarkMode ? 'bg-gray-900' : 'bg-white'} shadow-xl`}>
-                <div className="w-16 h-16 rounded-xl bg-gradient-to-r from-blue-500 to-indigo-500 p-3 mb-4 text-white">
+                <div className="w-16 h-16 rounded-xl bg-gradient-to-r from-sky-100 to-blue-200 p-3 mb-4 text-stone-700">
                   <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path d="M12 2L2 7L12 12L22 7L12 2Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
                     <path d="M2 17L12 22L22 17" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
@@ -348,7 +348,7 @@ export default function EnterpriseStablecoinPage() {
               </div>
               
               <div className={`rounded-2xl p-8 ${isDarkMode ? 'bg-gray-900' : 'bg-white'} shadow-xl`}>
-                <div className="w-16 h-16 rounded-xl bg-gradient-to-r from-purple-500 to-pink-500 p-3 mb-4 text-white">
+                <div className="w-16 h-16 rounded-xl bg-gradient-to-r from-stone-100 to-stone-200 p-3 mb-4 text-stone-700">
                   <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path d="M13 2L3 14H12L11 22L21 10H12L13 2Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
                   </svg>
@@ -365,7 +365,7 @@ export default function EnterpriseStablecoinPage() {
               </div>
               
               <div className={`rounded-2xl p-8 ${isDarkMode ? 'bg-gray-900' : 'bg-white'} shadow-xl`}>
-                <div className="w-16 h-16 rounded-xl bg-gradient-to-r from-green-500 to-emerald-500 p-3 mb-4 text-white">
+                <div className="w-16 h-16 rounded-xl bg-gradient-to-r from-green-100 to-green-200 p-3 mb-4 text-stone-700">
                   <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2Z" stroke="currentColor" strokeWidth="2"/>
                     <path d="M8 12L10.5 14.5L16 9" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
@@ -388,7 +388,7 @@ export default function EnterpriseStablecoinPage() {
         {/* CTA Section */}
         <section className="py-20">
           <div className="container mx-auto px-4">
-            <div className={`rounded-3xl bg-gradient-to-r from-indigo-600 to-purple-600 p-12 text-center text-white`}>
+            <div className={`rounded-3xl bg-gradient-to-r from-stone-200 via-stone-100 to-amber-50 p-12 text-center text-stone-700`}>
               <h2 className="text-4xl font-bold mb-4">
                 Ready to Issue Your Enterprise Stablecoin?
               </h2>
