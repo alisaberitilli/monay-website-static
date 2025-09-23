@@ -1,10 +1,11 @@
-const express = require('express');
+import express from 'express';
+import pool from '../config/database';
+import authenticate from '../middlewares/auth-middleware';
+import BusinessRuleEngine from '../services/businessRuleEngine';
+
 const router = express.Router();
-const pool = require('../config/database');
-const { verifyToken, requireRole } = require('../middleware/auth');
-const BusinessRuleEngine = require('../services/businessRuleEngine');
 const MonayFiatRailsClient = require('../services/monayFiatRailsClient');
-const { validateRequest } = require('../middleware/validation');
+const { validateRequest } = require('../middlewares/validation');
 const { body, param, query } = require('express-validator');
 
 // Benefit enrollment endpoint

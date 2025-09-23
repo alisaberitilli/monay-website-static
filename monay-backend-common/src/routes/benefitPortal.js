@@ -1,9 +1,10 @@
-const express = require('express');
+import express from 'express';
+import pool from '../config/database';
+import authenticate from '../middlewares/auth-middleware';
+import { validateRequest } from '../middlewares/validation';
+
 const router = express.Router();
-const pool = require('../config/database');
-const { verifyToken } = require('../middleware/auth');
-const { validateRequest } = require('../middleware/validation');
-const { body, param, query } = require('express-validator');
+import { body, param, query } from 'express-validator';
 const BenefitEligibilityVerification = require('../services/benefitEligibilityVerification');
 const BenefitBalanceTracker = require('../services/benefitBalanceTracker');
 

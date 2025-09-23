@@ -4,10 +4,10 @@ const crypto = require('crypto');
 const { Pool } = require('pg');
 
 class WaveAccountingConnector extends EventEmitter {
-  constructor(config) {
+  constructor(config = {}) {
     super();
-    this.pool = new Pool(config.db);
-    this.apiKey = config.apiKey;
+    this.pool = config.db ? new Pool(config.db) : null;
+    this.apiKey = config.apiKey || process.env.API_KEY;
     this.businessId = config.businessId;
     this.baseUrl = 'https://gql.waveapps.com/graphql/public';
     this.syncInterval = null;

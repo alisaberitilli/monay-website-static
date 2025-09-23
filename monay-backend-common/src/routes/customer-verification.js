@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import HttpStatus from 'http-status';
-import authenticate from '../middleware/auth-middleware';
-import rateLimiter from '../middleware/rate-limiter-middleware';
+import authenticate from '../middlewares/auth-middleware';
+import rateLimiter from '../middlewares/rate-limiter-middleware';
 import customerVerification from '../services/customer-verification';
 
 const router = Router();

@@ -4,13 +4,13 @@ const crypto = require('crypto');
 const { Pool } = require('pg');
 
 class FreshBooksConnector extends EventEmitter {
-  constructor(config) {
+  constructor(config = {}) {
     super();
-    this.pool = new Pool(config.db);
-    this.clientId = config.clientId;
-    this.clientSecret = config.clientSecret;
-    this.redirectUri = config.redirectUri;
-    this.accountId = config.accountId;
+    this.pool = config.db ? new Pool(config.db) : null;
+    this.clientId = config.clientId || process.env.FRESHBOOKS_CLIENT_ID;
+    this.clientSecret = config.clientSecret || process.env.FRESHBOOKS_CLIENT_SECRET;
+    this.redirectUri = config.redirectUri || process.env.FRESHBOOKS_REDIRECT_URI;
+    this.accountId = config.accountId || process.env.FRESHBOOKS_ACCOUNT_ID;
     this.baseUrl = 'https://api.freshbooks.com';
     this.accessToken = null;
     this.refreshToken = null;
