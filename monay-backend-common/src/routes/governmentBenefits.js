@@ -581,4 +581,4 @@ function generateAuthCode() {
   return 'AUTH' + Date.now().toString(36).toUpperCase() + Math.random().toString(36).substring(2, 8).toUpperCase();
 }
 
-module.exports = router;
+export default router;

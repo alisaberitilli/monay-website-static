@@ -825,4 +825,4 @@ router.identifySavings = function(data) {
   return opportunities;
 };
 
-module.exports = router;
+export default router;
