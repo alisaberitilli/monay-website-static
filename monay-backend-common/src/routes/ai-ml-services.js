@@ -6,7 +6,7 @@ import rateLimiter from '../middlewares/rate-limiter-middleware';
 // Import AI/ML services
 import PredictiveAnalyticsEngine from '../services/predictiveAnalyticsEngine';
 import AIPoweredFeatures from '../services/aiPoweredFeatures';
-import FraudDetectionML from '../services/fraudDetectionML';
+import FraudDetectionML from '../services/machineLearningModels';
 import BehavioralBiometrics from '../services/behavioralBiometrics';
 
 const router = Router();

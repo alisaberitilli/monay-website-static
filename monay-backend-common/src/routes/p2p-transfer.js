@@ -1,11 +1,11 @@
-const express = require('express');
+import express from 'express';
+import { v4 as uuidv4 } from 'uuid';
+import authenticateToken from '../middlewares/auth-middleware';
+import { User, Transaction, Wallet, Notification, sequelize } from '../models';
+import { Op } from 'sequelize';
+import utility from '../services/utility';
+
 const router = express.Router();
-const { v4: uuidv4 } = require('uuid');
-const authenticateToken = require('../middlewares/auth');
-const { User, Transaction, Wallet, Notification } = require('../models');
-const { Op } = require('sequelize');
-const utility = require('../services/utility');
-const { sequelize } = require('../models');
 
 /**
  * @route POST /api/p2p-transfer/search
@@ -557,4 +557,4 @@ router.post('/request', authenticateToken, async (req, res) => {
   }
 });
 
-module.exports = router;
+export default router;

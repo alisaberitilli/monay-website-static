@@ -10,7 +10,7 @@ import WaveAccountingConnector from '../services/waveAccountingConnector';
 import ZohoEnhancedConnector from '../services/zohoEnhancedConnector';
 import SageBusinessConnector from '../services/sageBusinessConnector';
 import SAPConnector from '../services/sapConnector';
-import OracleIntegration from '../services/oracleIntegration';
+import OracleIntegration from '../services/oracleNetSuiteIntegration';
 
 const router = Router();
 

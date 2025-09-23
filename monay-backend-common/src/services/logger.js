@@ -1,5 +1,5 @@
 import winston from 'winston';
-require('winston-daily-rotate-file');
+import 'winston-daily-rotate-file';
 import path from 'path';
 import fs from 'fs';
 
@@ -209,6 +209,23 @@ const emailErrorLogger = winston.createLogger({
 });
 
 export default {
+  infoLogger,
+  errorLogger,
+  paymentErrorLogger,
+  concurrentRequestsLogger,
+  tokenizationErrorLogger,
+  withdrawalPaymentErrorLogger,
+  depositePaymentErrorLogger,
+  transferpaymentErrorLogger,
+  depositePaymentInfoLogger,
+  tokenizationInfoLogger,
+  withdrawalPaymentInfoLogger,
+  transferpaymentInfoLogger,
+  paymentInfoLogger,
+  emailErrorLogger
+};
+
+export {
   infoLogger,
   errorLogger,
   paymentErrorLogger,

@@ -1,10 +1,11 @@
-const express = require('express');
+import express from 'express';
+import { v4 as uuidv4 } from 'uuid';
+import authenticateToken from '../middlewares/auth-middleware';
+import { User, ChildParent, Transaction, Wallet } from '../models';
+import { Op } from 'sequelize';
+import utility from '../services/utility';
+
 const router = express.Router();
-const { v4: uuidv4 } = require('uuid');
-const authenticateToken = require('../middlewares/auth');
-const { User, ChildParent, Transaction, Wallet } = require('../models');
-const { Op } = require('sequelize');
-const utility = require('../services/utility');
 
 /**
  * @route GET /api/accounts/secondary
@@ -565,4 +566,4 @@ router.get('/secondary/:userId/transactions', authenticateToken, async (req, res
   }
 });
 
-module.exports = router;
+export default router;
