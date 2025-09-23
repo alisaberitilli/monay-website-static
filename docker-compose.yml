@@ -1,0 +1,143 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:15-alpine
+    container_name: monay-postgres
+    environment:
+      POSTGRES_DB: monay
+      POSTGRES_USER: monay_user
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-monay_dev_password}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - monay-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U monay_user -d monay"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Redis Cache
+  redis:
+    image: redis:7-alpine
+    container_name: monay-redis
+    command: redis-server --requirepass ${REDIS_PASSWORD:-monay_redis_dev}
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - monay-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Backend API
+  backend:
+    build:
+      context: ./monay-backend-common
+      dockerfile: Dockerfile
+    container_name: monay-backend
+    ports:
+      - "3001:3001"
+    environment:
+      NODE_ENV: development
+      PORT: 3001
+      DATABASE_URL: postgres://monay_user:${DB_PASSWORD:-monay_dev_password}@postgres:5432/monay
+      REDIS_URL: redis://default:${REDIS_PASSWORD:-monay_redis_dev}@redis:6379
+      JWT_SECRET: ${JWT_SECRET:-dev_jwt_secret_change_in_production}
+      CORS_ORIGIN: http://localhost:3000,http://localhost:3002,http://localhost:3003,http://localhost:3007
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - monay-network
+    volumes:
+      - ./monay-backend-common:/app:cached
+      - /app/node_modules
+
+  # Website (Static)
+  website:
+    build:
+      context: ./monay-website-static
+      dockerfile: Dockerfile
+    container_name: monay-website
+    ports:
+      - "3000:3000"
+    environment:
+      NODE_ENV: production
+      NEXT_PUBLIC_API_URL: http://localhost:3001
+    networks:
+      - monay-network
+
+  # Admin Dashboard
+  admin:
+    build:
+      context: ./monay-admin
+      dockerfile: Dockerfile
+    container_name: monay-admin
+    ports:
+      - "3002:3002"
+    environment:
+      NODE_ENV: production
+      NEXT_PUBLIC_API_URL: http://localhost:3001
+      NEXTAUTH_SECRET: ${NEXTAUTH_SECRET:-dev_nextauth_secret}
+      NEXTAUTH_URL: http://localhost:3002
+    depends_on:
+      - backend
+    networks:
+      - monay-network
+
+  # Web Application
+  web-app:
+    build:
+      context: ./monay-cross-platform/web
+      dockerfile: Dockerfile
+    container_name: monay-web-app
+    ports:
+      - "3003:3003"
+    environment:
+      NODE_ENV: production
+      NEXT_PUBLIC_API_URL: http://localhost:3001
+      NEXTAUTH_SECRET: ${NEXTAUTH_SECRET:-dev_nextauth_secret}
+      NEXTAUTH_URL: http://localhost:3003
+    depends_on:
+      - backend
+    networks:
+      - monay-network
+
+  # Enterprise Wallet
+  enterprise-wallet:
+    build:
+      context: ./monay-caas/monay-enterprise-wallet
+      dockerfile: Dockerfile
+    container_name: monay-enterprise-wallet
+    ports:
+      - "3007:3007"
+    environment:
+      NODE_ENV: production
+      NEXT_PUBLIC_API_URL: http://localhost:3001
+      NEXTAUTH_SECRET: ${NEXTAUTH_SECRET:-dev_nextauth_secret}
+      NEXTAUTH_URL: http://localhost:3007
+      BASE_RPC_URL: ${BASE_RPC_URL:-https://sepolia.base.org}
+      SOLANA_RPC_URL: ${SOLANA_RPC_URL:-https://api.devnet.solana.com}
+    depends_on:
+      - backend
+    networks:
+      - monay-network
+
+networks:
+  monay-network:
+    driver: bridge
+
+volumes:
+  postgres_data:
+  redis_data:

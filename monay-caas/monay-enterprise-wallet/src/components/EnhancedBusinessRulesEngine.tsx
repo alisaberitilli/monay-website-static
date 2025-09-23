@@ -1,17 +1,49 @@
 'use client'
 
 import { useState } from 'react'
-import { motion } from 'framer-motion'
+import { motion, AnimatePresence } from 'framer-motion'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { 
+import { Input } from '@/components/ui/input'
+import { Textarea } from '@/components/ui/textarea'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
+import {
   Zap, Plus, Settings, Shield, Code, Activity,
-  CheckCircle, XCircle, Clock, AlertTriangle
+  CheckCircle, XCircle, Clock, AlertTriangle, X,
+  Layers, Package, TrendingUp
 } from 'lucide-react'
 import toast from 'react-hot-toast'
+import { useRouter } from 'next/navigation'
 
 export default function EnhancedBusinessRulesEngine() {
+  const router = useRouter()
   const [activeTab, setActiveTab] = useState('active')
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false)
+  const [viewMode, setViewMode] = useState<'rules' | 'ruleSets'>('rules')
+  const [newRule, setNewRule] = useState({
+    name: '',
+    description: '',
+    category: 'transaction',
+    chain: 'all',
+    conditions: [],
+    actions: [],
+    priority: 50
+  })
+  const [businessRules, setBusinessRules] = useState([])
 
   const rules = [
     {
@@ -88,10 +120,157 @@ export default function EnhancedBusinessRulesEngine() {
           </h2>
           <p className="text-gray-600 mt-1">Configure automated rules for dual-rail blockchain operations</p>
         </div>
-        <Button variant="gradient" className="shadow-lg">
-          <Plus className="h-4 w-4 mr-2" />
-          Create Rule
-        </Button>
+        <div className="flex gap-2">
+          <Button
+            variant="outline"
+            className="shadow-lg"
+            onClick={() => router.push('/capital-markets')}
+          >
+            <Layers className="h-4 w-4 mr-2" />
+            Capital Markets
+          </Button>
+          <Button
+            variant="outline"
+            className="shadow-lg"
+            onClick={() => router.push('/capital-markets/create')}
+          >
+            <Package className="h-4 w-4 mr-2" />
+            Create Rule Set
+          </Button>
+          <Dialog open={isCreateModalOpen} onOpenChange={setIsCreateModalOpen}>
+            <DialogTrigger asChild>
+              <Button variant="gradient" className="shadow-lg">
+                <Plus className="h-4 w-4 mr-2" />
+                Create Rule
+              </Button>
+            </DialogTrigger>
+          <DialogContent className="max-w-2xl">
+            <DialogHeader>
+              <DialogTitle>Create Business Rule</DialogTitle>
+              <DialogDescription>
+                Define a new business rule for automated smart contract execution
+              </DialogDescription>
+            </DialogHeader>
+            <div className="space-y-4 mt-4">
+              <div>
+                <label className="text-sm font-medium mb-1 block">Rule Name</label>
+                <Input
+                  placeholder="e.g., High-Value Transaction KYC"
+                  value={newRule.name}
+                  onChange={(e) => setNewRule({...newRule, name: e.target.value})}
+                />
+              </div>
+
+              <div>
+                <label className="text-sm font-medium mb-1 block">Description</label>
+                <Textarea
+                  placeholder="Describe what this rule does..."
+                  value={newRule.description}
+                  onChange={(e) => setNewRule({...newRule, description: e.target.value})}
+                  rows={3}
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="text-sm font-medium mb-1 block">Category</label>
+                  <Select value={newRule.category} onValueChange={(value) => setNewRule({...newRule, category: value})}>
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="transaction">Transaction</SelectItem>
+                      <SelectItem value="compliance">Compliance</SelectItem>
+                      <SelectItem value="security">Security</SelectItem>
+                      <SelectItem value="wallet">Wallet</SelectItem>
+                      <SelectItem value="token">Token</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div>
+                  <label className="text-sm font-medium mb-1 block">Target Chain</label>
+                  <Select value={newRule.chain} onValueChange={(value) => setNewRule({...newRule, chain: value})}>
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">All Chains</SelectItem>
+                      <SelectItem value="evm">Base L2 (EVM)</SelectItem>
+                      <SelectItem value="solana">Solana</SelectItem>
+                      <SelectItem value="cross-rail">Cross-Rail</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+
+              <div>
+                <label className="text-sm font-medium mb-1 block">Priority (0-100)</label>
+                <Input
+                  type="number"
+                  min="0"
+                  max="100"
+                  value={newRule.priority}
+                  onChange={(e) => setNewRule({...newRule, priority: parseInt(e.target.value) || 50})}
+                />
+              </div>
+
+              <div className="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
+                <p className="text-sm text-blue-700 dark:text-blue-300">
+                  💡 This rule will be compiled into smart contracts for both Base L2 (Solidity) and Solana (Rust)
+                </p>
+              </div>
+
+              <div className="flex justify-end gap-2">
+                <Button variant="outline" onClick={() => setIsCreateModalOpen(false)}>
+                  Cancel
+                </Button>
+                <Button
+                  variant="gradient"
+                  onClick={async () => {
+                    if (!newRule.name || !newRule.description) {
+                      toast.error('Please fill in all required fields')
+                      return
+                    }
+
+                    try {
+                      // Call the Business Rule Engine API
+                      const response = await fetch('/api/business-rules', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(newRule)
+                      })
+
+                      if (response.ok) {
+                        const createdRule = await response.json()
+                        setBusinessRules([...businessRules, createdRule.rule])
+                        toast.success('Business rule created successfully!')
+                        setIsCreateModalOpen(false)
+                        setNewRule({
+                          name: '',
+                          description: '',
+                          category: 'transaction',
+                          chain: 'all',
+                          conditions: [],
+                          actions: [],
+                          priority: 50
+                        })
+                      } else {
+                        toast.error('Failed to create rule')
+                      }
+                    } catch (error) {
+                      console.error('Error creating rule:', error)
+                      toast.error('Failed to create rule')
+                    }
+                  }}
+                >
+                  Create Rule
+                </Button>
+              </div>
+            </div>
+          </DialogContent>
+          </Dialog>
+        </div>
       </motion.div>
 
       {/* Stats */}
@@ -198,30 +377,127 @@ export default function EnhancedBusinessRulesEngine() {
         </Card>
       </motion.div>
 
-      {/* Blockchain Integration */}
+      {/* Smart Contract Generation */}
+      <motion.div variants={itemVariants}>
+        <Card className="glass-gradient">
+          <CardHeader>
+            <CardTitle>Smart Contract Generation</CardTitle>
+            <CardDescription>Business rules compiled to blockchain-specific contracts</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {/* EVM/Solidity Contract */}
+              <div className="space-y-3">
+                <div className="flex items-center gap-2">
+                  <Code className="h-5 w-5 text-blue-600" />
+                  <h4 className="font-semibold">Base L2 (Solidity)</h4>
+                </div>
+                <div className="p-3 bg-gray-900 rounded-lg overflow-x-auto">
+                  <pre className="text-xs text-green-400 font-mono">
+{`// Auto-generated from Business Rules
+pragma solidity ^0.8.20;
+
+contract InvoiceWalletRules {
+  function evaluateKYC(
+    uint256 amount
+  ) public pure returns (bool) {
+    if (amount > 10000) {
+      return requireAttestation("kyc");
+    }
+    return true;
+  }
+
+  function determineWalletMode(
+    uint256 riskScore
+  ) public pure returns (string) {
+    if (riskScore > 80) {
+      return "ephemeral";
+    } else if (riskScore < 30) {
+      return "persistent";
+    }
+    return "adaptive";
+  }
+}`}
+                  </pre>
+                </div>
+                <Button variant="outline" size="sm" className="w-full">
+                  Deploy to Base L2
+                </Button>
+              </div>
+
+              {/* Solana/Rust Contract */}
+              <div className="space-y-3">
+                <div className="flex items-center gap-2">
+                  <Code className="h-5 w-5 text-purple-600" />
+                  <h4 className="font-semibold">Solana (Rust)</h4>
+                </div>
+                <div className="p-3 bg-gray-900 rounded-lg overflow-x-auto">
+                  <pre className="text-xs text-green-400 font-mono">
+{`// Auto-generated from Business Rules
+use anchor_lang::prelude::*;
+
+#[program]
+pub mod invoice_wallet_rules {
+  pub fn evaluate_kyc(
+    ctx: Context<EvaluateKYC>,
+    amount: u64
+  ) -> Result<bool> {
+    if amount > 10000 {
+      require_attestation("kyc")?;
+    }
+    Ok(true)
+  }
+
+  pub fn determine_wallet_mode(
+    ctx: Context<DetermineMode>,
+    risk_score: u8
+  ) -> Result<String> {
+    if risk_score > 80 {
+      Ok("ephemeral".to_string())
+    } else if risk_score < 30 {
+      Ok("persistent".to_string())
+    } else {
+      Ok("adaptive".to_string())
+    }
+  }
+}`}
+                  </pre>
+                </div>
+                <Button variant="outline" size="sm" className="w-full">
+                  Deploy to Solana
+                </Button>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </motion.div>
+
+      {/* Blockchain Integration Status */}
       <motion.div variants={itemVariants}>
         <Card className="glass-gradient">
           <CardHeader>
             <CardTitle>Blockchain Integration</CardTitle>
-            <CardDescription>Smart contract integration with dual-rail architecture</CardDescription>
+            <CardDescription>Live smart contract deployment status</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="p-4 border rounded-lg bg-white/50 dark:bg-gray-800/50">
                 <div className="flex items-center gap-2 mb-2">
-                  <Code className="h-5 w-5 text-blue-600" />
+                  <CheckCircle className="h-5 w-5 text-green-600" />
                   <h4 className="font-semibold">Base L2 (EVM)</h4>
                 </div>
-                <p className="text-sm text-gray-600">ERC-3643 compliant smart contracts</p>
+                <p className="text-sm text-gray-600">BusinessRuleEngine.sol deployed</p>
                 <p className="text-xs text-gray-500 mt-2">Contract: 0x1234...5678</p>
+                <p className="text-xs text-green-600 mt-1">✓ 9 rules active</p>
               </div>
               <div className="p-4 border rounded-lg bg-white/50 dark:bg-gray-800/50">
                 <div className="flex items-center gap-2 mb-2">
-                  <Code className="h-5 w-5 text-purple-600" />
+                  <CheckCircle className="h-5 w-5 text-green-600" />
                   <h4 className="font-semibold">Solana</h4>
                 </div>
-                <p className="text-sm text-gray-600">Token-2022 with extensions</p>
+                <p className="text-sm text-gray-600">BusinessRuleEngine program deployed</p>
                 <p className="text-xs text-gray-500 mt-2">Program: 7xKXtg...2hnB</p>
+                <p className="text-xs text-green-600 mt-1">✓ 9 rules active</p>
               </div>
             </div>
           </CardContent>

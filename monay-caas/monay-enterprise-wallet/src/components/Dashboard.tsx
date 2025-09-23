@@ -1,6 +1,8 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
+import { toast } from 'react-hot-toast'
 
 interface DashboardProps {
   blockchainStatus: {
@@ -10,6 +12,7 @@ interface DashboardProps {
 }
 
 export default function Dashboard({ blockchainStatus }: DashboardProps) {
+  const router = useRouter()
   const [stats, setStats] = useState({
     totalValue: '$1,300,000',
     dayChange: '+2.45%',
@@ -140,16 +143,36 @@ export default function Dashboard({ blockchainStatus }: DashboardProps) {
           </div>
           <div className="p-6">
             <div className="space-y-3">
-              <button className="w-full px-4 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium">
+              <button
+                onClick={() => {
+                  router.push('/tokens/new')
+                  toast.success('Navigating to token creation')
+                }}
+                className="w-full px-4 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium">
                 Create New Token
               </button>
-              <button className="w-full px-4 py-3 bg-white border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors font-medium">
+              <button
+                onClick={() => {
+                  router.push('/transfers/new')
+                  toast.success('Opening transfer interface')
+                }}
+                className="w-full px-4 py-3 bg-white border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors font-medium">
                 Initiate Transfer
               </button>
-              <button className="w-full px-4 py-3 bg-white border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors font-medium">
+              <button
+                onClick={() => {
+                  router.push('/swap')
+                  toast.success('Opening cross-rail swap interface')
+                }}
+                className="w-full px-4 py-3 bg-white border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors font-medium">
                 Cross-Rail Swap
               </button>
-              <button className="w-full px-4 py-3 bg-white border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors font-medium">
+              <button
+                onClick={() => {
+                  router.push('/reports')
+                  toast.success('Loading reports dashboard')
+                }}
+                className="w-full px-4 py-3 bg-white border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors font-medium">
                 View Reports
               </button>
             </div>
@@ -161,7 +184,12 @@ export default function Dashboard({ blockchainStatus }: DashboardProps) {
       <div className="bg-white rounded-xl shadow-sm border border-gray-100">
         <div className="p-6 border-b border-gray-100 flex justify-between items-center">
           <h2 className="text-lg font-semibold">Recent Transactions</h2>
-          <button className="text-sm text-blue-600 hover:text-blue-700">View All</button>
+          <button
+            onClick={() => {
+              router.push('/transactions')
+              toast.success('Loading all transactions')
+            }}
+            className="text-sm text-blue-600 hover:text-blue-700">View All</button>
         </div>
         <div className="overflow-x-auto">
           <table className="w-full">

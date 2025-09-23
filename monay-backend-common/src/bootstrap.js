@@ -14,6 +14,7 @@ import appVersionMiddleware from './middlewares/app-version-middleware'
 import path from 'path';
 import scheduleJob from './services/schedule-job'
 import schedule from 'node-schedule';
+import invoiceWalletSocket from './services/invoice-wallet-socket';
 /**
  * Application startup class
  *
@@ -66,7 +67,29 @@ export default class Bootstrap {
 
         const swaggerSpec = swaggerJSDoc(options);
         app.use(cors({
-            'Access-Control-Allow-Origin': `https://${config.app.swaggerHost}`
+            origin: function (origin, callback) {
+                // Allow requests from localhost for development
+                const allowedOrigins = [
+                    'http://localhost:3000',
+                    'http://localhost:3001',
+                    'http://localhost:3002',
+                    'http://localhost:3003',
+                    'http://localhost:3007',
+                    `https://${config.app.swaggerHost}`
+                ];
+
+                // Allow requests with no origin (like mobile apps or Postman)
+                if (!origin) return callback(null, true);
+
+                if (allowedOrigins.includes(origin)) {
+                    callback(null, true);
+                } else {
+                    callback(new Error('Not allowed by CORS'));
+                }
+            },
+            credentials: true,
+            methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+            allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
         }));
         app.use(bodyParser.json({ limit: '500mb', extended: true }));
         app.use(compression());
@@ -147,6 +170,10 @@ export default class Bootstrap {
         const port = app.get('port');
         const server = app.listen(port, () => {
             console.log('Server has started on port %d', port);
+
+            // Initialize Socket.IO for Invoice Wallet real-time features
+            invoiceWalletSocket.initialize(server);
+            console.log('Invoice Wallet WebSocket service initialized');
         });
         // delete unused media from media temp
         this.scheduleJob();

@@ -418,17 +418,17 @@ export default function SignUp() {
                       <div className="font-medium">Terms & Conditions</div>
                       <div className="text-sm text-gray-600">
                         I agree to the{' '}
-                        <Link href="/terms" className="text-blue-600 hover:text-blue-700">
+                        <a href="https://www.monay.com/terms" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:text-blue-700">
                           Terms of Service
-                        </Link>
+                        </a>
                         ,{' '}
-                        <Link href="/privacy" className="text-blue-600 hover:text-blue-700">
+                        <a href="https://www.monay.com/privacy" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:text-blue-700">
                           Privacy Policy
-                        </Link>
+                        </a>
                         , and{' '}
-                        <Link href="/aml-policy" className="text-blue-600 hover:text-blue-700">
+                        <a href="https://www.monay.com/anti-money-laundering" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:text-blue-700">
                           AML Policy
-                        </Link>
+                        </a>
                         .
                       </div>
                     </div>

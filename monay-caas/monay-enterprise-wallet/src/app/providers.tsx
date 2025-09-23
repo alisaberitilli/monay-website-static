@@ -2,11 +2,14 @@
 
 import { Toaster } from 'react-hot-toast'
 import { ThemeProvider } from './theme-provider'
+import { InvoiceWalletSocketProvider } from '@/hooks/useInvoiceWalletSocket'
 
 export function Providers({ children }: { children: React.ReactNode }) {
   return (
     <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-      {children}
+      <InvoiceWalletSocketProvider>
+        {children}
+      </InvoiceWalletSocketProvider>
       <Toaster
         position="top-right"
         toastOptions={{

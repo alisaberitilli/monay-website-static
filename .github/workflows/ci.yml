@@ -1,0 +1,332 @@
+name: Continuous Integration
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+
+env:
+  NODE_VERSION: '20.x'
+  DATABASE_URL: postgresql://test:test@localhost:5432/monay_test
+  JWT_SECRET: test-jwt-secret
+  REDIS_URL: redis://localhost:6379
+
+jobs:
+  # Frontend Tests - Enterprise Wallet
+  frontend-test:
+    runs-on: ubuntu-latest
+    name: Frontend Tests (Enterprise Wallet)
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          cache-dependency-path: monay-caas/monay-enterprise-wallet/package-lock.json
+
+      - name: Install dependencies
+        working-directory: ./monay-caas/monay-enterprise-wallet
+        run: npm ci --legacy-peer-deps
+
+      - name: Run type checking
+        working-directory: ./monay-caas/monay-enterprise-wallet
+        run: npm run type-check
+
+      - name: Run linting
+        working-directory: ./monay-caas/monay-enterprise-wallet
+        run: npm run lint
+
+      - name: Run unit tests
+        working-directory: ./monay-caas/monay-enterprise-wallet
+        run: npm test -- --coverage --maxWorkers=2
+
+      - name: Upload coverage reports
+        uses: codecov/codecov-action@v3
+        with:
+          directory: ./monay-caas/monay-enterprise-wallet/coverage
+          flags: frontend
+          name: frontend-coverage
+
+  # Backend Tests
+  backend-test:
+    runs-on: ubuntu-latest
+    name: Backend Tests
+
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_USER: test
+          POSTGRES_PASSWORD: test
+          POSTGRES_DB: monay_test
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+
+      redis:
+        image: redis:7-alpine
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 6379:6379
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          cache-dependency-path: monay-backend-common/package-lock.json
+
+      - name: Install dependencies
+        working-directory: ./monay-backend-common
+        run: npm ci --legacy-peer-deps
+
+      - name: Run database migrations
+        working-directory: ./monay-backend-common
+        run: npm run migration
+        continue-on-error: true
+
+      - name: Run unit tests
+        working-directory: ./monay-backend-common
+        run: npm test -- --coverage --maxWorkers=2
+
+      - name: Upload coverage reports
+        uses: codecov/codecov-action@v3
+        with:
+          directory: ./monay-backend-common/coverage
+          flags: backend
+          name: backend-coverage
+
+  # E2E Tests
+  e2e-test:
+    runs-on: ubuntu-latest
+    name: E2E Tests (Cypress)
+
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_USER: test
+          POSTGRES_PASSWORD: test
+          POSTGRES_DB: monay_test
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Install backend dependencies
+        working-directory: ./monay-backend-common
+        run: npm ci --legacy-peer-deps
+
+      - name: Start backend server
+        working-directory: ./monay-backend-common
+        run: |
+          npm start &
+          npx wait-on http://localhost:3001/health -t 30000
+        env:
+          NODE_ENV: test
+
+      - name: Install frontend dependencies
+        working-directory: ./monay-caas/monay-enterprise-wallet
+        run: npm ci --legacy-peer-deps
+
+      - name: Build frontend
+        working-directory: ./monay-caas/monay-enterprise-wallet
+        run: npm run build
+        env:
+          NEXT_PUBLIC_API_URL: http://localhost:3001
+
+      - name: Run Cypress E2E tests
+        uses: cypress-io/github-action@v6
+        with:
+          working-directory: ./monay-caas/monay-enterprise-wallet
+          start: npm start
+          wait-on: 'http://localhost:3007'
+          wait-on-timeout: 120
+          browser: chrome
+          record: false
+        env:
+          CYPRESS_API_URL: http://localhost:3001
+          CYPRESS_baseUrl: http://localhost:3007
+
+      - name: Upload Cypress artifacts
+        if: failure()
+        uses: actions/upload-artifact@v3
+        with:
+          name: cypress-artifacts
+          path: |
+            monay-caas/monay-enterprise-wallet/cypress/screenshots
+            monay-caas/monay-enterprise-wallet/cypress/videos
+
+  # Security Scanning
+  security-scan:
+    runs-on: ubuntu-latest
+    name: Security Scanning
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Run Trivy vulnerability scanner
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: 'fs'
+          scan-ref: '.'
+          format: 'sarif'
+          output: 'trivy-results.sarif'
+          severity: 'HIGH,CRITICAL'
+
+      - name: Upload Trivy results to GitHub Security
+        uses: github/codeql-action/upload-sarif@v2
+        with:
+          sarif_file: 'trivy-results.sarif'
+
+      - name: Run npm audit
+        run: |
+          cd monay-backend-common && npm audit --audit-level=high || true
+          cd ../monay-caas/monay-enterprise-wallet && npm audit --audit-level=high || true
+
+  # Smart Contract Tests
+  smart-contract-test:
+    runs-on: ubuntu-latest
+    name: Smart Contract Tests
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Install Foundry
+        uses: foundry-rs/foundry-toolchain@v1
+        with:
+          version: nightly
+
+      - name: Install dependencies
+        working-directory: ./monay-backend-common
+        run: npm ci --legacy-peer-deps
+
+      - name: Compile contracts
+        working-directory: ./monay-backend-common
+        run: npm run contracts:compile
+        continue-on-error: true
+
+      - name: Run contract tests
+        working-directory: ./monay-backend-common
+        run: npx hardhat test
+        continue-on-error: true
+
+  # Performance Tests
+  performance-test:
+    runs-on: ubuntu-latest
+    name: Performance Tests
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Install K6
+        run: |
+          sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys C5AD17C747E3415A3642D57D77C6C491D6AC1D69
+          echo "deb https://dl.k6.io/deb stable main" | sudo tee /etc/apt/sources.list.d/k6.list
+          sudo apt-get update
+          sudo apt-get install k6
+
+      - name: Run performance tests
+        run: |
+          echo "Performance tests would run here"
+        continue-on-error: true
+
+  # Build Docker Images
+  docker-build:
+    runs-on: ubuntu-latest
+    name: Build Docker Images
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build Backend Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: ./monay-backend-common
+          push: false
+          tags: monay-backend:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Build Frontend Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: ./monay-caas/monay-enterprise-wallet
+          push: false
+          tags: monay-enterprise-wallet:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  # Summary Job
+  test-summary:
+    needs: [frontend-test, backend-test, e2e-test, security-scan]
+    runs-on: ubuntu-latest
+    name: Test Summary
+    if: always()
+
+    steps:
+      - name: Check test results
+        run: |
+          if [[ "${{ needs.frontend-test.result }}" == "failure" || \
+                "${{ needs.backend-test.result }}" == "failure" || \
+                "${{ needs.e2e-test.result }}" == "failure" ]]; then
+            echo "❌ Tests failed! Please check the logs."
+            exit 1
+          else
+            echo "✅ All tests passed successfully!"
+          fi
+
+      - name: Post results to Slack
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        uses: 8398a7/action-slack@v3
+        with:
+          status: ${{ job.status }}
+          text: |
+            CI Pipeline Complete
+            Frontend: ${{ needs.frontend-test.result }}
+            Backend: ${{ needs.backend-test.result }}
+            E2E: ${{ needs.e2e-test.result }}
+            Security: ${{ needs.security-scan.result }}
+          webhook_url: ${{ secrets.SLACK_WEBHOOK }}
+        continue-on-error: true

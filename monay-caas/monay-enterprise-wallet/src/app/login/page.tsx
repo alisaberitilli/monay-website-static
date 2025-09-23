@@ -167,13 +167,13 @@ export default function Login() {
 
         <div className="mt-6 text-center text-sm text-gray-500">
           By signing in, you agree to our{' '}
-          <Link href="/terms" className="text-blue-600 hover:text-blue-700">
+          <a href="https://www.monay.com/terms" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:text-blue-700">
             Terms of Service
-          </Link>{' '}
+          </a>{' '}
           and{' '}
-          <Link href="/privacy" className="text-blue-600 hover:text-blue-700">
+          <a href="https://www.monay.com/privacy" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:text-blue-700">
             Privacy Policy
-          </Link>
+          </a>
         </div>
       </div>
     </div>

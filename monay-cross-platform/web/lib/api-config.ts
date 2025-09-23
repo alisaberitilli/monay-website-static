@@ -1,6 +1,7 @@
 // API Configuration for Monay Backend
 export const API_CONFIG = {
-  BASE_URL: process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:3001',
+  // Use relative URL to go through Next.js proxy (avoids CORS issues)
+  BASE_URL: typeof window !== 'undefined' ? '' : (process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:3001'),
   API_PREFIX: '/api',
   TIMEOUT: 10000, // 10 seconds
 };

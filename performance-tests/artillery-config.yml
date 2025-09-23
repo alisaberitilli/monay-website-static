@@ -1,0 +1,307 @@
+config:
+  target: "http://localhost:3001"
+  processor: "./processor.js"
+
+  phases:
+    # Warm-up phase
+    - duration: 60
+      arrivalRate: 1
+      name: "Warm-up"
+
+    # Ramp-up phase
+    - duration: 120
+      arrivalRate: 5
+      rampTo: 25
+      name: "Ramp-up"
+
+    # Sustained load
+    - duration: 300
+      arrivalRate: 25
+      name: "Sustained Load"
+
+    # Spike test
+    - duration: 60
+      arrivalRate: 100
+      name: "Spike Test"
+
+    # Cool down
+    - duration: 60
+      arrivalRate: 5
+      name: "Cool Down"
+
+  payload:
+    path: "./test-data.csv"
+    fields:
+      - "email"
+      - "invoiceAmount"
+      - "vendorName"
+
+  variables:
+    walletTypes:
+      - "INVOICE_FIRST"
+      - "STANDARD"
+      - "EPHEMERAL"
+    currencies:
+      - "USD"
+      - "EUR"
+      - "GBP"
+
+  plugins:
+    metrics-by-endpoint:
+      enabled: true
+    publish-metrics:
+      - type: cloudwatch
+        region: us-east-1
+    expect:
+      enabled: true
+
+  environments:
+    development:
+      target: "http://localhost:3001"
+      phases:
+        - duration: 60
+          arrivalRate: 2
+    staging:
+      target: "https://staging-api.monay.com"
+      phases:
+        - duration: 300
+          arrivalRate: 10
+    production:
+      target: "https://api.monay.com"
+      phases:
+        - duration: 600
+          arrivalRate: 50
+
+  http:
+    timeout: 10
+    pool: 50
+
+  ensure:
+    p99: 1000  # 99th percentile response time < 1s
+    p95: 500   # 95th percentile response time < 500ms
+    maxErrorRate: 1  # Max 1% error rate
+
+scenarios:
+  - name: "Complete Invoice Wallet Flow"
+    weight: 60
+    flow:
+      # 1. Register/Login
+      - post:
+          url: "/api/auth/register"
+          json:
+            email: "{{ $randomString() }}@test.com"
+            password: "Test123!@#"
+            firstName: "Performance"
+            lastName: "Test"
+            companyName: "{{ $randomString() }} Corp"
+          capture:
+            - json: "$.token"
+              as: "authToken"
+            - json: "$.user.id"
+              as: "userId"
+          expect:
+            - statusCode: 201
+            - hasProperty: "token"
+
+      # 2. Create Invoice Wallet
+      - post:
+          url: "/api/invoice-wallets"
+          headers:
+            Authorization: "Bearer {{ authToken }}"
+          json:
+            walletName: "PerfWallet_{{ $randomString() }}"
+            description: "Performance test wallet"
+            walletType: "{{ $randomItem(walletTypes) }}"
+            currency: "{{ $randomItem(currencies) }}"
+            complianceLevel: "STANDARD"
+            autoPayEnabled: true
+            paymentThreshold: 1000
+          capture:
+            - json: "$.id"
+              as: "walletId"
+            - json: "$.address"
+              as: "walletAddress"
+          expect:
+            - statusCode: 201
+            - hasProperty: "id"
+            - hasProperty: "address"
+          afterResponse: "logWalletCreation"
+
+      # 3. Fund Wallet
+      - post:
+          url: "/api/invoice-wallets/{{ walletId }}/fund"
+          headers:
+            Authorization: "Bearer {{ authToken }}"
+          json:
+            amount: 10000
+            currency: "USD"
+            paymentMethod: "BANK_TRANSFER"
+            reference: "PERF-{{ $timestamp() }}"
+          expect:
+            - statusCode: 200
+            - hasProperty: "transactionId"
+
+      # 4. Attach Invoice
+      - post:
+          url: "/api/invoice-wallets/{{ walletId }}/invoices"
+          headers:
+            Authorization: "Bearer {{ authToken }}"
+          json:
+            invoiceNumber: "INV-{{ $timestamp() }}-{{ $randomNumber(1000, 9999) }}"
+            amount: "{{ invoiceAmount }}"
+            currency: "USD"
+            dueDate: "{{ $dateOffset(30, 'days') }}"
+            vendorName: "{{ vendorName }}"
+            description: "Performance test invoice"
+            items:
+              - description: "Service Fee"
+                quantity: 1
+                unitPrice: "{{ invoiceAmount }}"
+                total: "{{ invoiceAmount }}"
+          capture:
+            - json: "$.id"
+              as: "invoiceId"
+          expect:
+            - statusCode: 201
+            - hasProperty: "id"
+            - contentType: "application/json"
+
+      # 5. Process Payment
+      - post:
+          url: "/api/invoice-wallets/{{ walletId }}/invoices/{{ invoiceId }}/pay"
+          headers:
+            Authorization: "Bearer {{ authToken }}"
+          json:
+            paymentMethod: "WALLET_BALANCE"
+            amount: "{{ invoiceAmount }}"
+          expect:
+            - statusCode: 200
+            - hasProperty: "transactionId"
+            - hasProperty: "status"
+          afterResponse: "validatePaymentStatus"
+
+      # 6. Check Balance
+      - get:
+          url: "/api/invoice-wallets/{{ walletId }}/balance"
+          headers:
+            Authorization: "Bearer {{ authToken }}"
+          expect:
+            - statusCode: 200
+            - hasProperty: "available"
+            - hasProperty: "pending"
+            - hasProperty: "reserved"
+
+      # 7. Get Transaction History
+      - get:
+          url: "/api/invoice-wallets/{{ walletId }}/transactions?limit=10"
+          headers:
+            Authorization: "Bearer {{ authToken }}"
+          expect:
+            - statusCode: 200
+            - hasProperty: "transactions"
+            - contentType: "application/json"
+
+      # Think time
+      - think: 2
+
+  - name: "WebSocket Connection Test"
+    weight: 20
+    engine: "ws"
+    flow:
+      - connect:
+          url: "ws://localhost:3001/socket.io"
+          headers:
+            Authorization: "Bearer {{ authToken }}"
+
+      - send:
+          data:
+            event: "subscribe:wallet"
+            walletId: "{{ walletId }}"
+
+      - think: 5
+
+      - send:
+          data:
+            event: "balance:update"
+            walletId: "{{ walletId }}"
+            balance:
+              available: 5000
+              pending: 1000
+
+      - think: 2
+
+  - name: "High Volume Transaction Test"
+    weight: 20
+    flow:
+      - loop:
+        - post:
+            url: "/api/invoice-wallets/{{ walletId }}/transactions"
+            headers:
+              Authorization: "Bearer {{ authToken }}"
+            json:
+              type: "{{ $randomItem(['CREDIT', 'DEBIT']) }}"
+              amount: "{{ $randomNumber(10, 1000) }}"
+              currency: "USD"
+              description: "Load test transaction"
+            expect:
+              - statusCode:
+                  - 200
+                  - 201
+        count: 10
+
+  - name: "Concurrent Wallet Operations"
+    weight: 10
+    flow:
+      # Parallel operations
+      - parallel:
+        - get:
+            url: "/api/invoice-wallets/{{ walletId }}"
+            headers:
+              Authorization: "Bearer {{ authToken }}"
+        - get:
+            url: "/api/invoice-wallets/{{ walletId }}/balance"
+            headers:
+              Authorization: "Bearer {{ authToken }}"
+        - get:
+            url: "/api/invoice-wallets/{{ walletId }}/invoices"
+            headers:
+              Authorization: "Bearer {{ authToken }}"
+        - get:
+            url: "/api/invoice-wallets/{{ walletId }}/transactions"
+            headers:
+              Authorization: "Bearer {{ authToken }}"
+
+  - name: "Compliance Check Load"
+    weight: 5
+    flow:
+      - post:
+          url: "/api/compliance/check"
+          headers:
+            Authorization: "Bearer {{ authToken }}"
+          json:
+            walletId: "{{ walletId }}"
+            transactionAmount: "{{ $randomNumber(10000, 100000) }}"
+            transactionType: "WIRE_TRANSFER"
+          expect:
+            - statusCode: 200
+            - hasProperty: "kycRequired"
+            - hasProperty: "riskScore"
+
+  - name: "Business Rules Evaluation"
+    weight: 5
+    flow:
+      - post:
+          url: "/api/business-rules/evaluate"
+          headers:
+            Authorization: "Bearer {{ authToken }}"
+          json:
+            ruleType: "TRANSACTION"
+            context:
+              amount: "{{ $randomNumber(100, 50000) }}"
+              currency: "USD"
+              walletId: "{{ walletId }}"
+              userId: "{{ userId }}"
+          expect:
+            - statusCode: 200
+            - hasProperty: "approved"
+            - hasProperty: "appliedRules"

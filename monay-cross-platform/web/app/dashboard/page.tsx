@@ -24,6 +24,7 @@ import {
   MoreVertical
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
+import apiClient from '@/lib/api-client';
 
 interface Transaction {
   id: string;
@@ -52,10 +53,9 @@ export default function DashboardPage() {
 
   const fetchBalance = async () => {
     try {
-      const response = await fetch('/api/wallet/balance');
-      if (response.ok) {
-        const data = await response.json();
-        setBalance(data.balance);
+      const response = await apiClient.getBalance();
+      if (response.success && response.data) {
+        setBalance(response.data.balance || response.data.available || 0);
       }
     } catch (error) {
       console.error('Error fetching balance:', error);
@@ -73,7 +73,7 @@ export default function DashboardPage() {
   const recentTransactions: Transaction[] = [];
 
   const quickActions = [
-    { name: 'Send', icon: Send, gradient: 'from-blue-500 to-cyan-500', path: '/send' },
+    { name: 'Send', icon: Send, gradient: 'from-blue-500 to-cyan-500', path: '/transfer' },
     { name: 'Request', icon: ArrowDown, gradient: 'from-purple-500 to-pink-500', path: '/request-money' },
     { name: 'Top Up', icon: Plus, gradient: 'from-orange-500 to-red-500', path: '/add-money' },
     { name: 'Bills', icon: FileText, gradient: 'from-green-500 to-emerald-500', path: '/transactions' },

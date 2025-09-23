@@ -1,0 +1,681 @@
+import Stripe from 'stripe';
+import HttpStatus from 'http-status';
+import { CustomError } from '../middlewares/errors';
+import loggers from './logger';
+
+class StripeCryptoDisbursmentsService {
+  constructor() {
+    this.stripe = new Stripe(process.env.STRIPE_SECRET_KEY || 'sk_test_51SABVjFzOpfMHqen5u4SujADp4VBSpgQLrFhV0o6JMV0YMW2KtFqFekbhJhcNZb9ZBGp4Mn456xjRjUvN0f7geAR00QzIpetdm', {
+      apiVersion: '2023-10-16',
+    });
+
+    // Supported cryptocurrencies
+    this.supportedCryptos = {
+      USDC: {
+        symbol: 'usdc',
+        network: 'ethereum',
+        decimals: 6,
+        minAmount: 1,
+        maxAmount: 100000
+      },
+      USDT: {
+        symbol: 'usdt',
+        network: 'ethereum',
+        decimals: 6,
+        minAmount: 1,
+        maxAmount: 100000
+      },
+      DAI: {
+        symbol: 'dai',
+        network: 'ethereum',
+        decimals: 18,
+        minAmount: 1,
+        maxAmount: 100000
+      },
+      BTC: {
+        symbol: 'btc',
+        network: 'bitcoin',
+        decimals: 8,
+        minAmount: 0.0001,
+        maxAmount: 10
+      },
+      ETH: {
+        symbol: 'eth',
+        network: 'ethereum',
+        decimals: 18,
+        minAmount: 0.001,
+        maxAmount: 100
+      }
+    };
+
+    // Disbursement configuration
+    this.disbursementConfig = {
+      maxBatchSize: 100,
+      defaultCurrency: 'usd',
+      supportedMethods: ['instant', 'standard', 'wire', 'crypto']
+    };
+  }
+
+  /**
+   * CRYPTO RAILS
+   */
+
+  /**
+   * Create crypto onramp session (buy crypto with fiat)
+   */
+  async createCryptoOnramp(onrampData) {
+    try {
+      const { amount, cryptocurrency, walletAddress, customerId, paymentMethod } = onrampData;
+
+      // Validate cryptocurrency
+      const crypto = this.supportedCryptos[cryptocurrency.toUpperCase()];
+      if (!crypto) {
+        throw new Error(`Unsupported cryptocurrency: ${cryptocurrency}`);
+      }
+
+      // Validate amount
+      if (amount < crypto.minAmount || amount > crypto.maxAmount) {
+        throw new Error(`Amount must be between ${crypto.minAmount} and ${crypto.maxAmount}`);
+      }
+
+      // Create checkout session for crypto purchase
+      const session = await this.stripe.checkout.sessions.create({
+        mode: 'payment',
+        customer: customerId,
+        payment_method_types: paymentMethod ? [paymentMethod] : ['card', 'us_bank_account'],
+        line_items: [{
+          price_data: {
+            currency: 'usd',
+            product_data: {
+              name: `${cryptocurrency.toUpperCase()} Purchase`,
+              description: `Buy ${amount} ${cryptocurrency.toUpperCase()}`,
+              metadata: {
+                type: 'crypto_purchase',
+                cryptocurrency: cryptocurrency.toUpperCase(),
+                network: crypto.network
+              }
+            },
+            unit_amount: Math.round(amount * 100) // Convert to cents
+          },
+          quantity: 1
+        }],
+        metadata: {
+          type: 'crypto_onramp',
+          cryptocurrency: cryptocurrency.toUpperCase(),
+          walletAddress,
+          network: crypto.network,
+          amount: amount.toString()
+        },
+        success_url: `${process.env.APP_URL}/crypto/success?session_id={CHECKOUT_SESSION_ID}`,
+        cancel_url: `${process.env.APP_URL}/crypto/cancel`
+      });
+
+      loggers.infoLogger.info(`Crypto onramp session created: ${session.id}`);
+
+      return {
+        success: true,
+        sessionId: session.id,
+        sessionUrl: session.url,
+        cryptocurrency: cryptocurrency.toUpperCase(),
+        amount,
+        walletAddress,
+        network: crypto.network,
+        estimatedReceival: this.calculateCryptoArrival(crypto.network)
+      };
+    } catch (error) {
+      loggers.errorLogger.error(`Crypto onramp failed: ${error.message}`);
+      throw new CustomError(
+        error.message || 'Crypto purchase failed',
+        HttpStatus.BAD_REQUEST
+      );
+    }
+  }
+
+  /**
+   * Create crypto offramp session (sell crypto for fiat)
+   */
+  async createCryptoOfframp(offrampData) {
+    try {
+      const { cryptocurrency, amount, bankAccount, customerId } = offrampData;
+
+      // Validate cryptocurrency
+      const crypto = this.supportedCryptos[cryptocurrency.toUpperCase()];
+      if (!crypto) {
+        throw new Error(`Unsupported cryptocurrency: ${cryptocurrency}`);
+      }
+
+      // Create payout for crypto sale
+      const payout = {
+        type: 'crypto_offramp',
+        cryptocurrency: cryptocurrency.toUpperCase(),
+        cryptoAmount: amount,
+        network: crypto.network,
+        customerId,
+        bankAccount,
+        status: 'pending_crypto_receipt',
+        estimatedFiatAmount: await this.getCryptoPrice(cryptocurrency, amount),
+        createdAt: new Date()
+      };
+
+      // Generate unique deposit address for user to send crypto
+      const depositAddress = await this.generateCryptoDepositAddress(cryptocurrency);
+
+      loggers.infoLogger.info(`Crypto offramp initiated for ${amount} ${cryptocurrency}`);
+
+      return {
+        success: true,
+        depositAddress,
+        network: crypto.network,
+        amount,
+        cryptocurrency: cryptocurrency.toUpperCase(),
+        estimatedFiatAmount: payout.estimatedFiatAmount,
+        status: payout.status,
+        instructions: `Send exactly ${amount} ${cryptocurrency.toUpperCase()} to the provided address. Funds will be credited to your bank account within 1-3 business days after confirmation.`
+      };
+    } catch (error) {
+      loggers.errorLogger.error(`Crypto offramp failed: ${error.message}`);
+      throw new CustomError(
+        error.message || 'Crypto sale failed',
+        HttpStatus.BAD_REQUEST
+      );
+    }
+  }
+
+  /**
+   * Process crypto payment (accept crypto as payment)
+   */
+  async processCryptoPayment(paymentData) {
+    try {
+      const { amount, cryptocurrency, description, customerId, metadata } = paymentData;
+
+      // Validate cryptocurrency
+      const crypto = this.supportedCryptos[cryptocurrency.toUpperCase()];
+      if (!crypto) {
+        throw new Error(`Unsupported cryptocurrency: ${cryptocurrency}`);
+      }
+
+      // Generate payment address
+      const paymentAddress = await this.generateCryptoDepositAddress(cryptocurrency);
+
+      // Create payment intent for tracking
+      const paymentIntent = await this.stripe.paymentIntents.create({
+        amount: Math.round(amount * 100),
+        currency: 'usd',
+        customer: customerId,
+        description: description || `Crypto payment in ${cryptocurrency.toUpperCase()}`,
+        metadata: {
+          ...metadata,
+          type: 'crypto_payment',
+          cryptocurrency: cryptocurrency.toUpperCase(),
+          network: crypto.network,
+          paymentAddress
+        },
+        payment_method_types: ['card'], // Fallback option
+        capture_method: 'manual' // Don't auto-capture until crypto is received
+      });
+
+      loggers.infoLogger.info(`Crypto payment initiated: ${paymentIntent.id}`);
+
+      return {
+        success: true,
+        paymentIntentId: paymentIntent.id,
+        paymentAddress,
+        cryptocurrency: cryptocurrency.toUpperCase(),
+        network: crypto.network,
+        amount,
+        qrCode: this.generateQRCode(paymentAddress, amount, cryptocurrency),
+        expiresIn: 3600 // 1 hour
+      };
+    } catch (error) {
+      loggers.errorLogger.error(`Crypto payment failed: ${error.message}`);
+      throw new CustomError(
+        error.message || 'Crypto payment failed',
+        HttpStatus.BAD_REQUEST
+      );
+    }
+  }
+
+  /**
+   * DISBURSEMENTS
+   */
+
+  /**
+   * Create instant disbursement
+   */
+  async createInstantDisbursement(disbursementData) {
+    try {
+      const { amount, recipient, method, currency, description, metadata } = disbursementData;
+
+      // Create transfer based on method
+      let transfer;
+
+      switch (method) {
+        case 'debit_card':
+          transfer = await this.createInstantCardTransfer(amount, recipient, currency, metadata);
+          break;
+        case 'bank_account':
+          transfer = await this.createInstantBankTransfer(amount, recipient, currency, metadata);
+          break;
+        case 'wallet':
+          transfer = await this.createWalletTransfer(amount, recipient, currency, metadata);
+          break;
+        default:
+          throw new Error(`Unsupported disbursement method: ${method}`);
+      }
+
+      loggers.infoLogger.info(`Instant disbursement created: ${transfer.id}`);
+
+      return {
+        success: true,
+        disbursementId: transfer.id,
+        amount,
+        currency: currency || 'usd',
+        method,
+        status: transfer.status,
+        estimatedArrival: transfer.arrival_date ? new Date(transfer.arrival_date * 1000) : 'instant',
+        fee: transfer.fee || 0
+      };
+    } catch (error) {
+      loggers.errorLogger.error(`Instant disbursement failed: ${error.message}`);
+      throw new CustomError(
+        error.message || 'Disbursement failed',
+        HttpStatus.BAD_REQUEST
+      );
+    }
+  }
+
+  /**
+   * Create batch disbursement
+   */
+  async createBatchDisbursement(batchData) {
+    try {
+      const { disbursements, description, metadata } = batchData;
+
+      if (disbursements.length > this.disbursementConfig.maxBatchSize) {
+        throw new Error(`Batch size exceeds maximum of ${this.disbursementConfig.maxBatchSize}`);
+      }
+
+      const results = [];
+      const errors = [];
+
+      // Process each disbursement
+      for (const disbursement of disbursements) {
+        try {
+          const result = await this.createInstantDisbursement({
+            ...disbursement,
+            metadata: {
+              ...metadata,
+              batchId: `batch_${Date.now()}`,
+              batchIndex: disbursements.indexOf(disbursement)
+            }
+          });
+          results.push(result);
+        } catch (error) {
+          errors.push({
+            recipient: disbursement.recipient,
+            error: error.message
+          });
+        }
+      }
+
+      loggers.infoLogger.info(`Batch disbursement processed: ${results.length} successful, ${errors.length} failed`);
+
+      return {
+        success: true,
+        totalCount: disbursements.length,
+        successCount: results.length,
+        failureCount: errors.length,
+        successful: results,
+        failed: errors,
+        totalAmount: results.reduce((sum, r) => sum + r.amount, 0)
+      };
+    } catch (error) {
+      loggers.errorLogger.error(`Batch disbursement failed: ${error.message}`);
+      throw new CustomError(
+        error.message || 'Batch disbursement failed',
+        HttpStatus.BAD_REQUEST
+      );
+    }
+  }
+
+  /**
+   * Create instant card transfer (to debit card)
+   */
+  async createInstantCardTransfer(amount, recipient, currency, metadata) {
+    try {
+      // Create payout to debit card
+      const payout = await this.stripe.payouts.create({
+        amount: Math.round(amount * 100),
+        currency: currency || 'usd',
+        method: 'instant',
+        destination: recipient.cardId, // Debit card token
+        description: `Instant transfer to ${recipient.last4}`,
+        metadata: {
+          ...metadata,
+          recipientName: recipient.name,
+          recipientEmail: recipient.email,
+          method: 'instant_card'
+        }
+      });
+
+      return payout;
+    } catch (error) {
+      loggers.errorLogger.error(`Instant card transfer failed: ${error.message}`);
+      throw error;
+    }
+  }
+
+  /**
+   * Create instant bank transfer
+   */
+  async createInstantBankTransfer(amount, recipient, currency, metadata) {
+    try {
+      // Create transfer to connected account or external bank
+      const transfer = await this.stripe.transfers.create({
+        amount: Math.round(amount * 100),
+        currency: currency || 'usd',
+        destination: recipient.accountId, // Stripe Connect account or bank account
+        transfer_group: metadata?.transferGroup,
+        description: `Transfer to ${recipient.name}`,
+        metadata: {
+          ...metadata,
+          recipientName: recipient.name,
+          recipientEmail: recipient.email,
+          method: 'bank_transfer'
+        }
+      });
+
+      // Create payout from connected account to bank
+      if (recipient.bankAccountId) {
+        await this.stripe.payouts.create({
+          amount: Math.round(amount * 100),
+          currency: currency || 'usd',
+          method: 'standard',
+          destination: recipient.bankAccountId,
+          metadata
+        }, {
+          stripeAccount: recipient.accountId
+        });
+      }
+
+      return transfer;
+    } catch (error) {
+      loggers.errorLogger.error(`Bank transfer failed: ${error.message}`);
+      throw error;
+    }
+  }
+
+  /**
+   * Create wallet transfer (Stripe Treasury)
+   */
+  async createWalletTransfer(amount, recipient, currency, metadata) {
+    try {
+      // Create outbound transfer from Treasury
+      const transfer = await this.stripe.treasury.outboundTransfers.create({
+        amount: Math.round(amount * 100),
+        currency: currency || 'usd',
+        financial_account: process.env.STRIPE_TREASURY_ACCOUNT,
+        destination_payment_method: recipient.paymentMethodId,
+        description: `Wallet transfer to ${recipient.name}`,
+        metadata: {
+          ...metadata,
+          recipientId: recipient.id,
+          method: 'wallet_transfer'
+        }
+      });
+
+      return transfer;
+    } catch (error) {
+      loggers.errorLogger.error(`Wallet transfer failed: ${error.message}`);
+      throw error;
+    }
+  }
+
+  /**
+   * Create emergency disbursement (4-hour SLA)
+   */
+  async createEmergencyDisbursement(emergencyData) {
+    try {
+      const { amount, recipient, reason, approvedBy, metadata } = emergencyData;
+
+      // Log emergency disbursement request
+      loggers.infoLogger.info(`EMERGENCY DISBURSEMENT: ${amount} to ${recipient.name} - Reason: ${reason}`);
+
+      // Use fastest available method
+      let result;
+
+      // Try instant card first
+      if (recipient.cardId) {
+        try {
+          result = await this.createInstantCardTransfer(amount, recipient, 'usd', {
+            ...metadata,
+            type: 'emergency',
+            reason,
+            approvedBy,
+            sla: '4_hours'
+          });
+        } catch (cardError) {
+          loggers.errorLogger.error(`Card transfer failed, trying bank: ${cardError.message}`);
+        }
+      }
+
+      // Fallback to bank transfer
+      if (!result && recipient.bankAccountId) {
+        result = await this.createInstantBankTransfer(amount, recipient, 'usd', {
+          ...metadata,
+          type: 'emergency',
+          reason,
+          approvedBy,
+          sla: '4_hours'
+        });
+      }
+
+      if (!result) {
+        throw new Error('No valid disbursement method available for recipient');
+      }
+
+      // Set up monitoring for 4-hour SLA
+      this.monitorEmergencyDisbursement(result.id, recipient);
+
+      return {
+        success: true,
+        disbursementId: result.id,
+        amount,
+        method: result.object,
+        status: result.status,
+        slaDeadline: new Date(Date.now() + 4 * 60 * 60 * 1000), // 4 hours from now
+        trackingUrl: `${process.env.APP_URL}/disbursements/emergency/${result.id}`
+      };
+    } catch (error) {
+      loggers.errorLogger.error(`EMERGENCY DISBURSEMENT FAILED: ${error.message}`);
+
+      // Alert operations team immediately
+      this.alertOperationsTeam({
+        type: 'emergency_disbursement_failure',
+        error: error.message,
+        recipient: emergencyData.recipient,
+        amount: emergencyData.amount
+      });
+
+      throw new CustomError(
+        'Emergency disbursement failed - operations team alerted',
+        HttpStatus.INTERNAL_SERVER_ERROR
+      );
+    }
+  }
+
+  /**
+   * Monitor emergency disbursement for SLA compliance
+   */
+  async monitorEmergencyDisbursement(disbursementId, recipient) {
+    try {
+      // Use the SLA monitoring service for proper tracking
+      const slaMonitoring = require('./sla-monitoring').default;
+
+      await slaMonitoring.trackSLA('emergency_disbursement', disbursementId, {
+        recipient,
+        recipientType: recipient.type,
+        amount: recipient.amount,
+        currency: recipient.currency,
+        reason: recipient.reason || 'Emergency disbursement'
+      });
+
+      loggers.infoLogger.info(`SLA tracking initiated for emergency disbursement: ${disbursementId}`);
+    } catch (error) {
+      loggers.errorLogger.error(`Failed to initiate SLA monitoring: ${error.message}`);
+
+      // Fallback to basic monitoring if SLA service fails
+      this.fallbackMonitoring(disbursementId, recipient);
+    }
+  }
+
+  /**
+   * Fallback monitoring if SLA service fails
+   */
+  fallbackMonitoring(disbursementId, recipient) {
+    // Set up basic monitoring as fallback
+    const checkIntervals = [30, 60, 120, 180, 240]; // minutes
+
+    checkIntervals.forEach(minutes => {
+      setTimeout(async () => {
+        try {
+          const status = await this.checkDisbursementStatus(disbursementId);
+
+          if (status !== 'completed' && status !== 'paid') {
+            loggers.errorLogger.error(`EMERGENCY DISBURSEMENT SLA WARNING: ${disbursementId} not completed after ${minutes} minutes`);
+
+            if (minutes >= 180) { // 3 hours
+              this.alertOperationsTeam({
+                type: 'emergency_sla_warning',
+                disbursementId,
+                recipient,
+                minutesElapsed: minutes
+              });
+            }
+          }
+        } catch (error) {
+          loggers.errorLogger.error(`Failed to check emergency disbursement status: ${error.message}`);
+        }
+      }, minutes * 60 * 1000);
+    });
+  }
+
+  /**
+   * Check disbursement status
+   */
+  async checkDisbursementStatus(disbursementId) {
+    try {
+      // Try different object types
+      let status;
+
+      try {
+        const payout = await this.stripe.payouts.retrieve(disbursementId);
+        status = payout.status;
+      } catch {
+        try {
+          const transfer = await this.stripe.transfers.retrieve(disbursementId);
+          status = transfer.status;
+        } catch {
+          const outboundTransfer = await this.stripe.treasury.outboundTransfers.retrieve(disbursementId);
+          status = outboundTransfer.status;
+        }
+      }
+
+      return status;
+    } catch (error) {
+      loggers.errorLogger.error(`Failed to retrieve disbursement status: ${error.message}`);
+      throw error;
+    }
+  }
+
+  /**
+   * HELPER FUNCTIONS
+   */
+
+  /**
+   * Generate crypto deposit address
+   */
+  async generateCryptoDepositAddress(cryptocurrency) {
+    // In production, this would integrate with a crypto custody solution
+    // For now, generate a placeholder address
+    const crypto = this.supportedCryptos[cryptocurrency.toUpperCase()];
+
+    if (crypto.network === 'ethereum') {
+      return `0x${crypto.symbol}${Math.random().toString(16).substr(2, 40)}`;
+    } else if (crypto.network === 'bitcoin') {
+      return `bc1q${Math.random().toString(36).substr(2, 39)}`;
+    }
+
+    return `${crypto.symbol}_${Math.random().toString(36).substr(2, 20)}`;
+  }
+
+  /**
+   * Get current crypto price
+   */
+  async getCryptoPrice(cryptocurrency, amount) {
+    // In production, integrate with price oracle
+    const mockPrices = {
+      BTC: 65000,
+      ETH: 3500,
+      USDC: 1,
+      USDT: 1,
+      DAI: 1
+    };
+
+    const price = mockPrices[cryptocurrency.toUpperCase()] || 1;
+    return amount * price;
+  }
+
+  /**
+   * Generate QR code for crypto payment
+   */
+  generateQRCode(address, amount, cryptocurrency) {
+    // Generate payment URI
+    let uri;
+
+    if (cryptocurrency.toUpperCase() === 'BTC') {
+      uri = `bitcoin:${address}?amount=${amount}`;
+    } else if (['ETH', 'USDC', 'USDT', 'DAI'].includes(cryptocurrency.toUpperCase())) {
+      uri = `ethereum:${address}?value=${amount}`;
+    } else {
+      uri = address;
+    }
+
+    // In production, use QR code library to generate actual QR image
+    return {
+      uri,
+      dataUrl: `data:image/svg+xml;base64,${Buffer.from(`<svg>QR Code for ${uri}</svg>`).toString('base64')}`
+    };
+  }
+
+  /**
+   * Calculate crypto arrival time
+   */
+  calculateCryptoArrival(network) {
+    const confirmations = {
+      ethereum: { blocks: 12, minutesPerBlock: 0.25 }, // ~3 minutes
+      bitcoin: { blocks: 3, minutesPerBlock: 10 }, // ~30 minutes
+    };
+
+    const networkConfig = confirmations[network] || confirmations.ethereum;
+    const minutes = networkConfig.blocks * networkConfig.minutesPerBlock;
+
+    return new Date(Date.now() + minutes * 60 * 1000);
+  }
+
+  /**
+   * Alert operations team
+   */
+  alertOperationsTeam(alert) {
+    // In production, integrate with PagerDuty, Slack, or other alerting system
+    loggers.errorLogger.error(`OPERATIONS ALERT: ${JSON.stringify(alert)}`);
+
+    // Send notifications via multiple channels
+    // - Email to ops team
+    // - SMS to on-call
+    // - Slack alert
+    // - PagerDuty incident
+  }
+}
+
+export default new StripeCryptoDisbursmentsService();

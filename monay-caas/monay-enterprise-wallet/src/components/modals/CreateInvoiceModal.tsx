@@ -14,6 +14,7 @@ import toast from 'react-hot-toast'
 interface CreateInvoiceModalProps {
   isOpen: boolean
   onClose: () => void
+  onInvoiceCreated?: (invoice: any) => void
 }
 
 interface LineItem {
@@ -24,7 +25,7 @@ interface LineItem {
   total: number
 }
 
-export default function CreateInvoiceModal({ isOpen, onClose }: CreateInvoiceModalProps) {
+export default function CreateInvoiceModal({ isOpen, onClose, onInvoiceCreated }: CreateInvoiceModalProps) {
   const [step, setStep] = useState(1)
   const [isProcessing, setIsProcessing] = useState(false)
   const [lineItems, setLineItems] = useState<LineItem[]>([
@@ -39,7 +40,7 @@ export default function CreateInvoiceModal({ isOpen, onClose }: CreateInvoiceMod
     recipientAddress: '',
     
     // Step 2 - Invoice Details
-    invoiceNumber: `INV-${Date.now()}`,
+    invoiceNumber: `INV-${Date.now()}-${Math.random().toString(36).substr(2, 5)}`,
     dueDate: '',
     currency: 'USDM',
     notes: '',
@@ -92,15 +93,104 @@ export default function CreateInvoiceModal({ isOpen, onClose }: CreateInvoiceMod
   }
 
   const handleSubmit = async () => {
+    console.log('Invoice submission started')
+    console.log('Form data:', formData)
+    console.log('Line items:', lineItems)
+
     setIsProcessing(true)
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 3000))
-    toast.success('Invoice created and sent successfully!')
-    setIsProcessing(false)
-    onClose()
-    // Reset form
-    setStep(1)
-    setLineItems([{ id: '1', description: '', quantity: 1, price: 0, total: 0 }])
+
+    try {
+      // Validate required fields
+      if (!formData.recipientName || !formData.recipientEmail) {
+        console.log('Validation failed: missing recipient info')
+        toast.error('Please fill in recipient name and email')
+        setIsProcessing(false)
+        setStep(1)
+        return
+      }
+
+      // Validate line items
+      const validLineItems = lineItems.filter(item => item.description && item.price > 0)
+      if (validLineItems.length === 0) {
+        console.log('Validation failed: no valid line items')
+        toast.error('Please add at least one line item with description and price')
+        setIsProcessing(false)
+        setStep(2)
+        return
+      }
+
+      console.log('Validation passed, creating invoice...')
+
+      // Create the invoice object
+      const newInvoice = {
+        id: formData.invoiceNumber,
+        type: 'outbound',
+        client: formData.recipientName || 'Unknown Client',
+        company: formData.recipientCompany || '',
+        email: formData.recipientEmail || '',
+        address: formData.recipientAddress || '',
+        amount: `$${calculateTotal().toFixed(2)}`,
+        amountNum: calculateTotal(),
+        status: 'pending',
+        dueDate: formData.dueDate || new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+        paymentMethod: formData.paymentMethods[0] || 'Multiple',
+        paymentMethods: formData.paymentMethods,
+        description: validLineItems.map(item => item.description).join(', '),
+        lineItems: validLineItems,
+        currency: formData.currency || 'USDM',
+        notes: formData.notes || '',
+        termsAndConditions: formData.termsAndConditions || 'Payment is due within the specified timeframe.',
+        subtotal: calculateSubtotal(),
+        tax: calculateTax(),
+        total: calculateTotal(),
+        createdAt: new Date().toISOString(),
+        icon: '📄',
+        isNew: true
+      }
+
+      // Save to localStorage
+      console.log('Saving invoice to localStorage...')
+      const existingInvoices = JSON.parse(localStorage.getItem('invoices') || '[]')
+      existingInvoices.push(newInvoice)
+      localStorage.setItem('invoices', JSON.stringify(existingInvoices))
+      console.log('Invoice saved to localStorage', newInvoice)
+
+      // Simulate API call delay
+      await new Promise(resolve => setTimeout(resolve, 1500))
+
+      // Call the callback if provided
+      if (onInvoiceCreated) {
+        console.log('Calling onInvoiceCreated callback')
+        onInvoiceCreated(newInvoice)
+      }
+
+      console.log('Invoice created successfully!')
+      toast.success(`Invoice ${formData.invoiceNumber} created successfully!`)
+
+      // Reset form before closing
+      setStep(1)
+      setLineItems([{ id: '1', description: '', quantity: 1, price: 0, total: 0 }])
+      setFormData({
+        recipientType: 'email',
+        recipientEmail: '',
+        recipientName: '',
+        recipientCompany: '',
+        recipientAddress: '',
+        invoiceNumber: `INV-${Date.now() + Math.floor(Math.random() * 10000)}-${Math.random().toString(36).substr(2, 5)}`,
+        dueDate: '',
+        currency: 'USDM',
+        notes: '',
+        termsAndConditions: 'Payment is due within the specified timeframe. Late payments may incur additional fees.',
+        paymentMethods: ['card', 'ach', 'wallet']
+      })
+
+      setIsProcessing(false)
+      onClose()
+    } catch (error) {
+      console.error('Error creating invoice:', error)
+      toast.error(`Failed to create invoice: ${error instanceof Error ? error.message : 'Unknown error'}`)
+      setIsProcessing(false)
+    }
   }
 
   return (

@@ -6,6 +6,18 @@ const { UserCard } = models;
 
 export default {
   /**
+   * Create a new card
+   * @param {Object} cardData
+   */
+  async create(cardData) {
+    try {
+      return await UserCard.create(cardData);
+    } catch (error) {
+      throw Error(error);
+    }
+  },
+
+  /**
    * Find card detail
    * @param {Object} whereObj
    */

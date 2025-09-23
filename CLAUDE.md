@@ -65,30 +65,41 @@ Monay is a comprehensive fintech platform implementing a dual-rail blockchain ar
 | Application | Port | Description |
 |------------|------|-------------|
 | **monay-website** | 3000 | Public Marketing Website |
-| **monay-backend-common** | 3001 | Centralized Backend API |
+| **monay-backend-common** | 3001 | Centralized Backend API (SINGLE INSTANCE) |
 | **monay-admin** | 3002 | Admin Dashboard (formerly monay-frontend) |
-| **monay-web** | 3003 | User Web Application |
+| **monay-consumer-web** | 3003 | Consumer Super App Web Application |
 | **monay-mobile-api** | 3004 | Mobile-specific API (Reserved) |
 | **monay-webhook** | 3005 | Webhook Service (Reserved) |
 | **monay-enterprise-wallet** | 3007 | Enterprise Wallet Management |
 
-### Database & Cache
+### Database & Cache (SHARED - DO NOT DUPLICATE)
 | Service | Port | Description |
 |---------|------|-------------|
-| **PostgreSQL** | 5432 | Primary Database |
-| **Redis** | 6379 | Cache & Sessions |
+| **PostgreSQL** | 5432 | Primary Database (SHARED by all applications) |
+| **Redis** | 6379 | Cache & Sessions (SHARED by all applications) |
 
-## 🚀 Active Applications & Services (UPDATED: 2025-08-26)
+**CRITICAL**:
+- Only ONE instance of monay-backend-common should run on port 3001
+- ALL applications share the same PostgreSQL database on port 5432
+- Consumer wallet and Enterprise wallet use the SAME database
+- Never create duplicate databases or run multiple backend instances
+
+## 🚀 Active Applications & Services (UPDATED: 2025-09-22)
 
 | Application | Location | Port | Status | Description |
 |------------|----------|------|--------|-------------|
 | **monay-website** | `/monay-website/` | 3000 | ✅ Active | Public Marketing Website |
-| **monay-backend-common** | `/monay-backend-common/` | 3001 | ✅ Active | Centralized Backend API |
+| **monay-backend-common** | `/monay-backend-common/` | 3001 | ✅ Active | Centralized Backend API (SHARED) |
 | **monay-admin** | `/monay-admin/` | 3002 | ✅ Active | Admin Dashboard (Next.js 14) |
-| **monay-cross-platform/web** | `/monay-cross-platform/web/` | 3003 | ✅ Active | End-User Web Application |
-| **monay-enterprise-wallet** | `/monay-caas/monay-enterprise-wallet/` | 3007 | ✅ Active | Enterprise Wallet Management (Next.js 14) |
-| **monay-ios** | `/monay-cross-platform/ios/` | - | 🔄 Pending | iOS Mobile App |
-| **monay-android** | `/monay-cross-platform/android/` | - | 🔄 Pending | Android Mobile App |
+| **monay-consumer-web** | `/monay-cross-platform/web/` | 3003 | ✅ Active | Consumer Super App Web |
+| **monay-consumer-mobile** | `/monay-cross-platform/mobile/` | - | ✅ Active | Consumer Super App Mobile (iOS/Android) |
+| **monay-enterprise-wallet** | `/monay-caas/monay-enterprise-wallet/` | 3007 | ✅ Active | Enterprise Wallet Management |
+
+**Database Architecture:**
+- Single PostgreSQL instance (port 5432) shared by ALL applications
+- Single Redis instance (port 6379) shared for caching/sessions
+- Backend API (port 3001) is the ONLY service with database access
+- All frontend apps communicate through the backend API
 
 ### Migration Completed (2025-08-25)
 ✅ **Backend Migration**: `/monay-wallet/backend/` → `/monay-backend-common/` (Port: 5000 → 3001)
@@ -120,20 +131,62 @@ Monay is a comprehensive fintech platform implementing a dual-rail blockchain ar
 - Business rules configuration
 - Analytics and reporting
 
-#### 4. Monay-Cross-Platform/Web (Port 3003)
-- User web application for wallet management
-- Transaction history and card management
-- Payment processing and account settings
-- Mobile responsive design
+#### 4. Monay Consumer Wallet - Super App (Port 3003)
+**The First U.S.-Centric Super App** - Consumer wallet combining financial services with lifestyle features.
 
-### 5. Monay-RNiOS
-- Native iOS mobile application
+##### Location & Architecture
+- **Web Application**: `/monay-cross-platform/web/` (Port 3003)
+- **Mobile iOS**: `/monay-cross-platform/mobile/` (React Native + Expo)
+- **Mobile Android**: `/monay-cross-platform/mobile/` (React Native + Expo)
+- **Shared Components**: `/monay-cross-platform/shared/`
+- **Documentation**: `/monay-cross-platform/docs/`
+  - PRD: `Monay_Consumer_Wallet_PRD.md`
+  - UI Mockups: `superApp.png`
+
+##### Core Features
+**Financial Services:**
+- Multi-currency wallet (Fiat USD + Stablecoins USDC/USDT/PYUSD + Crypto BTC/ETH/SOL)
+- Virtual/physical card with instant issuance (zero-balance start)
+- P2P transfers with Request-to-Pay tagging (invoice-first model)
+- Multi-rail payments: ACH, FedNow, RTP, Cards, Stablecoins, Crypto
+- Enterprise invoice payments via Monay-WaaS integration
+
+**Super App Services:**
+- **Travel & Mobility**: Flights, buses, ride-hailing, tolls, EV charging
+- **Hospitality**: Hotels, Airbnb-style stays, restaurants
+- **Retail/E-commerce**: In-app shopping, QR merchant payments
+- **Healthcare**: Bill pay, pharmacy, HSA/FSA wallet
+- **Education**: Tuition, loan repayments, scholarships
+- **Entertainment**: Event ticketing, subscriptions, gaming
+- **Government Benefits**: SNAP, unemployment, tax refunds, Social Security
+
+##### Technical Stack
+- **Web**: Next.js 14 with TypeScript, TailwindCSS
+- **Mobile**: React Native with Expo
+- **Backend**: Shared monay-backend-common (Port 3001)
+- **Database**: Shared PostgreSQL (Port 5432) - NO separate database
+- **Authentication**: JWT from monay-backend-common
+
+##### Compliance & Security
+- Monay-ID integration for KYC/AML
+- Biometric authentication (Face ID, Touch ID, fingerprint)
+- Real-time fraud detection
+- FinCEN, OCC, PCI DSS, SOC 2 compliance
+
+##### Important Notes
+- **Shared Database**: Uses existing `monay` PostgreSQL database
+- **Single Backend**: All data access through port 3001 only
+- **Port Conflicts**: Always use port 3003 for consumer web
+- **No Database Creation**: Never create duplicate tables or migrations
+
+### 5. Monay-RNiOS (Legacy - Being Replaced)
+- Being replaced by React Native app in `/monay-cross-platform/mobile/`
 - Biometric authentication and NFC support
 - Apple Pay and Apple Wallet integration
 - Push notifications
 
-### 6. Monay-RNAndroid
-- Native Android mobile application
+### 6. Monay-RNAndroid (Legacy - Being Replaced)
+- Being replaced by React Native app in `/monay-cross-platform/mobile/`
 - Fingerprint authentication and NFC support
 - Google Pay and Google Wallet integration
 - Push notifications

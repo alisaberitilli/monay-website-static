@@ -1,0 +1,524 @@
+const { Pool } = require('pg');
+const bcrypt = require('bcryptjs');
+const { v4: uuidv4 } = require('uuid');
+
+// Create test database pool
+const createTestPool = () => {
+  return new Pool({
+    connectionString: process.env.DATABASE_URL || 'postgresql://test:test@localhost:5432/monay_test',
+    max: 10,
+    idleTimeoutMillis: 30000,
+    connectionTimeoutMillis: 2000,
+  });
+};
+
+let testPool = null;
+
+const getTestDb = () => {
+  if (!testPool) {
+    testPool = createTestPool();
+  }
+  return testPool;
+};
+
+// Database cleanup utilities
+const cleanDatabase = async () => {
+  const db = getTestDb();
+  const client = await db.connect();
+
+  try {
+    await client.query('BEGIN');
+
+    // Delete in correct order to respect foreign key constraints
+    const tables = [
+      'audit_logs',
+      'webhook_logs',
+      'notifications',
+      'transaction_history',
+      'invoice_payments',
+      'invoice_items',
+      'invoices',
+      'wallet_transfers',
+      'wallet_transactions',
+      'invoice_wallets',
+      'business_rule_executions',
+      'business_rules',
+      'compliance_checks',
+      'kyc_documents',
+      'user_sessions',
+      'user_tokens',
+      'users'
+    ];
+
+    for (const table of tables) {
+      await client.query(`DELETE FROM ${table}`);
+    }
+
+    await client.query('COMMIT');
+  } catch (error) {
+    await client.query('ROLLBACK');
+    throw error;
+  } finally {
+    client.release();
+  }
+};
+
+// Seed data creators
+const seedUsers = async (count = 5) => {
+  const db = getTestDb();
+  const users = [];
+
+  for (let i = 0; i < count; i++) {
+    const hashedPassword = await bcrypt.hash('Test123!@#', 10);
+    const user = {
+      id: uuidv4(),
+      email: `user${i}@test.com`,
+      password: hashedPassword,
+      first_name: `Test${i}`,
+      last_name: `User${i}`,
+      company_name: `Company${i}`,
+      role: i === 0 ? 'admin' : 'user',
+      kyc_status: 'VERIFIED',
+      created_at: new Date(),
+      updated_at: new Date()
+    };
+
+    const query = `
+      INSERT INTO users (
+        id, email, password, first_name, last_name,
+        company_name, role, kyc_status, created_at, updated_at
+      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+      RETURNING *
+    `;
+
+    const values = [
+      user.id, user.email, user.password, user.first_name, user.last_name,
+      user.company_name, user.role, user.kyc_status, user.created_at, user.updated_at
+    ];
+
+    const result = await db.query(query, values);
+    users.push(result.rows[0]);
+  }
+
+  return users;
+};
+
+const seedWallets = async (userId, count = 3) => {
+  const db = getTestDb();
+  const wallets = [];
+
+  for (let i = 0; i < count; i++) {
+    const wallet = {
+      id: uuidv4(),
+      user_id: userId,
+      wallet_name: `Test Wallet ${i}`,
+      description: `Test wallet description ${i}`,
+      wallet_type: i === 0 ? 'INVOICE_FIRST' : 'STANDARD',
+      address: `0x${Math.random().toString(16).substr(2, 40)}`,
+      currency: 'USD',
+      balance: Math.floor(Math.random() * 10000),
+      pending_balance: Math.floor(Math.random() * 1000),
+      reserved_balance: Math.floor(Math.random() * 500),
+      compliance_level: 'STANDARD',
+      status: 'ACTIVE',
+      auto_pay_enabled: i % 2 === 0,
+      payment_threshold: 1000,
+      created_at: new Date(),
+      updated_at: new Date()
+    };
+
+    const query = `
+      INSERT INTO invoice_wallets (
+        id, user_id, wallet_name, description, wallet_type,
+        address, currency, balance, pending_balance, reserved_balance,
+        compliance_level, status, auto_pay_enabled, payment_threshold,
+        created_at, updated_at
+      ) VALUES (
+        $1, $2, $3, $4, $5, $6, $7, $8, $9, $10,
+        $11, $12, $13, $14, $15, $16
+      )
+      RETURNING *
+    `;
+
+    const values = Object.values(wallet);
+    const result = await db.query(query, values);
+    wallets.push(result.rows[0]);
+  }
+
+  return wallets;
+};
+
+const seedInvoices = async (walletId, count = 5) => {
+  const db = getTestDb();
+  const invoices = [];
+
+  for (let i = 0; i < count; i++) {
+    const dueDate = new Date();
+    dueDate.setDate(dueDate.getDate() + 30);
+
+    const invoice = {
+      id: uuidv4(),
+      wallet_id: walletId,
+      invoice_number: `INV-TEST-${Date.now()}-${i}`,
+      amount: Math.floor(Math.random() * 5000) + 100,
+      currency: 'USD',
+      due_date: dueDate,
+      vendor_name: `Test Vendor ${i}`,
+      vendor_address: `123 Test St, Suite ${i}`,
+      description: `Test invoice ${i}`,
+      payment_terms: 'NET30',
+      status: ['PENDING', 'PAID', 'OVERDUE', 'CANCELLED'][i % 4],
+      paid_amount: 0,
+      payment_date: null,
+      created_at: new Date(),
+      updated_at: new Date()
+    };
+
+    if (invoice.status === 'PAID') {
+      invoice.paid_amount = invoice.amount;
+      invoice.payment_date = new Date();
+    }
+
+    const query = `
+      INSERT INTO invoices (
+        id, wallet_id, invoice_number, amount, currency,
+        due_date, vendor_name, vendor_address, description,
+        payment_terms, status, paid_amount, payment_date,
+        created_at, updated_at
+      ) VALUES (
+        $1, $2, $3, $4, $5, $6, $7, $8, $9, $10,
+        $11, $12, $13, $14, $15
+      )
+      RETURNING *
+    `;
+
+    const values = Object.values(invoice);
+    const result = await db.query(query, values);
+    invoices.push(result.rows[0]);
+
+    // Add invoice items
+    await seedInvoiceItems(invoice.id, 3);
+  }
+
+  return invoices;
+};
+
+const seedInvoiceItems = async (invoiceId, count = 3) => {
+  const db = getTestDb();
+  const items = [];
+
+  for (let i = 0; i < count; i++) {
+    const quantity = Math.floor(Math.random() * 10) + 1;
+    const unitPrice = Math.floor(Math.random() * 1000) + 10;
+
+    const item = {
+      id: uuidv4(),
+      invoice_id: invoiceId,
+      description: `Line item ${i + 1}`,
+      quantity: quantity,
+      unit_price: unitPrice,
+      total: quantity * unitPrice,
+      tax_rate: 0.1,
+      tax_amount: quantity * unitPrice * 0.1,
+      created_at: new Date()
+    };
+
+    const query = `
+      INSERT INTO invoice_items (
+        id, invoice_id, description, quantity, unit_price,
+        total, tax_rate, tax_amount, created_at
+      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+      RETURNING *
+    `;
+
+    const values = Object.values(item);
+    const result = await db.query(query, values);
+    items.push(result.rows[0]);
+  }
+
+  return items;
+};
+
+const seedTransactions = async (walletId, count = 10) => {
+  const db = getTestDb();
+  const transactions = [];
+
+  for (let i = 0; i < count; i++) {
+    const types = ['CREDIT', 'DEBIT', 'TRANSFER_IN', 'TRANSFER_OUT', 'INVOICE_PAYMENT'];
+    const statuses = ['PENDING', 'COMPLETED', 'FAILED', 'CANCELLED'];
+
+    const transaction = {
+      id: uuidv4(),
+      wallet_id: walletId,
+      transaction_type: types[i % types.length],
+      amount: Math.floor(Math.random() * 1000) + 10,
+      currency: 'USD',
+      status: statuses[i % statuses.length],
+      reference: `TXN-${Date.now()}-${i}`,
+      description: `Test transaction ${i}`,
+      metadata: JSON.stringify({ test: true, index: i }),
+      created_at: new Date(Date.now() - (i * 24 * 60 * 60 * 1000)), // Spread over days
+      updated_at: new Date()
+    };
+
+    const query = `
+      INSERT INTO wallet_transactions (
+        id, wallet_id, transaction_type, amount, currency,
+        status, reference, description, metadata,
+        created_at, updated_at
+      ) VALUES (
+        $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11
+      )
+      RETURNING *
+    `;
+
+    const values = Object.values(transaction);
+    const result = await db.query(query, values);
+    transactions.push(result.rows[0]);
+  }
+
+  return transactions;
+};
+
+const seedBusinessRules = async (count = 5) => {
+  const db = getTestDb();
+  const rules = [];
+
+  const ruleTypes = ['TRANSACTION', 'WALLET_CREATION', 'COMPLIANCE', 'LIMIT', 'FRAUD'];
+  const conditions = [
+    { amount: { $gt: 10000 } },
+    { currency: { $in: ['USD', 'EUR'] } },
+    { user_kyc_status: { $eq: 'VERIFIED' } },
+    { transaction_count: { $lte: 100 } },
+    { risk_score: { $lt: 0.7 } }
+  ];
+
+  for (let i = 0; i < count; i++) {
+    const rule = {
+      id: uuidv4(),
+      name: `Test Rule ${i}`,
+      description: `Test business rule ${i}`,
+      rule_type: ruleTypes[i % ruleTypes.length],
+      conditions: JSON.stringify(conditions[i % conditions.length]),
+      actions: JSON.stringify({
+        approve: i % 2 === 0,
+        flag_for_review: i % 3 === 0,
+        require_additional_kyc: i % 4 === 0
+      }),
+      priority: i + 1,
+      is_active: true,
+      created_at: new Date(),
+      updated_at: new Date()
+    };
+
+    const query = `
+      INSERT INTO business_rules (
+        id, name, description, rule_type, conditions,
+        actions, priority, is_active, created_at, updated_at
+      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+      RETURNING *
+    `;
+
+    const values = Object.values(rule);
+    const result = await db.query(query, values);
+    rules.push(result.rows[0]);
+  }
+
+  return rules;
+};
+
+// Test data factories
+const createTestUser = async (overrides = {}) => {
+  const hashedPassword = await bcrypt.hash(overrides.password || 'Test123!@#', 10);
+
+  const user = {
+    id: uuidv4(),
+    email: `test-${Date.now()}@test.com`,
+    password: hashedPassword,
+    first_name: 'Test',
+    last_name: 'User',
+    company_name: 'Test Company',
+    role: 'user',
+    kyc_status: 'VERIFIED',
+    ...overrides
+  };
+
+  const db = getTestDb();
+  const query = `
+    INSERT INTO users (
+      id, email, password, first_name, last_name,
+      company_name, role, kyc_status
+    ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+    RETURNING *
+  `;
+
+  const values = [
+    user.id, user.email, user.password, user.first_name,
+    user.last_name, user.company_name, user.role, user.kyc_status
+  ];
+
+  const result = await db.query(query, values);
+  return result.rows[0];
+};
+
+const createTestWallet = async (userId, overrides = {}) => {
+  const wallet = {
+    id: uuidv4(),
+    user_id: userId,
+    wallet_name: `Test Wallet ${Date.now()}`,
+    description: 'Test wallet',
+    wallet_type: 'INVOICE_FIRST',
+    address: `0x${Math.random().toString(16).substr(2, 40)}`,
+    currency: 'USD',
+    balance: 0,
+    compliance_level: 'STANDARD',
+    status: 'ACTIVE',
+    ...overrides
+  };
+
+  const db = getTestDb();
+  const query = `
+    INSERT INTO invoice_wallets (
+      id, user_id, wallet_name, description, wallet_type,
+      address, currency, balance, compliance_level, status
+    ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+    RETURNING *
+  `;
+
+  const values = [
+    wallet.id, wallet.user_id, wallet.wallet_name, wallet.description,
+    wallet.wallet_type, wallet.address, wallet.currency, wallet.balance,
+    wallet.compliance_level, wallet.status
+  ];
+
+  const result = await db.query(query, values);
+  return result.rows[0];
+};
+
+// Transaction helpers
+const beginTransaction = async () => {
+  const db = getTestDb();
+  const client = await db.connect();
+  await client.query('BEGIN');
+  return client;
+};
+
+const commitTransaction = async (client) => {
+  await client.query('COMMIT');
+  client.release();
+};
+
+const rollbackTransaction = async (client) => {
+  await client.query('ROLLBACK');
+  client.release();
+};
+
+// Query helpers
+const findById = async (table, id) => {
+  const db = getTestDb();
+  const query = `SELECT * FROM ${table} WHERE id = $1`;
+  const result = await db.query(query, [id]);
+  return result.rows[0];
+};
+
+const findByField = async (table, field, value) => {
+  const db = getTestDb();
+  const query = `SELECT * FROM ${table} WHERE ${field} = $1`;
+  const result = await db.query(query, [value]);
+  return result.rows;
+};
+
+const updateById = async (table, id, updates) => {
+  const db = getTestDb();
+  const fields = Object.keys(updates);
+  const values = Object.values(updates);
+
+  const setClause = fields
+    .map((field, index) => `${field} = $${index + 2}`)
+    .join(', ');
+
+  const query = `
+    UPDATE ${table}
+    SET ${setClause}, updated_at = CURRENT_TIMESTAMP
+    WHERE id = $1
+    RETURNING *
+  `;
+
+  const result = await db.query(query, [id, ...values]);
+  return result.rows[0];
+};
+
+const deleteById = async (table, id) => {
+  const db = getTestDb();
+  const query = `DELETE FROM ${table} WHERE id = $1 RETURNING *`;
+  const result = await db.query(query, [id]);
+  return result.rows[0];
+};
+
+// Assertion helpers
+const assertDatabaseHas = async (table, conditions) => {
+  const db = getTestDb();
+  const fields = Object.keys(conditions);
+  const values = Object.values(conditions);
+
+  const whereClause = fields
+    .map((field, index) => `${field} = $${index + 1}`)
+    .join(' AND ');
+
+  const query = `SELECT COUNT(*) FROM ${table} WHERE ${whereClause}`;
+  const result = await db.query(query, values);
+
+  return parseInt(result.rows[0].count) > 0;
+};
+
+const assertDatabaseMissing = async (table, conditions) => {
+  const exists = await assertDatabaseHas(table, conditions);
+  return !exists;
+};
+
+// Migration helpers
+const runMigrations = async () => {
+  const db = getTestDb();
+
+  // This would typically run your migration files
+  // For now, we'll assume migrations are handled by the ORM
+  console.log('Running test database migrations...');
+};
+
+const resetDatabase = async () => {
+  await cleanDatabase();
+  await runMigrations();
+};
+
+// Close pool on test suite completion
+const closeTestDb = async () => {
+  if (testPool) {
+    await testPool.end();
+    testPool = null;
+  }
+};
+
+module.exports = {
+  getTestDb,
+  cleanDatabase,
+  seedUsers,
+  seedWallets,
+  seedInvoices,
+  seedInvoiceItems,
+  seedTransactions,
+  seedBusinessRules,
+  createTestUser,
+  createTestWallet,
+  beginTransaction,
+  commitTransaction,
+  rollbackTransaction,
+  findById,
+  findByField,
+  updateById,
+  deleteById,
+  assertDatabaseHas,
+  assertDatabaseMissing,
+  runMigrations,
+  resetDatabase,
+  closeTestDb
+};

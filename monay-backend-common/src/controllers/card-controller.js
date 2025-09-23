@@ -94,6 +94,84 @@ export default {
     }
   },
   /**
+   * Issue a new card linked to a wallet
+   * @param {Object} req
+   * @param {Object} res
+   * @param {Function} next
+   */
+  async issueCard(req, res, next) {
+    try {
+      const {
+        cardType,
+        cardHolderName,
+        spendingLimit,
+        linkedWallet,
+        walletId
+      } = req.body;
+
+      // Validate required fields
+      if (!cardHolderName || !linkedWallet) {
+        return res.status(HttpStatus.BAD_REQUEST).json({
+          success: false,
+          message: 'Card holder name and linked wallet are required'
+        });
+      }
+
+      // Generate card details
+      const cardNumber = `****-****-****-${Math.floor(1000 + Math.random() * 9000)}`;
+      const expiryDate = new Date(Date.now() + 365 * 24 * 60 * 60 * 1000 * 3);
+
+      // Create card data
+      const cardData = {
+        cardType: cardType || 'virtual',
+        cardName: cardType === 'physical' ? 'Physical Debit Card' : 'Virtual Debit Card',
+        cardIcon: cardType === 'physical' ? 'card-physical' : 'card-virtual',
+        cardNumber: cardNumber,
+        nameOnCard: cardHolderName,
+        month: expiryDate.getMonth() + 1,
+        year: expiryDate.getFullYear(),
+        last4Digit: cardNumber.substr(cardNumber.length - 4),
+        userId: req.user.id,
+        linkedWallet: linkedWallet,
+        walletId: walletId || linkedWallet,
+        spendingLimit: parseFloat(spendingLimit) || 10000,
+        balance: 0,
+        status: 'active',
+        isDefault: false
+      };
+
+      // Save to database
+      const result = await cardRepository.create(cardData);
+
+      if (result) {
+        res.status(HttpStatus.CREATED).json({
+          success: true,
+          data: {
+            id: result.id,
+            cardNumber: cardNumber,
+            cardHolder: cardHolderName,
+            expiryDate: `${expiryDate.getMonth() + 1}/${expiryDate.getFullYear() % 100}`,
+            status: 'active',
+            type: cardType || 'virtual',
+            balance: 0,
+            spendingLimit: parseFloat(spendingLimit) || 10000,
+            linkedWallet: linkedWallet
+          },
+          message: `${cardType === 'physical' ? 'Physical' : 'Virtual'} card issued successfully and linked to wallet: ${linkedWallet}`
+        });
+      } else {
+        res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
+          success: false,
+          message: 'Failed to issue card'
+        });
+      }
+    } catch (error) {
+      console.error('Card issuance error:', error);
+      next(error);
+    }
+  },
+
+  /**
    * delete user card by id
    * @param {Object} req
    * @param {Object} res
@@ -115,6 +193,39 @@ export default {
           message: utility.getMessage(req, false, 'USER_CARD_NOT_DELETED')
         });
       }
+    } catch (error) {
+      next(error);
+    }
+  },
+
+  /**
+   * Issue a new card (virtual or physical) with Stripe integration
+   * @param {Object} req
+   * @param {Object} res
+   * @param {Function} next
+   */
+  async issueCard(req, res, next) {
+    try {
+      const { cardType, walletId, shippingAddress, spendingLimits } = req.body;
+      const userId = req.user.id;
+
+      // For now, return a mock response until Stripe issuing is fully integrated
+      const mockCard = {
+        id: `card_${Date.now()}`,
+        userId,
+        walletId,
+        type: cardType || 'virtual',
+        last4: '4242',
+        brand: 'Visa',
+        status: 'active',
+        createdAt: new Date()
+      };
+
+      res.status(HttpStatus.OK).json({
+        success: true,
+        data: mockCard,
+        message: 'Card issued successfully'
+      });
     } catch (error) {
       next(error);
     }

@@ -1,8 +1,80 @@
 import { Router } from 'express';
 import middlewares from '../middlewares';
+const BusinessRuleEngine = require('../services/business-rule-engine/BusinessRuleEngine');
+const loggers = require('../services/logger');
+const logger = loggers.logger || loggers;
 
 const router = Router();
 const { authMiddleware } = middlewares;
+
+// Initialize Business Rule Engine
+(async () => {
+  try {
+    await BusinessRuleEngine.initialize();
+    if (logger && logger.info) {
+      logger.info('Business Rule Engine initialized');
+    } else {
+      console.log('Business Rule Engine initialized');
+    }
+  } catch (error) {
+    if (logger && logger.error) {
+      logger.error('Failed to initialize BRE', { error: error.message });
+    } else {
+      console.error('Failed to initialize BRE', { error: error.message });
+    }
+  }
+})();
+
+/**
+ * @route POST /api/business-rules/evaluate
+ * @description Evaluate invoice against business rules
+ * @access Public
+ */
+router.post('/business-rules/evaluate', async (req, res) => {
+  try {
+    const { invoice } = req.body;
+
+    if (!invoice) {
+      return res.status(400).json({
+        success: false,
+        error: 'Invoice data is required'
+      });
+    }
+
+    if (logger && logger.info) {
+      logger.info('Evaluating invoice with BRE', { invoiceId: invoice.id });
+    } else {
+      console.log('Evaluating invoice with BRE', { invoiceId: invoice.id });
+    }
+
+    // Evaluate invoice using Business Rule Engine
+    const evaluation = await BusinessRuleEngine.evaluateInvoice(invoice);
+
+    // Return evaluation results
+    res.json({
+      success: true,
+      ...evaluation
+    });
+  } catch (error) {
+    if (logger && logger.error) {
+      logger.error('BRE evaluation failed', {
+        error: error.message,
+        invoice: req.body.invoice?.id
+      });
+    } else {
+      console.error('BRE evaluation failed', {
+        error: error.message,
+        invoice: req.body.invoice?.id
+      });
+    }
+
+    res.status(500).json({
+      success: false,
+      error: 'Failed to evaluate invoice',
+      message: error.message
+    });
+  }
+});
 
 // Mock business rules data (in production, this would come from database)
 const mockBusinessRules = [

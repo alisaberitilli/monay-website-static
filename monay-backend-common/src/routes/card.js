@@ -33,6 +33,14 @@ router.post(
   cardController.saveCardRequest
 );
 
+// New endpoint for issuing cards with wallet association
+router.post(
+  '/cards/issue',
+  authMiddleware,
+  resourceAccessMiddleware(['user', 'merchant', 'admin']),
+  cardController.issueCard
+);
+
 router.delete(
   '/user/card/:cardId',
   authMiddleware,

@@ -1,6 +1,7 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { toast } from 'react-hot-toast'
 
 interface WalletAPI {
   id: string
@@ -31,12 +32,51 @@ interface DebitCard {
   balance: number
   spendingLimit: number
   linkedWallet: string
+  invoiceId?: string
+  walletMode?: 'ephemeral' | 'persistent' | 'adaptive'
+  complianceLevel?: string
 }
 
 export default function ProgrammableWallet() {
   const [activeTab, setActiveTab] = useState<'overview' | 'api' | 'cards' | 'contracts' | 'automation'>('overview')
   const [showCreateCardModal, setShowCreateCardModal] = useState(false)
   const [showAPIModal, setShowAPIModal] = useState(false)
+  const [cards, setCards] = useState<DebitCard[]>([
+    {
+      id: 'card_001',
+      cardNumber: '****-****-****-4242',
+      cardHolder: 'John Doe',
+      expiryDate: '12/26',
+      status: 'active',
+      type: 'physical',
+      balance: 25000,
+      spendingLimit: 10000,
+      linkedWallet: '0x1234...abcd',
+      invoiceId: 'INV-2024-001',
+      walletMode: 'ephemeral',
+      complianceLevel: 'KYC Level 2'
+    },
+    {
+      id: 'card_002',
+      cardNumber: '****-****-****-8765',
+      cardHolder: 'Jane Smith',
+      expiryDate: '09/25',
+      status: 'active',
+      type: 'virtual',
+      balance: 50000,
+      spendingLimit: 25000,
+      linkedWallet: '0x5678...efgh',
+      invoiceId: 'INV-2024-002',
+      walletMode: 'persistent',
+      complianceLevel: 'KYC Level 3'
+    }
+  ])
+  const [cardFormData, setCardFormData] = useState({
+    cardType: 'virtual',
+    cardHolderName: '',
+    spendingLimit: '',
+    linkedWallet: ''
+  })
 
   const walletFeatures = [
     { name: 'Multi-Chain Support', status: 'active', chains: ['Base EVM L2', 'Solana'] },
@@ -127,6 +167,42 @@ export default function ProgrammableWallet() {
     { name: 'Recurring Payment', trigger: 'Monthly on 1st', action: 'Pay $2500 to vendor', status: 'active' },
     { name: 'Yield Optimization', trigger: 'USDM balance > $10k', action: 'Stake in yield pool', status: 'testing' }
   ]
+
+  // Fetch existing cards on component mount
+  useEffect(() => {
+    const fetchCards = async () => {
+      try {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:3001'}/api/user/cards`, {
+          headers: {
+            'Authorization': `Bearer ${localStorage.getItem('authToken')}`
+          }
+        })
+
+        if (response.ok) {
+          const result = await response.json()
+          if (result.success && result.data) {
+            // Transform backend card data to match our DebitCard interface
+            const transformedCards = result.data.map((card: any) => ({
+              id: card.id,
+              cardNumber: card.cardNumber || `****-****-****-${card.last4Digit}`,
+              cardHolder: card.nameOnCard,
+              expiryDate: `${card.month}/${card.year % 100}`,
+              status: card.status as 'active' | 'frozen' | 'cancelled',
+              type: card.cardType || 'virtual',
+              balance: card.balance || 0,
+              spendingLimit: card.spendingLimit || 10000,
+              linkedWallet: card.linkedWallet || card.walletId || '0x...'
+            }))
+            setCards(transformedCards)
+          }
+        }
+      } catch (error) {
+        console.error('Failed to fetch cards:', error)
+      }
+    }
+
+    fetchCards()
+  }, [])
 
   return (
     <div className="space-y-6">
@@ -342,18 +418,28 @@ export default function ProgrammableWallet() {
         {activeTab === 'cards' && (
           <div className="p-6">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {debitCards.map((card) => (
+              {cards.map((card) => (
                 <div key={card.id} className="relative">
-                  {/* Card Visual */}
-                  <div className={`rounded-xl p-6 h-48 ${
-                    card.type === 'physical' 
+                  {/* Card Visual with Invoice-First Design */}
+                  <div className={`rounded-xl p-6 h-56 relative overflow-hidden ${
+                    card.type === 'physical'
                       ? 'bg-gradient-to-br from-gray-800 to-black text-white'
                       : 'bg-gradient-to-br from-blue-500 to-purple-600 text-white'
                   }`}>
-                    <div className="flex justify-between items-start mb-8">
+                    {/* Invoice Badge */}
+                    {card.invoiceId && (
+                      <div className="absolute top-2 right-2 bg-white/20 backdrop-blur px-2 py-1 rounded text-xs">
+                        Invoice #{card.invoiceId}
+                      </div>
+                    )}
+
+                    <div className="flex justify-between items-start mb-4">
                       <div>
                         <p className="text-xs opacity-75">{card.type === 'physical' ? 'Physical' : 'Virtual'} Card</p>
-                        <p className="text-lg font-bold mt-1">USDM Debit</p>
+                        <p className="text-lg font-bold mt-1">Invoice-First USDM</p>
+                        {card.walletMode && (
+                          <p className="text-xs opacity-75 mt-1">Mode: {card.walletMode}</p>
+                        )}
                       </div>
                       <span className={`px-2 py-1 rounded text-xs font-medium ${
                         card.status === 'active' ? 'bg-green-500 text-white' : 'bg-red-500 text-white'
@@ -372,6 +458,11 @@ export default function ProgrammableWallet() {
                         <p className="text-sm font-medium">{card.expiryDate}</p>
                       </div>
                     </div>
+                    {card.complianceLevel && (
+                      <div className="mt-2">
+                        <p className="text-xs opacity-75">Compliance: {card.complianceLevel}</p>
+                      </div>
+                    )}
                   </div>
                   
                   {/* Card Details */}
@@ -389,6 +480,18 @@ export default function ProgrammableWallet() {
                         <span className="text-gray-500">Linked Wallet</span>
                         <span className="font-mono text-xs">{card.linkedWallet}</span>
                       </div>
+                      {card.invoiceId && (
+                        <div className="flex justify-between">
+                          <span className="text-gray-500">Invoice</span>
+                          <span className="font-medium">#{card.invoiceId}</span>
+                        </div>
+                      )}
+                      {card.walletMode && (
+                        <div className="flex justify-between">
+                          <span className="text-gray-500">Wallet Mode</span>
+                          <span className="capitalize text-xs px-2 py-1 bg-blue-100 text-blue-800 rounded">{card.walletMode}</span>
+                        </div>
+                      )}
                     </div>
                     <div className="flex gap-2 mt-4">
                       <button className="flex-1 px-3 py-1 border border-gray-300 rounded text-sm hover:bg-gray-50">
@@ -465,7 +568,12 @@ export default function ProgrammableWallet() {
               ))}
             </div>
 
-            <button className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+            <button
+              onClick={() => {
+                toast.success('Opening contract deployment wizard...')
+                // In production, this would open a modal or navigate to deployment page
+              }}
+              className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
               + Deploy New Contract
             </button>
           </div>
@@ -507,7 +615,12 @@ export default function ProgrammableWallet() {
               ))}
             </div>
 
-            <button className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+            <button
+              onClick={() => {
+                toast.success('Opening automation rule builder...')
+                // In production, this would open a modal for creating automation rules
+              }}
+              className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
               + Create Automation
             </button>
           </div>
@@ -524,25 +637,54 @@ export default function ProgrammableWallet() {
             <div className="p-6 space-y-4">
               <div>
                 <label className="block text-sm font-medium mb-2">Card Type</label>
-                <select className="w-full px-3 py-2 border rounded-lg">
-                  <option>Virtual Card (Instant)</option>
-                  <option>Physical Card (5-7 days)</option>
+                <select
+                  className="w-full px-3 py-2 border rounded-lg"
+                  value={cardFormData.cardType}
+                  onChange={(e) => setCardFormData({...cardFormData, cardType: e.target.value})}
+                >
+                  <option value="virtual">Virtual Card (Instant)</option>
+                  <option value="physical">Physical Card (5-7 days)</option>
                 </select>
               </div>
               <div>
                 <label className="block text-sm font-medium mb-2">Card Holder Name</label>
-                <input type="text" className="w-full px-3 py-2 border rounded-lg" />
+                <input
+                  type="text"
+                  className="w-full px-3 py-2 border rounded-lg"
+                  value={cardFormData.cardHolderName}
+                  onChange={(e) => setCardFormData({...cardFormData, cardHolderName: e.target.value})}
+                  placeholder="Enter card holder name"
+                />
               </div>
               <div>
                 <label className="block text-sm font-medium mb-2">Spending Limit (Daily)</label>
-                <input type="number" className="w-full px-3 py-2 border rounded-lg" placeholder="$10,000" />
+                <input
+                  type="number"
+                  className="w-full px-3 py-2 border rounded-lg"
+                  placeholder="$10,000"
+                  value={cardFormData.spendingLimit}
+                  onChange={(e) => setCardFormData({...cardFormData, spendingLimit: e.target.value})}
+                />
               </div>
               <div>
-                <label className="block text-sm font-medium mb-2">Link to Wallet</label>
-                <select className="w-full px-3 py-2 border rounded-lg">
-                  <option>Main Wallet (0x1234...abcd)</option>
-                  <option>Treasury Wallet (0x5678...efgh)</option>
+                <label className="block text-sm font-medium mb-2">Link to Invoice Wallet (Required)</label>
+                <select
+                  className="w-full px-3 py-2 border rounded-lg"
+                  value={cardFormData.linkedWallet}
+                  onChange={(e) => setCardFormData({...cardFormData, linkedWallet: e.target.value})}
+                  required
+                >
+                  <option value="">Select an invoice wallet</option>
+                  <option value="ephemeral_inv_001">Invoice #INV-001 (Ephemeral - High Security)</option>
+                  <option value="persistent_inv_002">Invoice #INV-002 (Persistent - Multi-use)</option>
+                  <option value="adaptive_inv_003">Invoice #INV-003 (Adaptive - Smart Mode)</option>
+                  <option value="treasury_main">Treasury Main (Cross-Rail Enabled)</option>
                 </select>
+              </div>
+              <div className="p-3 bg-blue-50 rounded-lg">
+                <p className="text-sm text-blue-800">
+                  <strong>Invoice-First Design:</strong> Cards are automatically linked to invoice wallets for enhanced compliance and tracking.
+                </p>
               </div>
             </div>
             <div className="p-6 border-t flex justify-end gap-3">
@@ -552,7 +694,71 @@ export default function ProgrammableWallet() {
               >
                 Cancel
               </button>
-              <button className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+              <button
+                onClick={async () => {
+                  // Validate form data
+                  if (!cardFormData.cardHolderName || !cardFormData.linkedWallet) {
+                    toast.error('Please fill in all required fields')
+                    return
+                  }
+
+                  try {
+                    // Make API call to backend
+                    const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:3001'}/api/cards/issue`, {
+                      method: 'POST',
+                      headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${localStorage.getItem('authToken')}`
+                      },
+                      body: JSON.stringify({
+                        cardType: cardFormData.cardType,
+                        cardHolderName: cardFormData.cardHolderName,
+                        spendingLimit: cardFormData.spendingLimit,
+                        linkedWallet: cardFormData.linkedWallet,
+                        walletId: cardFormData.linkedWallet
+                      })
+                    })
+
+                    if (response.ok) {
+                      const result = await response.json()
+
+                      // Create card object from API response
+                      const newCard: DebitCard = {
+                        id: result.data.id || `card_${Date.now()}`,
+                        cardNumber: result.data.cardNumber,
+                        cardHolder: result.data.cardHolder,
+                        expiryDate: result.data.expiryDate,
+                        status: result.data.status as 'active' | 'frozen' | 'cancelled',
+                        type: result.data.type as 'virtual' | 'physical',
+                        balance: result.data.balance,
+                        spendingLimit: result.data.spendingLimit,
+                        linkedWallet: result.data.linkedWallet
+                      }
+
+                      // Add to cards array
+                      setCards([...cards, newCard])
+
+                      // Show success message
+                      toast.success(result.message || `${cardFormData.cardType === 'virtual' ? 'Virtual' : 'Physical'} card issued successfully!`)
+
+                      // Reset form and close modal
+                      setCardFormData({
+                        cardType: 'virtual',
+                        cardHolderName: '',
+                        spendingLimit: '',
+                        linkedWallet: ''
+                      })
+                      setShowCreateCardModal(false)
+                    } else {
+                      const error = await response.json()
+                      toast.error(error.message || 'Failed to issue card')
+                    }
+                  } catch (error) {
+                    toast.error('Failed to issue card. Please try again.')
+                    console.error('Card issuance error:', error)
+                  }
+                }}
+                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
                 Issue Card
               </button>
             </div>
