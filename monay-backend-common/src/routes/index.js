@@ -41,6 +41,7 @@ import contracts from './contracts.js';
 import invoiceWallets from './invoiceWallets.js';
 import capitalMarkets from './capital-markets.js';
 import circle from './circle.js';
+import circleWallets from './circle-wallets.js';  // Circle wallet integration for consumer dual-wallet
 // import governmentServices from './government-services.js';  // Temporarily disabled - fixing imports
 import aiMlServices from './ai-ml-services.js';
 import erpConnectors from './erp-connectors.js';
@@ -116,6 +117,7 @@ const register = (app) => {
   app.use('/api/invoice-wallets', invoiceWallets); // Invoice-First wallet routes
   app.use('/api/capital-markets', capitalMarkets); // Capital Markets rule sets
   app.use('/api/circle', circle); // Circle USDC integration for mint/burn operations
+  app.use('/api/circle-wallets', circleWallets); // Circle wallet integration for consumer dual-wallet
   // app.use('/api/government', governmentServices); // Government services endpoints - temporarily disabled
   app.use('/api/ai-ml', aiMlServices); // AI/ML services endpoints
   app.use('/api/erp', erpConnectors); // ERP connector endpoints
