@@ -1098,4 +1098,4 @@ class FreshBooksConnector extends EventEmitter {
   }
 }
 
-module.exports = FreshBooksConnector;
+export default FreshBooksConnector;

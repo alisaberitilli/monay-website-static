@@ -850,4 +850,4 @@ class TradeFinanceOperationsService extends EventEmitter {
   }
 }
 
-module.exports = TradeFinanceOperationsService;
+export default TradeFinanceOperationsService;

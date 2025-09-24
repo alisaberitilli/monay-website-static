@@ -681,4 +681,4 @@ class SAPConnector extends EventEmitter {
   }
 }
 
-module.exports = SAPConnector;
+export default SAPConnector;

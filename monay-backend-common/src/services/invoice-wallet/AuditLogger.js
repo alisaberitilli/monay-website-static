@@ -464,7 +464,7 @@ class AuditLogger {
    * Fallback file-based logging if database fails
    */
   fallbackFileLog(data) {
-    const fs = require('fs')
+    import fs from 'fs'
     const logFile = `/var/log/monay/audit-fallback-${new Date().toISOString().split('T')[0]}.log`
 
     fs.appendFileSync(logFile, JSON.stringify({

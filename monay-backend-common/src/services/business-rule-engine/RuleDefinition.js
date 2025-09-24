@@ -401,4 +401,4 @@ class RuleDefinition {
   }
 }
 
-module.exports = new RuleDefinition();
+export default new RuleDefinition();

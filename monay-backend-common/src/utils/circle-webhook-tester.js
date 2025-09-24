@@ -1,0 +1,428 @@
+/**
+ * Circle Webhook Testing Utility
+ * Helps test Circle webhook integration without needing actual Circle events
+ */
+
+const crypto = require('crypto');
+const axios = require('axios');
+
+class CircleWebhookTester {
+  constructor(webhookUrl = 'http://localhost:3001/api/circle/webhooks', secret = 'test-secret') {
+    this.webhookUrl = webhookUrl;
+    this.secret = secret;
+  }
+
+  /**
+   * Generate webhook signature
+   */
+  generateSignature(payload) {
+    const payloadString = typeof payload === 'string' ? payload : JSON.stringify(payload);
+    return crypto
+      .createHmac('sha256', this.secret)
+      .update(payloadString)
+      .digest('hex');
+  }
+
+  /**
+   * Create mock webhook payload
+   */
+  createMockPayload(type, data = {}) {
+    const basePayload = {
+      Type: type,
+      MessageId: `msg_${Date.now()}_${Math.random().toString(36).substring(7)}`,
+      TopicArn: 'arn:aws:sns:us-east-1:123456789012:circle-webhooks',
+      Message: '',
+      Timestamp: new Date().toISOString(),
+      SignatureVersion: '1',
+      Signature: 'mock-signature',
+      SigningCertURL: 'https://sns.us-east-1.amazonaws.com/mock.pem',
+      UnsubscribeURL: 'https://sns.us-east-1.amazonaws.com/?Action=Unsubscribe&SubscriptionArn=mock'
+    };
+
+    // Create message based on type
+    let message;
+    switch (type) {
+      case 'payments':
+        message = this.createPaymentMessage(data);
+        break;
+      case 'transfers':
+        message = this.createTransferMessage(data);
+        break;
+      case 'payouts':
+        message = this.createPayoutMessage(data);
+        break;
+      case 'wallets':
+        message = this.createWalletMessage(data);
+        break;
+      default:
+        message = data;
+    }
+
+    basePayload.Message = JSON.stringify(message);
+    return basePayload;
+  }
+
+  /**
+   * Create payment message
+   */
+  createPaymentMessage(overrides = {}) {
+    return {
+      id: `payment_${Date.now()}`,
+      type: 'payment',
+      merchantId: 'merchant_123',
+      merchantWalletId: 'wallet_123',
+      amount: {
+        amount: '1000.00',
+        currency: 'USD'
+      },
+      source: {
+        id: 'src_123',
+        type: 'card'
+      },
+      status: 'confirmed',
+      createDate: new Date().toISOString(),
+      updateDate: new Date().toISOString(),
+      ...overrides
+    };
+  }
+
+  /**
+   * Create transfer message
+   */
+  createTransferMessage(overrides = {}) {
+    return {
+      id: `transfer_${Date.now()}`,
+      type: 'transfer',
+      source: {
+        type: 'wallet',
+        id: 'wallet_source_123',
+        address: '0xSource123'
+      },
+      destination: {
+        type: 'blockchain',
+        address: '0xDestination456',
+        chain: 'ETH'
+      },
+      amount: {
+        amount: '500.00',
+        currency: 'USD'
+      },
+      transactionHash: `0x${crypto.randomBytes(32).toString('hex')}`,
+      status: 'complete',
+      createDate: new Date().toISOString(),
+      ...overrides
+    };
+  }
+
+  /**
+   * Create payout message
+   */
+  createPayoutMessage(overrides = {}) {
+    return {
+      id: `payout_${Date.now()}`,
+      type: 'payout',
+      merchantId: 'merchant_123',
+      walletId: 'wallet_123',
+      amount: {
+        amount: '750.00',
+        currency: 'USD'
+      },
+      fees: {
+        amount: '2.50',
+        currency: 'USD'
+      },
+      destination: {
+        type: 'wire',
+        id: 'bank_123',
+        name: 'Test Bank Account'
+      },
+      status: 'complete',
+      createDate: new Date().toISOString(),
+      ...overrides
+    };
+  }
+
+  /**
+   * Create wallet message
+   */
+  createWalletMessage(overrides = {}) {
+    return {
+      id: `wallet_${Date.now()}`,
+      type: 'wallet',
+      walletId: 'wallet_new_123',
+      entityId: 'entity_123',
+      address: `0x${crypto.randomBytes(20).toString('hex')}`,
+      blockchain: 'ETH',
+      status: 'active',
+      createDate: new Date().toISOString(),
+      ...overrides
+    };
+  }
+
+  /**
+   * Send webhook to server
+   */
+  async sendWebhook(type, data = {}, headers = {}) {
+    const payload = this.createMockPayload(type, data);
+    const signature = this.generateSignature(payload);
+
+    try {
+      const response = await axios.post(this.webhookUrl, payload, {
+        headers: {
+          'Content-Type': 'application/json',
+          'x-circle-signature': signature,
+          ...headers
+        }
+      });
+
+      return {
+        success: true,
+        status: response.status,
+        data: response.data
+      };
+    } catch (error) {
+      return {
+        success: false,
+        status: error.response?.status,
+        error: error.response?.data || error.message
+      };
+    }
+  }
+
+  /**
+   * Test webhook endpoint with various scenarios
+   */
+  async runTests() {
+    console.log('🧪 Starting Circle Webhook Tests...\n');
+
+    const tests = [
+      {
+        name: 'Payment Confirmed',
+        type: 'payments',
+        data: { status: 'confirmed', amount: { amount: '1500.00', currency: 'USD' } }
+      },
+      {
+        name: 'Payment Failed',
+        type: 'payments',
+        data: { status: 'failed', errorCode: 'card_declined' }
+      },
+      {
+        name: 'Transfer Complete',
+        type: 'transfers',
+        data: { status: 'complete' }
+      },
+      {
+        name: 'Transfer Pending',
+        type: 'transfers',
+        data: { status: 'pending' }
+      },
+      {
+        name: 'Payout Complete',
+        type: 'payouts',
+        data: { status: 'complete' }
+      },
+      {
+        name: 'Wallet Created',
+        type: 'wallets',
+        data: { status: 'active' }
+      },
+      {
+        name: 'Invalid Signature',
+        type: 'payments',
+        data: {},
+        invalidSignature: true
+      }
+    ];
+
+    for (const test of tests) {
+      console.log(`Testing: ${test.name}`);
+
+      const headers = test.invalidSignature
+        ? { 'x-circle-signature': 'invalid-signature' }
+        : {};
+
+      const result = await this.sendWebhook(test.type, test.data, headers);
+
+      if (result.success) {
+        console.log(`✅ ${test.name}: SUCCESS (Status: ${result.status})`);
+      } else {
+        console.log(`❌ ${test.name}: FAILED (Status: ${result.status})`);
+        if (result.error) {
+          console.log(`   Error: ${JSON.stringify(result.error)}`);
+        }
+      }
+      console.log('');
+    }
+
+    console.log('✨ Webhook tests completed!');
+  }
+
+  /**
+   * Simulate webhook flow
+   */
+  async simulateFlow() {
+    console.log('🔄 Simulating Complete USDC Flow...\n');
+
+    const flow = [
+      {
+        step: 'User initiates mint',
+        type: 'payments',
+        data: {
+          status: 'pending',
+          amount: { amount: '5000.00', currency: 'USD' }
+        }
+      },
+      {
+        step: 'Payment confirmed',
+        type: 'payments',
+        data: {
+          status: 'confirmed',
+          amount: { amount: '5000.00', currency: 'USD' }
+        },
+        delay: 2000
+      },
+      {
+        step: 'User transfers USDC',
+        type: 'transfers',
+        data: {
+          status: 'pending',
+          amount: { amount: '1000.00', currency: 'USD' }
+        },
+        delay: 1000
+      },
+      {
+        step: 'Transfer confirmed',
+        type: 'transfers',
+        data: {
+          status: 'complete',
+          amount: { amount: '1000.00', currency: 'USD' },
+          transactionHash: `0x${crypto.randomBytes(32).toString('hex')}`
+        },
+        delay: 3000
+      },
+      {
+        step: 'User burns USDC',
+        type: 'payouts',
+        data: {
+          status: 'pending',
+          amount: { amount: '2000.00', currency: 'USD' }
+        },
+        delay: 1000
+      },
+      {
+        step: 'Burn complete',
+        type: 'payouts',
+        data: {
+          status: 'complete',
+          amount: { amount: '2000.00', currency: 'USD' }
+        },
+        delay: 2000
+      }
+    ];
+
+    for (const step of flow) {
+      console.log(`📍 ${step.step}`);
+
+      if (step.delay) {
+        await new Promise(resolve => setTimeout(resolve, step.delay));
+      }
+
+      const result = await this.sendWebhook(step.type, step.data);
+
+      if (result.success) {
+        console.log(`   ✅ Webhook sent successfully`);
+      } else {
+        console.log(`   ❌ Webhook failed: ${result.error}`);
+      }
+      console.log('');
+    }
+
+    console.log('🎉 Flow simulation completed!');
+  }
+
+  /**
+   * Stress test webhook endpoint
+   */
+  async stressTest(count = 100, concurrent = 10) {
+    console.log(`🚀 Starting stress test: ${count} webhooks, ${concurrent} concurrent...\n`);
+
+    const startTime = Date.now();
+    const results = { success: 0, failed: 0 };
+    const types = ['payments', 'transfers', 'payouts', 'wallets'];
+
+    const sendBatch = async () => {
+      const type = types[Math.floor(Math.random() * types.length)];
+      const result = await this.sendWebhook(type);
+
+      if (result.success) {
+        results.success++;
+      } else {
+        results.failed++;
+      }
+    };
+
+    // Send webhooks in batches
+    for (let i = 0; i < count; i += concurrent) {
+      const batch = [];
+      for (let j = 0; j < concurrent && i + j < count; j++) {
+        batch.push(sendBatch());
+      }
+      await Promise.all(batch);
+
+      // Progress update
+      const progress = Math.min(i + concurrent, count);
+      process.stdout.write(`\rProgress: ${progress}/${count} webhooks sent...`);
+    }
+
+    const duration = (Date.now() - startTime) / 1000;
+    const rps = count / duration;
+
+    console.log('\n\n📊 Stress Test Results:');
+    console.log(`   Total: ${count} webhooks`);
+    console.log(`   Success: ${results.success}`);
+    console.log(`   Failed: ${results.failed}`);
+    console.log(`   Duration: ${duration.toFixed(2)}s`);
+    console.log(`   Rate: ${rps.toFixed(2)} webhooks/second`);
+    console.log(`   Success Rate: ${((results.success / count) * 100).toFixed(2)}%`);
+  }
+}
+
+// CLI interface
+if (require.main === module) {
+  const tester = new CircleWebhookTester();
+  const args = process.argv.slice(2);
+  const command = args[0];
+
+  switch (command) {
+    case 'test':
+      tester.runTests();
+      break;
+    case 'flow':
+      tester.simulateFlow();
+      break;
+    case 'stress':
+      const count = parseInt(args[1]) || 100;
+      const concurrent = parseInt(args[2]) || 10;
+      tester.stressTest(count, concurrent);
+      break;
+    case 'send':
+      const type = args[1] || 'payments';
+      tester.sendWebhook(type).then(result => {
+        console.log('Result:', result);
+      });
+      break;
+    default:
+      console.log('Circle Webhook Tester');
+      console.log('=====================');
+      console.log('');
+      console.log('Usage:');
+      console.log('  node circle-webhook-tester.js test              # Run all tests');
+      console.log('  node circle-webhook-tester.js flow              # Simulate complete flow');
+      console.log('  node circle-webhook-tester.js stress [n] [c]    # Stress test (n webhooks, c concurrent)');
+      console.log('  node circle-webhook-tester.js send [type]       # Send single webhook');
+      console.log('');
+      console.log('Types: payments, transfers, payouts, wallets');
+  }
+}
+
+module.exports = CircleWebhookTester;

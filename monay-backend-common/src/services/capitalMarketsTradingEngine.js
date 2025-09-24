@@ -1126,4 +1126,4 @@ class CapitalMarketsTradingEngine extends EventEmitter {
   }
 }
 
-module.exports = CapitalMarketsTradingEngine;
+export default CapitalMarketsTradingEngine;

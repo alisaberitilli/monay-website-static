@@ -908,4 +908,4 @@ class SecurityAuditService extends EventEmitter {
   }
 }
 
-module.exports = SecurityAuditService;
+export default SecurityAuditService;

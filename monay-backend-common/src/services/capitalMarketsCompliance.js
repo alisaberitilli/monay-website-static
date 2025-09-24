@@ -1135,4 +1135,4 @@ class CapitalMarketsComplianceEngine extends EventEmitter {
   }
 }
 
-module.exports = CapitalMarketsComplianceEngine;
+export default CapitalMarketsComplianceEngine;

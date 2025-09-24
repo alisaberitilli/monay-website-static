@@ -4,13 +4,13 @@ import authenticate from '../middlewares/auth-middleware';
 import rateLimiter from '../middlewares/rate-limiter-middleware';
 
 // Import ERP Connector services
-import QuickBooksConnector from '../services/quickBooksConnector';
-import FreshBooksConnector from '../services/freshBooksConnector';
-import WaveAccountingConnector from '../services/waveAccountingConnector';
-import ZohoEnhancedConnector from '../services/zohoEnhancedConnector';
-import SageBusinessConnector from '../services/sageBusinessConnector';
-import SAPConnector from '../services/sapConnector';
-import OracleIntegration from '../services/oracleNetSuiteIntegration';
+import QuickBooksConnector from '../services/quickBooksConnector.js';
+import FreshBooksConnector from '../services/freshBooksConnector.js';
+import WaveAccountingConnector from '../services/waveAccountingConnector.js';
+import ZohoEnhancedConnector from '../services/zohoEnhancedConnector.js';
+import SageBusinessConnector from '../services/sageBusinessConnector.js';
+import SAPConnector from '../services/sapConnector.js';
+import OracleIntegration from '../services/oracleNetSuiteIntegration.js';
 
 const router = Router();
 

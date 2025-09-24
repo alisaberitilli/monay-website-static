@@ -785,4 +785,4 @@ class EmergencyDisbursement {
   }
 }
 
-module.exports = new EmergencyDisbursement();
+export default new EmergencyDisbursement();

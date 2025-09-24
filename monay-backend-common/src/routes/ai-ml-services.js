@@ -4,10 +4,10 @@ import authenticate from '../middlewares/auth-middleware';
 import rateLimiter from '../middlewares/rate-limiter-middleware';
 
 // Import AI/ML services
-import PredictiveAnalyticsEngine from '../services/predictiveAnalyticsEngine';
-import AIPoweredFeatures from '../services/aiPoweredFeatures';
-import FraudDetectionML from '../services/machineLearningModels';
-import BehavioralBiometrics from '../services/behavioralBiometrics';
+import PredictiveAnalyticsEngine from '../services/predictiveAnalyticsEngine.js';
+import AIPoweredFeatures from '../services/aiPoweredFeatures.js';
+import FraudDetectionML from '../services/machineLearningModels.js';
+import BehavioralBiometrics from '../services/behavioralBiometrics.js';
 
 const router = Router();
 

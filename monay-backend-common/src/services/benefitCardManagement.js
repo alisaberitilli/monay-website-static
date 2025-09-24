@@ -1074,4 +1074,4 @@ class BenefitCardManagement extends EventEmitter {
 }
 
 // Export singleton instance
-module.exports = new BenefitCardManagement();
+export default new BenefitCardManagement();

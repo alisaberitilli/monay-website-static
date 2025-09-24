@@ -950,4 +950,4 @@ class TenantManagementService extends EventEmitter {
   }
 }
 
-module.exports = TenantManagementService;
+export default TenantManagementService;

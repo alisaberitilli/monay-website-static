@@ -1,7 +1,7 @@
 import HttpStatus from 'http-status';
 import repositories from '../repositories';
-import utility from '../services/utility';
-import config from '../config';
+import utility from '../services/utility.js';
+import config from '../config/index.js';
 const { transactionRepository } = repositories;
 
 export default {

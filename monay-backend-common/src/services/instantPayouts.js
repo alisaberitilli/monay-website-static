@@ -923,4 +923,4 @@ class InstantPayoutSystem extends EventEmitter {
   }
 }
 
-module.exports = InstantPayoutSystem;
+export default InstantPayoutSystem;

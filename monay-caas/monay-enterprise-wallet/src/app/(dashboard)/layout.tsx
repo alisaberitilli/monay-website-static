@@ -2,6 +2,7 @@
 
 import Sidebar from '@/components/layout/Sidebar'
 import MobileNavigation from '@/components/layout/MobileNavigation'
+import TenantSelector from '@/components/TenantSelector'
 import { useIsMobile } from '@/hooks/useMediaQuery'
 
 export default function DashboardLayout({
@@ -23,6 +24,7 @@ export default function DashboardLayout({
           <div className="flex items-center justify-between">
             <h1 className="text-2xl font-semibold text-gray-900">Monay Enterprise</h1>
             <div className="flex items-center gap-4">
+              <TenantSelector />
               <span className="text-sm text-gray-600">Welcome back!</span>
             </div>
           </div>

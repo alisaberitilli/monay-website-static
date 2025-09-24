@@ -6,18 +6,18 @@
  * @description Generates ephemeral/persistent cryptocurrency wallets from invoices
  */
 
-const { v4: uuidv4 } = require('uuid');
-const crypto = require('crypto');
-const { ethers } = require('ethers');
-const { Keypair } = require('@solana/web3.js');
-const db = require('../../models');
-const logger = require('../logger');
-const evmService = require('../evm');
-const solanaService = require('../solana');
-const AIModeSelectorEngine = require('./AIModeSelectorEngine');
-const QuantumCrypto = require('./QuantumCrypto');
-const EphemeralManager = require('./EphemeralManager');
-const blockchainIntegration = require('./BlockchainIntegration');
+import { v4 as uuidv4 } from 'uuid';
+import crypto from 'crypto';
+import { ethers } from 'ethers';
+import { Keypair } from '@solana/web3.js';
+import db from '../../models/index.js';
+import logger from '../logger.js';
+import evmService from '../evm.js';
+import solanaService from '../solana.js';
+import AIModeSelectorEngine from './AIModeSelectorEngine.js';
+import QuantumCrypto from './QuantumCrypto.js';
+import EphemeralManager from './EphemeralManager.js';
+import blockchainIntegration from './BlockchainIntegration.js';
 
 class WalletFactory {
   constructor() {
@@ -451,4 +451,4 @@ class WalletFactory {
   }
 }
 
-module.exports = WalletFactory;
+export default WalletFactory;

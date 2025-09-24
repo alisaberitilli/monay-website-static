@@ -843,4 +843,4 @@ class Form1099GenerationSystem extends EventEmitter {
   }
 }
 
-module.exports = Form1099GenerationSystem;
+export default Form1099GenerationSystem;

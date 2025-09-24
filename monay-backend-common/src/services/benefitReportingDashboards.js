@@ -907,4 +907,4 @@ class BenefitReportingDashboards {
   }
 }
 
-module.exports = new BenefitReportingDashboards();
+export default new BenefitReportingDashboards();

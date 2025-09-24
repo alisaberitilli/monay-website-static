@@ -1,5 +1,5 @@
 import emailer from './base-emailer';
-import config from '../config';
+import config from '../config/index.js';
 import ejsTemplate from './ejs';
 export default {
     /**

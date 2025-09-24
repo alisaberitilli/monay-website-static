@@ -925,4 +925,4 @@ class VirtualCardPlatform {
   }
 }
 
-module.exports = VirtualCardPlatform;
+export default VirtualCardPlatform;

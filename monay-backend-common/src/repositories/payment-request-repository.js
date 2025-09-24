@@ -1,6 +1,6 @@
-import models from '../models';
+import models from '../models/index.js';
 import moment from 'moment-timezone';
-import utility from '../services/utility';
+import utility from '../services/utility.js';
 import notificationRepository from '../repositories/notification-repository';
 const { PaymentRequest, User, Transaction } = models;
 const { Op } = models.Sequelize;

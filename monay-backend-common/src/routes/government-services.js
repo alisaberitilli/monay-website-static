@@ -4,22 +4,22 @@ import authenticate from '../middlewares/auth-middleware';
 import rateLimiter from '../middlewares/rate-limiter-middleware';
 
 // Import all government services
-import BenefitEligibilityVerification from '../services/benefitEligibilityVerification';
-import BenefitIssuanceWorkflows from '../services/benefitIssuanceWorkflows';
-import BenefitBalanceTracker from '../services/benefitBalanceTracker';
-import BenefitTransactionProcessor from '../services/benefitTransactionProcessor';
-import BenefitCardManagement from '../services/benefitCardManagement';
-import BenefitReportingDashboards from '../services/benefitReportingDashboards';
-import MultiLanguageSupport from '../services/multiLanguageSupport';
-import MobileOptimization from '../services/mobileOptimization';
-import StateIntegrationService from '../services/stateIntegrationService';
-import AnalyticsReportingService from '../services/analyticsReportingService';
-import MedicaidMedicareIntegration from '../services/medicaidMedicareIntegration';
-import EducationBenefitsService from '../services/educationBenefitsService';
-import HousingAssistancePrograms from '../services/housingAssistancePrograms';
-import VeteranBenefitsService from '../services/veteranBenefitsService';
-import TribalBenefitsService from '../services/tribalBenefitsService';
-import AgriculturalProgramsService from '../services/agriculturalProgramsService';
+import BenefitEligibilityVerification from '../services/benefitEligibilityVerification.js';
+import BenefitIssuanceWorkflows from '../services/benefitIssuanceWorkflows.js';
+import BenefitBalanceTracker from '../services/benefitBalanceTracker.js';
+import BenefitTransactionProcessor from '../services/benefitTransactionProcessor.js';
+import BenefitCardManagement from '../services/benefitCardManagement.js';
+import BenefitReportingDashboards from '../services/benefitReportingDashboards.js';
+import MultiLanguageSupport from '../services/multiLanguageSupport.js';
+import MobileOptimization from '../services/mobileOptimization.js';
+import StateIntegrationService from '../services/stateIntegrationService.js';
+import AnalyticsReportingService from '../services/analyticsReportingService.js';
+import MedicaidMedicareIntegration from '../services/medicaidMedicareIntegration.js';
+import EducationBenefitsService from '../services/educationBenefitsService.js';
+import HousingAssistancePrograms from '../services/housingAssistancePrograms.js';
+import VeteranBenefitsService from '../services/veteranBenefitsService.js';
+import TribalBenefitsService from '../services/tribalBenefitsService.js';
+import AgriculturalProgramsService from '../services/agriculturalProgramsService.js';
 
 const router = Router();
 

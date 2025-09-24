@@ -902,4 +902,4 @@ class ReconciliationSystem extends EventEmitter {
   }
 }
 
-module.exports = ReconciliationSystem;
+export default ReconciliationSystem;

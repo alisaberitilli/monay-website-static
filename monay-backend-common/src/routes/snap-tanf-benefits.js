@@ -6,9 +6,9 @@
 import { Router } from 'express';
 import HttpStatus from 'http-status';
 import authenticate from '../middlewares/auth-middleware';
-import snapTanfSystem from '../services/snap-tanf-benefit-system';
-import emergencyDisbursementSystem from '../services/emergency-disbursement-system';
-import loggers from '../services/logger';
+import snapTanfSystem from '../services/snap-tanf-benefit-system.js';
+import emergencyDisbursementSystem from '../services/emergency-disbursement-system.js';
+import loggers from '../services/logger.js';
 
 const router = Router();
 

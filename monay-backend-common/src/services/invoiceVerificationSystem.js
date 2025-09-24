@@ -806,4 +806,4 @@ class InvoiceVerificationSystem extends EventEmitter {
   }
 }
 
-module.exports = InvoiceVerificationSystem;
+export default InvoiceVerificationSystem;

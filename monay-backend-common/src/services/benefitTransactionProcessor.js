@@ -1176,4 +1176,4 @@ class BenefitTransactionProcessor extends EventEmitter {
 }
 
 // Export singleton instance
-module.exports = new BenefitTransactionProcessor();
+export default new BenefitTransactionProcessor();

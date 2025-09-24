@@ -51,6 +51,18 @@ const navigationItems: NavItem[] = [
     icon: Building2,
   },
   {
+    label: 'Groups',
+    href: '/groups',
+    icon: Users,
+    badge: 'New',
+  },
+  {
+    label: 'Billing',
+    href: '/billing',
+    icon: CreditCard,
+    badge: 'USDXM 10% OFF',
+  },
+  {
     label: 'Customers',
     href: '/customers',
     icon: Users,

@@ -4,10 +4,10 @@ import { useState } from 'react'
 import { motion } from 'framer-motion'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { 
-  ArrowUpRight, ArrowDownRight, TrendingUp, Wallet, CreditCard, 
+import {
+  ArrowUpRight, ArrowDownRight, TrendingUp, Wallet, CreditCard,
   Activity, Send, FileText, Plus, BarChart3, ArrowRightLeft,
-  Clock, CheckCircle, XCircle, AlertCircle, ExternalLink
+  Clock, CheckCircle, XCircle, AlertCircle, ExternalLink, DollarSign
 } from 'lucide-react'
 import TransactionDetailModal from '@/components/modals/TransactionDetailModal'
 import TransferModal from '@/components/modals/TransferModal'
@@ -86,22 +86,30 @@ export default function AnimatedDashboard({ blockchainStatus, onNavigate }: Anim
   ]
 
   const quickActions = [
-    { 
-      label: "Send Money", 
+    {
+      label: "USDC Operations",
+      icon: DollarSign,
+      color: "from-cyan-500 to-blue-600",
+      onClick: () => {
+        router.push('/usdc-operations')
+      }
+    },
+    {
+      label: "Send Money",
       icon: Send,
       color: "from-blue-500 to-indigo-600",
       onClick: () => setIsTransferModalOpen(true)
     },
-    { 
-      label: "Request Payment", 
+    {
+      label: "Request Payment",
       icon: FileText,
       color: "from-green-500 to-emerald-600",
       onClick: () => {
         setIsInvoiceModalOpen(true)
       }
     },
-    { 
-      label: "Add Card", 
+    {
+      label: "Add Card",
       icon: Plus,
       color: "from-purple-500 to-pink-600",
       onClick: () => {
@@ -111,8 +119,8 @@ export default function AnimatedDashboard({ blockchainStatus, onNavigate }: Anim
         }
       }
     },
-    { 
-      label: "View Analytics", 
+    {
+      label: "View Analytics",
       icon: BarChart3,
       color: "from-orange-500 to-red-600",
       onClick: () => {

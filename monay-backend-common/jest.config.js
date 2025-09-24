@@ -1,15 +1,14 @@
-module.exports = {
+export default {
   testEnvironment: 'node',
-  transform: {
-    '^.+\\.(js|jsx)?$': 'babel-jest'
+  extensionsToTreatAsEsm: ['.js'],
+  moduleNameMapper: {
+    '^(\\.{1,2}/.*)\\.js$': '$1',
+    '^@/(.*)$': '<rootDir>/src/$1'
   },
+  transform: {}, // No transform needed for native ES modules
   transformIgnorePatterns: [
     '/node_modules/(?!(uuid|ethers|@solana)/)'
   ],
-  moduleNameMapper: {
-    '^@/(.*)$': '<rootDir>/src/$1',
-    '^uuid$': '<rootDir>/node_modules/uuid/dist/index.js'
-  },
   roots: ['<rootDir>/src'],
   testMatch: [
     '**/__tests__/**/*.{js,ts}',
@@ -30,5 +29,12 @@ module.exports = {
     }
   },
   setupFilesAfterEnv: ['<rootDir>/jest.setup.js'],
-  testTimeout: 30000
+  testTimeout: 30000,
+  testEnvironmentOptions: {
+    experimental: {
+      vm: {
+        modules: true
+      }
+    }
+  }
 };

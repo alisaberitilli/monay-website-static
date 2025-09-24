@@ -1438,4 +1438,4 @@ class FraudDetectionPatterns extends EventEmitter {
 }
 
 // Export singleton instance
-module.exports = new FraudDetectionPatterns();
+export default new FraudDetectionPatterns();

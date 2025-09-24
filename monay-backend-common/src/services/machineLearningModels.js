@@ -940,4 +940,4 @@ class MachineLearningModelsService extends EventEmitter {
   }
 }
 
-module.exports = MachineLearningModelsService;
+export default MachineLearningModelsService;

@@ -861,4 +861,4 @@ class LoyaltyProgramManagementService extends EventEmitter {
   }
 }
 
-module.exports = LoyaltyProgramManagementService;
+export default LoyaltyProgramManagementService;

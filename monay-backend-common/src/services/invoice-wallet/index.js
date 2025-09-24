@@ -5,10 +5,10 @@
  * @module invoice-wallet
  */
 
-const WalletFactory = require('./WalletFactory');
-const AIModeSelectorEngine = require('./AIModeSelectorEngine');
-const EphemeralManager = require('./EphemeralManager');
-const QuantumCrypto = require('./QuantumCrypto');
+import WalletFactory from './WalletFactory.js';
+import AIModeSelectorEngine from './AIModeSelectorEngine.js';
+import EphemeralManager from './EphemeralManager.js';
+import QuantumCrypto from './QuantumCrypto.js';
 
 // Create singleton instances
 const walletFactory = new WalletFactory();
@@ -16,7 +16,7 @@ const aiModeSelector = new AIModeSelectorEngine();
 const ephemeralManager = new EphemeralManager();
 const quantumCrypto = new QuantumCrypto();
 
-module.exports = {
+export default {
   WalletFactory,
   AIModeSelectorEngine,
   EphemeralManager,

@@ -6,7 +6,7 @@
  * @description Production integration with NIST-approved quantum-resistant algorithms
  */
 
-const crypto = require('crypto');
+import crypto from 'crypto';
 
 /**
  * Production Quantum Cryptography Implementation
@@ -74,7 +74,7 @@ class QuantumCryptoProduction {
   async initialize() {
     try {
       // Production: Uncomment when liboqs is installed
-      // const OQS = require('node-oqs');
+      // import OQS from 'node-oqs';
       // this.oqs = new OQS();
 
       // Verify FIPS mode if required
@@ -109,7 +109,7 @@ class QuantumCryptoProduction {
 
     // Production implementation with liboqs
     /*
-    const OQS = require('node-oqs');
+    import OQS from 'node-oqs';
 
     if (type === 'kem') {
       const kem = new OQS.KeyEncapsulation(algo);
@@ -187,7 +187,7 @@ class QuantumCryptoProduction {
   async encapsulate(publicKey) {
     // Production with liboqs
     /*
-    const OQS = require('node-oqs');
+    import OQS from 'node-oqs';
     const kem = new OQS.KeyEncapsulation('kyber768');
     const result = kem.encapsulate(publicKey);
     return {
@@ -216,7 +216,7 @@ class QuantumCryptoProduction {
   async quantumSign(message, secretKey) {
     // Production with liboqs
     /*
-    const OQS = require('node-oqs');
+    import OQS from 'node-oqs';
     const sig = new OQS.Signature('dilithium3');
     const signature = sig.sign(message, secretKey);
     return {
@@ -484,4 +484,4 @@ class QuantumCryptoProduction {
   }
 }
 
-module.exports = QuantumCryptoProduction;
+export default QuantumCryptoProduction;

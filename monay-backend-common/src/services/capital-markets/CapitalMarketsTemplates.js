@@ -757,4 +757,4 @@ class CapitalMarketsTemplates {
   }
 }
 
-module.exports = new CapitalMarketsTemplates();
+export default new CapitalMarketsTemplates();

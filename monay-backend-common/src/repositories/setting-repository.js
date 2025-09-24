@@ -1,6 +1,6 @@
-import models from '../models';
-import config from '../config';
-import utility from '../services/utility';
+import models from '../models/index.js';
+import config from '../config/index.js';
+import utility from '../services/utility.js';
 const { exec } = require('child_process');
 const { Setting, Country, KycDocument } = models;
 

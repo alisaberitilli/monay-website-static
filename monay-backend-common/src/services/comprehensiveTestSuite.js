@@ -893,4 +893,4 @@ class ComprehensiveTestSuite extends EventEmitter {
   }
 }
 
-module.exports = ComprehensiveTestSuite;
+export default ComprehensiveTestSuite;

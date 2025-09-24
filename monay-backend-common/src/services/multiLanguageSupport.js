@@ -897,4 +897,4 @@ class MultiLanguageSupport {
   }
 }
 
-module.exports = new MultiLanguageSupport();
+export default new MultiLanguageSupport();

@@ -937,4 +937,4 @@ class AIPoweredFeaturesService extends EventEmitter {
   }
 }
 
-module.exports = AIPoweredFeaturesService;
+export default AIPoweredFeaturesService;

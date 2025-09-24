@@ -910,4 +910,4 @@ class InterCompanyProcessing extends EventEmitter {
   }
 }
 
-module.exports = InterCompanyProcessing;
+export default InterCompanyProcessing;

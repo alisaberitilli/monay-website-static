@@ -4,7 +4,7 @@ import path from 'path';
 import { DateTime } from 'luxon';
 import moment from 'moment';
 import momentTimeZone from 'moment-timezone';
-import config from '../config';
+import config from '../config/index.js';
 import language from '../language';
 import userRepository from '../repositories/user-repository';
 export default {

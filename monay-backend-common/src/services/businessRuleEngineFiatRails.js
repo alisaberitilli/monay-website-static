@@ -731,4 +731,4 @@ class BusinessRuleEngineFiatRails extends BusinessRuleEngine {
   }
 }
 
-module.exports = BusinessRuleEngineFiatRails;
+export default BusinessRuleEngineFiatRails;

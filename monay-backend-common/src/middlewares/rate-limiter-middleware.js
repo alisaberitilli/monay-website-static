@@ -1,5 +1,5 @@
-import utility from '../services/utility';
-import loggers from '../services/logger';
+import utility from '../services/utility.js';
+import loggers from '../services/logger.js';
 const { RateLimiterMemory } = require('rate-limiter-flexible');
 
 /**

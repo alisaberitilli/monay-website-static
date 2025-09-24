@@ -798,4 +798,4 @@ class OracleNetSuiteIntegration extends EventEmitter {
   }
 }
 
-module.exports = OracleNetSuiteIntegration;
+export default OracleNetSuiteIntegration;

@@ -1,10 +1,10 @@
 import HttpStatus from 'http-status';
 import { Op } from 'sequelize';
-import utility from '../services/utility';
+import utility from '../services/utility.js';
 import repositories from '../repositories';
-import sms from '../services/sms';
-import encryptAPIs from '../services/encrypt';
-import config from '../config'
+import sms from '../services/sms.js';
+import encryptAPIs from '../services/encrypt.js';
+import config from '../config/index.js'
 const { accountRepository, userRepository, activityLogRepository , parentChildRepository } = repositories;
 
 export default {

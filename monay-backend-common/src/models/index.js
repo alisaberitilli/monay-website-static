@@ -1,7 +1,7 @@
 import fs from 'fs';
 import Sequelize from 'sequelize';
 import path from 'path';
-import config from '../config';
+import config from '../config/index.js';
 
 // Use PostgreSQL configuration
 const dbConfig = {

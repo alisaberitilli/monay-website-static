@@ -753,4 +753,4 @@ class BenefitEligibilityVerification {
   }
 }
 
-module.exports = BenefitEligibilityVerification;
+export default BenefitEligibilityVerification;

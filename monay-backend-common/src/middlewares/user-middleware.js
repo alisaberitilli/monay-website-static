@@ -1,7 +1,7 @@
 import HttpStatus from 'http-status';
 import repositories from '../repositories';
-import encryptAPIs from '../services/encrypt';
-import utility from '../services/utility';
+import encryptAPIs from '../services/encrypt.js';
+import utility from '../services/utility.js';
 import moment from 'moment';
 import { Op } from 'sequelize';
 

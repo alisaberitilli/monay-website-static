@@ -1,6 +1,6 @@
 import BaseJoi from '@hapi/joi';
 import Extension from '@hapi/joi-date';
-import utility from '../services/utility';
+import utility from '../services/utility.js';
 
 const Joi = BaseJoi.extend(Extension);
 

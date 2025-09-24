@@ -1,5 +1,5 @@
 import Joi from 'joi';
-import utility from '../services/utility';
+import utility from '../services/utility.js';
 
 const changeStatusSchema = Joi.object({
     status: Joi.string()

@@ -2,13 +2,17 @@ import winston from 'winston';
 import 'winston-daily-rotate-file';
 import path from 'path';
 import fs from 'fs';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 // Logger class for TilliPay and other services
 export class Logger {
   constructor(options = {}) {
     this.logName = options.logName || 'default';
     this.logFolder = options.logFolder || 'logs';
-    
+
     // Ensure log directory exists
     const logDir = path.join(__dirname, '../', 'logs', this.logFolder);
     if (!fs.existsSync(logDir)) {

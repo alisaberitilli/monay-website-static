@@ -1499,4 +1499,4 @@ class ComplianceReportingSystem extends EventEmitter {
 }
 
 // Export singleton instance
-module.exports = new ComplianceReportingSystem();
+export default new ComplianceReportingSystem();

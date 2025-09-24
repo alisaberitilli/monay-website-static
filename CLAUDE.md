@@ -1,5 +1,30 @@
 # Project: Monay - Dual-Rail Blockchain Payment Platform
 
+## 🛑 CRITICAL DATABASE SAFETY RULES - ABSOLUTELY FORBIDDEN ACTIONS 🛑
+
+### ⚠️ NEVER EXECUTE THESE COMMANDS - DATABASE INTEGRITY IS PARAMOUNT ⚠️
+1. **DROP** - NEVER use DROP TABLE, DROP DATABASE, DROP SCHEMA, DROP INDEX, DROP COLUMN
+2. **DELETE** - NEVER use DELETE FROM without WHERE clause, avoid DELETE operations
+3. **TRUNCATE** - NEVER use TRUNCATE TABLE
+4. **PURGE** - NEVER use any PURGE operations
+5. **ALTER DROP** - NEVER use ALTER TABLE ... DROP COLUMN
+6. **CASCADE DELETE** - NEVER use CASCADE DELETE operations
+
+### ✅ DATABASE SAFETY PRACTICES
+- **SINGLE DATABASE**: All applications (Admin, CaaS, Consumer Wallet) share ONE 'monay' PostgreSQL database
+- **NO CHANGES**: Database schema is FROZEN - no structural changes allowed
+- **READ-ONLY PREFERENCE**: Prefer SELECT queries over modifications
+- **BACKUP FIRST**: Always backup before any data operations
+- **USE TRANSACTIONS**: Wrap modifications in transactions with ROLLBACK capability
+- **TEST ENVIRONMENT**: Test all queries in development first
+- **RECOVERY SCRIPT**: Use `/monay-backend-common/migrations/DATABASE_RECOVERY_SCRIPT.sh` if needed
+
+### 🎯 Monay-Admin Role
+**Monay-Admin (Port 3002)** is the SUPER ADMIN MANAGER that controls:
+- **Monay-CaaS**: Enterprise Coin-as-a-Service platform management
+- **Monay Consumer Wallet**: Consumer wallet and super app management
+- **Shared Infrastructure**: Single backend (3001) and database for all apps
+
 ## Overview
 Monay is a comprehensive fintech platform implementing a dual-rail blockchain architecture that combines enterprise-grade stablecoin issuance with consumer-facing payment services. The platform offers Coin-as-a-Service (CaaS) and Wallet-as-a-Service (WaaS) solutions with integrated compliance and payment infrastructure.
 
@@ -41,12 +66,14 @@ Monay is a comprehensive fintech platform implementing a dual-rail blockchain ar
 - **Wallet Integration**: WalletConnect, Phantom
 
 ### Backend
-- **Runtime**: Node.js 20+
+- **Runtime**: Node.js 20+ (Native ES Modules - NO BABEL)
 - **Framework**: Express.js/Fastify
+- **Module System**: ES Modules (`"type": "module"` in package.json)
 - **Database**: PostgreSQL 15+
 - **Cache**: Redis 7+
 - **Queue**: Apache Kafka
 - **Monitoring**: DataDog/Prometheus
+- **Important**: Do NOT use Babel for transpilation - use native Node.js ES module support
 
 ### Blockchain
 - **EVM**: Solidity 0.8.20+, Hardhat, Ethers.js v6
@@ -124,12 +151,17 @@ Monay is a comprehensive fintech platform implementing a dual-rail blockchain ar
 - Real-time: Socket.io support
 - Note: All frontend apps access data ONLY through this API
 
-#### 3. Monay-Admin (Port 3002)
-- Administrative dashboard (v2.0.0)
-- User and transaction management
-- Compliance monitoring
-- Business rules configuration
-- Analytics and reporting
+#### 3. Monay-Admin (Port 3002) - SUPER ADMIN MANAGER
+**Critical Role**: Central administrative control for BOTH Monay-CaaS and Monay Consumer Wallet
+- Administrative dashboard (v2.0.0) - Master control panel for entire platform
+- User and transaction management across all applications
+- Compliance monitoring for both enterprise and consumer operations
+- Business rules configuration for dual-rail blockchain
+- Analytics and reporting for CaaS and WaaS platforms
+- Tenant management for multi-tenant operations
+- Billing analytics with USDXM support
+- **USES**: Same monay-backend-common (port 3001) as all other applications
+- **DATABASE**: Shares single PostgreSQL 'monay' database with ALL applications
 
 #### 4. Monay Consumer Wallet - Super App (Port 3003)
 **The First U.S.-Centric Super App** - Consumer wallet combining financial services with lifestyle features.
@@ -333,9 +365,12 @@ npm run test:load
 
 ### TypeScript/JavaScript
 - Use TypeScript for all new code
+- Use ES Modules (native Node.js support) - NO BABEL TRANSPILATION
+- Always include .js file extensions in imports for ES modules
 - Async/await over promises
 - Functional components with hooks in React
 - Proper error handling with try/catch blocks
+- Backend uses `"type": "module"` in package.json for native ES module support
 
 ### Solidity
 - Follow OpenZeppelin standards
@@ -354,6 +389,48 @@ npm run test:load
 - Redis for caching and sessions
 - Proper indexing for performance
 - Row-level security where applicable
+
+## 🚨 CRITICAL: Database Recovery & Management
+
+### Database Recovery Instructions
+**In case of database loss or corruption, use the recovery script immediately:**
+```bash
+cd /Users/alisaberi/Data/0ProductBuild/monay/monay-backend-common/migrations
+./DATABASE_RECOVERY_SCRIPT.sh
+```
+
+### Key Recovery Files (NEVER DELETE THESE)
+- **`/monay-backend-common/migrations/CONSOLIDATED_MONAY_SCHEMA.sql`** - Complete schema (70 tables)
+- **`/monay-backend-common/migrations/DATABASE_RECOVERY_SCRIPT.sh`** - Automated recovery
+- **`/COMPREHENSIVE_DATABASE_RECOVERY_ANALYSIS.md`** - Full documentation
+
+### ⚠️ IMPORTANT: When Making Database Changes
+1. **ALWAYS update CONSOLIDATED_MONAY_SCHEMA.sql** after adding new tables/changes
+2. **NEVER use DROP TABLE statements** in any migration
+3. **Use CREATE TABLE IF NOT EXISTS** for safety
+4. **Test migrations on a backup database first**
+5. **Update the recovery script if schema changes significantly**
+
+### Database Commands
+```bash
+# Check database status (should show 70+ tables)
+psql -U alisaberi -d monay -c "SELECT COUNT(*) FROM information_schema.tables WHERE table_schema = 'public';"
+
+# Create manual backup
+pg_dump -U alisaberi monay > monay_backup_$(date +%Y%m%d_%H%M%S).sql
+
+# Restore from backup
+psql -U alisaberi monay < backup_file.sql
+
+# Run migrations
+npm run migration:run
+
+# Generate migration
+npm run migration:generate
+
+# Seed database
+npm run seed
+```
 
 ## Commands
 
@@ -377,18 +454,6 @@ npm run lint
 
 # Build for production
 npm run build
-```
-
-### Database
-```bash
-# Run migrations
-npm run migration:run
-
-# Generate migration
-npm run migration:generate
-
-# Seed database
-npm run seed
 ```
 
 ### Mobile Development

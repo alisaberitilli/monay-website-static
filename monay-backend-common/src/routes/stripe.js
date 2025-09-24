@@ -1,5 +1,5 @@
 import express from 'express';
-import * as stripeController from '../controllers/stripe-controller';
+import * as stripeController from '../controllers/stripe-controller.js';
 import auth from '../middlewares/auth-middleware';
 import rateLimiter from '../middlewares/rate-limiter-middleware';
 import { validateRequest } from '../middlewares/validate-middleware';

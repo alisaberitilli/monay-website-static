@@ -746,4 +746,4 @@ class FinancialReportingService extends EventEmitter {
   }
 }
 
-module.exports = FinancialReportingService;
+export default FinancialReportingService;

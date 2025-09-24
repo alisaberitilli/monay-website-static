@@ -1048,4 +1048,4 @@ class SageBusinessConnector extends EventEmitter {
   }
 }
 
-module.exports = SageBusinessConnector;
+export default SageBusinessConnector;

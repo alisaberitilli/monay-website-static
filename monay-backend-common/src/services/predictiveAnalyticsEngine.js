@@ -836,4 +836,4 @@ class PredictiveAnalyticsEngine extends EventEmitter {
   }
 }
 
-module.exports = PredictiveAnalyticsEngine;
+export default PredictiveAnalyticsEngine;

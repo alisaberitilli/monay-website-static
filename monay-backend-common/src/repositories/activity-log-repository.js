@@ -1,5 +1,5 @@
-import models from '../models';
-import utility from '../services/utility';
+import models from '../models/index.js';
+import utility from '../services/utility.js';
 import moment from 'moment-timezone';
 import { Op } from 'sequelize';
 const { Sequelize } = models.sequelize;

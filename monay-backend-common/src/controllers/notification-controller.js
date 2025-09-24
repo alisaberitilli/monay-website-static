@@ -1,7 +1,7 @@
 import HttpStatus from 'http-status';
 import repositories from '../repositories';
-import notification from '../services/notification';
-import utility from '../services/utility';
+import notification from '../services/notification.js';
+import utility from '../services/utility.js';
 
 const { notificationRepository, userRepository } = repositories;
 

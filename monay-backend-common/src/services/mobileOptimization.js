@@ -894,4 +894,4 @@ class MobileOptimization {
   }
 }
 
-module.exports = new MobileOptimization();
+export default new MobileOptimization();

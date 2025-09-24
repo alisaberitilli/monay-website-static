@@ -397,4 +397,4 @@ class RuleEvaluator {
   }
 }
 
-module.exports = new RuleEvaluator();
+export default new RuleEvaluator();

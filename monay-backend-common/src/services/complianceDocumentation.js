@@ -1414,4 +1414,4 @@ const authorizationUrl = client.authorizationUrl({
   }
 }
 
-module.exports = ComplianceDocumentation;
+export default ComplianceDocumentation;

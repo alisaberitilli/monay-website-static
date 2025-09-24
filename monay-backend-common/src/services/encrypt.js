@@ -1,5 +1,5 @@
 const crypto = require('crypto');
-import config from '../config';
+import config from '../config/index.js';
 const { algorithm, salt, digest, secretKey } = config.crypto;
 
 let encrypt = async (plainText) => {

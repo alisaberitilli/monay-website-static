@@ -1,6 +1,6 @@
 import loggers from './logger';
-import twilio from '../services/twilio';
-import config from '../config';
+import twilio from '../services/twilio.js';
+import config from '../config/index.js';
 const { errorLogger } = loggers;
 
 export default {

@@ -572,4 +572,4 @@ class RuleValidator {
   }
 }
 
-module.exports = new RuleValidator();
+export default new RuleValidator();

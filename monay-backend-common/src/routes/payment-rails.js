@@ -7,9 +7,9 @@
 import { Router } from 'express';
 import HttpStatus from 'http-status';
 import authenticate from '../middlewares/auth-middleware';
-import dwollaPaymentService from '../services/dwolla-payment';
-import paymentRailOrchestrator from '../services/payment-rail-orchestrator';
-import loggers from '../services/logger';
+import dwollaPaymentService from '../services/dwolla-payment.js';
+import paymentRailOrchestrator from '../services/payment-rail-orchestrator.js';
+import loggers from '../services/logger.js';
 
 const router = Router();
 

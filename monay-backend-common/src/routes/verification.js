@@ -1,8 +1,8 @@
 import { Router } from 'express';
 import HttpStatus from 'http-status';
-import nudgeOTPService from '../services/nudge-otp';
-import models from '../models';
-import utility from '../services/utility';
+import nudgeOTPService from '../services/nudge-otp.js';
+import models from '../models/index.js';
+import utility from '../services/utility.js';
 import middlewares from '../middlewares';
 
 const { User } = models;

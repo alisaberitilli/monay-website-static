@@ -808,4 +808,4 @@ class MultiChannelNotifications {
   }
 }
 
-module.exports = new MultiChannelNotifications();
+export default new MultiChannelNotifications();

@@ -806,4 +806,4 @@ pub mod invoice_wallet_rules {
   }
 }
 
-module.exports = new RuleCompiler();
+export default new RuleCompiler();

@@ -1,9 +1,9 @@
-import models from '../models';
-import utility from '../services/utility';
-import sms from '../services/sms';
-import encryptAPIs from '../services/encrypt';
-import Email from '../services/email';
-import logger from '../services/logger';
+import models from '../models/index.js';
+import utility from '../services/utility.js';
+import sms from '../services/sms.js';
+import encryptAPIs from '../services/encrypt.js';
+import Email from '../services/email.js';
+import logger from '../services/logger.js';
 const { ChangeMobileHistory, User } = models;
 
 export default {

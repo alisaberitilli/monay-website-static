@@ -475,4 +475,4 @@ class RuleSetService {
   }
 }
 
-module.exports = new RuleSetService();
+export default new RuleSetService();

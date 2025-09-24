@@ -1,7 +1,7 @@
-const { pool } = require('../models');
-const redis = require('../config/redis');
-const crypto = require('crypto');
-const { v4: uuidv4 } = require('uuid');
+import { pool } from '../models/index.js';
+import redis from '../config/redis.js';
+import crypto from 'crypto';
+import { v4 as uuidv4 } from 'uuid';
 
 class AccountLinking {
   constructor() {
@@ -736,4 +736,4 @@ class AccountLinking {
   }
 }
 
-module.exports = new AccountLinking();
+export default new AccountLinking();

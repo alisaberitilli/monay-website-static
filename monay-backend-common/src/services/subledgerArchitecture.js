@@ -717,4 +717,4 @@ class SubledgerArchitecture extends EventEmitter {
   }
 }
 
-module.exports = SubledgerArchitecture;
+export default SubledgerArchitecture;

@@ -1,5 +1,5 @@
 import express from 'express';
-import solanaService from '../services/solana';
+import solanaService from '../services/solana.js';
 import authMiddleware from '../middlewares/auth-middleware';
 import { successResponse, errorResponse } from '../helpers';
 

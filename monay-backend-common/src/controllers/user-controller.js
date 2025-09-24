@@ -1,10 +1,10 @@
 import HttpStatus from 'http-status';
 import { Op } from 'sequelize';
 import repositories from '../repositories';
-import models from '../models';
-import utility from '../services/utility';
-import logger from '../services/logger';
-import Email from '../services/email';
+import models from '../models/index.js';
+import utility from '../services/utility.js';
+import logger from '../services/logger.js';
+import Email from '../services/email.js';
 
 const { UserToken, UserKyc, ChildParent } = models;
 const {

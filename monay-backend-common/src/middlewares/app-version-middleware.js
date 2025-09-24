@@ -1,6 +1,6 @@
 import HttpStatus from 'http-status';
 import semver from 'semver';
-import settingRepository from '../repositories/setting-repository';
+import settingRepository from '../repositories/setting-repository.js';
 /**
   * Check version
   * @param {Object} req

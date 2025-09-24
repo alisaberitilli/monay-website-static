@@ -858,4 +858,4 @@ class BenefitIssuanceWorkflows extends EventEmitter {
 }
 
 // Export singleton instance
-module.exports = new BenefitIssuanceWorkflows();
+export default new BenefitIssuanceWorkflows();

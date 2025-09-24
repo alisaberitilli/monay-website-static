@@ -2,7 +2,7 @@ const uniqid = require('uniqid');
 const Cryptr = require('cryptr');
 import config from "../config";
 import utility from './utility';
-import models from '../models';
+import models from '../models/index.js';
 import loggers from './logger';
 import encryptAPIs from './encrypt';
 import ApiRequest from "./api-request";

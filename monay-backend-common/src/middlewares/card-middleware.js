@@ -1,6 +1,6 @@
 import HttpStatus from 'http-status';
 import repositories from '../repositories';
-import utility from '../services/utility';
+import utility from '../services/utility.js';
 import models from "../models";
 
 const { UserCard } = models;

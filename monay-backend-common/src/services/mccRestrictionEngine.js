@@ -982,4 +982,4 @@ class MCCRestrictionEngine extends EventEmitter {
 }
 
 // Export singleton instance
-module.exports = new MCCRestrictionEngine();
+export default new MCCRestrictionEngine();

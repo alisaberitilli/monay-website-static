@@ -781,4 +781,4 @@ class BenefitBalanceTracker extends EventEmitter {
 }
 
 // Export singleton instance
-module.exports = new BenefitBalanceTracker();
+export default new BenefitBalanceTracker();

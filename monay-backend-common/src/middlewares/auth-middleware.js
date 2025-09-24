@@ -1,7 +1,7 @@
 import HttpStatus from 'http-status';
-import jwt from '../services/jwt';
-import userRepository from '../repositories/user-repository';
-import accountRepository from '../repositories/account-repository';
+import jwt from '../services/jwt.js';
+import userRepository from '../repositories/user-repository.js';
+import accountRepository from '../repositories/account-repository.js';
 /**
   * Check user authorization
   * @param {Object} req
@@ -113,6 +113,9 @@ const checkRole = (allowedRoles) => {
   };
 };
 
+// Create verifyAdmin middleware
+const verifyAdmin = checkRole(['platform_admin', 'admin', 'high_security']);
+
 // Make authValidateRequest the default export for backward compatibility
 // But also add properties to it for the new functionality
 authValidateRequest.verifyToken = authValidateRequest; // auth.verifyToken works same as auth
@@ -125,3 +128,10 @@ authValidateRequest.authValidateRequest = authValidateRequest;
 // - auth.verifyToken (same as auth for TilliPay routes if needed)
 // - auth.checkRole (for role-based access control)
 export default authValidateRequest;
+
+// Named exports for new API style
+export {
+  authValidateRequest as verifyToken,
+  verifyAdmin,
+  checkRole
+};

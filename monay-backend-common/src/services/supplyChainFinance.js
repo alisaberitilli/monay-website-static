@@ -822,4 +822,4 @@ class SupplyChainFinanceService extends EventEmitter {
   }
 }
 
-module.exports = SupplyChainFinanceService;
+export default SupplyChainFinanceService;

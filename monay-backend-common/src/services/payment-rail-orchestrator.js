@@ -9,7 +9,7 @@ import stripePaymentService from './stripe-payment';
 import HttpStatus from 'http-status';
 import { CustomError } from '../middlewares/errors';
 import loggers from './logger';
-import db from '../models';
+import db from '../models/index.js';
 
 class PaymentRailOrchestrator {
   constructor() {

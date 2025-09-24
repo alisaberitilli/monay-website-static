@@ -426,4 +426,4 @@ router.delete('/rule-sets/:id', authMiddleware, async (req, res) => {
   }
 });
 
-module.exports = router;
+export default router;

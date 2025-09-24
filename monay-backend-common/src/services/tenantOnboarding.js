@@ -985,4 +985,4 @@ class TenantOnboardingSystem extends EventEmitter {
   }
 }
 
-module.exports = TenantOnboardingSystem;
+export default TenantOnboardingSystem;

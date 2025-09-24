@@ -6,15 +6,17 @@ import helmet from 'helmet';
 import express from 'express';
 import swaggerUi from 'swagger-ui-express';
 import swaggerJSDoc from 'swagger-jsdoc';
-import routes from './routes';
-import models from './models';
-import config from './config';
-import loggers from './services/logger';
-import appVersionMiddleware from './middlewares/app-version-middleware'
+import routes from './routes/index.js';
+import models from './models/index.js';
+import config from './config/index.js';
+import loggers from './services/logger.js';
+import appVersionMiddleware from './middlewares/app-version-middleware.js';
 import path from 'path';
-import scheduleJob from './services/schedule-job'
+import scheduleJob from './services/schedule-job.js';
 import schedule from 'node-schedule';
-import invoiceWalletSocket from './services/invoice-wallet-socket';
+import invoiceWalletSocket from './services/invoice-wallet-socket.js';
+import enterpriseWalletSocket from './services/enterprise-wallet-socket.js';
+import databaseSafety from './services/database-safety.js';
 /**
  * Application startup class
  *
@@ -130,20 +132,32 @@ export default class Bootstrap {
         const {
             sequelize
         } = models;
+
+        // Apply database safety middleware
+        databaseSafety.createSafetyMiddleware(sequelize);
+
         sequelize
             .authenticate()
             .then(async () => {
                 loggers.infoLogger.info('Database connected successfully');
-                // Skip sync since database already exists with data
-                // await sequelize
-                //     .sync()
-                //     .then(() => {
-                //         loggers.infoLogger.info('Database sync successfully');
-                //     })
-                //     .catch((error) => {
-                //         console.log(error)
-                //         loggers.infoLogger.error('Database syncing error %s', error);
-                //     });
+
+                // Check database health
+                const health = await databaseSafety.checkDatabaseHealth(sequelize);
+
+                if (health.warnings.length > 0) {
+                    loggers.errorLogger.error('Database health warnings:');
+                    health.warnings.forEach(warning => {
+                        loggers.errorLogger.error(` - ${warning}`);
+                    });
+                }
+
+                loggers.infoLogger.info(`Database has ${health.tableCount} tables`);
+                loggers.infoLogger.info(`Critical tables present: ${health.criticalTables.length}/${health.criticalTables.length + health.missingTables.length}`);
+
+                // NEVER sync with force in production
+                // Use safeDatabaseSync if sync is ever needed
+                // await databaseSafety.safeDatabaseSync(sequelize, { alter: true });
+
                 loggers.infoLogger.info('Database sync skipped - using existing schema');
             })
             .catch((error) => {
@@ -174,6 +188,10 @@ export default class Bootstrap {
             // Initialize Socket.IO for Invoice Wallet real-time features
             invoiceWalletSocket.initialize(server);
             console.log('Invoice Wallet WebSocket service initialized');
+
+            // Initialize Socket.IO for Enterprise Wallet real-time features
+            enterpriseWalletSocket.initialize(server);
+            console.log('Enterprise Wallet WebSocket service initialized');
         });
         // delete unused media from media temp
         this.scheduleJob();

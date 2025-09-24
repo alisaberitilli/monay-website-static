@@ -11,8 +11,8 @@
  * - Or other NIST-approved post-quantum libraries
  */
 
-const crypto = require('crypto');
-const logger = require('../logger');
+import crypto from 'crypto';
+import logger from '../logger';
 
 class QuantumCrypto {
   constructor() {
@@ -416,4 +416,4 @@ class QuantumCrypto {
   }
 }
 
-module.exports = QuantumCrypto;
+export default QuantumCrypto;

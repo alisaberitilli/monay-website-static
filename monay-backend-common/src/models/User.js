@@ -1,9 +1,9 @@
-import config from '../config';
-import utility from '../services/utility';
+import config from '../config/index.js';
+import utility from '../services/utility.js';
 
 const defaultUsermage = `${config.app.baseUrl}public/default-images/user.png`;
 
-module.exports = (sequelize, DataTypes) => {
+export default (sequelize, DataTypes) => {
   const User = sequelize.define(
     'User',
     {

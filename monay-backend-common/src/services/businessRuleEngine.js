@@ -926,4 +926,4 @@ class BusinessRuleEngine {
   }
 }
 
-module.exports = BusinessRuleEngine;
+export default BusinessRuleEngine;

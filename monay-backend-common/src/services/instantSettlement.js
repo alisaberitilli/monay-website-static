@@ -859,4 +859,4 @@ class InstantSettlement {
   }
 }
 
-module.exports = new InstantSettlement();
+export default new InstantSettlement();

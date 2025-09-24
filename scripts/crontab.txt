@@ -1,0 +1,8 @@
+# Database Backup Cron Jobs
+# Format: minute hour day month weekday command
+
+# Backup all databases at noon (12:00 PM)
+0 12 * * * /Users/alisaberi/Data/0ProductBuild/monay/scripts/backup-databases.sh
+
+# Backup all databases at midnight (12:00 AM)
+0 0 * * * /Users/alisaberi/Data/0ProductBuild/monay/scripts/backup-databases.sh

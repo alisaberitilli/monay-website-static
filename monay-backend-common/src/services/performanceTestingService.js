@@ -1061,4 +1061,4 @@ class PerformanceTestingService extends EventEmitter {
   }
 }
 
-module.exports = PerformanceTestingService;
+export default PerformanceTestingService;

@@ -6,9 +6,12 @@ import multer from 'multer';
 import multerS3 from 'multer-s3';
 import Jimp from 'jimp';
 import HttpStatus from 'http-status';
-import config from '../config';
-import models from '../models';
-import s3Bucket from '../services/s3-bucket';
+import QRCode from 'qrcode';
+import config from '../config/index.js';
+import models from '../models/index.js';
+import s3Bucket from '../services/s3-bucket.js';
+import loggers from '../services/logger.js';
+import accountRepository from './account-repository';
 
 // Jimp helper functions to replace Sharp
 const jimpTransforms = {
@@ -72,9 +75,7 @@ const jimpTransforms = {
     }
   }
 };
-import loggers from '../services/logger';
-import accountRepository from './account-repository';
-const QRCode = require('qrcode')
+// Imports moved to top of file
 
 const { MediaTemp, User } = models;
 const { Op, literal } = models.Sequelize;

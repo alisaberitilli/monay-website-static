@@ -7,7 +7,7 @@
 import dwollaPaymentService from './dwolla-payment';
 import paymentRailOrchestrator from './payment-rail-orchestrator';
 import loggers from './logger';
-import db from '../models';
+import db from '../models/index.js';
 import { CustomError } from '../middlewares/errors';
 import HttpStatus from 'http-status';
 

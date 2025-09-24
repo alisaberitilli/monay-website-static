@@ -1428,4 +1428,4 @@ class TransactionMonitoringSystem extends EventEmitter {
 }
 
 // Export singleton instance
-module.exports = new TransactionMonitoringSystem();
+export default new TransactionMonitoringSystem();

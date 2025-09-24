@@ -1,5 +1,7 @@
-const router = require('express').Router();
-const CustomerService = require('../services/CustomerService');
+import express from 'express';
+import CustomerService from '../services/CustomerService.js';
+
+const router = express.Router();
 
 // Initialize service
 const customerService = new CustomerService();
@@ -309,4 +311,4 @@ router.get('/:id/compliance', async (req, res) => {
   }
 });
 
-module.exports = router;
+export default router;

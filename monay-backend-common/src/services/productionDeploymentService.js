@@ -1167,4 +1167,4 @@ class ProductionDeploymentService extends EventEmitter {
   }
 }
 
-module.exports = ProductionDeploymentService;
+export default ProductionDeploymentService;

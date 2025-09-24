@@ -1,0 +1,690 @@
+/**
+ * Circle Metrics Collection Service
+ * Tracks and analyzes performance metrics for USDC operations
+ */
+
+const EventEmitter = require('events');
+
+class CircleMetricsCollector extends EventEmitter {
+  constructor() {
+    super();
+
+    this.metrics = {
+      operations: {
+        mint: { count: 0, volume: 0, avgTime: 0, success: 0, failed: 0 },
+        burn: { count: 0, volume: 0, avgTime: 0, success: 0, failed: 0 },
+        transfer: { count: 0, volume: 0, avgTime: 0, success: 0, failed: 0 },
+        walletCreation: { count: 0, avgTime: 0, success: 0, failed: 0 }
+      },
+      performance: {
+        apiLatency: [],
+        throughput: [],
+        errorRate: 0,
+        uptime: 100
+      },
+      volume: {
+        hourly: {},
+        daily: {},
+        monthly: {},
+        total: 0
+      },
+      errors: {
+        byType: {},
+        byOperation: {},
+        recent: []
+      },
+      wallets: {
+        created: 0,
+        active: 0,
+        totalBalance: 0,
+        avgBalance: 0
+      },
+      network: {
+        ethereum: { transactions: 0, gasUsed: 0, avgGasPrice: 0 },
+        solana: { transactions: 0, computeUnits: 0, avgFee: 0 },
+        polygon: { transactions: 0, gasUsed: 0, avgGasPrice: 0 },
+        avalanche: { transactions: 0, gasUsed: 0, avgGasPrice: 0 }
+      }
+    };
+
+    this.timeWindows = {
+      minute: 60 * 1000,
+      hour: 60 * 60 * 1000,
+      day: 24 * 60 * 60 * 1000,
+      week: 7 * 24 * 60 * 60 * 1000,
+      month: 30 * 24 * 60 * 60 * 1000
+    };
+
+    this.dataPoints = [];
+    this.maxDataPoints = 10000;
+    this.aggregationInterval = null;
+    this.startTime = Date.now();
+  }
+
+  /**
+   * Start metrics collection
+   */
+  start(intervalMs = 60000) {
+    console.log(`📊 Starting Circle metrics collection (interval: ${intervalMs}ms)`);
+
+    // Start aggregation
+    this.aggregationInterval = setInterval(() => {
+      this.aggregate();
+    }, intervalMs);
+
+    // Initialize hourly buckets
+    this.initializeTimeBuckets();
+  }
+
+  /**
+   * Stop metrics collection
+   */
+  stop() {
+    if (this.aggregationInterval) {
+      clearInterval(this.aggregationInterval);
+      this.aggregationInterval = null;
+      console.log('🛑 Circle metrics collection stopped');
+    }
+  }
+
+  /**
+   * Record an operation metric
+   */
+  recordOperation(type, amount, duration, success = true, metadata = {}) {
+    const dataPoint = {
+      type: 'operation',
+      operation: type,
+      amount: parseFloat(amount) || 0,
+      duration,
+      success,
+      metadata,
+      timestamp: Date.now()
+    };
+
+    this.dataPoints.push(dataPoint);
+    this.trimDataPoints();
+
+    // Update operation metrics
+    const op = this.metrics.operations[type];
+    if (op) {
+      op.count++;
+      op.volume += dataPoint.amount;
+      op.avgTime = ((op.avgTime * (op.count - 1)) + duration) / op.count;
+
+      if (success) {
+        op.success++;
+      } else {
+        op.failed++;
+      }
+    }
+
+    // Update volume
+    this.updateVolume(dataPoint.amount);
+
+    // Emit event
+    this.emit('operation', dataPoint);
+
+    return dataPoint;
+  }
+
+  /**
+   * Record API performance
+   */
+  recordApiPerformance(endpoint, method, duration, statusCode, success = true) {
+    const dataPoint = {
+      type: 'api',
+      endpoint,
+      method,
+      duration,
+      statusCode,
+      success,
+      timestamp: Date.now()
+    };
+
+    this.dataPoints.push(dataPoint);
+    this.trimDataPoints();
+
+    // Update latency
+    this.metrics.performance.apiLatency.push(duration);
+    if (this.metrics.performance.apiLatency.length > 100) {
+      this.metrics.performance.apiLatency.shift();
+    }
+
+    // Update error rate
+    if (!success) {
+      this.recordError('api', `${method} ${endpoint} failed with ${statusCode}`);
+    }
+
+    this.emit('apiCall', dataPoint);
+
+    return dataPoint;
+  }
+
+  /**
+   * Record wallet metrics
+   */
+  recordWallet(action, walletData = {}) {
+    const dataPoint = {
+      type: 'wallet',
+      action,
+      walletId: walletData.walletId,
+      balance: walletData.balance || 0,
+      timestamp: Date.now()
+    };
+
+    this.dataPoints.push(dataPoint);
+    this.trimDataPoints();
+
+    if (action === 'created') {
+      this.metrics.wallets.created++;
+    }
+
+    if (action === 'updated' && walletData.balance !== undefined) {
+      this.updateWalletBalance(walletData.walletId, walletData.balance);
+    }
+
+    this.emit('wallet', dataPoint);
+
+    return dataPoint;
+  }
+
+  /**
+   * Record network metrics
+   */
+  recordNetworkTransaction(chain, gasUsed, gasPrice, success = true) {
+    const network = this.metrics.network[chain.toLowerCase()];
+    if (network) {
+      network.transactions++;
+
+      if (chain.toLowerCase() === 'solana') {
+        network.computeUnits += gasUsed;
+        network.avgFee = ((network.avgFee * (network.transactions - 1)) + gasPrice) / network.transactions;
+      } else {
+        network.gasUsed += gasUsed;
+        network.avgGasPrice = ((network.avgGasPrice * (network.transactions - 1)) + gasPrice) / network.transactions;
+      }
+    }
+
+    const dataPoint = {
+      type: 'network',
+      chain,
+      gasUsed,
+      gasPrice,
+      success,
+      timestamp: Date.now()
+    };
+
+    this.emit('network', dataPoint);
+
+    return dataPoint;
+  }
+
+  /**
+   * Record an error
+   */
+  recordError(type, message, operation = null) {
+    const error = {
+      type,
+      message,
+      operation,
+      timestamp: Date.now()
+    };
+
+    // Update error counts
+    this.metrics.errors.byType[type] = (this.metrics.errors.byType[type] || 0) + 1;
+
+    if (operation) {
+      this.metrics.errors.byOperation[operation] = (this.metrics.errors.byOperation[operation] || 0) + 1;
+    }
+
+    // Keep recent errors
+    this.metrics.errors.recent.push(error);
+    if (this.metrics.errors.recent.length > 100) {
+      this.metrics.errors.recent.shift();
+    }
+
+    // Update error rate
+    this.calculateErrorRate();
+
+    this.emit('error', error);
+
+    return error;
+  }
+
+  /**
+   * Update volume metrics
+   */
+  updateVolume(amount) {
+    const now = new Date();
+    const hour = now.toISOString().substring(0, 13);
+    const day = now.toISOString().substring(0, 10);
+    const month = now.toISOString().substring(0, 7);
+
+    this.metrics.volume.hourly[hour] = (this.metrics.volume.hourly[hour] || 0) + amount;
+    this.metrics.volume.daily[day] = (this.metrics.volume.daily[day] || 0) + amount;
+    this.metrics.volume.monthly[month] = (this.metrics.volume.monthly[month] || 0) + amount;
+    this.metrics.volume.total += amount;
+
+    // Clean old data
+    this.cleanOldVolumeData();
+  }
+
+  /**
+   * Update wallet balance tracking
+   */
+  updateWalletBalance(walletId, balance) {
+    // This would normally track individual wallet balances
+    // For now, we'll update aggregate metrics
+    this.metrics.wallets.active++;
+    this.metrics.wallets.totalBalance += balance;
+    this.metrics.wallets.avgBalance = this.metrics.wallets.totalBalance / this.metrics.wallets.active;
+  }
+
+  /**
+   * Calculate error rate
+   */
+  calculateErrorRate() {
+    const recentPoints = this.getRecentDataPoints('hour');
+    const totalCalls = recentPoints.filter(p => p.type === 'api' || p.type === 'operation').length;
+    const failedCalls = recentPoints.filter(p => !p.success).length;
+
+    this.metrics.performance.errorRate = totalCalls > 0 ? (failedCalls / totalCalls) * 100 : 0;
+  }
+
+  /**
+   * Calculate throughput
+   */
+  calculateThroughput() {
+    const windows = ['minute', 'hour', 'day'];
+    const throughput = {};
+
+    windows.forEach(window => {
+      const points = this.getRecentDataPoints(window);
+      const operations = points.filter(p => p.type === 'operation').length;
+      const duration = this.timeWindows[window] / 1000; // Convert to seconds
+
+      throughput[window] = operations / duration;
+    });
+
+    this.metrics.performance.throughput = throughput;
+
+    return throughput;
+  }
+
+  /**
+   * Get recent data points
+   */
+  getRecentDataPoints(window = 'hour') {
+    const cutoff = Date.now() - this.timeWindows[window];
+    return this.dataPoints.filter(p => p.timestamp > cutoff);
+  }
+
+  /**
+   * Aggregate metrics
+   */
+  aggregate() {
+    // Calculate throughput
+    this.calculateThroughput();
+
+    // Calculate error rate
+    this.calculateErrorRate();
+
+    // Calculate uptime
+    const uptimeDuration = Date.now() - this.startTime;
+    const downtimePoints = this.dataPoints.filter(p => p.type === 'downtime');
+    const totalDowntime = downtimePoints.reduce((sum, p) => sum + (p.duration || 0), 0);
+    this.metrics.performance.uptime = ((uptimeDuration - totalDowntime) / uptimeDuration) * 100;
+
+    // Emit aggregated metrics
+    this.emit('aggregate', this.getSnapshot());
+  }
+
+  /**
+   * Initialize time buckets
+   */
+  initializeTimeBuckets() {
+    const now = new Date();
+    const hour = now.toISOString().substring(0, 13);
+    const day = now.toISOString().substring(0, 10);
+    const month = now.toISOString().substring(0, 7);
+
+    if (!this.metrics.volume.hourly[hour]) {
+      this.metrics.volume.hourly[hour] = 0;
+    }
+    if (!this.metrics.volume.daily[day]) {
+      this.metrics.volume.daily[day] = 0;
+    }
+    if (!this.metrics.volume.monthly[month]) {
+      this.metrics.volume.monthly[month] = 0;
+    }
+  }
+
+  /**
+   * Clean old volume data
+   */
+  cleanOldVolumeData() {
+    const now = Date.now();
+
+    // Keep only last 24 hours
+    const hourCutoff = new Date(now - this.timeWindows.day).toISOString().substring(0, 13);
+    Object.keys(this.metrics.volume.hourly).forEach(hour => {
+      if (hour < hourCutoff) {
+        delete this.metrics.volume.hourly[hour];
+      }
+    });
+
+    // Keep only last 30 days
+    const dayCutoff = new Date(now - this.timeWindows.month).toISOString().substring(0, 10);
+    Object.keys(this.metrics.volume.daily).forEach(day => {
+      if (day < dayCutoff) {
+        delete this.metrics.volume.daily[day];
+      }
+    });
+
+    // Keep only last 12 months
+    const monthCutoff = new Date(now - (365 * this.timeWindows.day)).toISOString().substring(0, 7);
+    Object.keys(this.metrics.volume.monthly).forEach(month => {
+      if (month < monthCutoff) {
+        delete this.metrics.volume.monthly[month];
+      }
+    });
+  }
+
+  /**
+   * Trim data points to max size
+   */
+  trimDataPoints() {
+    if (this.dataPoints.length > this.maxDataPoints) {
+      this.dataPoints = this.dataPoints.slice(-this.maxDataPoints);
+    }
+  }
+
+  /**
+   * Get current metrics snapshot
+   */
+  getSnapshot() {
+    return {
+      timestamp: Date.now(),
+      operations: this.metrics.operations,
+      performance: {
+        ...this.metrics.performance,
+        avgLatency: this.getAverageLatency(),
+        p95Latency: this.getPercentileLatency(95),
+        p99Latency: this.getPercentileLatency(99)
+      },
+      volume: {
+        ...this.metrics.volume,
+        last24h: this.getVolumeLastHours(24),
+        last7d: this.getVolumeLastDays(7),
+        last30d: this.getVolumeLastDays(30)
+      },
+      errors: {
+        ...this.metrics.errors,
+        errorRate: this.metrics.performance.errorRate
+      },
+      wallets: this.metrics.wallets,
+      network: this.metrics.network,
+      uptime: this.metrics.performance.uptime
+    };
+  }
+
+  /**
+   * Get average latency
+   */
+  getAverageLatency() {
+    const latencies = this.metrics.performance.apiLatency;
+    if (latencies.length === 0) return 0;
+
+    const sum = latencies.reduce((a, b) => a + b, 0);
+    return sum / latencies.length;
+  }
+
+  /**
+   * Get percentile latency
+   */
+  getPercentileLatency(percentile) {
+    const latencies = [...this.metrics.performance.apiLatency].sort((a, b) => a - b);
+    if (latencies.length === 0) return 0;
+
+    const index = Math.ceil((percentile / 100) * latencies.length) - 1;
+    return latencies[index];
+  }
+
+  /**
+   * Get volume for last N hours
+   */
+  getVolumeLastHours(hours) {
+    const now = Date.now();
+    let total = 0;
+
+    for (let i = 0; i < hours; i++) {
+      const hour = new Date(now - (i * this.timeWindows.hour)).toISOString().substring(0, 13);
+      total += this.metrics.volume.hourly[hour] || 0;
+    }
+
+    return total;
+  }
+
+  /**
+   * Get volume for last N days
+   */
+  getVolumeLastDays(days) {
+    const now = Date.now();
+    let total = 0;
+
+    for (let i = 0; i < days; i++) {
+      const day = new Date(now - (i * this.timeWindows.day)).toISOString().substring(0, 10);
+      total += this.metrics.volume.daily[day] || 0;
+    }
+
+    return total;
+  }
+
+  /**
+   * Get operation statistics
+   */
+  getOperationStats(operation, window = 'hour') {
+    const points = this.getRecentDataPoints(window)
+      .filter(p => p.type === 'operation' && p.operation === operation);
+
+    if (points.length === 0) {
+      return {
+        count: 0,
+        volume: 0,
+        avgDuration: 0,
+        successRate: 0
+      };
+    }
+
+    const successful = points.filter(p => p.success).length;
+    const totalVolume = points.reduce((sum, p) => sum + p.amount, 0);
+    const avgDuration = points.reduce((sum, p) => sum + p.duration, 0) / points.length;
+
+    return {
+      count: points.length,
+      volume: totalVolume,
+      avgDuration,
+      successRate: (successful / points.length) * 100
+    };
+  }
+
+  /**
+   * Get network statistics
+   */
+  getNetworkStats() {
+    return this.metrics.network;
+  }
+
+  /**
+   * Reset metrics
+   */
+  reset() {
+    this.metrics = {
+      operations: {
+        mint: { count: 0, volume: 0, avgTime: 0, success: 0, failed: 0 },
+        burn: { count: 0, volume: 0, avgTime: 0, success: 0, failed: 0 },
+        transfer: { count: 0, volume: 0, avgTime: 0, success: 0, failed: 0 },
+        walletCreation: { count: 0, avgTime: 0, success: 0, failed: 0 }
+      },
+      performance: {
+        apiLatency: [],
+        throughput: [],
+        errorRate: 0,
+        uptime: 100
+      },
+      volume: {
+        hourly: {},
+        daily: {},
+        monthly: {},
+        total: 0
+      },
+      errors: {
+        byType: {},
+        byOperation: {},
+        recent: []
+      },
+      wallets: {
+        created: 0,
+        active: 0,
+        totalBalance: 0,
+        avgBalance: 0
+      },
+      network: {
+        ethereum: { transactions: 0, gasUsed: 0, avgGasPrice: 0 },
+        solana: { transactions: 0, computeUnits: 0, avgFee: 0 },
+        polygon: { transactions: 0, gasUsed: 0, avgGasPrice: 0 },
+        avalanche: { transactions: 0, gasUsed: 0, avgGasPrice: 0 }
+      }
+    };
+
+    this.dataPoints = [];
+    this.startTime = Date.now();
+    this.initializeTimeBuckets();
+
+    console.log('📊 Metrics reset');
+  }
+
+  /**
+   * Export metrics to JSON
+   */
+  exportToJSON() {
+    return JSON.stringify(this.getSnapshot(), null, 2);
+  }
+
+  /**
+   * Generate report
+   */
+  generateReport(window = 'day') {
+    const snapshot = this.getSnapshot();
+    const windowLabel = window.charAt(0).toUpperCase() + window.slice(1);
+
+    const report = {
+      title: `Circle Metrics Report - Last ${windowLabel}`,
+      generated: new Date().toISOString(),
+      summary: {
+        totalOperations: Object.values(snapshot.operations).reduce((sum, op) => sum + op.count, 0),
+        totalVolume: snapshot.volume[`last${window === 'day' ? '24h' : window === 'week' ? '7d' : '30d'}`],
+        successRate: this.calculateOverallSuccessRate(),
+        avgLatency: snapshot.performance.avgLatency.toFixed(2) + 'ms',
+        uptime: snapshot.performance.uptime.toFixed(2) + '%'
+      },
+      operations: snapshot.operations,
+      performance: snapshot.performance,
+      volume: snapshot.volume,
+      topErrors: this.getTopErrors(5),
+      recommendations: this.generateRecommendations(snapshot)
+    };
+
+    return report;
+  }
+
+  /**
+   * Calculate overall success rate
+   */
+  calculateOverallSuccessRate() {
+    let totalOps = 0;
+    let successfulOps = 0;
+
+    Object.values(this.metrics.operations).forEach(op => {
+      totalOps += op.count;
+      successfulOps += op.success;
+    });
+
+    return totalOps > 0 ? ((successfulOps / totalOps) * 100).toFixed(2) : 100;
+  }
+
+  /**
+   * Get top errors
+   */
+  getTopErrors(limit = 5) {
+    const errors = Object.entries(this.metrics.errors.byType)
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, limit)
+      .map(([type, count]) => ({ type, count }));
+
+    return errors;
+  }
+
+  /**
+   * Generate recommendations based on metrics
+   */
+  generateRecommendations(snapshot) {
+    const recommendations = [];
+
+    // Check error rate
+    if (snapshot.performance.errorRate > 5) {
+      recommendations.push({
+        severity: 'high',
+        message: `Error rate is ${snapshot.performance.errorRate.toFixed(2)}%. Investigate and address failing operations.`
+      });
+    }
+
+    // Check latency
+    if (snapshot.performance.p95Latency > 5000) {
+      recommendations.push({
+        severity: 'medium',
+        message: `P95 latency is ${snapshot.performance.p95Latency}ms. Consider optimizing API calls or scaling infrastructure.`
+      });
+    }
+
+    // Check volume trends
+    const recentVolume = snapshot.volume.last24h;
+    const previousVolume = this.getVolumeForPeriod(Date.now() - (2 * this.timeWindows.day), Date.now() - this.timeWindows.day);
+
+    if (previousVolume > 0) {
+      const volumeChange = ((recentVolume - previousVolume) / previousVolume) * 100;
+      if (volumeChange > 200) {
+        recommendations.push({
+          severity: 'medium',
+          message: `Volume increased by ${volumeChange.toFixed(0)}% in the last 24 hours. Monitor capacity.`
+        });
+      }
+    }
+
+    // Check wallet balance concentration
+    if (snapshot.wallets.avgBalance > 100000) {
+      recommendations.push({
+        severity: 'low',
+        message: `Average wallet balance is high ($${snapshot.wallets.avgBalance.toFixed(2)}). Review security measures.`
+      });
+    }
+
+    return recommendations;
+  }
+
+  /**
+   * Get volume for a specific period
+   */
+  getVolumeForPeriod(startTime, endTime) {
+    const points = this.dataPoints.filter(p =>
+      p.type === 'operation' &&
+      p.timestamp >= startTime &&
+      p.timestamp <= endTime
+    );
+
+    return points.reduce((sum, p) => sum + p.amount, 0);
+  }
+}
+
+// Export singleton instance
+module.exports = new CircleMetricsCollector();

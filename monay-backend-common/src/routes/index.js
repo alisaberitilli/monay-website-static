@@ -1,45 +1,46 @@
 import { Router } from 'express';
 import HttpStatus from 'http-status';
-import account from './account';
-import accounts from './accounts';  // Consumer wallet Primary/Secondary accounts
-import media from './media';
-import cms from './cms';
-import admin from './admin';
-import notification from './notification';
-import setting from './setting';
-import user from './user';
-import paymentRequest from './payment-request';
-import card from './card';
-import bank from './bank';
-import transaction from './transaction';
-import payMoney from './pay-money';
-import addMoney from './add-money';
-import withdrawal from './withdrawal';
-import contact from './contact';
-import wallet from './wallet';
-import userBlock from './user-block';
+import account from './account.js';
+import accounts from './accounts.js';  // Consumer wallet Primary/Secondary accounts
+import media from './media.js';
+import cms from './cms.js';
+import admin from './admin.js';
+import notification from './notification.js';
+import setting from './setting.js';
+import user from './user.js';
+import paymentRequest from './payment-request.js';
+import card from './card.js';
+import bank from './bank.js';
+import transaction from './transaction.js';
+import payMoney from './pay-money.js';
+import addMoney from './add-money.js';
+import withdrawal from './withdrawal.js';
+import contact from './contact.js';
+import wallet from './wallet.js';
+import userBlock from './user-block.js';
 import path from 'path';
-import loggers from '../services/logger';
-import activityLog from './activity-log';
-import subadmin from './subadmin';
-import role from './role';
-import businessRules from './business-rules';
-import auth from './auth';
-import verification from './verification';
-import apiInfo from './api-info';
-import solana from './solana';
-import status from './status';
-import monayFiat from './monay-fiat';
-import stripe from './stripe';
-import blockchain from './blockchain';
-import treasury from './treasury';
-import oneqa from './oneqa-manual';
+import loggers from '../services/logger.js';
+import activityLog from './activity-log.js';
+import subadmin from './subadmin.js';
+import role from './role.js';
+import businessRules from './business-rules.js';
+import auth from './auth.js';
+import verification from './verification.js';
+import apiInfo from './api-info.js';
+import solana from './solana.js';
+import status from './status.js';
+import monayFiat from './monay-fiat.js';
+import stripe from './stripe.js';
+import blockchain from './blockchain.js';
+import treasury from './treasury.js';
+import oneqa from './oneqa-manual.js';
 import evm from './evm.js';
 import bridge from './bridge.js';
 import apiHealth, { trackEndpointHealth } from './api-health.js';
 import contracts from './contracts.js';
 import invoiceWallets from './invoiceWallets.js';
 import capitalMarkets from './capital-markets.js';
+import circle from './circle.js';
 // import governmentServices from './government-services.js';  // Temporarily disabled - fixing imports
 import aiMlServices from './ai-ml-services.js';
 import erpConnectors from './erp-connectors.js';
@@ -52,6 +53,11 @@ import industryVerticals from './industry-verticals.js';
 import authPlaceholder from './auth-placeholder.js';
 import customers from './customers.js';
 import p2pTransfer from './p2p-transfer.js';
+import organizations from './organizations.js';
+import walletBalance from './wallet-balance.js';
+import webhooks from './webhooks.js';
+import dataExports from './data-exports.js';
+import enterpriseRbac from './enterprise-rbac.js';
 
 const router = Router();
 const register = (app) => {
@@ -84,6 +90,7 @@ const register = (app) => {
     payMoney,
     addMoney,
     wallet,
+    walletBalance,  // Wallet balance and limits management
     withdrawal,
     contact,
     userBlock,
@@ -108,6 +115,7 @@ const register = (app) => {
   app.use('/api', contracts); // Contracts routes already have /contracts prefix
   app.use('/api/invoice-wallets', invoiceWallets); // Invoice-First wallet routes
   app.use('/api/capital-markets', capitalMarkets); // Capital Markets rule sets
+  app.use('/api/circle', circle); // Circle USDC integration for mint/burn operations
   // app.use('/api/government', governmentServices); // Government services endpoints - temporarily disabled
   app.use('/api/ai-ml', aiMlServices); // AI/ML services endpoints
   app.use('/api/erp', erpConnectors); // ERP connector endpoints
@@ -118,6 +126,10 @@ const register = (app) => {
   app.use('/api/benefits', snapTanfBenefits); // SNAP/TANF benefit management system
   app.use('/api/verticals', industryVerticals); // Industry-specific payment solutions for 15 business sectors
   app.use('/api/customers', customers); // Customer management system with KYC/AML
+  app.use('/api/organizations', organizations); // Organization management system
+  app.use('/api/webhooks', webhooks); // Webhook management system for integrations
+  app.use('/api/exports', dataExports); // Advanced data export functionality
+  app.use('/api/enterprise-rbac', enterpriseRbac); // Enterprise Role-Based Access Control with industry-specific roles
 
 
   app.use((error, req, res, next) => {

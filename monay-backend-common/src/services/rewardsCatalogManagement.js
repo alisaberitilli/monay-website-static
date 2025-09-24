@@ -733,4 +733,4 @@ class RewardsCatalogManagementService extends EventEmitter {
   }
 }
 
-module.exports = RewardsCatalogManagementService;
+export default RewardsCatalogManagementService;

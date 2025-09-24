@@ -1,6 +1,6 @@
 
 import mediaRepository from './media-repository';
-import models from '../models';
+import models from '../models/index.js';
 import { Op } from 'sequelize';
 import notificationRepository from './notification-repository';
 const { UserKyc, MediaTemp } = models;

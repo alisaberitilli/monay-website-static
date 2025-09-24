@@ -1334,4 +1334,4 @@ class WaveAccountingConnector extends EventEmitter {
   }
 }
 
-module.exports = WaveAccountingConnector;
+export default WaveAccountingConnector;

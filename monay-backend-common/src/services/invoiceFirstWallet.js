@@ -780,4 +780,4 @@ class InvoiceFirstWallet extends EventEmitter {
   }
 }
 
-module.exports = InvoiceFirstWallet;
+export default InvoiceFirstWallet;

@@ -1,7 +1,7 @@
 import axios from "axios";
 import config from "../config";
-import loggers from '../services/logger';
-import utility from '../services/utility';
+import loggers from '../services/logger.js';
+import utility from '../services/utility.js';
 
 const httpMethod = {
   GET: "get",

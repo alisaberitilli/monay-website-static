@@ -6,11 +6,11 @@
  * @description Manages self-destructing wallet lifecycle with NIST SP 800-88 compliant erasure
  */
 
-const crypto = require('crypto');
-const schedule = require('node-schedule');
-const db = require('../../models');
-const logger = require('../logger');
-const Redis = require('redis');
+import crypto from 'crypto';
+import schedule from 'node-schedule';
+import db from '../../models';
+import logger from '../logger';
+import Redis from 'redis';
 
 class EphemeralManager {
   constructor() {
@@ -488,4 +488,4 @@ class EphemeralManager {
   }
 }
 
-module.exports = EphemeralManager;
+export default EphemeralManager;

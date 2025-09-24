@@ -1,8 +1,8 @@
 import { Router } from 'express';
-import OneQAService from '../services/oneqa-service';
+import OneQAService from '../services/oneqa-service.js';
 import middlewares from '../middlewares';
 import helpers from '../helpers';
-import { logger } from '../services/logger';
+import { logger } from '../services/logger.js';
 
 const router = Router();
 const { authMiddleware } = middlewares;

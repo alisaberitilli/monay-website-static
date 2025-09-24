@@ -1,7 +1,7 @@
 'use strict';
 
 import twilio from 'twilio';
-import config from '../config';
+import config from '../config/index.js';
 import settingRepository from '../repositories/setting-repository';
 import loggers from './logger';
 let infoLogger = loggers.infoLogger;

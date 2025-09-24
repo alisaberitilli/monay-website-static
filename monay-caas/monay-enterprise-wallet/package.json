@@ -17,7 +17,10 @@
     "cypress:open": "cypress open",
     "cypress:run": "cypress run",
     "test:e2e": "cypress run --headless",
-    "test:e2e:watch": "cypress open"
+    "test:e2e:watch": "cypress open",
+    "analyze": "ANALYZE=true next build --config next.config.analyzer.js",
+    "analyze:server": "BUNDLE_ANALYZE=server next build --config next.config.analyzer.js",
+    "analyze:browser": "BUNDLE_ANALYZE=browser next build --config next.config.analyzer.js"
   },
   "dependencies": {
     "@headlessui/react": "^2.2.7",
@@ -76,6 +79,7 @@
     "zustand": "^4.5.7"
   },
   "devDependencies": {
+    "@next/bundle-analyzer": "^15.5.4",
     "@tailwindcss/forms": "^0.5.10",
     "@tailwindcss/typography": "^0.5.16",
     "@testing-library/cypress": "^10.1.0",

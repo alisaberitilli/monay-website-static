@@ -1,0 +1,401 @@
+const jwt = require('jsonwebtoken');
+const mfaService = require('../services/mfa');
+const { auditLogService } = require('../services/audit-log');
+
+/**
+ * Middleware to enforce MFA verification for protected routes
+ */
+const requireMFA = (options = {}) => {
+  const {
+    action = null,
+    skipIfNotEnabled = false,
+    allowBackupCodes = true,
+    maxAge = 30 * 60 * 1000 // 30 minutes
+  } = options;
+
+  return async (req, res, next) => {
+    try {
+      const userId = req.user?.id || req.userId;
+      
+      if (!userId) {
+        return res.status(401).json({
+          success: false,
+          error: 'Authentication required'
+        });
+      }
+
+      // Check if MFA is enabled for user
+      const mfaStatus = await mfaService.getMFAStatus(userId);
+      
+      if (!mfaStatus?.enabled) {
+        if (skipIfNotEnabled) {
+          return next();
+        }
+        return res.status(403).json({
+          success: false,
+          error: 'MFA must be enabled for this action',
+          requiresSetup: true
+        });
+      }
+
+      // Check if action requires MFA
+      if (action) {
+        const required = await mfaService.requiresMFA(userId, action);
+        if (!required) {
+          return next();
+        }
+      }
+
+      // Check for MFA token in headers or body
+      const mfaToken = req.headers['x-mfa-token'] || 
+                      req.body.mfaToken || 
+                      req.query.mfaToken;
+
+      if (!mfaToken) {
+        return res.status(403).json({
+          success: false,
+          error: 'MFA verification required',
+          mfaRequired: true,
+          action
+        });
+      }
+
+      // Verify MFA token
+      try {
+        const decoded = jwt.verify(mfaToken, process.env.JWT_SECRET);
+        
+        // Check token age
+        const tokenAge = Date.now() - (decoded.iat * 1000);
+        if (tokenAge > maxAge) {
+          return res.status(403).json({
+            success: false,
+            error: 'MFA token expired',
+            mfaRequired: true
+          });
+        }
+
+        // Verify user matches
+        if (decoded.userId !== userId) {
+          return res.status(403).json({
+            success: false,
+            error: 'MFA token invalid for user'
+          });
+        }
+
+        // Check if MFA was verified
+        if (!decoded.mfaVerified) {
+          return res.status(403).json({
+            success: false,
+            error: 'MFA verification incomplete'
+          });
+        }
+
+        // Add MFA info to request
+        req.mfa = {
+          verified: true,
+          method: decoded.method || 'totp',
+          verifiedAt: new Date(decoded.iat * 1000)
+        };
+
+        next();
+      } catch (error) {
+        if (error.name === 'TokenExpiredError') {
+          return res.status(403).json({
+            success: false,
+            error: 'MFA token expired',
+            mfaRequired: true
+          });
+        }
+        
+        return res.status(403).json({
+          success: false,
+          error: 'Invalid MFA token',
+          mfaRequired: true
+        });
+      }
+    } catch (error) {
+      console.error('MFA middleware error:', error);
+      res.status(500).json({
+        success: false,
+        error: 'MFA verification failed'
+      });
+    }
+  };
+};
+
+/**
+ * Middleware to check MFA status without enforcing
+ */
+const checkMFA = async (req, res, next) => {
+  try {
+    const userId = req.user?.id || req.userId;
+    
+    if (!userId) {
+      req.mfaStatus = { enabled: false };
+      return next();
+    }
+
+    const status = await mfaService.getMFAStatus(userId);
+    req.mfaStatus = status || { enabled: false };
+    
+    // Check for existing MFA verification
+    const mfaToken = req.headers['x-mfa-token'] || 
+                    req.body.mfaToken || 
+                    req.query.mfaToken;
+
+    if (mfaToken) {
+      try {
+        const decoded = jwt.verify(mfaToken, process.env.JWT_SECRET);
+        if (decoded.userId === userId && decoded.mfaVerified) {
+          req.mfaVerified = true;
+          req.mfaMethod = decoded.method || 'totp';
+        }
+      } catch (error) {
+        // Invalid token, continue without MFA verification
+        req.mfaVerified = false;
+      }
+    }
+
+    next();
+  } catch (error) {
+    console.error('Check MFA error:', error);
+    req.mfaStatus = { enabled: false };
+    next();
+  }
+};
+
+/**
+ * Middleware for MFA setup enforcement
+ */
+const enforceMFASetup = (gracePeriodDays = 7) => {
+  return async (req, res, next) => {
+    try {
+      const userId = req.user?.id;
+      if (!userId) {
+        return next();
+      }
+
+      const db = require('../models');
+      const user = await db.User.findByPk(userId, {
+        attributes: ['mfaEnabled', 'createdAt', 'mfaEnforcedAt']
+      });
+
+      if (user.mfaEnabled) {
+        return next();
+      }
+
+      // Check if grace period has expired
+      const accountAge = Date.now() - new Date(user.createdAt).getTime();
+      const gracePeriodMs = gracePeriodDays * 24 * 60 * 60 * 1000;
+
+      if (accountAge > gracePeriodMs) {
+        // Check if this is an MFA setup endpoint
+        const setupPaths = ['/api/mfa/setup', '/api/mfa/verify-setup', '/api/mfa/status'];
+        if (setupPaths.some(path => req.path.startsWith(path))) {
+          return next();
+        }
+
+        return res.status(403).json({
+          success: false,
+          error: 'MFA setup is required for your account',
+          mfaSetupRequired: true,
+          gracePeriodExpired: true
+        });
+      }
+
+      // Add warning to response
+      const daysRemaining = Math.ceil((gracePeriodMs - accountAge) / (24 * 60 * 60 * 1000));
+      res.setHeader('X-MFA-Setup-Warning', `MFA setup required in ${daysRemaining} days`);
+      
+      next();
+    } catch (error) {
+      console.error('Enforce MFA setup error:', error);
+      next();
+    }
+  };
+};
+
+/**
+ * Middleware for step-up authentication
+ */
+const stepUpAuth = (options = {}) => {
+  const {
+    maxAge = 5 * 60 * 1000, // 5 minutes for high-risk operations
+    reason = 'This action requires recent authentication'
+  } = options;
+
+  return async (req, res, next) => {
+    try {
+      const userId = req.user?.id;
+      if (!userId) {
+        return res.status(401).json({
+          success: false,
+          error: 'Authentication required'
+        });
+      }
+
+      // Check if MFA is enabled
+      const mfaStatus = await mfaService.getMFAStatus(userId);
+      if (!mfaStatus?.enabled) {
+        // If MFA not enabled, require password re-authentication
+        const passwordToken = req.headers['x-password-token'];
+        if (!passwordToken) {
+          return res.status(403).json({
+            success: false,
+            error: reason,
+            stepUpRequired: true,
+            method: 'password'
+          });
+        }
+
+        try {
+          const decoded = jwt.verify(passwordToken, process.env.JWT_SECRET);
+          const tokenAge = Date.now() - (decoded.iat * 1000);
+          
+          if (tokenAge > maxAge || decoded.userId !== userId) {
+            throw new Error('Invalid password token');
+          }
+          
+          req.stepUp = {
+            verified: true,
+            method: 'password',
+            verifiedAt: new Date(decoded.iat * 1000)
+          };
+          
+          return next();
+        } catch (error) {
+          return res.status(403).json({
+            success: false,
+            error: 'Step-up authentication required',
+            stepUpRequired: true,
+            method: 'password'
+          });
+        }
+      }
+
+      // MFA is enabled, check for recent verification
+      const mfaToken = req.headers['x-mfa-token'];
+      if (!mfaToken) {
+        return res.status(403).json({
+          success: false,
+          error: reason,
+          stepUpRequired: true,
+          method: 'mfa'
+        });
+      }
+
+      try {
+        const decoded = jwt.verify(mfaToken, process.env.JWT_SECRET);
+        const tokenAge = Date.now() - (decoded.iat * 1000);
+        
+        if (tokenAge > maxAge) {
+          return res.status(403).json({
+            success: false,
+            error: 'Recent MFA verification required',
+            stepUpRequired: true,
+            method: 'mfa',
+            maxAge
+          });
+        }
+
+        if (decoded.userId !== userId || !decoded.mfaVerified) {
+          throw new Error('Invalid MFA token');
+        }
+
+        req.stepUp = {
+          verified: true,
+          method: 'mfa',
+          verifiedAt: new Date(decoded.iat * 1000)
+        };
+
+        // Log step-up authentication
+        await auditLogService.log({
+          userId,
+          action: 'STEP_UP_AUTH_SUCCESS',
+          resource: 'security',
+          details: {
+            method: 'mfa',
+            reason,
+            path: req.path
+          },
+          severity: 'INFO',
+          category: 'AUTHENTICATION'
+        });
+
+        next();
+      } catch (error) {
+        return res.status(403).json({
+          success: false,
+          error: 'Step-up authentication failed',
+          stepUpRequired: true,
+          method: 'mfa'
+        });
+      }
+    } catch (error) {
+      console.error('Step-up auth error:', error);
+      res.status(500).json({
+        success: false,
+        error: 'Authentication verification failed'
+      });
+    }
+  };
+};
+
+/**
+ * Rate limiting for MFA attempts
+ */
+const mfaRateLimit = (options = {}) => {
+  const {
+    maxAttempts = 5,
+    windowMs = 15 * 60 * 1000 // 15 minutes
+  } = options;
+
+  const attempts = new Map();
+
+  return (req, res, next) => {
+    const userId = req.user?.id || req.ip;
+    const key = `mfa-${userId}`;
+    
+    const now = Date.now();
+    const userAttempts = attempts.get(key) || [];
+    
+    // Clean old attempts
+    const recentAttempts = userAttempts.filter(
+      timestamp => now - timestamp < windowMs
+    );
+    
+    if (recentAttempts.length >= maxAttempts) {
+      return res.status(429).json({
+        success: false,
+        error: 'Too many MFA attempts. Please try again later.',
+        retryAfter: Math.ceil((recentAttempts[0] + windowMs - now) / 1000)
+      });
+    }
+    
+    // Record attempt
+    recentAttempts.push(now);
+    attempts.set(key, recentAttempts);
+    
+    // Clean up old entries periodically
+    if (Math.random() < 0.01) {
+      for (const [k, v] of attempts.entries()) {
+        const validAttempts = v.filter(t => now - t < windowMs);
+        if (validAttempts.length === 0) {
+          attempts.delete(k);
+        } else {
+          attempts.set(k, validAttempts);
+        }
+      }
+    }
+    
+    next();
+  };
+};
+
+module.exports = {
+  requireMFA,
+  checkMFA,
+  enforceMFASetup,
+  stepUpAuth,
+  mfaRateLimit
+};

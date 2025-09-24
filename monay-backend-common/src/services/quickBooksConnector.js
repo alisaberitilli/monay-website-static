@@ -782,4 +782,4 @@ class QuickBooksConnector extends EventEmitter {
   }
 }
 
-module.exports = QuickBooksConnector;
+export default QuickBooksConnector;

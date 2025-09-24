@@ -835,4 +835,4 @@ class LoyaltyPointsAccrualEngine extends EventEmitter {
   }
 }
 
-module.exports = LoyaltyPointsAccrualEngine;
+export default LoyaltyPointsAccrualEngine;

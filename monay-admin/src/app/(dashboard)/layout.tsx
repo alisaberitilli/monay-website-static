@@ -15,6 +15,8 @@ import {
   Menu,
   X,
   Shield,
+  Building,
+  DollarSign,
 } from 'lucide-react';
 import { useAuthStore } from '@/store/auth';
 import { authService } from '@/services/auth.service';
@@ -28,6 +30,20 @@ const sidebarItems = [
     icon: LayoutDashboard,
     label: 'Dashboard',
     href: '/dashboard',
+  },
+  {
+    key: '/tenants',
+    icon: Building,
+    label: 'Tenants',
+    href: '/tenants',
+    badge: 'New',
+  },
+  {
+    key: '/billing-analytics',
+    icon: DollarSign,
+    label: 'Billing Analytics',
+    href: '/billing-analytics',
+    badge: 'USDXM',
   },
   {
     key: '/users',
@@ -127,14 +143,19 @@ export default function DashboardLayout({
                   <Button
                     variant={isActive ? "secondary" : "ghost"}
                     className={`w-full justify-start h-12 text-left transition-all duration-200 ${
-                      isActive 
-                        ? 'bg-white/10 text-white shadow-lg' 
+                      isActive
+                        ? 'bg-white/10 text-white shadow-lg'
                         : 'text-slate-300 hover:text-white hover:bg-white/5'
                     }`}
                     onClick={() => setSidebarOpen(false)}
                   >
                     <Icon className="w-5 h-5 mr-3" />
-                    {item.label}
+                    <span className="flex-1">{item.label}</span>
+                    {item.badge && (
+                      <span className="ml-2 px-2 py-1 text-xs bg-green-500/20 text-green-300 rounded-full">
+                        {item.badge}
+                      </span>
+                    )}
                   </Button>
                 </Link>
               </motion.div>

@@ -819,4 +819,4 @@ class AIFraudDetectionSystem extends EventEmitter {
   }
 }
 
-module.exports = AIFraudDetectionSystem;
+export default AIFraudDetectionSystem;

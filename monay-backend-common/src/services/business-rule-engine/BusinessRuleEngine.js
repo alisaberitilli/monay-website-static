@@ -680,4 +680,4 @@ class BusinessRuleEngine extends EventEmitter {
   }
 }
 
-module.exports = new BusinessRuleEngine();
+export default new BusinessRuleEngine();

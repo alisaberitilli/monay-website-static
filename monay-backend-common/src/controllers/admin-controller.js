@@ -1,8 +1,8 @@
 import HttpStatus from 'http-status';
 import repositories from '../repositories';
 import transactionRepository from '../repositories/transaction-repository';
-import utility from '../services/utility';
-import models from '../models';
+import utility from '../services/utility.js';
+import models from '../models/index.js';
 const { PaymentRequest, Transaction } = models;
 const { userRepository, paymentRequestRepository } = repositories;
 

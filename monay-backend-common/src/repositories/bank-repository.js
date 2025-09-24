@@ -1,5 +1,5 @@
-import models from '../models';
-import paymentGateway from '../services/payment-gateway';
+import models from '../models/index.js';
+import paymentGateway from '../services/payment-gateway.js';
 const { UserBankAccount } = models;
 
 export default {

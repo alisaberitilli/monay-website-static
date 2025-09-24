@@ -1,8 +1,8 @@
 import HttpStatus from 'http-status';
-import utility from '../services/utility';
+import utility from '../services/utility.js';
 import repositories from '../repositories';
-import models from '../models';
-import paymentGatewayAPIs from '../services/payment-gateway';
+import models from '../models/index.js';
+import paymentGatewayAPIs from '../services/payment-gateway.js';
 import moment from 'moment-timezone';
 import { Op } from 'sequelize';
 const { Sequelize } = models.sequelize;

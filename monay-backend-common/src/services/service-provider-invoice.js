@@ -280,4 +280,4 @@ class ServiceProviderInvoiceService {
   }
 }
 
-module.exports = new ServiceProviderInvoiceService();
+export default new ServiceProviderInvoiceService();

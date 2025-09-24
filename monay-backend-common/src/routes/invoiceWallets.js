@@ -6,11 +6,11 @@
  */
 
 import express from 'express';
-import { walletFactory, ephemeralManager, aiModeSelector } from '../services/invoice-wallet';
-import auditLogger from '../services/invoice-wallet/AuditLogger';
-import blockchainIntegration from '../services/invoice-wallet/BlockchainIntegration';
+import { walletFactory, ephemeralManager, aiModeSelector } from '../services/invoice-wallet.js';
+import auditLogger from '../services/invoice-wallet/AuditLogger.js';
+import blockchainIntegration from '../services/invoice-wallet/BlockchainIntegration.js';
 import authMiddleware from '../middlewares/auth-middleware';
-import db from '../models';
+import db from '../models/index.js';
 
 // Use console for now since logger import is causing issues
 const logger = {

@@ -1,5 +1,5 @@
-import models from '../models';
-import utility from '../services/utility';
+import models from '../models/index.js';
+import utility from '../services/utility.js';
 const { Op } = models.Sequelize;
 const { UserRole, RolePermission, UserToken } = models;
 const { Sequelize } = models.sequelize;

@@ -2,7 +2,7 @@ import HttpStatus from 'http-status';
 import repositories from '../repositories';
 import { find } from 'lodash';
 const { mediaRepository, userKycRepository } = repositories;
-import s3Bucket from '../services/s3-bucket';
+import s3Bucket from '../services/s3-bucket.js';
 
 export default {
   /**

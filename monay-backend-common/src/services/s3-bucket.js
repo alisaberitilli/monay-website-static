@@ -1,6 +1,6 @@
 import fs from 'fs';
 import { S3Client, HeadObjectCommand, DeleteObjectsCommand, PutObjectCommand } from '@aws-sdk/client-s3';
-import config from '../config';
+import config from '../config/index.js';
 
 const s3Client = new S3Client({
   region: config.aws.region || 'ap-south-1',

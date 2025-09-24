@@ -221,7 +221,7 @@ class PerformanceMonitor extends EventEmitter {
     this.metrics.systemResources.cpuUsage = Math.min(100, cpuPercent)
 
     // Calculate memory percentage
-    const totalMem = require('os').totalmem()
+    import totalMem from 'os'.totalmem()
     const memPercent = (memUsage.heapUsed / totalMem) * 100
     this.metrics.systemResources.memoryUsage = memPercent
 

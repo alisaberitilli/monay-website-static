@@ -6,8 +6,8 @@
  * @module ComplianceAttestation
  */
 
-const crypto = require('crypto');
-const loggers = require('../logger');
+import crypto from 'crypto';
+import loggers from '../logger';
 const logger = {
   info: (msg, data) => loggers.logger ? loggers.logger.info(msg, data) : console.log(msg, data),
   error: (msg, data) => loggers.errorLogger ? loggers.errorLogger.error(msg, data) : console.error(msg, data),
@@ -727,4 +727,4 @@ SIMULATOR_KEY_DO_NOT_USE_IN_PRODUCTION
   }
 }
 
-module.exports = new ComplianceAttestation();
+export default new ComplianceAttestation();

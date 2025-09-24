@@ -814,4 +814,4 @@ class HighAvailability {
   }
 }
 
-module.exports = new HighAvailability();
+export default new HighAvailability();

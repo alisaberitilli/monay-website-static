@@ -743,4 +743,4 @@ class InvoiceFactoringService extends EventEmitter {
   }
 }
 
-module.exports = InvoiceFactoringService;
+export default InvoiceFactoringService;

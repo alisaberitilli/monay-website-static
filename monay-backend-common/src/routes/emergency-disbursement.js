@@ -6,9 +6,9 @@
 import { Router } from 'express';
 import HttpStatus from 'http-status';
 import authenticate from '../middlewares/auth-middleware';
-import emergencyDisbursementSystem from '../services/emergency-disbursement-system';
-import paymentRailOrchestrator from '../services/payment-rail-orchestrator';
-import loggers from '../services/logger';
+import emergencyDisbursementSystem from '../services/emergency-disbursement-system.js';
+import paymentRailOrchestrator from '../services/payment-rail-orchestrator.js';
+import loggers from '../services/logger.js';
 
 const router = Router();
 

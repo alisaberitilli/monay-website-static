@@ -1,15 +1,15 @@
 import { Op, Sequelize } from 'sequelize';
 import bcrypt from 'bcryptjs';
-import Email from '../services/email';
-import utility from '../services/utility';
-import jwt from '../services/jwt';
-import models from '../models';
+import Email from '../services/email.js';
+import utility from '../services/utility.js';
+import jwt from '../services/jwt.js';
+import models from '../models/index.js';
 import userRepository from './user-repository';
-import encryptAPIs from '../services/encrypt';
-import config from '../config';
+import encryptAPIs from '../services/encrypt.js';
+import config from '../config/index.js';
 import path from 'path';
 import fs from 'fs';
-import logger from '../services/logger';
+import logger from '../services/logger.js';
 import mediaRepository from './media-repository';
 const { User, UserToken, UserDevice, UserRole, RolePermission, ChildParent, Country, UserKyc } = models;
 const QRCode = require('qrcode')

@@ -881,4 +881,4 @@ class XeroIntegration extends EventEmitter {
   }
 }
 
-module.exports = XeroIntegration;
+export default XeroIntegration;

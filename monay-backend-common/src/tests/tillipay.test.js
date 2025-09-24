@@ -1,6 +1,6 @@
 import request from 'supertest';
 import app from '../index';
-import tilliPayService from '../services/tillipay';
+import tilliPayService from '../services/tillipay.js';
 
 jest.mock('../services/tillipay');
 

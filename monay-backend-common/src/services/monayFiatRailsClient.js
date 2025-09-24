@@ -717,4 +717,4 @@ class MonayFiatRailsClient {
   }
 }
 
-module.exports = MonayFiatRailsClient;
+export default MonayFiatRailsClient;

@@ -1,6 +1,6 @@
 import httpStatus from 'http-status';
-import monayFiatService from '../services/monay-fiat';
-import { Logger } from '../services/logger';
+import monayFiatService from '../services/monay-fiat.js';
+import { Logger } from '../services/logger.js';
 import Transaction from '../models/Transaction';
 import User from '../models/User';
 

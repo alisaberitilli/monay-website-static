@@ -1,6 +1,6 @@
 import HttpStatus from 'http-status';
-import utility from '../services/utility';
-import userBlockRepository from '../repositories/user-block-repository';
+import utility from '../services/utility.js';
+import userBlockRepository from '../repositories/user-block-repository.js';
 
 export default {
 

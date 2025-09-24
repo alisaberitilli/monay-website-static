@@ -893,4 +893,4 @@ class ExpenseManagementSystem extends EventEmitter {
   }
 }
 
-module.exports = ExpenseManagementSystem;
+export default ExpenseManagementSystem;

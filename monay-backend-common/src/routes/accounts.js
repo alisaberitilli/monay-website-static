@@ -1,9 +1,9 @@
 import express from 'express';
 import { v4 as uuidv4 } from 'uuid';
 import authenticateToken from '../middlewares/auth-middleware';
-import { User, ChildParent, Transaction, Wallet } from '../models';
+import { User, ChildParent, Transaction, Wallet } from '../models/index.js';
 import { Op } from 'sequelize';
-import utility from '../services/utility';
+import utility from '../services/utility.js';
 
 const router = express.Router();
 

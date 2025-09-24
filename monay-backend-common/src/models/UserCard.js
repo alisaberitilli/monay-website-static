@@ -1,7 +1,7 @@
-import config from '../config';
-import utility from '../services/utility';
+import config from '../config/index.js';
+import utility from '../services/utility.js';
 
-module.exports = (sequelize, DataTypes) => {
+export default (sequelize, DataTypes) => {
     const UserCard = sequelize.define(
         'UserCard',
         {

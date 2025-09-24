@@ -795,4 +795,4 @@ class ContractorOnboardingSystem extends EventEmitter {
   }
 }
 
-module.exports = ContractorOnboardingSystem;
+export default ContractorOnboardingSystem;

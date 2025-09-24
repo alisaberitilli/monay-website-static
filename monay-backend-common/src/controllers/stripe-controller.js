@@ -1,7 +1,7 @@
 import httpStatus from 'http-status';
-import stripePaymentService from '../services/stripe-payment';
-import { Logger } from '../services/logger';
-import db from '../models';
+import stripePaymentService from '../services/stripe-payment.js';
+import { Logger } from '../services/logger.js';
+import db from '../models/index.js';
 
 const logger = new Logger({
   logName: 'stripe-controller',

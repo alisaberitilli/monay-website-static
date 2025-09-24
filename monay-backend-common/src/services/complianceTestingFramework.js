@@ -1077,4 +1077,4 @@ class ComplianceTestingFramework {
   }
 }
 
-module.exports = ComplianceTestingFramework;
+export default ComplianceTestingFramework;

@@ -908,4 +908,4 @@ class ATMNetwork {
   }
 }
 
-module.exports = ATMNetwork;
+export default ATMNetwork;

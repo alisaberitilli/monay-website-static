@@ -1,0 +1,494 @@
+const speakeasy = require('speakeasy');
+const QRCode = require('qrcode');
+const crypto = require('crypto');
+const { auditLogService, AuditActions } = require('./audit-log');
+
+class MFAService {
+  constructor() {
+    this.backupCodeLength = 8;
+    this.backupCodeCount = 10;
+    this.otpWindow = 2; // Time window for TOTP validation
+    this.maxAttempts = 5;
+    this.lockoutDuration = 15 * 60 * 1000; // 15 minutes
+  }
+
+  /**
+   * Generate MFA secret for user
+   */
+  async generateSecret(userId, email) {
+    try {
+      // Generate secret
+      const secret = speakeasy.generateSecret({
+        length: 32,
+        name: `Monay (${email})`,
+        issuer: 'Monay Enterprise Wallet'
+      });
+
+      // Generate backup codes
+      const backupCodes = this.generateBackupCodes();
+
+      // Store encrypted secret
+      const encryptedSecret = this.encryptSecret(secret.base32);
+
+      // Log MFA setup initiated
+      await auditLogService.log({
+        userId,
+        action: AuditActions.MFA_ENABLED,
+        resource: 'mfa',
+        details: { method: 'TOTP' },
+        severity: 'INFO',
+        category: 'SECURITY'
+      });
+
+      return {
+        secret: secret.base32,
+        encryptedSecret,
+        qrCode: secret.otpauth_url,
+        backupCodes,
+        manual: {
+          secret: secret.base32,
+          encoding: 'base32',
+          algorithm: 'SHA1',
+          digits: 6,
+          period: 30
+        }
+      };
+    } catch (error) {
+      console.error('MFA secret generation error:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Generate QR code for secret
+   */
+  async generateQRCode(otpauthUrl) {
+    try {
+      const qrCodeDataUrl = await QRCode.toDataURL(otpauthUrl, {
+        errorCorrectionLevel: 'M',
+        type: 'image/png',
+        quality: 0.92,
+        margin: 1,
+        width: 256
+      });
+      return qrCodeDataUrl;
+    } catch (error) {
+      console.error('QR code generation error:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Verify TOTP token
+   */
+  verifyTOTP(token, secret, userId = null) {
+    try {
+      const verified = speakeasy.totp.verify({
+        secret,
+        encoding: 'base32',
+        token,
+        window: this.otpWindow,
+        algorithm: 'sha1'
+      });
+
+      if (userId) {
+        // Log verification attempt
+        auditLogService.log({
+          userId,
+          action: verified ? 'MFA_VERIFY_SUCCESS' : 'MFA_VERIFY_FAILED',
+          resource: 'mfa',
+          details: { method: 'TOTP', verified },
+          severity: verified ? 'INFO' : 'WARNING',
+          category: 'AUTHENTICATION'
+        });
+      }
+
+      return verified;
+    } catch (error) {
+      console.error('TOTP verification error:', error);
+      return false;
+    }
+  }
+
+  /**
+   * Generate backup codes
+   */
+  generateBackupCodes() {
+    const codes = [];
+    for (let i = 0; i < this.backupCodeCount; i++) {
+      const code = crypto.randomBytes(4).toString('hex').toUpperCase();
+      codes.push(code);
+    }
+    return codes;
+  }
+
+  /**
+   * Hash backup code for storage
+   */
+  hashBackupCode(code) {
+    return crypto
+      .createHash('sha256')
+      .update(code)
+      .digest('hex');
+  }
+
+  /**
+   * Verify backup code
+   */
+  verifyBackupCode(inputCode, hashedCodes) {
+    const hashedInput = this.hashBackupCode(inputCode.toUpperCase());
+    const index = hashedCodes.findIndex(code => code === hashedInput);
+    
+    if (index !== -1) {
+      // Remove used code
+      hashedCodes.splice(index, 1);
+      return { verified: true, remainingCodes: hashedCodes };
+    }
+    
+    return { verified: false, remainingCodes: hashedCodes };
+  }
+
+  /**
+   * Encrypt secret for storage
+   */
+  encryptSecret(secret) {
+    const algorithm = 'aes-256-gcm';
+    const key = crypto.scryptSync(
+      process.env.MFA_ENCRYPTION_KEY || 'default-key',
+      'salt',
+      32
+    );
+    const iv = crypto.randomBytes(16);
+    const cipher = crypto.createCipheriv(algorithm, key, iv);
+    
+    let encrypted = cipher.update(secret, 'utf8', 'hex');
+    encrypted += cipher.final('hex');
+    
+    const authTag = cipher.getAuthTag();
+    
+    return {
+      encrypted,
+      iv: iv.toString('hex'),
+      authTag: authTag.toString('hex')
+    };
+  }
+
+  /**
+   * Decrypt secret from storage
+   */
+  decryptSecret(encryptedData) {
+    const algorithm = 'aes-256-gcm';
+    const key = crypto.scryptSync(
+      process.env.MFA_ENCRYPTION_KEY || 'default-key',
+      'salt',
+      32
+    );
+    
+    const decipher = crypto.createDecipheriv(
+      algorithm,
+      key,
+      Buffer.from(encryptedData.iv, 'hex')
+    );
+    
+    decipher.setAuthTag(Buffer.from(encryptedData.authTag, 'hex'));
+    
+    let decrypted = decipher.update(encryptedData.encrypted, 'hex', 'utf8');
+    decrypted += decipher.final('utf8');
+    
+    return decrypted;
+  }
+
+  /**
+   * Generate SMS OTP
+   */
+  generateSMSOTP() {
+    return Math.floor(100000 + Math.random() * 900000).toString();
+  }
+
+  /**
+   * Generate email OTP
+   */
+  generateEmailOTP() {
+    return crypto.randomBytes(3).toString('hex').toUpperCase();
+  }
+
+  /**
+   * Verify OTP with expiration
+   */
+  verifyOTP(inputOTP, storedOTP, timestamp, maxAge = 300000) { // 5 minutes
+    const now = Date.now();
+    const age = now - timestamp;
+    
+    if (age > maxAge) {
+      return { verified: false, reason: 'expired' };
+    }
+    
+    if (inputOTP !== storedOTP) {
+      return { verified: false, reason: 'invalid' };
+    }
+    
+    return { verified: true };
+  }
+
+  /**
+   * Check if user is locked out
+   */
+  async checkLockout(userId) {
+    const db = require('../models');
+    const user = await db.User.findByPk(userId);
+    
+    if (!user.mfaLockoutUntil) {
+      return { locked: false };
+    }
+    
+    const now = new Date();
+    if (user.mfaLockoutUntil > now) {
+      const remainingTime = Math.ceil((user.mfaLockoutUntil - now) / 1000);
+      return {
+        locked: true,
+        remainingSeconds: remainingTime
+      };
+    }
+    
+    // Clear lockout
+    await user.update({
+      mfaLockoutUntil: null,
+      mfaFailedAttempts: 0
+    });
+    
+    return { locked: false };
+  }
+
+  /**
+   * Handle failed MFA attempt
+   */
+  async handleFailedAttempt(userId) {
+    const db = require('../models');
+    const user = await db.User.findByPk(userId);
+    
+    const attempts = (user.mfaFailedAttempts || 0) + 1;
+    
+    if (attempts >= this.maxAttempts) {
+      // Lock account
+      const lockoutUntil = new Date(Date.now() + this.lockoutDuration);
+      
+      await user.update({
+        mfaFailedAttempts: attempts,
+        mfaLockoutUntil: lockoutUntil
+      });
+      
+      // Log security event
+      await auditLogService.log({
+        userId,
+        action: 'MFA_LOCKOUT',
+        resource: 'mfa',
+        details: {
+          attempts,
+          lockoutUntil
+        },
+        severity: 'SECURITY',
+        category: 'SECURITY'
+      });
+      
+      return {
+        locked: true,
+        lockoutUntil
+      };
+    }
+    
+    await user.update({
+      mfaFailedAttempts: attempts
+    });
+    
+    return {
+      locked: false,
+      remainingAttempts: this.maxAttempts - attempts
+    };
+  }
+
+  /**
+   * Reset failed attempts on successful verification
+   */
+  async resetFailedAttempts(userId) {
+    const db = require('../models');
+    await db.User.update(
+      {
+        mfaFailedAttempts: 0,
+        mfaLockoutUntil: null
+      },
+      { where: { id: userId } }
+    );
+  }
+
+  /**
+   * Enable MFA for user
+   */
+  async enableMFA(userId, secret, backupCodes) {
+    try {
+      const db = require('../models');
+      const encryptedSecret = this.encryptSecret(secret);
+      const hashedBackupCodes = backupCodes.map(code => this.hashBackupCode(code));
+      
+      await db.User.update(
+        {
+          mfaEnabled: true,
+          mfaSecret: JSON.stringify(encryptedSecret),
+          mfaBackupCodes: JSON.stringify(hashedBackupCodes),
+          mfaEnabledAt: new Date()
+        },
+        { where: { id: userId } }
+      );
+      
+      // Log MFA enabled
+      await auditLogService.log({
+        userId,
+        action: AuditActions.MFA_ENABLED,
+        resource: 'user',
+        resourceId: userId,
+        severity: 'INFO',
+        category: 'SECURITY'
+      });
+      
+      return true;
+    } catch (error) {
+      console.error('Enable MFA error:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Disable MFA for user
+   */
+  async disableMFA(userId) {
+    try {
+      const db = require('../models');
+      
+      await db.User.update(
+        {
+          mfaEnabled: false,
+          mfaSecret: null,
+          mfaBackupCodes: null,
+          mfaEnabledAt: null,
+          mfaFailedAttempts: 0,
+          mfaLockoutUntil: null
+        },
+        { where: { id: userId } }
+      );
+      
+      // Log MFA disabled
+      await auditLogService.log({
+        userId,
+        action: AuditActions.MFA_DISABLED,
+        resource: 'user',
+        resourceId: userId,
+        severity: 'WARNING',
+        category: 'SECURITY'
+      });
+      
+      return true;
+    } catch (error) {
+      console.error('Disable MFA error:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Get MFA status for user
+   */
+  async getMFAStatus(userId) {
+    try {
+      const db = require('../models');
+      const user = await db.User.findByPk(userId, {
+        attributes: [
+          'mfaEnabled',
+          'mfaEnabledAt',
+          'mfaFailedAttempts',
+          'mfaLockoutUntil'
+        ]
+      });
+      
+      if (!user) {
+        return null;
+      }
+      
+      const backupCodesCount = user.mfaBackupCodes ? 
+        JSON.parse(user.mfaBackupCodes).length : 0;
+      
+      return {
+        enabled: user.mfaEnabled,
+        enabledAt: user.mfaEnabledAt,
+        backupCodesRemaining: backupCodesCount,
+        failedAttempts: user.mfaFailedAttempts || 0,
+        lockedUntil: user.mfaLockoutUntil
+      };
+    } catch (error) {
+      console.error('Get MFA status error:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Generate new backup codes
+   */
+  async regenerateBackupCodes(userId) {
+    try {
+      const db = require('../models');
+      const newCodes = this.generateBackupCodes();
+      const hashedCodes = newCodes.map(code => this.hashBackupCode(code));
+      
+      await db.User.update(
+        {
+          mfaBackupCodes: JSON.stringify(hashedCodes)
+        },
+        { where: { id: userId } }
+      );
+      
+      // Log backup codes regenerated
+      await auditLogService.log({
+        userId,
+        action: 'MFA_BACKUP_CODES_REGENERATED',
+        resource: 'mfa',
+        severity: 'INFO',
+        category: 'SECURITY'
+      });
+      
+      return newCodes;
+    } catch (error) {
+      console.error('Regenerate backup codes error:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Verify MFA requirement for action
+   */
+  async requiresMFA(userId, action) {
+    // Define high-risk actions requiring MFA
+    const highRiskActions = [
+      'TRANSFER_LARGE_AMOUNT',
+      'CHANGE_PASSWORD',
+      'ADD_BENEFICIARY',
+      'DISABLE_MFA',
+      'EXPORT_PRIVATE_KEY',
+      'DELETE_ACCOUNT',
+      'CHANGE_EMAIL',
+      'API_KEY_CREATE'
+    ];
+    
+    if (!highRiskActions.includes(action)) {
+      return false;
+    }
+    
+    const db = require('../models');
+    const user = await db.User.findByPk(userId, {
+      attributes: ['mfaEnabled']
+    });
+    
+    return user?.mfaEnabled || false;
+  }
+}
+
+// Singleton instance
+const mfaService = new MFAService();
+
+module.exports = mfaService;

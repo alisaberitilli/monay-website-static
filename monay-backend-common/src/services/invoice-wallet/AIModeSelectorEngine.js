@@ -6,7 +6,7 @@
  * @description Determines optimal wallet mode (ephemeral/persistent/adaptive) based on transaction parameters
  */
 
-const logger = require('../logger');
+import logger from '../logger';
 
 class AIModeSelectorEngine {
   constructor() {
@@ -465,4 +465,4 @@ class AIModeSelectorEngine {
   }
 }
 
-module.exports = AIModeSelectorEngine;
+export default AIModeSelectorEngine;

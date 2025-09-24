@@ -5,18 +5,18 @@
  * @module BlockchainIntegration
  */
 
-const { ethers } = require('ethers');
-const {
+import { ethers } from 'ethers';
+import {
   Connection,
   Keypair,
   PublicKey,
   SystemProgram,
   Transaction,
   LAMPORTS_PER_SOL
-} = require('@solana/web3.js');
-const { TOKEN_PROGRAM_ID } = require('@solana/spl-token');
-const logger = require('../logger');
-const auditLogger = require('./AuditLogger');
+} from '@solana/web3.js';
+import { TOKEN_PROGRAM_ID } from '@solana/spl-token';
+import logger from '../logger';
+import auditLogger from './AuditLogger';
 
 class BlockchainIntegration {
   constructor() {
@@ -435,4 +435,4 @@ class BlockchainIntegration {
   }
 }
 
-module.exports = new BlockchainIntegration();
+export default new BlockchainIntegration();

@@ -1,5 +1,5 @@
 import * as admin from 'firebase-admin';
-import config from '../config';
+import config from '../config/index.js';
 
 const projectId = config.google.project_id;
 admin.initializeApp({

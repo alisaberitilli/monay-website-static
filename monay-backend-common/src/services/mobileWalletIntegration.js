@@ -890,4 +890,4 @@ class MobileWalletIntegration {
   }
 }
 
-module.exports = MobileWalletIntegration;
+export default MobileWalletIntegration;

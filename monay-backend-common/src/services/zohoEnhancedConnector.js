@@ -932,4 +932,4 @@ class ZohoEnhancedConnector extends EventEmitter {
   }
 }
 
-module.exports = ZohoEnhancedConnector;
+export default ZohoEnhancedConnector;

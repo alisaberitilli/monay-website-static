@@ -1022,4 +1022,4 @@ class MonitoringAlertingService extends EventEmitter {
   }
 }
 
-module.exports = MonitoringAlertingService;
+export default MonitoringAlertingService;

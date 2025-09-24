@@ -1,7 +1,7 @@
 import express from 'express';
 import pool from '../config/database';
 import authenticate from '../middlewares/auth-middleware';
-import BusinessRuleEngine from '../services/businessRuleEngine';
+import BusinessRuleEngine from '../services/businessRuleEngine.js';
 
 const router = express.Router();
 const MonayFiatRailsClient = require('../services/monayFiatRailsClient');
