@@ -7,7 +7,6 @@
  */
 
 import axios from 'axios';
-import colors from 'colors';
 
 const API_BASE_URL = process.env.API_URL || 'http://localhost:3001';
 const AUTH_TOKEN = process.env.AUTH_TOKEN || 'your-test-auth-token';
@@ -40,14 +39,14 @@ const results = {
  */
 async function runTest(name, testFn) {
     try {
-        console.log(`\n🧪 Testing: ${name}`.cyan);
+        console.log(`\n🧪 Testing: ${name}`);
         await testFn();
-        console.log(`✅ PASSED: ${name}`.green);
+        console.log(`✅ PASSED: ${name}`);
         results.passed++;
         results.tests.push({ name, status: 'passed' });
     } catch (error) {
-        console.log(`❌ FAILED: ${name}`.red);
-        console.log(`   Error: ${error.message}`.gray);
+        console.log(`❌ FAILED: ${name}`);
+        console.log(`   Error: ${error.message}`);
         results.failed++;
         results.tests.push({ name, status: 'failed', error: error.message });
     }
@@ -69,9 +68,9 @@ async function testWalletInitialization() {
             throw new Error('Missing wallet data in response');
         }
 
-        console.log('   Monay Wallet ID:'.gray, data.monay.id);
-        console.log('   Circle Wallet ID:'.gray, data.circle.circle_wallet_id);
-        console.log('   Link Status:'.gray, data.link.link_status);
+        console.log('   Monay Wallet ID:', data.monay.id);
+        console.log('   Circle Wallet ID:', data.circle.circle_wallet_id);
+        console.log('   Link Status:', data.link.link_status);
     });
 }
 
@@ -91,9 +90,9 @@ async function testBalanceOperations() {
             throw new Error('Invalid balance response');
         }
 
-        console.log('   Monay Balance:'.gray, `$${balance.monay_balance}`);
-        console.log('   Circle Balance:'.gray, `$${balance.circle_balance} USDC`);
-        console.log('   Total USD Value:'.gray, `$${balance.total_usd_value}`);
+        console.log('   Monay Balance:', `$${balance.monay_balance}`);
+        console.log('   Circle Balance:', `$${balance.circle_balance} USDC`);
+        console.log('   Total USD Value:', `$${balance.total_usd_value}`);
     });
 
     await runTest('Get Circle Wallet Details', async () => {
@@ -104,9 +103,9 @@ async function testBalanceOperations() {
         }
 
         const details = response.data.data;
-        console.log('   Wallet Address:'.gray, details.address);
-        console.log('   USDC Balance:'.gray, details.balance);
-        console.log('   Auto-Convert:'.gray, details.auto_convert);
+        console.log('   Wallet Address:', details.address);
+        console.log('   USDC Balance:', details.balance);
+        console.log('   Auto-Convert:', details.auto_convert);
     });
 }
 
@@ -127,9 +126,9 @@ async function testBridgeTransfers() {
         }
 
         const estimate = response.data.data;
-        console.log('   Fee:'.gray, `$${estimate.fee}`);
-        console.log('   Time:'.gray, `${estimate.time_seconds} seconds`);
-        console.log('   Sufficient Balance:'.gray, estimate.sufficient_balance);
+        console.log('   Fee:', `$${estimate.fee}`);
+        console.log('   Time:', `${estimate.time_seconds} seconds`);
+        console.log('   Sufficient Balance:', estimate.sufficient_balance);
     });
 
     await runTest('Bridge Monay to Circle', async () => {
@@ -143,12 +142,12 @@ async function testBridgeTransfers() {
             }
 
             const transfer = response.data.data;
-            console.log('   Transfer ID:'.gray, transfer.bridge_transfer_id);
-            console.log('   Amount:'.gray, `$${transfer.amount}`);
-            console.log('   Status:'.gray, transfer.status);
+            console.log('   Transfer ID:', transfer.bridge_transfer_id);
+            console.log('   Amount:', `$${transfer.amount}`);
+            console.log('   Status:', transfer.status);
         } catch (error) {
             if (error.response?.data?.message?.includes('Insufficient')) {
-                console.log('   Skipped:'.yellow, 'Insufficient balance for test');
+                console.log('   Skipped:', 'Insufficient balance for test');
             } else {
                 throw error;
             }
@@ -163,11 +162,11 @@ async function testBridgeTransfers() {
         }
 
         const history = response.data.data;
-        console.log('   Total Transfers:'.gray, history.length);
+        console.log('   Total Transfers:', history.length);
 
         if (history.length > 0) {
             const latest = history[0];
-            console.log('   Latest Transfer:'.gray,
+            console.log('   Latest Transfer:',
                 `${latest.amount} ${latest.source_currency} → ${latest.destination_currency}`);
         }
     });
@@ -189,12 +188,12 @@ async function testSmartRouting() {
         }
 
         const routing = response.data.data;
-        console.log('   Recommended:'.gray, routing.recommended_wallet);
-        console.log('   Reason:'.gray, routing.reason);
-        console.log('   Monay Fee:'.gray, `$${routing.analysis.fees.monay}`);
-        console.log('   Circle Fee:'.gray, `$${routing.analysis.fees.circle}`);
-        console.log('   Monay Time:'.gray, `${routing.analysis.times.monay}s`);
-        console.log('   Circle Time:'.gray, `${routing.analysis.times.circle}s`);
+        console.log('   Recommended:', routing.recommended_wallet);
+        console.log('   Reason:', routing.reason);
+        console.log('   Monay Fee:', `$${routing.analysis.fees.monay}`);
+        console.log('   Circle Fee:', `$${routing.analysis.fees.circle}`);
+        console.log('   Monay Time:', `${routing.analysis.times.monay}s`);
+        console.log('   Circle Time:', `${routing.analysis.times.circle}s`);
     });
 }
 
@@ -210,13 +209,13 @@ async function testTransactionHistory() {
         }
 
         const transactions = response.data.data;
-        console.log('   Total Transactions:'.gray, transactions.length);
+        console.log('   Total Transactions:', transactions.length);
 
         if (transactions.length > 0) {
             const latest = transactions[0];
-            console.log('   Latest Transaction:'.gray,
+            console.log('   Latest Transaction:',
                 `${latest.type} - ${latest.amount} ${latest.currency}`);
-            console.log('   Status:'.gray, latest.status);
+            console.log('   Status:', latest.status);
         }
     });
 }
@@ -230,14 +229,14 @@ async function testSyncOperations() {
 
         if (!response.data.success) {
             // This might fail if Circle API is not configured
-            console.log('   Warning:'.yellow, 'Sync failed - Circle API may not be configured');
+            console.log('   Warning:', 'Sync failed - Circle API may not be configured');
             return;
         }
 
         const sync = response.data.data;
-        console.log('   Synced Balance:'.gray, sync.usdc_balance);
-        console.log('   Available:'.gray, sync.available_balance);
-        console.log('   Pending:'.gray, sync.pending_balance);
+        console.log('   Synced Balance:', sync.usdc_balance);
+        console.log('   Available:', sync.available_balance);
+        console.log('   Pending:', sync.pending_balance);
     });
 }
 
@@ -253,7 +252,7 @@ async function testErrorHandling() {
             throw new Error('Should have rejected negative amount');
         } catch (error) {
             if (error.response?.status === 400) {
-                console.log('   Correctly rejected:'.gray, 'Invalid amount');
+                console.log('   Correctly rejected:', 'Invalid amount');
             } else {
                 throw error;
             }
@@ -269,7 +268,7 @@ async function testErrorHandling() {
             throw new Error('Should have rejected invalid direction');
         } catch (error) {
             if (error.response?.status === 400) {
-                console.log('   Correctly rejected:'.gray, 'Invalid direction');
+                console.log('   Correctly rejected:', 'Invalid direction');
             } else {
                 throw error;
             }
@@ -296,9 +295,9 @@ async function testPerformance() {
         const maxTime = Math.max(...times);
         const minTime = Math.min(...times);
 
-        console.log('   Average:'.gray, `${avgTime.toFixed(2)}ms`);
-        console.log('   Min:'.gray, `${minTime}ms`);
-        console.log('   Max:'.gray, `${maxTime}ms`);
+        console.log('   Average:', `${avgTime.toFixed(2)}ms`);
+        console.log('   Min:', `${minTime}ms`);
+        console.log('   Max:', `${maxTime}ms`);
 
         if (avgTime > 200) {
             throw new Error(`Average response time ${avgTime}ms exceeds 200ms target`);
@@ -310,11 +309,11 @@ async function testPerformance() {
  * Main test runner
  */
 async function runAllTests() {
-    console.log('\n===================================='.cyan);
-    console.log('🚀 Circle Integration Test Suite'.cyan.bold);
-    console.log('===================================='.cyan);
-    console.log('API URL:'.gray, API_BASE_URL);
-    console.log('Time:'.gray, new Date().toISOString());
+    console.log('\n====================================');
+    console.log('🚀 Circle Integration Test Suite');
+    console.log('====================================');
+    console.log('API URL:', API_BASE_URL);
+    console.log('Time:', new Date().toISOString());
 
     // Run test suites
     await testWalletInitialization();
@@ -327,34 +326,34 @@ async function runAllTests() {
     await testPerformance();
 
     // Print summary
-    console.log('\n===================================='.cyan);
-    console.log('📊 Test Results Summary'.cyan.bold);
-    console.log('===================================='.cyan);
-    console.log(`✅ Passed: ${results.passed}`.green);
-    console.log(`❌ Failed: ${results.failed}`.red);
-    console.log(`📝 Total: ${results.passed + results.failed}`.gray);
+    console.log('\n====================================');
+    console.log('📊 Test Results Summary');
+    console.log('====================================');
+    console.log(`✅ Passed: ${results.passed}`);
+    console.log(`❌ Failed: ${results.failed}`);
+    console.log(`📝 Total: ${results.passed + results.failed}`);
 
     const passRate = ((results.passed / (results.passed + results.failed)) * 100).toFixed(1);
-    console.log(`📈 Pass Rate: ${passRate}%`.yellow);
+    console.log(`📈 Pass Rate: ${passRate}%`);
 
     // Exit code
     if (results.failed > 0) {
-        console.log('\n⚠️  Some tests failed. Please review the errors above.'.yellow);
+        console.log('\n⚠️  Some tests failed. Please review the errors above.');
         process.exit(1);
     } else {
-        console.log('\n🎉 All tests passed successfully!'.green.bold);
+        console.log('\n🎉 All tests passed successfully!');
         process.exit(0);
     }
 }
 
 // Handle errors
 process.on('unhandledRejection', (error) => {
-    console.error('\n❌ Unhandled error:'.red, error);
+    console.error('\n❌ Unhandled error:', error);
     process.exit(1);
 });
 
 // Run tests
 runAllTests().catch(error => {
-    console.error('\n❌ Test suite failed:'.red, error);
+    console.error('\n❌ Test suite failed:', error);
     process.exit(1);
 });
