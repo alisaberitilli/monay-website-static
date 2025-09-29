@@ -4,10 +4,10 @@
  * GENIUS Act compliant with real-time distribution capabilities
  */
 
-import emergencyDisbursementSystem from './emergency-disbursement-system';
-import dwollaPaymentService from './dwolla-payment';
-import loggers from './logger';
-import { CustomError } from '../middlewares/errors';
+import emergencyDisbursementSystem from './emergency-disbursement-system.js';
+import dwollaPaymentService from './dwolla-payment.js';
+import loggers from './logger.js';
+import { CustomError } from '../middlewares/errors.js';
 import HttpStatus from 'http-status';
 
 class SNAPTANFBenefitSystem {

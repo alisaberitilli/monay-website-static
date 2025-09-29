@@ -2,12 +2,22 @@ import express from 'express';
 import pg from 'pg';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
-import { verifyToken, verifyAdmin } from '../middlewares/auth-middleware.js';
+import { authenticateToken } from '../middlewares/auth-middleware.js';
 import { Logger } from '../services/logger.js';
 
 const router = express.Router();
 const { Pool } = pg;
 const logger = new Logger({ logName: 'organizations', logFolder: 'organizations' });
+
+// Create aliases for compatibility
+const verifyToken = authenticateToken;
+const verifyAdmin = (req, res, next) => {
+  // Check if user has admin role
+  if (!req.user || req.user.role !== 'admin') {
+    return res.status(403).json({ error: 'Admin access required' });
+  }
+  next();
+};
 
 // Database pool
 const pool = new Pool({

@@ -1,5 +1,5 @@
 import HttpStatus from 'http-status';
-import repositories from '../repositories';
+import repositories from '../repositories/index.js';
 import utility from '../services/utility.js';
 const { settingRepository, activityLogRepository } = repositories;
 

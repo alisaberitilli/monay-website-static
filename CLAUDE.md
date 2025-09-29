@@ -58,9 +58,20 @@ Monay is a comprehensive fintech platform implementing a dual-rail blockchain ar
 
 ## Development Stack
 
+### 🚨 CRITICAL MODULE SYSTEM REQUIREMENT 🚨
+**⚠️ ES MODULES ONLY - HARD RULE ⚠️**
+- **ALL projects MUST use ES Modules** (`"type": "module"` in package.json)
+- **NEVER use CommonJS** (no `require()`, no `module.exports`)
+- **ALWAYS use ES Module syntax** (`import`/`export`)
+- **Config files**: Use `.cjs` extension if CommonJS needed (e.g., `next.config.cjs`)
+- **This is NON-NEGOTIABLE**: ES Modules are mandatory across ALL projects
+- **Enforcement Date**: September 28, 2025
+- **Applies to**: Backend, Frontend, Scripts, Tests, ALL CODE
+
 ### Frontend
 - **Framework**: Next.js 14+
 - **Language**: TypeScript
+- **Module System**: ES Modules ONLY (`"type": "module"` required)
 - **Styling**: TailwindCSS
 - **State Management**: Zustand
 - **Wallet Integration**: WalletConnect, Phantom
@@ -68,7 +79,7 @@ Monay is a comprehensive fintech platform implementing a dual-rail blockchain ar
 ### Backend
 - **Runtime**: Node.js 20+ (Native ES Modules - NO BABEL)
 - **Framework**: Express.js/Fastify
-- **Module System**: ES Modules (`"type": "module"` in package.json)
+- **Module System**: ES Modules ONLY (`"type": "module"` required)
 - **Database**: PostgreSQL 15+
 - **Cache**: Redis 7+
 - **Queue**: Apache Kafka
@@ -363,14 +374,29 @@ npm run test:load
 
 ## Code Conventions
 
+### 🔴 MANDATORY: ES MODULES ONLY 🔴
+**CRITICAL REQUIREMENT - NO EXCEPTIONS:**
+- **ALL projects MUST have `"type": "module"` in package.json**
+- **NEVER use CommonJS syntax:**
+  - ❌ `const x = require('module')`
+  - ❌ `module.exports = {}`
+  - ❌ `exports.function = {}`
+- **ALWAYS use ES Module syntax:**
+  - ✅ `import x from 'module'`
+  - ✅ `export default {}`
+  - ✅ `export { function }`
+- **Config files needing CommonJS**: Rename to `.cjs` extension
+- **This applies to ALL code**: Frontend, Backend, Tests, Scripts, Everything
+- **Violation = Build Failure**: CI/CD will reject CommonJS code
+
 ### TypeScript/JavaScript
 - Use TypeScript for all new code
-- Use ES Modules (native Node.js support) - NO BABEL TRANSPILATION
+- Use ES Modules EXCLUSIVELY (native Node.js support) - NO BABEL TRANSPILATION
 - Always include .js file extensions in imports for ES modules
 - Async/await over promises
 - Functional components with hooks in React
 - Proper error handling with try/catch blocks
-- Backend uses `"type": "module"` in package.json for native ES module support
+- ALL projects use `"type": "module"` in package.json for native ES module support
 
 ### Solidity
 - Follow OpenZeppelin standards

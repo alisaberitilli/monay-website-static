@@ -1,7 +1,9 @@
-const { pool } = require('../models');
-const redis = require('../config/redis');
-const fs = require('fs').promises;
-const path = require('path');
+import db from '../models/index.js';
+const { pool } = db;
+import redis from '../config/redis.js';
+import { promises as fs } from 'fs';
+import path from 'path';
+import crypto from 'crypto';
 
 class MultiLanguageSupport {
   constructor() {
@@ -530,7 +532,7 @@ class MultiLanguageSupport {
   }
 
   generateTranslationKey(text) {
-    const crypto = require('crypto');
+    // Use imported crypto
     return crypto.createHash('md5').update(text).digest('hex');
   }
 

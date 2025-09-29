@@ -1,11 +1,11 @@
 import httpStatus from 'http-status';
 import monayFiatService from '../services/monay-fiat.js';
 import { Logger } from '../services/logger.js';
-import Transaction from '../models/Transaction';
-import User from '../models/User';
+import Transaction from '../models/Transaction.js';
+import User from '../models/User.js';
 
 const logger = new Logger({
-  logName: 'tillipay-controller',
+  logName: 'monay-fiat-controller',
   logFolder: 'controllers'
 });
 
@@ -25,7 +25,7 @@ export const testConnection = async (req, res) => {
     logger.logError('Test Connection Error', error);
     return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
       success: false,
-      message: 'Failed to test TilliPay connection',
+      message: 'Failed to test Monay Fiat connection',
       error: error.message
     });
   }
@@ -73,7 +73,7 @@ export const createPaymentLink = async (req, res) => {
       currency: currency || 'USD',
       type: 'payment_link',
       status: 'pending',
-      provider: 'tillipay',
+      provider: 'monay-fiat',
       description,
       metadata: {
         paymentUrl: paymentLink.paymentUrl,
@@ -160,7 +160,7 @@ export const processCardPayment = async (req, res) => {
       currency: currency || 'USD',
       type: 'card_payment',
       status: payment.status.toLowerCase(),
-      provider: 'tillipay',
+      provider: 'monay-fiat',
       authorizationCode: payment.authorizationCode,
       metadata: {
         cardLastFour: cardNumber.slice(-4),
@@ -245,7 +245,7 @@ export const processACHPayment = async (req, res) => {
       currency: currency || 'USD',
       type: 'ach_payment',
       status: payment.status.toLowerCase(),
-      provider: 'tillipay',
+      provider: 'monay-fiat',
       metadata: {
         accountLastFour: accountNumber.slice(-4),
         accountType,
@@ -291,7 +291,7 @@ export const getPaymentStatus = async (req, res) => {
       where: {
         id: transactionId,
         userId,
-        provider: 'tillipay'
+        provider: 'monay-fiat'
       }
     });
 
@@ -361,7 +361,7 @@ export const refundPayment = async (req, res) => {
       where: {
         id: transactionId,
         userId,
-        provider: 'tillipay',
+        provider: 'monay-fiat',
         status: ['completed', 'captured']
       }
     });
@@ -400,7 +400,7 @@ export const refundPayment = async (req, res) => {
       currency: transaction.currency,
       type: 'refund',
       status: refund.status.toLowerCase(),
-      provider: 'tillipay',
+      provider: 'monay-fiat',
       metadata: {
         originalTransactionId: transaction.id,
         reason,
@@ -457,7 +457,7 @@ export const capturePayment = async (req, res) => {
       where: {
         id: transactionId,
         userId,
-        provider: 'tillipay',
+        provider: 'monay-fiat',
         status: 'authorized'
       }
     });
@@ -528,7 +528,7 @@ export const voidPayment = async (req, res) => {
       where: {
         id: transactionId,
         userId,
-        provider: 'tillipay',
+        provider: 'monay-fiat',
         status: ['authorized', 'pending']
       }
     });
@@ -609,7 +609,7 @@ export const getTransactionHistory = async (req, res) => {
     const userTransactions = await Transaction.findAll({
       where: {
         userId,
-        provider: 'tillipay',
+        provider: 'monay-fiat',
         externalId: history.transactions.map(t => t.transactionId)
       },
       attributes: ['id', 'externalId']
@@ -670,7 +670,7 @@ export const handleWebhook = async (req, res) => {
     const transaction = await Transaction.findOne({
       where: {
         externalId: result.transactionId,
-        provider: 'tillipay'
+        provider: 'monay-fiat'
       }
     });
 

@@ -1,8 +1,8 @@
-import { Op } from 'sequelize';
-import models from "../models";
-import utility from "../services/utility";
-import paymentGateway from "../services/payment-gateway";
-const { UserCard } = models;
+import pkg from 'sequelize';
+const { Op } = pkg;
+import models from "../models/index.js";
+import utility from "../services/utility.js";
+import paymentGateway from "../services/payment-gateway.js";
 
 export default {
   /**

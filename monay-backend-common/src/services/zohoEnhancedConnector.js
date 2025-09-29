@@ -1,7 +1,7 @@
-const EventEmitter = require('events');
-const axios = require('axios');
-const crypto = require('crypto');
-const { Pool } = require('pg');
+import EventEmitter from 'events';
+import axios from 'axios';
+import crypto from 'crypto';
+import { Pool } from 'pg';
 
 class ZohoEnhancedConnector extends EventEmitter {
   constructor(config = {}) {

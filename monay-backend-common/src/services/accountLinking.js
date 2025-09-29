@@ -1,4 +1,5 @@
-import { pool } from '../models/index.js';
+import db from '../models/index.js';
+const { pool } = db;
 import redis from '../config/redis.js';
 import crypto from 'crypto';
 import { v4 as uuidv4 } from 'uuid';

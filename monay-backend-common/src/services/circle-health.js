@@ -3,7 +3,7 @@
  * Monitors the health and performance of Circle integration
  */
 
-const EventEmitter = require('events');
+import EventEmitter from 'events';
 
 class CircleHealthMonitor extends EventEmitter {
   constructor(circleService) {
@@ -489,4 +489,4 @@ class CircleHealthMonitor extends EventEmitter {
   }
 }
 
-module.exports = CircleHealthMonitor;
+export default CircleHealthMonitor;

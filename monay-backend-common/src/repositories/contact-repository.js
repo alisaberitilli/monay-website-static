@@ -1,6 +1,6 @@
-import { Op } from 'sequelize';
+import pkg from 'sequelize';
+const { Op } = pkg;
 import models from '../models/index.js';
-const { User } = models;
 const { Sequelize } = models.sequelize;
 export default {
   /**

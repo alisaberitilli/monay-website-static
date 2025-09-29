@@ -1,9 +1,9 @@
-const { Pool } = require('pg');
-const crypto = require('crypto');
+import { Pool } from 'pg';
+import crypto from 'crypto';
 
 // Initialize services
-const TenantManagementService = require('../services/tenant-management');
-const BillingCalculationService = require('../services/billing-calculation');
+import TenantManagementService from '../services/tenant-management.js';
+import BillingCalculationService from '../services/billing-calculation.js';
 
 class TenantIsolationMiddleware {
   constructor() {
@@ -496,8 +496,8 @@ class TenantIsolationMiddleware {
     // Implementation would use proper JWT verification
     // This is a placeholder
     try {
-      const jwt = require('jsonwebtoken');
-      return jwt.verify(token, process.env.JWT_SECRET);
+      const jwt = await import('jsonwebtoken');
+      return jwt.default.verify(token, process.env.JWT_SECRET);
     } catch (error) {
       return null;
     }
@@ -525,4 +525,4 @@ class TenantIsolationMiddleware {
 }
 
 // Export singleton instance
-module.exports = new TenantIsolationMiddleware();
+export default new TenantIsolationMiddleware();

@@ -1,5 +1,5 @@
 import { chromium } from 'playwright';
-import loggers from './logger';
+import loggers from './logger.js';
 
 const logger = loggers.internalLogger || console;
 

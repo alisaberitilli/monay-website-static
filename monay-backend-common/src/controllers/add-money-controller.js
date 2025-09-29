@@ -1,6 +1,6 @@
 import HttpStatus from 'http-status';
-import repositories from '../repositories';
-import notificationRepository from '../repositories/notification-repository';
+import repositories from '../repositories/index.js';
+import notificationRepository from '../repositories/notification-repository.js';
 import utility from '../services/utility.js';
 
 const { transactionRepository,userRepository } = repositories;

@@ -1,7 +1,7 @@
 // Test Monay Admin Frontend Configuration
 // Verify CaaS & WaaS administrative capabilities and service integrations
 
-const monayConfig = require('../monay.config.js');
+import monayConfig from '../monay.config.js';
 
 console.log('🧪 Testing Monay Admin Frontend Configuration...\\n');
 

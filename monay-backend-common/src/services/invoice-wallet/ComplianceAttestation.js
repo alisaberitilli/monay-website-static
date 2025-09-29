@@ -7,7 +7,7 @@
  */
 
 import crypto from 'crypto';
-import loggers from '../logger';
+import loggers from '../logger.js';
 const logger = {
   info: (msg, data) => loggers.logger ? loggers.logger.info(msg, data) : console.log(msg, data),
   error: (msg, data) => loggers.errorLogger ? loggers.errorLogger.error(msg, data) : console.error(msg, data),

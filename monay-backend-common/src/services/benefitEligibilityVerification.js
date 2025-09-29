@@ -1,5 +1,7 @@
-const pool = require('../models');
-const axios = require('axios');
+import pool from '../models/index.js';
+import axios from 'axios';
+import crypto from 'crypto';
+import BusinessRuleEngine from './businessRuleEngine.js';
 
 class BenefitEligibilityVerification {
   // Income limits by household size for various programs (2025 Federal Poverty Level)
@@ -690,7 +692,7 @@ class BenefitEligibilityVerification {
    * Get program restrictions
    */
   static getProgramRestrictions(programType) {
-    const BusinessRuleEngine = require('./businessRuleEngine');
+    // Use imported BusinessRuleEngine
     return BusinessRuleEngine.FEDERAL_PROGRAM_RULES[programType] || {};
   }
 
@@ -702,7 +704,7 @@ class BenefitEligibilityVerification {
   }
 
   static hashSSN(ssn) {
-    const crypto = require('crypto');
+    // Use imported crypto
     return crypto.createHash('sha256').update(ssn).digest('hex');
   }
 

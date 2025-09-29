@@ -1,8 +1,7 @@
 import models from '../models/index.js';
 import config from '../config/index.js';
 import utility from '../services/utility.js';
-const { exec } = require('child_process');
-const { Setting, Country, KycDocument } = models;
+import { exec } from 'child_process';
 
 export default {
 
@@ -79,7 +78,7 @@ export default {
         if (res) {
           await Setting.update({ value: 1 }, { where: { key: 'is_country_setting' } });
           exec(
-            `sudo pm2 restart monay-api/index.js`,
+            `sudo pm2 restart src/index.js`,
             { maxBuffer: 1024 * 2084 }, async (err, stdout, stderr) => {
               if (err) {
                 console.error('buffer error', err);

@@ -1,7 +1,8 @@
-const pool = require('../models');
-const EventEmitter = require('events');
-const crypto = require('crypto');
-const QRCode = require('qrcode');
+import pool from '../models/index.js';
+import EventEmitter from 'events';
+import crypto from 'crypto';
+import QRCode from 'qrcode';
+import BusinessRuleEngine from './businessRuleEngine.js';
 
 class BenefitCardManagement extends EventEmitter {
   constructor() {
@@ -737,7 +738,7 @@ class BenefitCardManagement extends EventEmitter {
    * Set initial card limits based on program
    */
   async setCardLimits(cardId, programType, client) {
-    const BusinessRuleEngine = require('./businessRuleEngine');
+    // Use imported BusinessRuleEngine
     const rules = BusinessRuleEngine.FEDERAL_PROGRAM_RULES[programType];
 
     const limits = {
@@ -786,7 +787,7 @@ class BenefitCardManagement extends EventEmitter {
    * Validate spending limits
    */
   async validateLimits(limits, programType) {
-    const BusinessRuleEngine = require('./businessRuleEngine');
+    // Use imported BusinessRuleEngine
     const rules = BusinessRuleEngine.FEDERAL_PROGRAM_RULES[programType];
 
     const validated = {};

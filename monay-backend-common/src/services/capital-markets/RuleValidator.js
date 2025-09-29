@@ -4,7 +4,7 @@
  * @module services/capital-markets/RuleValidator
  */
 
-const loggers = require('../logger');
+import loggers from '../logger.js';
 const logger = loggers.logger || loggers;
 
 /**

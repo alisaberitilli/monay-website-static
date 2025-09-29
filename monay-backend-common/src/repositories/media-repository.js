@@ -11,7 +11,7 @@ import config from '../config/index.js';
 import models from '../models/index.js';
 import s3Bucket from '../services/s3-bucket.js';
 import loggers from '../services/logger.js';
-import accountRepository from './account-repository';
+import accountRepository from './account-repository.js';
 
 // Jimp helper functions to replace Sharp
 const jimpTransforms = {
@@ -77,7 +77,6 @@ const jimpTransforms = {
 };
 // Imports moved to top of file
 
-const { MediaTemp, User } = models;
 const { Op, literal } = models.Sequelize;
 
 

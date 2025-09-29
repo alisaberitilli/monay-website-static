@@ -1,10 +1,10 @@
-const { EventEmitter } = require('events');
-const { Pool } = require('pg');
-const crypto = require('crypto');
-const fs = require('fs').promises;
-const path = require('path');
-const { exec } = require('child_process');
-const util = require('util');
+import { EventEmitter } from 'events';
+import { Pool } from 'pg';
+import crypto from 'crypto';
+import { promises as fs } from 'fs';
+import path from 'path';
+import { exec } from 'child_process';
+import util from 'util';
 
 const execPromise = util.promisify(exec);
 

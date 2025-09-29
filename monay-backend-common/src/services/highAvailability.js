@@ -1,8 +1,10 @@
-const { pool } = require('../models');
-const redis = require('../config/redis');
-const cluster = require('cluster');
-const os = require('os');
-const { v4: uuidv4 } = require('uuid');
+import db from '../models/index.js';
+const { pool } = db;
+import redis from '../config/redis';
+import cluster from 'cluster';
+import os from 'os';
+import { v4 as uuidv4 } from 'uuid';
+import schedule from 'node-schedule';
 
 class HighAvailability {
   constructor() {
@@ -455,7 +457,7 @@ class HighAvailability {
   }
 
   async setupAutomatedBackups() {
-    const schedule = require('node-schedule');
+    // Use imported schedule
 
     // Schedule database backups
     schedule.scheduleJob(this.drConfig.backup_schedule, async () => {
@@ -544,7 +546,7 @@ class HighAvailability {
   }
 
   async scheduleDRTests() {
-    const schedule = require('node-schedule');
+    // Use imported schedule
 
     // Schedule monthly DR tests
     schedule.scheduleJob('0 0 1 * *', async () => {

@@ -1,8 +1,11 @@
-const express = require('express');
+import express from 'express';
 const router = express.Router();
-const { auditLogService, AuditActions } = require('../services/audit-log');
-const { authenticate, authorize } = require('../middleware/auth');
-const { auditAction } = require('../middleware/audit');
+import { auditLogService, AuditActions } from '../services/audit-log.js';
+import { authenticate, authorize } from '../middleware/auth.js';
+import { auditAction } from '../middleware/audit.js';
+import db from '../models/index.js';
+import pkg from 'sequelize';
+const { Op } = pkg;
 
 /**
  * @route GET /api/audit-logs
@@ -328,8 +331,6 @@ router.get('/stats',
   async (req, res) => {
     try {
       const { days = 30 } = req.query;
-      const db = require('../models');
-      const { Op } = require('sequelize');
       
       const startDate = new Date();
       startDate.setDate(startDate.getDate() - days);
@@ -423,4 +424,4 @@ function convertToCSV(logs) {
   return csv;
 }
 
-module.exports = router;
+export default router;

@@ -3,7 +3,7 @@
  * This file provides the expected function names for tests
  */
 
-import authMiddleware from './auth-middleware';
+import authMiddleware from './auth-middleware.js';
 import HttpStatus from 'http-status';
 
 // Main authentication function - wrap to match test expectations
@@ -93,9 +93,13 @@ export const validateApiKey = (req, res, next) => {
   });
 };
 
+// Alias for backward compatibility
+export const authenticateToken = authenticate;
+
 // Export all together for convenience
 export default {
   authenticate,
   authorize,
-  validateApiKey
+  validateApiKey,
+  authenticateToken
 };

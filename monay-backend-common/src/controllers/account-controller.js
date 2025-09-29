@@ -1,7 +1,8 @@
 import HttpStatus from 'http-status';
-import { Op } from 'sequelize';
+import pkg from 'sequelize';
+const { Op } = pkg;
 import utility from '../services/utility.js';
-import repositories from '../repositories';
+import repositories from '../repositories/index.js';
 import sms from '../services/sms.js';
 import encryptAPIs from '../services/encrypt.js';
 import config from '../config/index.js'

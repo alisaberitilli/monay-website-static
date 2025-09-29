@@ -1,6 +1,6 @@
-const { Pool } = require('pg');
-const crypto = require('crypto');
-const { v4: uuidv4 } = require('uuid');
+import { Pool } from 'pg';
+import crypto from 'crypto';
+import { v4 as uuidv4 } from 'uuid';
 
 class TenantManagementService {
   constructor(pool) {
@@ -496,4 +496,4 @@ class TenantManagementService {
   }
 }
 
-module.exports = TenantManagementService;
+export default TenantManagementService;

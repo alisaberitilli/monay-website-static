@@ -6,7 +6,7 @@
 
 import { Router } from 'express';
 import HttpStatus from 'http-status';
-import authenticate from '../middlewares/auth-middleware';
+import authenticate from '../middlewares/auth-middleware.js';
 import dwollaPaymentService from '../services/dwolla-payment.js';
 import paymentRailOrchestrator from '../services/payment-rail-orchestrator.js';
 import loggers from '../services/logger.js';

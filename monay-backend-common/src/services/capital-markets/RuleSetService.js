@@ -4,12 +4,12 @@
  * @module services/capital-markets/RuleSetService
  */
 
-const { v4: uuidv4 } = require('uuid');
-const models = require('../../models');
-const BusinessRuleEngine = require('../business-rule-engine/BusinessRuleEngine');
-const RuleCompiler = require('../business-rule-engine/RuleCompiler');
-const CapitalMarketsTemplates = require('./CapitalMarketsTemplates');
-const loggers = require('../logger');
+import { v4 as uuidv4 } from 'uuid';
+import models from '../../models/index.js';
+import BusinessRuleEngine from '../business-rule-engine/BusinessRuleEngine.js';
+import RuleCompiler from '../business-rule-engine/RuleCompiler.js';
+import CapitalMarketsTemplates from './CapitalMarketsTemplates.js';
+import loggers from '../logger.js';
 const logger = loggers.logger || loggers;
 
 class RuleSetService {

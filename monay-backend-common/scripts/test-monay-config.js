@@ -1,7 +1,7 @@
 // Test Monay Backend Configuration
 // Verify CaaS & WaaS backend services and integrations
 
-const monayConfig = require('../monay.config.js');
+import monayConfig from '../monay.config.js';
 
 console.log('🧪 Testing Monay Backend Configuration...\n');
 
@@ -148,7 +148,7 @@ async function testDatabaseConnection() {
     console.log('\n🔍 Testing Database Connectivity...');
     
     // Test PostgreSQL connection (using existing connection)
-    const { Pool } = require('pg');
+    import { Pool } from 'pg';
     const pool = new Pool({
       host: monayConfig.database.main.host,
       port: monayConfig.database.main.port,

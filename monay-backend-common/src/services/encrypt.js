@@ -1,4 +1,4 @@
-const crypto = require('crypto');
+import crypto from 'crypto';
 import config from '../config/index.js';
 const { algorithm, salt, digest, secretKey } = config.crypto;
 

@@ -1,5 +1,5 @@
-import ApiRequest from "./api-request";
-import config from "../config";
+import ApiRequest from "./api-request.js";
+import config from "../config/index.js";
 
 const PaymentApi = {
   async authentication(currency) {

@@ -1,6 +1,6 @@
-const request = require('supertest');
-const express = require('express');
-const path = require('path');
+import request from 'supertest';
+import express from 'express';
+import path from 'path';
 
 // Import the app after setting up environment
 let app;
@@ -56,7 +56,7 @@ const testInvoice = {
 describe('Invoice Wallet API Tests', () => {
   beforeAll(async () => {
     // Dynamic import of the app
-    const appModule = require('../../app');
+    import appModule from '../../app';
     app = appModule.app || appModule;
 
     // Start server for testing

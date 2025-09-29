@@ -8,8 +8,8 @@
 
 import crypto from 'crypto';
 import schedule from 'node-schedule';
-import db from '../../models';
-import logger from '../logger';
+import db from '../../models/index.js';
+import logger from '../logger.js';
 import Redis from 'redis';
 
 class EphemeralManager {

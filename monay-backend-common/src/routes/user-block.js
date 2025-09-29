@@ -1,7 +1,7 @@
 import { Router } from 'express';
-import controllers from '../controllers';
-import validations from '../validations';
-import middlewares from '../middlewares';
+import controllers from '../controllers/index.js';
+import validations from '../validations/index.js';
+import middlewares from '../middlewares/index.js';
 
 const router = Router();
 const { blockUserValidator } = validations;

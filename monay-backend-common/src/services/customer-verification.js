@@ -1,8 +1,9 @@
 import HttpStatus from 'http-status';
-import { CustomError } from '../middlewares/errors';
-import loggers from './logger';
+import { CustomError } from '../middlewares/errors.js';
+import loggers from './logger.js';
 import axios from 'axios';
 import crypto from 'crypto';
+import db from '../models/index.js';
 
 class CustomerVerificationService {
   constructor() {
@@ -631,7 +632,7 @@ class CustomerVerificationService {
    */
   async storeVerificationSession(sessionData) {
     // Store in database
-    const db = require('../models');
+    // Use imported db
     await db.VerificationSession.create(sessionData);
   }
 
@@ -639,7 +640,7 @@ class CustomerVerificationService {
    * Update verification status in database
    */
   async updateVerificationStatus(sessionId, statusData) {
-    const db = require('../models');
+    // Use imported db
     await db.VerificationSession.update(
       {
         status: statusData.status,
@@ -673,7 +674,7 @@ class CustomerVerificationService {
    */
   async generateVerificationReport(userId) {
     try {
-      const db = require('../models');
+      // Use imported db
       const sessions = await db.VerificationSession.findAll({
         where: { userId },
         order: [['createdAt', 'DESC']]

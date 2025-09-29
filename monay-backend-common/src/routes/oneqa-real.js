@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import OneQAPlaywrightService from '../services/oneqa-playwright.js';
-import helpers from '../helpers';
+import helpers from '../helpers/index.js';
 import loggers from '../services/logger.js';
 
 const router = Router();

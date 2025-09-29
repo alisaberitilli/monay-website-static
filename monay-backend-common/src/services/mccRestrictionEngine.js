@@ -1,5 +1,5 @@
-const pool = require('../models');
-const EventEmitter = require('events');
+import pool from '../models/index.js';
+import EventEmitter from 'events';
 
 class MCCRestrictionEngine extends EventEmitter {
   constructor() {

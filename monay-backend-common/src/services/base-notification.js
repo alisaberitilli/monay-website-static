@@ -1,11 +1,16 @@
-import * as admin from 'firebase-admin';
+import firebaseAdmin from 'firebase-admin';
 import config from '../config/index.js';
 
 const projectId = config.google.project_id;
-admin.initializeApp({
-    credential: admin.credential.cert(config.google.service_account_key),
-    databaseURL: `https://${projectId}.firebaseio.com`,
-});
+const admin = firebaseAdmin.default || firebaseAdmin;
+
+// Only initialize if we have the required config
+if (config.google && config.google.service_account_key && admin.credential) {
+    admin.initializeApp({
+        credential: admin.credential.cert(config.google.service_account_key),
+        databaseURL: `https://${projectId}.firebaseio.com`,
+    });
+}
 export default {
     /**
      * Send notification to android

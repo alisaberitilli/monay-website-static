@@ -6,7 +6,7 @@
 
 import crypto from 'crypto'
 import { promisify } from 'util'
-import auditLogger from './AuditLogger'
+import auditLogger from './AuditLogger.js'
 
 const randomBytes = promisify(crypto.randomBytes)
 

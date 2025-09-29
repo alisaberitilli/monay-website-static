@@ -3,7 +3,7 @@
  * @module services/capital-markets/CapitalMarketsTemplates
  */
 
-const { v4: uuidv4 } = require('uuid');
+import { v4 as uuidv4 } from 'uuid';
 
 /**
  * Capital Markets Templates Service

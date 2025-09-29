@@ -1,6 +1,6 @@
-import emailer from './base-emailer';
+import emailer from './base-emailer.js';
 import config from '../config/index.js';
-import ejsTemplate from './ejs';
+import ejsTemplate from './ejs.js';
 export default {
     /**
      * Send email on forgot password

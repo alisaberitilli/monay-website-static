@@ -3,7 +3,7 @@
  * Tracks and analyzes performance metrics for USDC operations
  */
 
-const EventEmitter = require('events');
+import EventEmitter from 'events';
 
 class CircleMetricsCollector extends EventEmitter {
   constructor() {
@@ -687,4 +687,4 @@ class CircleMetricsCollector extends EventEmitter {
 }
 
 // Export singleton instance
-module.exports = new CircleMetricsCollector();
+export default new CircleMetricsCollector();

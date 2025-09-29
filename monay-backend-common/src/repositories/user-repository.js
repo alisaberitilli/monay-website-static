@@ -1,24 +1,24 @@
-import { Op } from 'sequelize';
-import bcrypt from 'bcryptjs';
+import pkg from 'sequelize';
+const { Op } = pkg;
+import bcrypt from 'bcrypt';
 import cuid from 'cuid';
-import mediaRepository from './media-repository';
+import mediaRepository from './media-repository.js';
 import models from '../models/index.js';
-import accountRepository from './account-repository';
-import activityLogRepository from './activity-log-repository';
+import accountRepository from './account-repository.js';
+import activityLogRepository from './activity-log-repository.js';
 import utility from '../services/utility.js';
 import moment from 'moment-timezone';
 import sms from '../services/sms.js';
 import Email from '../services/email.js';
-import notificationRepository from './notification-repository';
+import notificationRepository from './notification-repository.js';
 import encryptAPIs from '../services/encrypt.js';
 import logger from '../services/logger.js';
 import config from '../config/index.js';
 const { Sequelize } = models.sequelize;
-const { User, Notification, UserKyc, UserRole, UserToken, ChildParent, Country } = models;
 const fromDateTime = ' 00:00:00';
 const toDateTime = ' 23:59:59';
 const dateFormat = 'YYYY-MM-DD HH:mm:ss';
-import utils from '../utils/index';
+import utils from '../utils/index.js';
 
 
 export default {

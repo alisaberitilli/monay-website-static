@@ -4,11 +4,11 @@
  * Created: 2025-01-21
  */
 
-const { EventEmitter } = require('events');
-const PDFDocument = require('pdfkit');
-const ExcelJS = require('exceljs');
-const fs = require('fs').promises;
-const path = require('path');
+import { EventEmitter } from 'events';
+import PDFDocument from 'pdfkit';
+import ExcelJS from 'exceljs';
+import { promises as fs } from 'fs';
+import path from 'path';
 
 class FinancialReportingService extends EventEmitter {
   constructor() {

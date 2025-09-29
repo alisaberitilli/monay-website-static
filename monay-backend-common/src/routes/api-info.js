@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import HttpStatus from 'http-status';
 import path from 'path';
+import net from 'net';
 
 const router = Router();
 
@@ -126,19 +127,20 @@ router.get('/api/info', (req, res) => {
           'GET /api/treasury/compliance/report - Generate compliance report'
         ]
       },
-      tillipay: {
-        base: '/api/tillipay',
+      monayFiat: {
+        base: '/api/monay-fiat',
+        description: 'Monay GPS Fiat Payment Gateway - Primary on/off-ramp provider',
         endpoints: [
-          'GET /api/tillipay/test-connection - Test TilliPay connection (Admin/Developer only)',
-          'POST /api/tillipay/payment-link - Create payment link',
-          'POST /api/tillipay/payment/card - Process card payment',
-          'POST /api/tillipay/payment/ach - Process ACH payment',
-          'GET /api/tillipay/payment/status/:transactionId - Get payment status',
-          'POST /api/tillipay/payment/refund/:transactionId - Refund payment (Admin/Merchant only)',
-          'POST /api/tillipay/payment/capture/:transactionId - Capture payment (Admin/Merchant only)',
-          'POST /api/tillipay/payment/void/:transactionId - Void payment (Admin/Merchant only)',
-          'GET /api/tillipay/transactions - Get transaction history',
-          'POST /api/tillipay/webhook - Handle TilliPay webhooks'
+          'GET /api/monay-fiat/test-connection - Test Monay Fiat connection (Admin/Developer only)',
+          'POST /api/monay-fiat/payment-link - Create payment link',
+          'POST /api/monay-fiat/payment/card - Process card payment',
+          'POST /api/monay-fiat/payment/ach - Process ACH payment',
+          'GET /api/monay-fiat/payment/status/:transactionId - Get payment status',
+          'POST /api/monay-fiat/payment/refund/:transactionId - Refund payment (Admin/Merchant only)',
+          'POST /api/monay-fiat/payment/capture/:transactionId - Capture payment (Admin/Merchant only)',
+          'POST /api/monay-fiat/payment/void/:transactionId - Void payment (Admin/Merchant only)',
+          'GET /api/monay-fiat/transactions - Get transaction history',
+          'POST /api/monay-fiat/webhook - Handle Monay Fiat webhooks'
         ]
       },
       status: '/status - Platform status dashboard',
@@ -261,7 +263,6 @@ router.get('/applications', async (req, res) => {
     }
     
     // Use net module for simple port check instead of HTTP fetch
-    const net = require('net');
     
     return new Promise((resolve) => {
       const start = Date.now();

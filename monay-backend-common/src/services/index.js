@@ -1,5 +1,5 @@
-import socialLogin from './social-login';
-import solana from './solana';
+import socialLogin from './social-login.js';
+import solana from './solana.js';
 
 export default {
     socialLogin,

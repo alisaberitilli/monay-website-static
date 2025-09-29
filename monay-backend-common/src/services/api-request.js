@@ -1,5 +1,5 @@
 import axios from "axios";
-import config from "../config";
+import config from "../config/index.js";
 import loggers from '../services/logger.js';
 import utility from '../services/utility.js';
 

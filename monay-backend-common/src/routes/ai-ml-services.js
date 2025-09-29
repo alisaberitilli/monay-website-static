@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import HttpStatus from 'http-status';
-import authenticate from '../middlewares/auth-middleware';
-import rateLimiter from '../middlewares/rate-limiter-middleware';
+import authenticate from '../middlewares/auth-middleware.js';
+import rateLimiter from '../middlewares/rate-limiter-middleware.js';
 
 // Import AI/ML services
 import PredictiveAnalyticsEngine from '../services/predictiveAnalyticsEngine.js';

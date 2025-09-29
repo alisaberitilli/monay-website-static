@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32">
+  <!-- Blue M shape -->
+  <path d="M 4 24 L 8 8 L 12 18 L 16 8 L 20 24 L 17 24 L 15 12 L 12 22 L 9 12 L 7 24 Z" fill="#0066FF"/>
+  <!-- Yellow dot -->
+  <circle cx="24" cy="22" r="3" fill="#FFD700"/>
+</svg>

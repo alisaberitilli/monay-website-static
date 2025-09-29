@@ -1,9 +1,12 @@
-const express = require('express');
+import express from 'express';
 const router = express.Router();
-const mfaService = require('../services/mfa');
-const { authenticate } = require('../middleware/auth');
-const { auditAction } = require('../middleware/audit');
-const { AuditActions } = require('../services/audit-log');
+import mfaService from '../services/mfa.js';
+import { authenticate } from '../middleware/auth.js';
+import { auditAction } from '../middleware/audit.js';
+import { AuditActions } from '../services/audit-log.js';
+import db from '../models/index.js';
+import bcrypt from 'bcryptjs';
+import jwt from 'jsonwebtoken';
 
 /**
  * @route POST /api/mfa/setup
@@ -147,7 +150,7 @@ router.post('/verify',
       }
 
       // Get user MFA secret
-      const db = require('../models');
+      // Use imported db
       const user = await db.User.findByPk(userId);
       
       if (!user.mfaEnabled || !user.mfaSecret) {
@@ -198,7 +201,7 @@ router.post('/verify',
       }
 
       // Generate MFA verification token
-      const mfaToken = require('jsonwebtoken').sign(
+      const mfaToken = jwt.sign(
         { userId, mfaVerified: true },
         process.env.JWT_SECRET,
         { expiresIn: '30m' }
@@ -236,9 +239,9 @@ router.post('/disable',
       const userId = req.user.id;
 
       // Verify password
-      const db = require('../models');
+      // Use imported db
       const user = await db.User.findByPk(userId);
-      const bcrypt = require('bcryptjs');
+      // Use imported bcrypt
       
       const passwordValid = await bcrypt.compare(password, user.password);
       if (!passwordValid) {
@@ -317,9 +320,9 @@ router.post('/backup-codes/regenerate',
       const userId = req.user.id;
 
       // Verify password
-      const db = require('../models');
+      // Use imported db
       const user = await db.User.findByPk(userId);
-      const bcrypt = require('bcryptjs');
+      // Use imported bcrypt
       
       const passwordValid = await bcrypt.compare(password, user.password);
       if (!passwordValid) {
@@ -444,7 +447,7 @@ router.post('/verify-sms',
       delete req.session.smsOTP;
 
       // Generate MFA verification token
-      const mfaToken = require('jsonwebtoken').sign(
+      const mfaToken = jwt.sign(
         { userId, mfaVerified: true, method: 'sms' },
         process.env.JWT_SECRET,
         { expiresIn: '30m' }
@@ -494,4 +497,4 @@ router.post('/check-requirement',
   }
 );
 
-module.exports = router;
+export default router;

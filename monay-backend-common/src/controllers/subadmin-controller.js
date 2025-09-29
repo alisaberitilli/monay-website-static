@@ -1,6 +1,6 @@
 import HttpStatus from 'http-status';
 import utility from '../services/utility.js';
-import repositories from '../repositories';
+import repositories from '../repositories/index.js';
 const { userRepository, activityLogRepository } = repositories;
 
 export default {

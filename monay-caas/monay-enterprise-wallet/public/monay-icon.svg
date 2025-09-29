@@ -1,0 +1,17 @@
+<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Blue M shape -->
+  <path d="M80 320 L80 128 Q80 80 128 80 Q176 80 176 128 L176 192 L256 112 Q256 80 288 80"
+    stroke="#0080FF"
+    stroke-width="48"
+    stroke-linecap="round"
+    fill="#0080FF"/>
+
+  <path d="M288 80 Q320 80 320 112 L400 192 L400 128 Q400 80 448 80 Q496 80 496 128 L496 320"
+    stroke="#0080FF"
+    stroke-width="48"
+    stroke-linecap="round"
+    fill="#0080FF"/>
+
+  <!-- Yellow dot -->
+  <circle cx="416" cy="384" r="48" fill="#FFD700"/>
+</svg>

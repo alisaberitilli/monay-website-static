@@ -1,6 +1,6 @@
-const { Pool } = require('pg');
-const bcrypt = require('bcryptjs');
-const { v4: uuidv4 } = require('uuid');
+import { Pool } from 'pg';
+import bcrypt from 'bcrypt';
+import { v4 as uuidv4 } from 'uuid';
 
 // Create test database pool
 const createTestPool = () => {
@@ -498,7 +498,7 @@ const closeTestDb = async () => {
   }
 };
 
-module.exports = {
+export default {
   getTestDb,
   cleanDatabase,
   seedUsers,

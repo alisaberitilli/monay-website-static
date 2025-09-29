@@ -1,8 +1,9 @@
-const pool = require('../models');
-const EventEmitter = require('events');
-const fs = require('fs').promises;
-const path = require('path');
-const crypto = require('crypto');
+import pool from '../models/index.js';
+import EventEmitter from 'events';
+import { promises as fs } from 'fs';
+import path from 'path';
+import crypto from 'crypto';
+import cron from 'node-cron';
 
 class ComplianceReportingSystem extends EventEmitter {
   constructor() {
@@ -1326,8 +1327,6 @@ class ComplianceReportingSystem extends EventEmitter {
    * Schedule a report
    */
   scheduleReport(reportType, cronSchedule, parameters) {
-    const cron = require('node-cron');
-
     const task = cron.schedule(cronSchedule, async () => {
       console.log(`Running scheduled report: ${reportType}`);
 

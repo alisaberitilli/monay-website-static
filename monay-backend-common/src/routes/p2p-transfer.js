@@ -1,8 +1,10 @@
 import express from 'express';
 import { v4 as uuidv4 } from 'uuid';
-import authenticateToken from '../middlewares/auth-middleware';
-import { User, Transaction, Wallet, Notification, sequelize } from '../models/index.js';
-import { Op } from 'sequelize';
+import authenticateToken from '../middlewares/auth-middleware.js';
+import db from '../models/index.js';
+const { User, Transaction, Wallet, Notification, sequelize } = db;
+import pkg from 'sequelize';
+const { Op } = pkg;
 import utility from '../services/utility.js';
 import p2pTransferService from '../services/p2p-transfer-service.js';
 import { body, param, query, validationResult } from 'express-validator';
@@ -21,13 +23,7 @@ router.post('/search', authenticateToken, async (req, res) => {
     const userId = req.user.id;
 
     if (!query) {
-      return res.status(400).json({
-        success: false,
-        error: {
-          code: 'INVALID_INPUT',
-          message: 'Search query is required'
-        }
-      });
+      return res.status(400).json({ success: false, error: 'Query is required' });
     }
 
     let whereClause = {};
@@ -164,10 +160,7 @@ router.post('/validate',
   async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      return res.status(400).json({
-        success: false,
-        errors: errors.array()
-      });
+      return res.status(400).json({ success: false, errors: errors.array() });
     }
 
     try {
@@ -213,10 +206,7 @@ router.post('/send',
   async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      return res.status(400).json({
-        success: false,
-        errors: errors.array()
-      });
+      return res.status(400).json({ success: false, errors: errors.array() });
     }
 
     try {
@@ -234,13 +224,7 @@ router.post('/send',
       const recipientData = await p2pTransferService.validateRecipient(recipientIdentifier);
 
       if (!recipientData.isValid && recipientData.isMonayUser) {
-        return res.status(400).json({
-          success: false,
-          error: {
-            code: 'INVALID_RECIPIENT',
-            message: recipientData.error
-          }
-        });
+        return res.status(400).json({ success: false, error: 'Invalid recipient' });
       }
 
       // Create the transfer
@@ -284,10 +268,7 @@ router.get('/status/:transferId',
   async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      return res.status(400).json({
-        success: false,
-        errors: errors.array()
-      });
+      return res.status(400).json({ success: false, errors: errors.array() });
     }
 
     try {
@@ -297,13 +278,7 @@ router.get('/status/:transferId',
       const status = await p2pTransferService.getTransferStatus(transferId, userId);
 
       if (!status) {
-        return res.status(404).json({
-          success: false,
-          error: {
-            code: 'NOT_FOUND',
-            message: 'Transfer not found'
-          }
-        });
+        return res.status(404).json({ success: false, error: 'Transfer not found' });
       }
 
       res.json({
@@ -334,10 +309,7 @@ router.post('/cancel/:transferId',
   async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      return res.status(400).json({
-        success: false,
-        errors: errors.array()
-      });
+      return res.status(400).json({ success: false, errors: errors.array() });
     }
 
     try {
@@ -374,10 +346,7 @@ router.post('/retry/:transferId',
   async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      return res.status(400).json({
-        success: false,
-        errors: errors.array()
-      });
+      return res.status(400).json({ success: false, errors: errors.array() });
     }
 
     try {
@@ -421,10 +390,7 @@ router.get('/history',
   async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      return res.status(400).json({
-        success: false,
-        errors: errors.array()
-      });
+      return res.status(400).json({ success: false, errors: errors.array() });
     }
 
     try {
@@ -482,13 +448,7 @@ router.post('/search', authenticateToken, async (req, res) => {
     const userId = req.user.id;
 
     if (!query) {
-      return res.status(400).json({
-        success: false,
-        error: {
-          code: 'INVALID_INPUT',
-          message: 'Search query is required'
-        }
-      });
+      return res.status(400).json({ success: false, error: 'Query is required' });
     }
 
     let whereClause = {};
@@ -580,10 +540,7 @@ router.get('/recent-contacts', authenticateToken, async (req, res) => {
     const recipientIds = recentTransfers.map(t => t.recipient_user_id).filter(Boolean);
 
     if (recipientIds.length === 0) {
-      return res.json({
-        success: true,
-        data: []
-      });
+      return res.json({ success: true, data: { transfers: [] } });
     }
 
     const users = await User.findAll({
@@ -655,233 +612,28 @@ router.get('/frequent', authenticateToken, async (req, res) => {
     );
 
     const results = frequentContacts.map(contact => ({
-      recipientId,
-      recipientIdentifier,
-      amount,
-      currency = 'USD',
-      note,
-      transferMethod = 'monay',
-      schedule = 'now',
-      scheduleDate
-    } = req.body;
+      id: contact.contact_user_id,
+      name: contact.contact_name,
+      email: contact.contact_email,
+      phone: contact.contact_phone,
+      transactionCount: contact.transaction_count,
+      lastTransaction: contact.last_transaction_date
+    }));
 
-    // Validate input
-    if (!amount || amount <= 0) {
-      await t.rollback();
-      return res.status(400).json({
-        success: false,
-        error: {
-          code: 'INVALID_AMOUNT',
-          message: 'Invalid transfer amount'
-        }
-      });
-    }
-
-    // Get sender's wallet
-    const senderWallet = await Wallet.findOne({
-      where: { userId: senderId, currency },
-      transaction: t
-    });
-
-    if (!senderWallet || senderWallet.balance < amount) {
-      await t.rollback();
-      return res.status(400).json({
-        success: false,
-        error: {
-          code: 'INSUFFICIENT_BALANCE',
-          message: 'Insufficient balance'
-        }
-      });
-    }
-
-    let receiver = null;
-    let receiverWallet = null;
-
-    // Find or invite recipient
-    if (recipientId) {
-      receiver = await User.findByPk(recipientId, { transaction: t });
-    } else if (recipientIdentifier) {
-      // Search by identifier
-      receiver = await User.findOne({
-        where: {
-          [Op.or]: [
-            { email: recipientIdentifier.toLowerCase() },
-            { mobile: recipientIdentifier },
-            { username: recipientIdentifier.toLowerCase() }
-          ]
-        },
-        transaction: t
-      });
-
-      if (!receiver && (transferMethod === 'phone' || transferMethod === 'email')) {
-        // Create pending transfer for non-Monay user
-        const pendingTransfer = await Transaction.create({
-          id: uuidv4(),
-          type: 'transfer',
-          senderId,
-          receiverIdentifier: recipientIdentifier,
-          amount,
-          currency,
-          status: 'pending_recipient',
-          description: note || 'P2P Transfer',
-          metadata: {
-            transferMethod,
-            inviteSent: true,
-            inviteSentAt: new Date()
-          }
-        }, { transaction: t });
-
-        // Send invitation (SMS or Email)
-        // await utility.sendTransferInvite(recipientIdentifier, transferMethod, amount, senderId);
-
-        await t.commit();
-        return res.json({
-          success: true,
-          data: {
-            transactionId: pendingTransfer.id,
-            status: 'pending_recipient',
-            message: `Invitation sent to ${recipientIdentifier}. Transfer will complete when they join Monay.`
-          }
-        });
-      }
-    }
-
-    if (!receiver) {
-      await t.rollback();
-      return res.status(404).json({
-        success: false,
-        error: {
-          code: 'RECIPIENT_NOT_FOUND',
-          message: 'Recipient not found'
-        }
-      });
-    }
-
-    // Get or create receiver's wallet
-    receiverWallet = await Wallet.findOne({
-      where: { userId: receiver.id, currency },
-      transaction: t
-    });
-
-    if (!receiverWallet) {
-      receiverWallet = await Wallet.create({
-        id: uuidv4(),
-        userId: receiver.id,
-        currency,
-        balance: 0
-      }, { transaction: t });
-    }
-
-    // Calculate fees
-    const transferFee = transferMethod === 'bank' ? 2.50 : 0;
-    const totalAmount = parseFloat(amount) + transferFee;
-
-    // Check daily limit
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-
-    const dailyTransfers = await Transaction.sum('amount', {
-      where: {
-        senderId,
-        type: 'transfer',
-        createdAt: { [Op.gte]: today }
-      },
-      transaction: t
-    });
-
-    const dailyLimit = 10000; // Default daily limit
-    if ((dailyTransfers || 0) + totalAmount > dailyLimit) {
-      await t.rollback();
-      return res.status(400).json({
-        success: false,
-        error: {
-          code: 'DAILY_LIMIT_EXCEEDED',
-          message: `Daily transfer limit of ${utility.formatCurrency(dailyLimit)} exceeded`
-        }
-      });
-    }
-
-    // Process transfer
-    const transferStatus = schedule === 'later' ? 'scheduled' : 'completed';
-
-    // Deduct from sender
-    senderWallet.balance -= totalAmount;
-    await senderWallet.save({ transaction: t });
-
-    // Add to receiver (if not scheduled)
-    if (schedule === 'now') {
-      receiverWallet.balance += parseFloat(amount);
-      await receiverWallet.save({ transaction: t });
-    }
-
-    // Create transaction record
-    const transaction = await Transaction.create({
-      id: uuidv4(),
-      type: 'transfer',
-      senderId,
-      receiverId: receiver.id,
-      amount: parseFloat(amount),
-      currency,
-      fee: transferFee,
-      status: transferStatus,
-      description: note || 'P2P Transfer',
-      metadata: {
-        transferMethod,
-        scheduleDate: schedule === 'later' ? scheduleDate : null
-      }
-    }, { transaction: t });
-
-    // Create notifications
-    if (schedule === 'now') {
-      // Sender notification
-      await Notification.create({
-        id: uuidv4(),
-        userId: senderId,
-        type: 'transfer_sent',
-        title: 'Transfer Sent',
-        message: `You sent ${utility.formatCurrency(amount)} to ${receiver.firstName} ${receiver.lastName}`,
-        data: { transactionId: transaction.id }
-      }, { transaction: t });
-
-      // Receiver notification
-      await Notification.create({
-        id: uuidv4(),
-        userId: receiver.id,
-        type: 'transfer_received',
-        title: 'Money Received',
-        message: `You received ${utility.formatCurrency(amount)} from ${req.user.firstName} ${req.user.lastName}`,
-        data: { transactionId: transaction.id }
-      }, { transaction: t });
-    }
-
-    await t.commit();
-
-    res.json({
+    res.status(200).json({
       success: true,
       data: {
-        transactionId: transaction.id,
-        amount: parseFloat(amount),
-        fee: transferFee,
-        totalAmount,
-        status: transferStatus,
-        receiver: {
-          id: receiver.id,
-          name: `${receiver.firstName} ${receiver.lastName}`,
-          identifier: receiver.email || receiver.mobile || receiver.username
-        },
-        message: schedule === 'later' 
-          ? `Transfer scheduled for ${scheduleDate}`
-          : 'Transfer completed successfully'
+        contacts: results,
+        total: results.length
       }
     });
   } catch (error) {
-    await t.rollback();
-    console.error('Error processing transfer:', error);
+    console.error('Error fetching frequent contacts:', error);
     res.status(500).json({
       success: false,
       error: {
         code: 'SERVER_ERROR',
-        message: 'Failed to process transfer'
+        message: 'Failed to fetch frequent contacts'
       }
     });
   }
@@ -971,13 +723,7 @@ router.post('/request', authenticateToken, async (req, res) => {
     } = req.body;
 
     if (!amount || amount <= 0) {
-      return res.status(400).json({
-        success: false,
-        error: {
-          code: 'INVALID_AMOUNT',
-          message: 'Invalid request amount'
-        }
-      });
+      return res.status(400).json({ success: false, error: 'Invalid amount' });
     }
 
     // Find payer
@@ -997,13 +743,7 @@ router.post('/request', authenticateToken, async (req, res) => {
     }
 
     if (!payer) {
-      return res.status(404).json({
-        success: false,
-        error: {
-          code: 'PAYER_NOT_FOUND',
-          message: 'Payer not found'
-        }
-      });
+      return res.status(404).json({ success: false, error: 'Payer not found' });
     }
 
     // Create payment request

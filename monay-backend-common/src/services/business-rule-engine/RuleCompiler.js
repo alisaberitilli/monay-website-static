@@ -6,15 +6,15 @@
  * @module RuleCompiler
  */
 
-const loggers = require('../logger');
+import loggers from '../logger.js';
 const logger = {
   info: (msg, data) => loggers.logger ? loggers.logger.info(msg, data) : console.log(msg, data),
   error: (msg, data) => loggers.errorLogger ? loggers.errorLogger.error(msg, data) : console.error(msg, data),
   warn: (msg, data) => loggers.logger ? loggers.logger.warn(msg, data) : console.warn(msg, data),
   debug: (msg, data) => loggers.logger ? loggers.logger.debug(msg, data) : console.debug(msg, data)
 };
-const fs = require('fs').promises;
-const path = require('path');
+import { promises as fs } from 'fs';
+import path from 'path';
 
 /**
  * Rule Compiler for multi-chain smart contract generation
@@ -564,7 +564,7 @@ pub enum BREError {
    */
   generateEVMDeployScript(options) {
     return `// Deploy BusinessRuleEngine to ${options.network || 'mainnet'}
-const { ethers } = require("hardhat");
+import { ethers } from "hardhat";
 
 async function main() {
   const BusinessRuleEngine = await ethers.getContractFactory("BusinessRuleEngine");
@@ -639,7 +639,7 @@ main()
     return `// Deploy BusinessRuleEngine to Solana ${options.network || 'mainnet'}
 import * as anchor from "@coral-xyz/anchor";
 import { Program } from "@coral-xyz/anchor";
-import { BusinessRuleEngine } from "../target/types/business_rule_engine";
+import { BusinessRuleEngine } from "../target/types/business_rule_engine.js";
 
 async function main() {
   const provider = anchor.AnchorProvider.env();

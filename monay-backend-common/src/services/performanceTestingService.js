@@ -1,7 +1,7 @@
-const { EventEmitter } = require('events');
-const { Pool } = require('pg');
-const crypto = require('crypto');
-const os = require('os');
+import { EventEmitter } from 'events';
+import { Pool } from 'pg';
+import crypto from 'crypto';
+import os from 'os';
 
 class PerformanceTestingService extends EventEmitter {
   constructor(dbConfig) {

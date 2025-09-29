@@ -4,11 +4,11 @@
  * Integrates with Dwolla FedNow/RTP for instant payments
  */
 
-import dwollaPaymentService from './dwolla-payment';
-import paymentRailOrchestrator from './payment-rail-orchestrator';
-import loggers from './logger';
+import dwollaPaymentService from './dwolla-payment.js';
+import paymentRailOrchestrator from './payment-rail-orchestrator.js';
+import loggers from './logger.js';
 import db from '../models/index.js';
-import { CustomError } from '../middlewares/errors';
+import { CustomError } from '../middlewares/errors.js';
 import HttpStatus from 'http-status';
 
 class EmergencyDisbursementSystem {

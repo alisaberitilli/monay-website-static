@@ -1,9 +1,9 @@
 import { Router } from 'express';
-import { authenticate } from '../middlewares/auth.js';
+import { authenticateToken } from '../middlewares/auth.js';
 import WalletOrchestratorService from '../services/wallet-orchestrator-service.js';
 import CircleWalletService from '../services/circle-wallet-service.js';
 import BridgeTransferService from '../services/bridge-transfer-service.js';
-import { logger } from '../services/logger.js';
+import logger from '../services/logger.js';
 
 const router = Router();
 const orchestrator = new WalletOrchestratorService();
@@ -15,7 +15,7 @@ const bridgeService = new BridgeTransferService();
  * @desc    Initialize dual wallet system for user
  * @access  Private
  */
-router.post('/initialize', authenticate, async (req, res) => {
+router.post('/initialize', authenticateToken, async (req, res) => {
     try {
         const userId = req.user.id;
         const result = await orchestrator.initializeUserWallets(userId);
@@ -47,7 +47,7 @@ router.post('/initialize', authenticate, async (req, res) => {
  * @desc    Get combined wallet balances
  * @access  Private
  */
-router.get('/balance', authenticate, async (req, res) => {
+router.get('/balance', authenticateToken, async (req, res) => {
     try {
         const userId = req.user.id;
         const balance = await orchestrator.getCombinedBalance(userId);
@@ -70,7 +70,7 @@ router.get('/balance', authenticate, async (req, res) => {
  * @desc    Get Circle wallet details
  * @access  Private
  */
-router.get('/details', authenticate, async (req, res) => {
+router.get('/details', authenticateToken, async (req, res) => {
     try {
         const userId = req.user.id;
         const result = await circleWalletService.getWalletDetails(userId);
@@ -100,7 +100,7 @@ router.get('/details', authenticate, async (req, res) => {
  * @desc    Deposit USDC from bank account
  * @access  Private
  */
-router.post('/deposit', authenticate, async (req, res) => {
+router.post('/deposit', authenticateToken, async (req, res) => {
     try {
         const userId = req.user.id;
         const { amount, source_id, source_type = 'ach_bank_account' } = req.body;
@@ -145,7 +145,7 @@ router.post('/deposit', authenticate, async (req, res) => {
  * @desc    Withdraw USDC to bank account
  * @access  Private
  */
-router.post('/withdraw', authenticate, async (req, res) => {
+router.post('/withdraw', authenticateToken, async (req, res) => {
     try {
         const userId = req.user.id;
         const { amount, destination_id, destination_type = 'ach_bank_account' } = req.body;
@@ -190,7 +190,7 @@ router.post('/withdraw', authenticate, async (req, res) => {
  * @desc    Transfer USDC to another wallet
  * @access  Private
  */
-router.post('/transfer', authenticate, async (req, res) => {
+router.post('/transfer', authenticateToken, async (req, res) => {
     try {
         const userId = req.user.id;
         const { amount, to_address, description } = req.body;
@@ -242,7 +242,7 @@ router.post('/transfer', authenticate, async (req, res) => {
  * @desc    Get Circle wallet transaction history
  * @access  Private
  */
-router.get('/transactions', authenticate, async (req, res) => {
+router.get('/transactions', authenticateToken, async (req, res) => {
     try {
         const userId = req.user.id;
         const { limit = 50, offset = 0 } = req.query;
@@ -278,7 +278,7 @@ router.get('/transactions', authenticate, async (req, res) => {
  * @desc    Bridge transfer from Monay to Circle wallet
  * @access  Private
  */
-router.post('/bridge/to-circle', authenticate, async (req, res) => {
+router.post('/bridge/to-circle', authenticateToken, async (req, res) => {
     try {
         const userId = req.user.id;
         const { amount } = req.body;
@@ -318,7 +318,7 @@ router.post('/bridge/to-circle', authenticate, async (req, res) => {
  * @desc    Bridge transfer from Circle to Monay wallet
  * @access  Private
  */
-router.post('/bridge/to-monay', authenticate, async (req, res) => {
+router.post('/bridge/to-monay', authenticateToken, async (req, res) => {
     try {
         const userId = req.user.id;
         const { amount } = req.body;
@@ -358,7 +358,7 @@ router.post('/bridge/to-monay', authenticate, async (req, res) => {
  * @desc    Get bridge transfer history
  * @access  Private
  */
-router.get('/bridge/history', authenticate, async (req, res) => {
+router.get('/bridge/history', authenticateToken, async (req, res) => {
     try {
         const userId = req.user.id;
         const { limit = 50 } = req.query;
@@ -390,7 +390,7 @@ router.get('/bridge/history', authenticate, async (req, res) => {
  * @desc    Estimate bridge transfer
  * @access  Private
  */
-router.post('/bridge/estimate', authenticate, async (req, res) => {
+router.post('/bridge/estimate', authenticateToken, async (req, res) => {
     try {
         const userId = req.user.id;
         const { amount, direction } = req.body;
@@ -436,7 +436,7 @@ router.post('/bridge/estimate', authenticate, async (req, res) => {
  * @desc    Get optimal payment routing
  * @access  Private
  */
-router.post('/routing/optimize', authenticate, async (req, res) => {
+router.post('/routing/optimize', authenticateToken, async (req, res) => {
     try {
         const userId = req.user.id;
         const { amount, payment_type = 'payment', metadata = {} } = req.body;
@@ -473,7 +473,7 @@ router.post('/routing/optimize', authenticate, async (req, res) => {
  * @desc    Sync Circle wallet balance
  * @access  Private
  */
-router.post('/sync', authenticate, async (req, res) => {
+router.post('/sync', authenticateToken, async (req, res) => {
     try {
         const userId = req.user.id;
         const result = await orchestrator.syncCircleWalletBalance(userId);

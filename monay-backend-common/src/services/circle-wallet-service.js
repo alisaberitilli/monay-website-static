@@ -1,11 +1,12 @@
-import { db, sequelize } from '../models/index.js';
-import CircleService from './circle.js';
-import { logger } from './logger.js';
+import db from '../models/index.js';
+const { sequelize } = db;
+import circleService from './circle.js';
+import logger from './logger.js';
 import crypto from 'crypto';
 
 class CircleWalletService {
     constructor() {
-        this.circleService = new CircleService();
+        this.circleService = circleService;
     }
 
     /**

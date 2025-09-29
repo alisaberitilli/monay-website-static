@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { chromium } from 'playwright';
-import logger from './logger';
+import logger from './logger.js';
 
 class OneQAService {
   constructor() {

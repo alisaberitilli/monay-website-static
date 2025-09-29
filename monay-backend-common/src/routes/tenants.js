@@ -1,11 +1,12 @@
-const express = require('express');
+import express from 'express';
 const router = express.Router();
-const { Pool } = require('pg');
-const { authenticateToken } = require('../middleware/auth');
-const tenantIsolation = require('../middleware/tenant-isolation');
-const TenantManagementService = require('../services/tenant-management');
-const { validateRequest } = require('../middleware/validation');
-const { body, param, query } = require('express-validator');
+import { Pool } from 'pg';
+import jwt from 'jsonwebtoken';
+import { authenticateToken } from '../middleware/auth.js';
+import tenantIsolation from '../middleware/tenant-isolation.js';
+import TenantManagementService from '../services/tenant-management.js';
+import { validateRequest } from '../middleware/validation.js';
+import { body, param, query } from 'express-validator';
 
 // Initialize service
 const pool = new Pool({
@@ -350,7 +351,6 @@ router.post('/:id/switch',
       const userResult = await pool.query(updateQuery, [id, req.user.id]);
 
       // Generate new JWT with updated tenant context
-      const jwt = require('jsonwebtoken');
       const token = jwt.sign(
         {
           user_id: req.user.id,
@@ -623,4 +623,4 @@ async function checkTenantPermission(userId, tenantId, permission) {
   return permissions.includes('*') || permissions.includes(permission);
 }
 
-module.exports = router;
+export default router;

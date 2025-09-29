@@ -1,6 +1,6 @@
 'use strict';
 
-module.exports = {
+export default {
   up: async (queryInterface, Sequelize) => {
     // Add MFA fields to Users table
     await queryInterface.addColumn('Users', 'mfaEnabled', {

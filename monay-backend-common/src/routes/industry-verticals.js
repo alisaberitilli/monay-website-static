@@ -5,7 +5,7 @@
 
 import { Router } from 'express';
 import HttpStatus from 'http-status';
-import authenticate from '../middlewares/auth-middleware';
+import authenticate from '../middlewares/auth-middleware.js';
 import industryVerticalSystem from '../services/industry-vertical-system.js';
 import loggers from '../services/logger.js';
 

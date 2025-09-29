@@ -1,11 +1,11 @@
-const express = require('express');
+import express from 'express';
 const router = express.Router();
-const { Pool } = require('pg');
-const { authenticateToken } = require('../middleware/auth');
-const tenantIsolation = require('../middleware/tenant-isolation');
-const BillingCalculationService = require('../services/billing-calculation');
-const { validateRequest } = require('../middleware/validation');
-const { body, param, query } = require('express-validator');
+import { Pool } from 'pg';
+import { authenticateToken } from '../middleware/auth.js';
+import tenantIsolation from '../middleware/tenant-isolation.js';
+import BillingCalculationService from '../services/billing-calculation.js';
+import { validateRequest } from '../middleware/validation';
+import { body, param, query } from 'express-validator';
 
 // Initialize service
 const pool = new Pool({
@@ -745,4 +745,4 @@ pool.query(createUpgradeTableQuery).catch(err => {
   console.log('Tier upgrade requests table already exists or error:', err.message);
 });
 
-module.exports = router;
+export default router;

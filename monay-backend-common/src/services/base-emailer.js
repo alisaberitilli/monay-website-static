@@ -1,6 +1,6 @@
 import nodemailer from 'nodemailer';
 import config from '../config/index.js';
-import settingRepository from '../repositories/setting-repository';
+import settingRepository from '../repositories/setting-repository.js';
 
 export default {
   async sendEmail(options) {

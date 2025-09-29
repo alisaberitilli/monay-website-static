@@ -1,7 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
-  swcMinify: true,
   images: {
     domains: ['localhost', 'api.monay.com'],
   },
@@ -154,5 +153,5 @@ const nextConfig = {
   },
 };
 
-module.exports = nextConfig;
+export default nextConfig;
 

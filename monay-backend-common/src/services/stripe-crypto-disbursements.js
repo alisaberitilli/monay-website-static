@@ -1,7 +1,8 @@
 import Stripe from 'stripe';
 import HttpStatus from 'http-status';
-import { CustomError } from '../middlewares/errors';
-import loggers from './logger';
+import { CustomError } from '../middlewares/errors.js';
+import loggers from './logger.js';
+import slaMonitoring from './sla-monitoring.js';
 
 class StripeCryptoDisbursmentsService {
   constructor() {
@@ -510,7 +511,7 @@ class StripeCryptoDisbursmentsService {
   async monitorEmergencyDisbursement(disbursementId, recipient) {
     try {
       // Use the SLA monitoring service for proper tracking
-      const slaMonitoring = require('./sla-monitoring').default;
+      // Use imported slaMonitoring
 
       await slaMonitoring.trackSLA('emergency_disbursement', disbursementId, {
         recipient,

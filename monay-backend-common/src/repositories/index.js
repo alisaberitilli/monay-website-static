@@ -1,20 +1,20 @@
-import userRepository from './user-repository';
-import mediaRepository from './media-repository';
-import paymentRequestRepository from './payment-request-repository';
-import cmsRepository from './cms-repository';
-import notificationRepository from './notification-repository';
-import settingRepository from './setting-repository';
-import accountRepository from './account-repository';
-import transactionRepository from './transaction-repository';
-import cardRepository from './card-repository';
-import bankRepository from './bank-repository';
-import contactRepository from './contact-repository';
-import changeMobileHistoryRepository from './change-mobile-history-repository';
-import userBlockRepository from './user-block-repository';
-import userKycRepository from './user-kyc-repository';
-import activityLogRepository from './activity-log-repository';
-import roleRepository from './role-repository';
-import parentChildRepository from './parent-child-repository';
+import userRepository from './user-repository.js';
+import mediaRepository from './media-repository.js';
+import paymentRequestRepository from './payment-request-repository.js';
+import cmsRepository from './cms-repository.js';
+import notificationRepository from './notification-repository.js';
+import settingRepository from './setting-repository.js';
+import accountRepository from './account-repository.js';
+import transactionRepository from './transaction-repository.js';
+import cardRepository from './card-repository.js';
+import bankRepository from './bank-repository.js';
+import contactRepository from './contact-repository.js';
+import changeMobileHistoryRepository from './change-mobile-history-repository.js';
+import userBlockRepository from './user-block-repository.js';
+import userKycRepository from './user-kyc-repository.js';
+import activityLogRepository from './activity-log-repository.js';
+import roleRepository from './role-repository.js';
+import parentChildRepository from './parent-child-repository.js';
 
 
 export default {

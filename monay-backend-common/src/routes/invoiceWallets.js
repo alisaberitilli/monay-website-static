@@ -6,10 +6,13 @@
  */
 
 import express from 'express';
-import { walletFactory, ephemeralManager, aiModeSelector } from '../services/invoice-wallet.js';
+import invoiceWallet from '../services/invoice-wallet/index.js';
+import crypto from 'crypto';
+import cardRepository from '../repositories/card-repository.js';
+const { walletFactory, ephemeralManager, aiModeSelector } = invoiceWallet;
 import auditLogger from '../services/invoice-wallet/AuditLogger.js';
 import blockchainIntegration from '../services/invoice-wallet/BlockchainIntegration.js';
-import authMiddleware from '../middlewares/auth-middleware';
+import authMiddleware from '../middlewares/auth-middleware.js';
 import db from '../models/index.js';
 
 // Use console for now since logger import is causing issues
@@ -41,11 +44,11 @@ router.post('/test-generate', async (req, res) => {
 
     // For testing, return mock wallet data
     const mockWallet = {
-      id: require('crypto').randomUUID(),
+      id: crypto.randomUUID(),
       invoiceId,
       mode: mode || 'ephemeral',
-      baseAddress: '0x' + require('crypto').randomBytes(20).toString('hex'),
-      solanaAddress: require('crypto').randomBytes(32).toString('base64').substring(0, 44),
+      baseAddress: '0x' + crypto.randomBytes(20).toString('hex'),
+      solanaAddress: crypto.randomBytes(32).toString('base64').substring(0, 44),
       status: 'active',
       features: features || {},
       expiresAt: mode === 'ephemeral' ? new Date(Date.now() + (ttl || 86400) * 1000).toISOString() : null,
@@ -55,7 +58,7 @@ router.post('/test-generate', async (req, res) => {
 
     // AUTO-CREATE VIRTUAL CARD for every wallet
     const autoCard = {
-      id: 'card_' + require('crypto').randomUUID(),
+      id: 'card_' + crypto.randomUUID(),
       walletId: mockWallet.id,
       cardNumber: `****-****-****-${Math.floor(1000 + Math.random() * 9000)}`,
       cardHolder: 'Wallet Default Card',
@@ -150,7 +153,7 @@ router.post('/generate', authMiddleware, async (req, res) => {
     // Create the card in database
     let autoCard = null;
     try {
-      const cardRepository = require('../repositories/card-repository').default;
+      // Use imported cardRepository
       autoCard = await cardRepository.create(cardData);
       logger.info('Auto-card issued for wallet', {
         cardId: autoCard.id,

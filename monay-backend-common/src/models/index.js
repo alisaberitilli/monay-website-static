@@ -1,7 +1,14 @@
 import fs from 'fs';
-import Sequelize from 'sequelize';
+import pkg from 'sequelize';
+const { Sequelize, DataTypes } = pkg;
 import path from 'path';
 import config from '../config/index.js';
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
+import { pathToFileURL } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 // Use PostgreSQL configuration
 const dbConfig = {
@@ -24,24 +31,36 @@ sequelize = new Sequelize(dbConfig.db, dbConfig.user, dbConfig.password, {
   dialect: dbConfig.dialect,
 });
 
+// Initialize models asynchronously
+async function initializeModels() {
+  // Load models using dynamic import (ES modules)
+  const modelFiles = fs.readdirSync(__dirname)
+    .filter(file => file.indexOf('.') !== 0 && file !== 'index.js' && file.endsWith('.js'));
 
-fs.readdirSync(__dirname)
-  .filter(file => file.indexOf('.') !== 0 && file !== 'index.js')
-  .forEach((file) => {
-    const model = sequelize.import(path.join(__dirname, file));
+  for (const file of modelFiles) {
+    const modelPath = pathToFileURL(path.join(__dirname, file)).href;
+    const { default: modelDefiner } = await import(modelPath);
+    const model = modelDefiner(sequelize, DataTypes);
     db[model.name] = model;
+  }
+
+  // Set up associations after all models are loaded
+  Object.keys(db).forEach((modelName) => {
+    if (db[modelName].associate) {
+      db[modelName].associate(db);
+    }
+    if (db[modelName].seedData) {
+      db[modelName].seedData(config);
+    }
   });
 
-Object.keys(db).forEach((modelName) => {
-  if (db[modelName].associate) {
-    db[modelName].associate(db);
-  }
-  if (db[modelName].seedData) {
-    db[modelName].seedData(config);
-  }
-});
+  return db;
+}
 
+// Export db with sequelize and Sequelize
 db.sequelize = sequelize;
 db.Sequelize = Sequelize;
+db.initializeModels = initializeModels;
+db.QueryTypes = Sequelize.QueryTypes;
 
 export default db;

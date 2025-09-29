@@ -6,8 +6,9 @@
 
 import dwolla from 'dwolla-v2';
 import HttpStatus from 'http-status';
-import { CustomError } from '../middlewares/errors';
-import loggers from './logger';
+import { CustomError } from '../middlewares/errors.js';
+import loggers from './logger.js';
+import crypto from 'crypto';
 
 class DwollaPaymentService {
   constructor() {
@@ -426,7 +427,7 @@ class DwollaPaymentService {
    */
   verifyWebhookSignature(headers, body, secret) {
     const signature = headers['x-dwolla-signature'];
-    const crypto = require('crypto');
+    // Use imported crypto
 
     const hash = crypto
       .createHmac('sha256', secret)

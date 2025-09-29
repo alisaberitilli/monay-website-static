@@ -1,7 +1,7 @@
-const axios = require('axios');
-const puppeteer = require('puppeteer');
-const logger = require('./logger');
-const { encrypt, decrypt } = require('./encrypt');
+import axios from 'axios';
+import puppeteer from 'puppeteer';
+import logger from './logger.js';
+import { encrypt, decrypt } from './encrypt.js';
 
 class ServiceProviderInvoiceService {
   constructor() {

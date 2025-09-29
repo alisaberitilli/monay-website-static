@@ -1,9 +1,9 @@
-const pool = require('../models');
-const BusinessRuleEngine = require('./businessRuleEngine');
-const MonayFiatRailsClient = require('./monayFiatRailsClient');
-const BenefitBalanceTracker = require('./benefitBalanceTracker');
-const EventEmitter = require('events');
-const crypto = require('crypto');
+import pool from '../models/index.js';
+import BusinessRuleEngine from './businessRuleEngine.js';
+import MonayFiatRailsClient from './monayFiatRailsClient.js';
+import BenefitBalanceTracker from './benefitBalanceTracker.js';
+import EventEmitter from 'events';
+import crypto from 'crypto';
 
 class BenefitTransactionProcessor extends EventEmitter {
   constructor() {

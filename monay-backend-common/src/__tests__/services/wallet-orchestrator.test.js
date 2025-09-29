@@ -1,6 +1,7 @@
 import { describe, it, expect, jest, beforeEach, afterEach } from '@jest/globals';
 import WalletOrchestratorService from '../../services/wallet-orchestrator-service.js';
-import { sequelize } from '../../models/index.js';
+import db from '../../models/index.js';
+const { sequelize } = db;
 
 // Mock dependencies
 jest.mock('../../models/index.js');

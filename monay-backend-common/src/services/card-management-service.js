@@ -6,7 +6,7 @@
 
 import Stripe from 'stripe';
 import crypto from 'crypto';
-import bcrypt from 'bcryptjs';
+import bcrypt from 'bcrypt';
 import db from '../models/index.js';
 import virtualCardService from './virtual-card-service.js';
 import realtimeNotificationsService from './realtime-notifications.js';

@@ -1,8 +1,8 @@
-const { EventEmitter } = require('events');
-const { Pool } = require('pg');
-const crypto = require('crypto');
-const fs = require('fs').promises;
-const path = require('path');
+import { EventEmitter } from 'events';
+import { Pool } from 'pg';
+import crypto from 'crypto';
+import { promises as fs } from 'fs';
+import path from 'path';
 
 class SecurityAuditService extends EventEmitter {
   constructor(dbConfig) {

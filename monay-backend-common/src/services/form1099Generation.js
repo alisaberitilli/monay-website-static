@@ -1,9 +1,9 @@
-const { Pool } = require('pg');
-const PDFDocument = require('pdfkit');
-const fs = require('fs').promises;
-const path = require('path');
-const crypto = require('crypto');
-const EventEmitter = require('events');
+import { Pool } from 'pg';
+import PDFDocument from 'pdfkit';
+import { promises as fs } from 'fs';
+import path from 'path';
+import crypto from 'crypto';
+import EventEmitter from 'events';
 
 class Form1099GenerationSystem extends EventEmitter {
   constructor(dbConfig) {

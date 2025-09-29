@@ -1,10 +1,10 @@
 import models from '../models/index.js';
 import utility from '../services/utility.js';
 import moment from 'moment-timezone';
-import { Op } from 'sequelize';
+import pkg from 'sequelize';
+const { Op } = pkg;
 const { Sequelize } = models.sequelize;
-const requestIp = require('request-ip');
-const { ActivityLog, User } = models;
+import requestIp from 'request-ip';
 const fromDateTime = ' 00:00:00';
 const toDateTime = ' 23:59:59';
 const dateFormat = 'YYYY-MM-DD HH:mm:ss';

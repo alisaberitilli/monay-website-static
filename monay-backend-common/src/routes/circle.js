@@ -2,7 +2,7 @@ import { Router } from 'express';
 import HttpStatus from 'http-status';
 import circleService from '../services/circle.js';
 import auth from '../middlewares/auth-middleware.js';
-import businessRules from '../services/businessRules.js';
+import businessRules from '../services/businessRuleEngine.js';
 
 const router = Router();
 

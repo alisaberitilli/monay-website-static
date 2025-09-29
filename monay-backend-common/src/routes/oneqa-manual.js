@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import OneQAManualService from '../services/oneqa-manual.js';
 import OneQAAutomatedService from '../services/oneqa-automated.js';
-import helpers from '../helpers';
+import helpers from '../helpers/index.js';
 import loggers from '../services/logger.js';
 
 const router = Router();

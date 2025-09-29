@@ -1,3 +1,9 @@
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
 import bodyParser from 'body-parser';
 import cors from 'cors';
 import compression from 'compression';
@@ -96,11 +102,23 @@ export default class Bootstrap {
         app.use(bodyParser.json({ limit: '500mb', extended: true }));
         app.use(compression());
         app.use(methodOverride());
-        app.use(helmet());
-        app.use(helmet.frameguard({ action: 'SAMEORIGIN' }));
+        // Configure helmet with custom CSP
         app.use(
             helmet({
+                contentSecurityPolicy: {
+                    directives: {
+                        defaultSrc: ["'self'"],
+                        imgSrc: ["'self'", "data:", "http://localhost:*", "https:"],
+                        scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'"],
+                        styleSrc: ["'self'", "'unsafe-inline'"],
+                        fontSrc: ["'self'", "data:"],
+                        connectSrc: ["'self'", "http://localhost:*", "ws://localhost:*"],
+                        frameSrc: ["'self'"],
+                        objectSrc: ["'none'"]
+                    },
+                },
                 referrerPolicy: { policy: "no-referrer" },
+                frameguard: { action: 'SAMEORIGIN' }
             })
         );
         if (config.app.environment == 'development' || config.app.environment == 'staging') {
@@ -112,6 +130,10 @@ export default class Bootstrap {
         app.use('/Monay', express.static(`${__dirname}/../Monay_IOS`));
         app.use('/MonayAndroid', express.static(`${__dirname}/../Monay_Android`));
         app.use(express.static(path.join(`${__dirname}/../build`)));
+
+        // Serve favicon
+        app.use('/favicon.ico', express.static(`${__dirname}/public/favicon.ico`));
+        app.use('/favicon.svg', express.static(`${__dirname}/public/favicon.svg`));
 
         app.use((req, res, next) => {
             if (req.connection.encrypted == undefined) {
@@ -128,41 +150,44 @@ export default class Bootstrap {
      * Check database connection
      * @memberOf Bootstrap
      */
-    connectDb() {
+    async connectDb() {
         const {
             sequelize
         } = models;
 
+        // Initialize models first
+        await models.initializeModels();
+
         // Apply database safety middleware
         databaseSafety.createSafetyMiddleware(sequelize);
 
-        sequelize
-            .authenticate()
-            .then(async () => {
-                loggers.infoLogger.info('Database connected successfully');
+        // Test database connection without using Bluebird's .return()
+        try {
+            // Simple query to test connection
+            await sequelize.query('SELECT 1+1 AS result', { type: models.QueryTypes.SELECT });
+            loggers.infoLogger.info('Database connected successfully');
 
-                // Check database health
-                const health = await databaseSafety.checkDatabaseHealth(sequelize);
+            // Check database health
+            const health = await databaseSafety.checkDatabaseHealth(sequelize);
 
-                if (health.warnings.length > 0) {
-                    loggers.errorLogger.error('Database health warnings:');
-                    health.warnings.forEach(warning => {
-                        loggers.errorLogger.error(` - ${warning}`);
-                    });
-                }
+            if (health.warnings.length > 0) {
+                loggers.errorLogger.error('Database health warnings:');
+                health.warnings.forEach(warning => {
+                    loggers.errorLogger.error(` - ${warning}`);
+                });
+            }
 
-                loggers.infoLogger.info(`Database has ${health.tableCount} tables`);
-                loggers.infoLogger.info(`Critical tables present: ${health.criticalTables.length}/${health.criticalTables.length + health.missingTables.length}`);
+            loggers.infoLogger.info(`Database has ${health.tableCount} tables`);
+            loggers.infoLogger.info(`Critical tables present: ${health.criticalTables.length}/${health.criticalTables.length + health.missingTables.length}`);
 
-                // NEVER sync with force in production
-                // Use safeDatabaseSync if sync is ever needed
-                // await databaseSafety.safeDatabaseSync(sequelize, { alter: true });
+            // NEVER sync with force in production
+            // Use safeDatabaseSync if sync is ever needed
+            // await databaseSafety.safeDatabaseSync(sequelize, { alter: true });
 
-                loggers.infoLogger.info('Database sync skipped - using existing schema');
-            })
-            .catch((error) => {
-                loggers.errorLogger.error('Database connection error %s', error);
-            });
+            loggers.infoLogger.info('Database sync skipped - using existing schema');
+        } catch (error) {
+            loggers.errorLogger.error('Database connection error %s', error);
+        }
     }
 
     /**

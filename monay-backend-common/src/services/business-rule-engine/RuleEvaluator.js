@@ -6,7 +6,8 @@
  * @module RuleEvaluator
  */
 
-const loggers = require('../logger');
+import loggers from '../logger.js';
+import RuleDefinition from './RuleDefinition.js';
 const logger = {
   info: (msg, data) => loggers.logger ? loggers.logger.info(msg, data) : console.log(msg, data),
   error: (msg, data) => loggers.errorLogger ? loggers.errorLogger.error(msg, data) : console.error(msg, data),
@@ -313,7 +314,7 @@ class RuleEvaluator {
    * @returns {Promise<Object>} Compliance evaluation result
    */
   async evaluateCompliance(transaction) {
-    const RuleDefinition = require('./RuleDefinition');
+    // Use imported RuleDefinition
     const rules = RuleDefinition.getInvoiceRules().compliance;
 
     const context = {

@@ -1,6 +1,6 @@
-const { Pool } = require('pg');
-const crypto = require('crypto');
-const EventEmitter = require('events');
+import { Pool } from 'pg';
+import crypto from 'crypto';
+import EventEmitter from 'events';
 
 class ExpenseManagementSystem extends EventEmitter {
   constructor(dbConfig) {

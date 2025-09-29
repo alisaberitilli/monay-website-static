@@ -1,6 +1,6 @@
 import config from '../config/index.js';
 import HttpStatus from 'http-status';
-import repositories from '../repositories';
+import repositories from '../repositories/index.js';
 import utility from '../services/utility.js';
 
 const { paymentRequestRepository, transactionRepository } = repositories;

@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 
-const hre = require('hardhat');
-const fs = require('fs');
-const path = require('path');
+import hre from 'hardhat';
+import fs from 'fs';
+import path from 'path';
 
 async function main() {
   console.log('====================================');

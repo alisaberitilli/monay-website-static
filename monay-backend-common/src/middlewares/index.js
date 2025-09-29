@@ -1,17 +1,17 @@
-import validateMiddleware from './validate-middleware';
-import authMiddleware from './auth-middleware';
-import resourceAccessMiddleware from './resource-access-middleware';
-import userMiddleware from './user-middleware';
-import cmsMiddleware from './cms-middleware';
-import accountMiddleware from './account-middleware';
-import mediaMiddleware from './media-middleware';
-import appVersionMiddleware from './app-version-middleware';
-import paymentRequestMiddleware from './payment-request-middleware';
-import withdrawalMiddleware from './withdrawal-middleware';
-import cardMiddleware from './card-middleware';
-import bankMiddleware from './bank-middleware';
-import blockUserMiddleware from './block-user-middleware';
-import roleMiddleware from './role-middleware';
+import validateMiddleware from './validate-middleware.js';
+import authMiddleware from './auth-middleware.js';
+import resourceAccessMiddleware from './resource-access-middleware.js';
+import userMiddleware from './user-middleware.js';
+import cmsMiddleware from './cms-middleware.js';
+import accountMiddleware from './account-middleware.js';
+import mediaMiddleware from './media-middleware.js';
+import appVersionMiddleware from './app-version-middleware.js';
+import paymentRequestMiddleware from './payment-request-middleware.js';
+import withdrawalMiddleware from './withdrawal-middleware.js';
+import cardMiddleware from './card-middleware.js';
+import bankMiddleware from './bank-middleware.js';
+import blockUserMiddleware from './block-user-middleware.js';
+import roleMiddleware from './role-middleware.js';
 
 
 export default {

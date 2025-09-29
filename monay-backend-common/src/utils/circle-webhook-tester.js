@@ -3,8 +3,8 @@
  * Helps test Circle webhook integration without needing actual Circle events
  */
 
-const crypto = require('crypto');
-const axios = require('axios');
+import crypto from 'crypto';
+import axios from 'axios';
 
 class CircleWebhookTester {
   constructor(webhookUrl = 'http://localhost:3001/api/circle/webhooks', secret = 'test-secret') {
@@ -425,4 +425,4 @@ if (require.main === module) {
   }
 }
 
-module.exports = CircleWebhookTester;
+export default CircleWebhookTester;

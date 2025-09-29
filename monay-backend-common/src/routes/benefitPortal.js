@@ -1,12 +1,12 @@
 import express from 'express';
-import pool from '../config/database';
-import authenticate from '../middlewares/auth-middleware';
-import { validateRequest } from '../middlewares/validation';
+import pool from '../config/database.js';
+import authenticate from '../middlewares/auth-middleware.js';
+import { validateRequest } from '../middlewares/validation.js';
 
 const router = express.Router();
 import { body, param, query } from 'express-validator';
-const BenefitEligibilityVerification = require('../services/benefitEligibilityVerification');
-const BenefitBalanceTracker = require('../services/benefitBalanceTracker');
+import BenefitEligibilityVerification from '../services/benefitEligibilityVerification.js';
+import BenefitBalanceTracker from '../services/benefitBalanceTracker.js';
 
 /**
  * Self-Service Benefit Portal API
@@ -739,7 +739,7 @@ router.getEstimatedCompletion = function(program, status) {
 };
 
 router.getProgramRestrictions = function(program) {
-  const BusinessRuleEngine = require('../services/businessRuleEngine');
+  import BusinessRuleEngine from '../services/businessRuleEngine.js';
   return BusinessRuleEngine.FEDERAL_PROGRAM_RULES[program] || {};
 };
 

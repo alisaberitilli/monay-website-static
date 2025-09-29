@@ -1,7 +1,7 @@
-// Check if services exist before requiring
+// Check if services exist before importing
 let InvoiceWalletService;
 try {
-  InvoiceWalletService = require('../../services/invoice-wallet/invoice-wallet.service');
+  InvoiceWalletService = await import('../../services/invoice-wallet/invoice-wallet.service.js');
 } catch (e) {
   // Service doesn't exist yet
   InvoiceWalletService = class {
@@ -26,8 +26,8 @@ const db = {
 
 // Only mock if exists
 try {
-  require('../../services/business-rules/BusinessRuleEngine');
-  jest.mock('../../services/business-rules/BusinessRuleEngine');
+  await import('../../services/business-rules/BusinessRuleEngine.js');
+  jest.mock('../../services/business-rules/BusinessRuleEngine.js');
 } catch (e) {
   // Service doesn't exist
 }

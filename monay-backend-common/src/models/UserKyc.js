@@ -1,5 +1,6 @@
 import config from '../config/index.js';
-import utility from '../services/utility.js';
+import fs from 'fs';
+import path from 'path';
 
 export default (sequelize, DataTypes) => {
     const UserKyc = sequelize.define(
@@ -54,30 +55,30 @@ export default (sequelize, DataTypes) => {
                 type: DataTypes.ENUM('pending', 'uploaded', 'approved', 'rejected', 'deleted'),
                 defaultValue: 'pending'
             },
-            // idProofImageUrl: {
-            //     type: DataTypes.VIRTUAL,
-            //     get() {
-            //         let str = this.get('idProofImage');
-            //         if (str && config.app.mediaStorage == 's3') {
-            //             return `${config.media.staticMediaUrl}${str}`;
-            //         } else if (!str || !utility.isFileExist(str)) {
-            //             return null;
-            //         }
-            //         return (str && `${config.app.baseUrl}${str}`) || null;
-            //     },
-            // },
-            // addressProofImageUrl: {
-            //     type: DataTypes.VIRTUAL,
-            //     get() {
-            //         let str = this.get('addressProofImage');
-            //         if (str && config.app.mediaStorage == 's3') {
-            //             return `${config.media.staticMediaUrl}${str}`;
-            //         } else if (!str || !utility.isFileExist(str)) {
-            //             return null;
-            //         }
-            //         return (str && `${config.app.baseUrl}${str}`) || null;
-            //     },
-            // },
+            idProofImageUrl: {
+                type: DataTypes.VIRTUAL,
+                get() {
+                    let str = this.get('idProofImage');
+                    if (str && config.app.mediaStorage == 's3') {
+                        return `${config.media.staticMediaUrl}${str}`;
+                    } else if (!str || !fs.existsSync(path.resolve(str))) {
+                        return null;
+                    }
+                    return (str && `${config.app.baseUrl}${str}`) || null;
+                },
+            },
+            addressProofImageUrl: {
+                type: DataTypes.VIRTUAL,
+                get() {
+                    let str = this.get('addressProofImage');
+                    if (str && config.app.mediaStorage == 's3') {
+                        return `${config.media.staticMediaUrl}${str}`;
+                    } else if (!str || !fs.existsSync(path.resolve(str))) {
+                        return null;
+                    }
+                    return (str && `${config.app.baseUrl}${str}`) || null;
+                },
+            },
         },
         {
             underscored: false,

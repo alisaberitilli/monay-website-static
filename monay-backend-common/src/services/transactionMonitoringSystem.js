@@ -1,6 +1,6 @@
-const pool = require('../models');
-const EventEmitter = require('events');
-const crypto = require('crypto');
+import pool from '../models/index.js';
+import EventEmitter from 'events';
+import crypto from 'crypto';
 
 class TransactionMonitoringSystem extends EventEmitter {
   constructor() {

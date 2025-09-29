@@ -1,5 +1,6 @@
 import config from '../config/index.js';
-import utility from '../services/utility.js';
+import fs from 'fs';
+import path from 'path';
 
 export default (sequelize, DataTypes) => {
     const UserCard = sequelize.define(
@@ -52,7 +53,7 @@ export default (sequelize, DataTypes) => {
                     let str = this.get('cardIcon');
                     if (str) {
                         return `${config.app.baseUrl}${str}`;
-                    } else if (!utility.isFileExist(str)) {
+                    } else if (str && !fs.existsSync(path.resolve(str))) {
                         return null;
                     }
                     return (str && `${config.app.baseUrl}${str}`) || null;

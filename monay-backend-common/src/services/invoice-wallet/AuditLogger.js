@@ -4,9 +4,10 @@
  * with compliance-grade logging and immutable records
  */
 
-import db from '../../models'
+import db from '../../models/index.js'
 import crypto from 'crypto'
 import { v4 as uuidv4 } from 'uuid'
+import fs from 'fs'
 
 class AuditLogger {
   constructor() {
@@ -464,7 +465,6 @@ class AuditLogger {
    * Fallback file-based logging if database fails
    */
   fallbackFileLog(data) {
-    import fs from 'fs'
     const logFile = `/var/log/monay/audit-fallback-${new Date().toISOString().split('T')[0]}.log`
 
     fs.appendFileSync(logFile, JSON.stringify({

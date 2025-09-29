@@ -1,5 +1,5 @@
-const bcrypt = require('bcryptjs');
-const { Sequelize } = require('sequelize');
+import bcrypt from 'bcryptjs';
+import { Sequelize } from 'sequelize';
 
 async function resetAdminPassword() {
   // Database connection using Sequelize

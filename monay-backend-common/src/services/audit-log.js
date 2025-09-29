@@ -1,6 +1,8 @@
-const { Op } = require('sequelize');
-const crypto = require('crypto');
-const { EventEmitter } = require('events');
+import pkg from 'sequelize';
+const { Op } = pkg;
+import crypto from 'crypto';
+import { EventEmitter } from 'events';
+import db from '../models/index.js';
 
 class AuditLogService extends EventEmitter {
   constructor() {
@@ -117,7 +119,7 @@ class AuditLogService extends EventEmitter {
     const entriesToFlush = this.queue.splice(0, this.batchSize);
     
     try {
-      const db = require('../models');
+      // Use imported db
       await db.AuditLog.bulkCreate(entriesToFlush, {
         ignoreDuplicates: true
       });
@@ -152,7 +154,7 @@ class AuditLogService extends EventEmitter {
     orderDirection = 'DESC'
   }) {
     try {
-      const db = require('../models');
+      // Use imported db
       const where = {};
 
       if (userId) where.userId = userId;
@@ -193,7 +195,7 @@ class AuditLogService extends EventEmitter {
    */
   async getUserActivity(userId, days = 30) {
     try {
-      const db = require('../models');
+      // Use imported db
       const startDate = new Date();
       startDate.setDate(startDate.getDate() - days);
 
@@ -224,7 +226,7 @@ class AuditLogService extends EventEmitter {
    */
   async getComplianceReport(tenantId, startDate, endDate) {
     try {
-      const db = require('../models');
+      // Use imported db
       
       const report = await db.AuditLog.findAll({
         where: {
@@ -261,7 +263,7 @@ class AuditLogService extends EventEmitter {
    */
   async archiveLogs(daysToKeep = 90) {
     try {
-      const db = require('../models');
+      // Use imported db
       const cutoffDate = new Date();
       cutoffDate.setDate(cutoffDate.getDate() - daysToKeep);
 
@@ -307,7 +309,7 @@ class AuditLogService extends EventEmitter {
    */
   async searchLogs(searchText, options = {}) {
     try {
-      const db = require('../models');
+      // Use imported db
       const { limit = 100, offset = 0 } = options;
 
       const logs = await db.AuditLog.findAndCountAll({
@@ -335,7 +337,7 @@ class AuditLogService extends EventEmitter {
    */
   async getSecurityEvents(hours = 24) {
     try {
-      const db = require('../models');
+      // Use imported db
       const cutoffTime = new Date();
       cutoffTime.setHours(cutoffTime.getHours() - hours);
 
@@ -445,7 +447,7 @@ const AuditCategory = {
   GENERAL: 'GENERAL'
 };
 
-module.exports = {
+export default {
   auditLogService,
   AuditActions,
   AuditSeverity,

@@ -17,6 +17,10 @@ import {
   Shield,
   Building,
   DollarSign,
+  Activity,
+  Layers,
+  BarChart3,
+  FileText,
 } from 'lucide-react';
 import { useAuthStore } from '@/store/auth';
 import { authService } from '@/services/auth.service';
@@ -26,30 +30,62 @@ import MonayLogo from '@/components/MonayLogo';
 
 const sidebarItems = [
   {
+    key: '/platform',
+    icon: Activity,
+    label: 'Platform Overview',
+    href: '/platform',
+    badge: 'SUPER ADMIN',
+    color: 'bg-gradient-to-r from-blue-500 to-purple-500',
+  },
+  {
     key: '/dashboard',
     icon: LayoutDashboard,
     label: 'Dashboard',
     href: '/dashboard',
   },
   {
+    key: 'divider-providers',
+    type: 'divider',
+    label: 'STABLECOIN PROVIDERS',
+  },
+  {
+    key: '/tempo-management',
+    icon: Activity,
+    label: 'Tempo (100K TPS)',
+    href: '/tempo-management',
+    badge: 'PRIMARY',
+    color: 'bg-blue-600',
+  },
+  {
+    key: '/circle-management',
+    icon: DollarSign,
+    label: 'Circle USDC',
+    href: '/circle-management',
+    badge: 'FALLBACK',
+    color: 'bg-purple-600',
+  },
+  {
+    key: '/providers',
+    icon: Layers,
+    label: 'Provider Comparison',
+    href: '/providers',
+  },
+  {
+    key: 'divider-management',
+    type: 'divider',
+    label: 'PLATFORM MANAGEMENT',
+  },
+  {
     key: '/tenants',
     icon: Building,
     label: 'Tenants',
     href: '/tenants',
-    badge: 'New',
   },
   {
-    key: '/billing-analytics',
-    icon: DollarSign,
-    label: 'Billing Analytics',
-    href: '/billing-analytics',
-    badge: 'USDXM',
-  },
-  {
-    key: '/users',
+    key: '/users-management',
     icon: Users,
-    label: 'Users',
-    href: '/users',
+    label: 'User Management',
+    href: '/users-management',
   },
   {
     key: '/transactions',
@@ -60,14 +96,60 @@ const sidebarItems = [
   {
     key: '/wallet',
     icon: Wallet,
-    label: 'Wallet',
+    label: 'Wallets',
     href: '/wallet',
+  },
+  {
+    key: '/billing-analytics',
+    icon: DollarSign,
+    label: 'Billing Analytics',
+    href: '/billing-analytics',
+  },
+  {
+    key: 'divider-compliance',
+    type: 'divider',
+    label: 'COMPLIANCE & SECURITY',
+  },
+  {
+    key: '/compliance',
+    icon: Shield,
+    label: 'Compliance & KYC',
+    href: '/compliance',
   },
   {
     key: '/business-rules',
     icon: Shield,
     label: 'Business Rules',
     href: '/business-rules',
+  },
+  {
+    key: 'divider-monitoring',
+    type: 'divider',
+    label: 'MONITORING & SETTINGS',
+  },
+  {
+    key: '/monitoring',
+    icon: Activity,
+    label: 'System Monitoring',
+    href: '/monitoring',
+  },
+  {
+    key: '/alerts',
+    icon: Bell,
+    label: 'Alerts & Notifications',
+    href: '/alerts',
+  },
+  {
+    key: '/analytics',
+    icon: BarChart3,
+    label: 'Analytics',
+    href: '/analytics',
+  },
+  {
+    key: '/audit',
+    icon: FileText,
+    label: 'Audit Trail',
+    href: '/audit',
   },
   {
     key: '/settings',
@@ -128,11 +210,22 @@ export default function DashboardLayout({
         </div>
 
         {/* Navigation */}
-        <nav className="flex-1 p-4 space-y-2">
+        <nav className="flex-1 p-4 space-y-2 overflow-y-auto">
           {sidebarItems.map((item) => {
+            // Handle dividers
+            if (item.type === 'divider') {
+              return (
+                <div key={item.key} className="pt-4 pb-2">
+                  <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider px-3">
+                    {item.label}
+                  </p>
+                </div>
+              );
+            }
+
             const Icon = item.icon;
             const isActive = pathname === item.href;
-            
+
             return (
               <motion.div
                 key={item.key}
@@ -152,7 +245,11 @@ export default function DashboardLayout({
                     <Icon className="w-5 h-5 mr-3" />
                     <span className="flex-1">{item.label}</span>
                     {item.badge && (
-                      <span className="ml-2 px-2 py-1 text-xs bg-green-500/20 text-green-300 rounded-full">
+                      <span className={`ml-2 px-2 py-1 text-xs rounded-full ${
+                        item.color
+                          ? `${item.color} text-white`
+                          : 'bg-green-500/20 text-green-300'
+                      }`}>
                         {item.badge}
                       </span>
                     )}

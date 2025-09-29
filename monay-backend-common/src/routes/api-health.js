@@ -99,7 +99,7 @@ function getServiceFromPath(path) {
     '/api/evm': 'evm',
     '/api/bridge': 'bridge',
     '/api/blockchain': 'blockchain',
-    '/api/tillipay': 'tillipay',
+    '/api/monay-fiat': 'monay-fiat',
     '/api/caas': 'caas'
   };
   
@@ -133,17 +133,17 @@ router.get('/api/endpoints/health', async (req, res) => {
     { method: 'GET', path: '/api/blockchain/solana/status' },
     { method: 'GET', path: '/api/blockchain/base/status' },
     
-    // TilliPay endpoints
-    { method: 'GET', path: '/api/tillipay/test-connection' },
-    { method: 'POST', path: '/api/tillipay/payment-link' },
-    { method: 'POST', path: '/api/tillipay/payment/card' },
-    { method: 'POST', path: '/api/tillipay/payment/ach' },
-    { method: 'GET', path: '/api/tillipay/payment/status/:transactionId' },
-    { method: 'POST', path: '/api/tillipay/payment/refund/:transactionId' },
-    { method: 'POST', path: '/api/tillipay/payment/capture/:transactionId' },
-    { method: 'POST', path: '/api/tillipay/payment/void/:transactionId' },
-    { method: 'GET', path: '/api/tillipay/transactions' },
-    { method: 'POST', path: '/api/tillipay/webhook' }
+    // Monay Fiat (GPS) endpoints
+    { method: 'GET', path: '/api/monay-fiat/test-connection' },
+    { method: 'POST', path: '/api/monay-fiat/payment-link' },
+    { method: 'POST', path: '/api/monay-fiat/payment/card' },
+    { method: 'POST', path: '/api/monay-fiat/payment/ach' },
+    { method: 'GET', path: '/api/monay-fiat/payment/status/:transactionId' },
+    { method: 'POST', path: '/api/monay-fiat/payment/refund/:transactionId' },
+    { method: 'POST', path: '/api/monay-fiat/payment/capture/:transactionId' },
+    { method: 'POST', path: '/api/monay-fiat/payment/void/:transactionId' },
+    { method: 'GET', path: '/api/monay-fiat/transactions' },
+    { method: 'POST', path: '/api/monay-fiat/webhook' }
   ];
   
   // Combine tracked health with known endpoints

@@ -1,12 +1,12 @@
-import bcrypt from 'bcryptjs';
+import bcrypt from 'bcrypt';
 import fs from 'fs';
 import path from 'path';
 import { DateTime } from 'luxon';
 import moment from 'moment';
 import momentTimeZone from 'moment-timezone';
 import config from '../config/index.js';
-import language from '../language';
-import userRepository from '../repositories/user-repository';
+import language from '../language/index.js';
+import userRepository from '../repositories/user-repository.js';
 export default {
   /**
   * Generate random string

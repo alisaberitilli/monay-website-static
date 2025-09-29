@@ -1,7 +1,9 @@
-const { pool } = require('../models');
-const redis = require('../config/redis');
-const sharp = require('sharp');
-const { v4: uuidv4 } = require('uuid');
+import db from '../models/index.js';
+const { pool } = db;
+import redis from '../config/redis';
+import sharp from 'sharp';
+import { v4 as uuidv4 } from 'uuid';
+import crypto from 'crypto';
 
 class MobileOptimization {
   constructor() {
@@ -384,7 +386,7 @@ class MobileOptimization {
   }
 
   async generateBiometricKey(biometricData) {
-    const crypto = require('crypto');
+    // Use imported crypto
     const key = crypto.randomBytes(32).toString('base64');
     return key;
   }
@@ -812,7 +814,7 @@ class MobileOptimization {
   }
 
   generateCacheKey(data) {
-    const crypto = require('crypto');
+    // Use imported crypto
     return crypto.createHash('md5').update(JSON.stringify(data)).digest('hex');
   }
 

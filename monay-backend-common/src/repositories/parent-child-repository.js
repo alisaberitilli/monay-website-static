@@ -1,9 +1,9 @@
-import { Op, Sequelize } from "sequelize";
-import models from "../models";
-import utility from "../services/utility";
-import encryptAPIs from "../services/encrypt";
+import pkg from 'sequelize';
+const { Op, Sequelize } = pkg;
+import models from "../models/index.js";
+import utility from "../services/utility.js";
+import encryptAPIs from "../services/encrypt.js";
 
-const { ChildParent, User } = models;
 const fromDateTime = " 00:00:00";
 const toDateTime = " 23:59:59";
 const dateFormat = "YYYY-MM-DD HH:mm:ss";

@@ -4,9 +4,9 @@
  * Created: 2025-01-21
  */
 
-const { EventEmitter } = require('events');
-const { v4: uuidv4 } = require('uuid');
-const crypto = require('crypto');
+import { EventEmitter } from 'events';
+import { v4 as uuidv4 } from 'uuid';
+import crypto from 'crypto';
 
 class TenantOnboardingSystem extends EventEmitter {
   constructor() {

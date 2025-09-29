@@ -1,4 +1,4 @@
-const { auditLogService, AuditActions, AuditSeverity, AuditCategory } = require('../services/audit-log');
+import { auditLogService, AuditActions, AuditSeverity, AuditCategory } from '../services/audit-log.js';
 
 /**
  * Middleware to automatically log API requests
@@ -336,7 +336,7 @@ function determineCategory(path) {
   return AuditCategory.GENERAL;
 }
 
-module.exports = {
+export default {
   auditMiddleware,
   auditAction,
   auditCompliance,

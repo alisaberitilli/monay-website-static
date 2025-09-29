@@ -28,7 +28,24 @@ import {
   ChevronRight,
   Upload,
   UserCheck,
-  UserPlus
+  UserPlus,
+  Vault,
+  Network,
+  Download,
+  Webhook,
+  Scale,
+  GitBranch,
+  Timer,
+  DollarSign as UsdcIcon,
+  Eye,
+  UserCog,
+  PlusCircle,
+  Receipt,
+  History,
+  RefreshCw,
+  Coins,
+  TrendingDown,
+  Activity
 } from 'lucide-react'
 
 interface NavItem {
@@ -46,6 +63,21 @@ const navigationItems: NavItem[] = [
     icon: Home,
   },
   {
+    label: 'Treasury',
+    href: '/treasury',
+    icon: Vault,
+    badge: 'New',
+    children: [
+      { label: 'Dashboard', href: '/treasury', icon: BarChart3 },
+      { label: 'Create Invoice', href: '/treasury/create-invoice', icon: PlusCircle },
+      { label: 'Invoices', href: '/treasury/invoices', icon: Receipt },
+      { label: 'Payment History', href: '/treasury/payments', icon: History },
+      { label: 'Provider Swap', href: '/treasury/swap', icon: RefreshCw },
+      { label: 'On-Ramp', href: '/treasury/onramp', icon: Coins },
+      { label: 'Off-Ramp', href: '/treasury/offramp', icon: TrendingDown },
+    ],
+  },
+  {
     label: 'Organizations',
     href: '/organizations',
     icon: Building2,
@@ -55,6 +87,12 @@ const navigationItems: NavItem[] = [
     href: '/groups',
     icon: Users,
     badge: 'New',
+  },
+  {
+    label: 'Payment Processing',
+    href: '/payments',
+    icon: Activity,
+    badge: 'Live',
   },
   {
     label: 'Billing',
@@ -123,6 +161,41 @@ const navigationItems: NavItem[] = [
     label: 'Business Rules',
     href: '/business-rules',
     icon: Shield,
+  },
+  {
+    label: 'RBAC',
+    href: '/rbac',
+    icon: UserCog,
+    badge: 'New',
+  },
+  {
+    label: 'Enterprise Hierarchy',
+    href: '/enterprise-hierarchy',
+    icon: Network,
+    badge: 'New',
+  },
+  {
+    label: 'Operations',
+    href: '#',
+    icon: GitBranch,
+    children: [
+      { label: 'Tempo Operations', href: '/tempo-operations', icon: Timer },
+      { label: 'USDC Operations', href: '/usdc-operations', icon: UsdcIcon },
+      { label: 'USDC Monitor', href: '/usdc-monitor', icon: Eye },
+      { label: 'Provider Comparison', href: '/provider-comparison', icon: Scale },
+    ],
+  },
+  {
+    label: 'Webhooks',
+    href: '/webhooks',
+    icon: Webhook,
+    badge: 'New',
+  },
+  {
+    label: 'Exports',
+    href: '/exports',
+    icon: Download,
+    badge: 'New',
   },
   {
     label: 'Industries',

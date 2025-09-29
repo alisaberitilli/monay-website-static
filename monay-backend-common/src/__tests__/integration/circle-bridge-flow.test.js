@@ -1,6 +1,7 @@
 import { describe, it, expect, jest, beforeEach, afterEach, beforeAll, afterAll } from '@jest/globals';
 import BridgeTransferService from '../../services/bridge-transfer-service.js';
-import { sequelize } from '../../models/index.js';
+import db from '../../models/index.js';
+const { sequelize } = db;
 
 describe('Circle Bridge Transfer Integration Tests', () => {
     let bridgeService;

@@ -1,8 +1,8 @@
-const { Pool } = require('pg');
-const crypto = require('crypto');
-const Redis = require('redis');
-const moment = require('moment');
-const EventEmitter = require('events');
+import { Pool } from 'pg';
+import crypto from 'crypto';
+import Redis from 'redis';
+import moment from 'moment';
+import EventEmitter from 'events';
 
 /**
  * Invoice-First Wallet Architecture

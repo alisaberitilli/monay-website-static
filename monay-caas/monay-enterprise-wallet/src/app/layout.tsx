@@ -8,6 +8,13 @@ const inter = Inter({ subsets: ['latin'] })
 export const metadata: Metadata = {
   title: 'Monay Enterprise Wallet',
   description: 'CaaS enterprise wallet for token management and compliance',
+  icons: {
+    icon: [
+      { url: '/monay-icon.svg', type: 'image/svg+xml' },
+      { url: '/icon', sizes: '32x32', type: 'image/png' },
+    ],
+    apple: '/monay-icon.svg',
+  },
 }
 
 export default function RootLayout({

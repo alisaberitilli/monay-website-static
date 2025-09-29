@@ -1,6 +1,6 @@
 import utility from '../services/utility.js';
 import loggers from '../services/logger.js';
-const { RateLimiterMemory } = require('rate-limiter-flexible');
+import { RateLimiterMemory } from 'rate-limiter-flexible';
 
 /**
 * Set rate limitor object

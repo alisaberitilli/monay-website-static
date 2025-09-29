@@ -1,4 +1,4 @@
-import loggers from './logger';
+import loggers from './logger.js';
 import twilio from '../services/twilio.js';
 import config from '../config/index.js';
 const { errorLogger } = loggers;

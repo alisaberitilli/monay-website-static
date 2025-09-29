@@ -1,5 +1,8 @@
 import { Router } from 'express';
+import express from 'express';
 import HttpStatus from 'http-status';
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
 import account from './account.js';
 import accounts from './accounts.js';  // Consumer wallet Primary/Secondary accounts
 import media from './media.js';
@@ -19,7 +22,7 @@ import contact from './contact.js';
 import wallet from './wallet.js';
 import userBlock from './user-block.js';
 import path from 'path';
-import loggers from '../services/logger.js';
+// import loggers from '../services/logger.js';  // Removed - using console now
 import activityLog from './activity-log.js';
 import subadmin from './subadmin.js';
 import role from './role.js';
@@ -42,12 +45,14 @@ import invoiceWallets from './invoiceWallets.js';
 import capitalMarkets from './capital-markets.js';
 import circle from './circle.js';
 import circleWallets from './circle-wallets.js';  // Circle wallet integration for consumer dual-wallet
+import enterpriseTreasury from './enterprise-treasury.js';  // Enterprise treasury and invoice management
 // import governmentServices from './government-services.js';  // Temporarily disabled - fixing imports
 import aiMlServices from './ai-ml-services.js';
 import erpConnectors from './erp-connectors.js';
 import authFederal from './auth-federal.js';
 import customerVerification from './customer-verification.js';
 import paymentRails from './payment-rails.js';
+import superAdmin from './super-admin.js';  // Super Admin routes for platform management
 import emergencyDisbursement from './emergency-disbursement.js';
 import snapTanfBenefits from './snap-tanf-benefits.js';
 import industryVerticals from './industry-verticals.js';
@@ -59,13 +64,103 @@ import walletBalance from './wallet-balance.js';
 import webhooks from './webhooks.js';
 import dataExports from './data-exports.js';
 import enterpriseRbac from './enterprise-rbac.js';
+import consumer from './consumer.js';  // Consumer wallet with Tempo priority
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 const router = Router();
 const register = (app) => {
+  // Serve static files including favicon
+  app.use(express.static(path.join(__dirname, '../../public')));
+
+  // Add favicon routes
+  app.get('/favicon.png', (req, res) => {
+    res.sendFile(path.join(__dirname, '../../public/favicon.png'));
+  });
+
+  app.get('/favicon.ico', (req, res) => {
+    res.sendFile(path.join(__dirname, '../../public/favicon.png'));
+  });
+
   // Add endpoint health tracking middleware
   app.use(trackEndpointHealth);
-  
+
   app.use(router);
+
+  // Root route with favicon
+  app.get('/', (req, res) => {
+    res.send(`
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <title>Monay API Server</title>
+        <link rel="icon" type="image/png" href="/favicon.png">
+        <link rel="alternate icon" href="/favicon.ico">
+        <style>
+          body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background: linear-gradient(135deg, #0066FF 0%, #004499 100%);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+          }
+          .container {
+            text-align: center;
+            padding: 2rem;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+          }
+          h1 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+          }
+          .logo {
+            font-size: 5rem;
+            margin-bottom: 2rem;
+          }
+          .status {
+            background: rgba(0, 255, 0, 0.2);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            display: inline-block;
+            margin-top: 1rem;
+          }
+          .links {
+            margin-top: 2rem;
+          }
+          .links a {
+            color: #FFD700;
+            margin: 0 1rem;
+            text-decoration: none;
+          }
+        </style>
+      </head>
+      <body>
+        <div class="container">
+          <div class="logo">
+            <svg xmlns="http://www.w3.org/2000/svg" width="120" height="120" viewBox="0 0 32 32">
+              <path d="M 4 24 L 8 8 L 12 18 L 16 8 L 20 24 L 17 24 L 15 12 L 12 22 L 9 12 L 7 24 Z" fill="white"/>
+              <circle cx="24" cy="22" r="3" fill="#FFD700"/>
+            </svg>
+          </div>
+          <h1>Monay Backend API</h1>
+          <p>Unified backend for CaaS & WaaS platforms</p>
+          <div class="status">✓ Server Running on Port ${process.env.PORT || 3001}</div>
+          <div class="links">
+            <a href="/api/status">API Status</a>
+            <a href="/api/health">Health Check</a>
+            ${process.env.NODE_ENV === 'development' ? '<a href="/api-docs">API Documentation</a>' : ''}
+          </div>
+        </div>
+      </body>
+      </html>
+    `);
+  });
 
   // API information endpoints at root level
   app.use('/', apiInfo);
@@ -105,7 +200,8 @@ const register = (app) => {
     oneqa,
     evm,
     bridge,
-    p2pTransfer  // P2P transfer endpoints for Consumer Wallet
+    p2pTransfer,  // P2P transfer endpoints for Consumer Wallet
+    consumer  // Consumer wallet with Tempo-first multi-provider support
   ]);
   
   // Mount blockchain and treasury routes with their prefixes
@@ -118,6 +214,7 @@ const register = (app) => {
   app.use('/api/capital-markets', capitalMarkets); // Capital Markets rule sets
   app.use('/api/circle', circle); // Circle USDC integration for mint/burn operations
   app.use('/api/circle-wallets', circleWallets); // Circle wallet integration for consumer dual-wallet
+  app.use('/api/enterprise-treasury', enterpriseTreasury); // Enterprise treasury and invoice tokenization on Solana
   // app.use('/api/government', governmentServices); // Government services endpoints - temporarily disabled
   app.use('/api/ai-ml', aiMlServices); // AI/ML services endpoints
   app.use('/api/erp', erpConnectors); // ERP connector endpoints
@@ -132,11 +229,13 @@ const register = (app) => {
   app.use('/api/webhooks', webhooks); // Webhook management system for integrations
   app.use('/api/exports', dataExports); // Advanced data export functionality
   app.use('/api/enterprise-rbac', enterpriseRbac); // Enterprise Role-Based Access Control with industry-specific roles
+  app.use('/api/super-admin', superAdmin); // Super Admin routes for comprehensive platform management
 
 
   app.use((error, req, res, next) => {
     if (!error.status || error.status == HttpStatus.INTERNAL_SERVER_ERROR) {
-      loggers.errorLogger.error(`internal error ${new Date()} ${error}`);
+      // loggers.errorLogger.error(`internal error ${new Date()} ${error}`);
+      console.error(`internal error ${new Date()} ${error}`);
       console.log('internal error', `${new Date()}`, error.status, error);
     }
     res.status(error.status || HttpStatus.INTERNAL_SERVER_ERROR).json({

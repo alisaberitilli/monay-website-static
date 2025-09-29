@@ -3,7 +3,7 @@ import HttpStatus from 'http-status';
 import nudgeOTPService from '../services/nudge-otp.js';
 import models from '../models/index.js';
 import utility from '../services/utility.js';
-import middlewares from '../middlewares';
+import middlewares from '../middlewares/index.js';
 
 const { User } = models;
 

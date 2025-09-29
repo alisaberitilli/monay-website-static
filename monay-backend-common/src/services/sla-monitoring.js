@@ -1,9 +1,11 @@
 import HttpStatus from 'http-status';
-import { CustomError } from '../middlewares/errors';
-import loggers from './logger';
+import { CustomError } from '../middlewares/errors.js';
+import loggers from './logger.js';
 import cron from 'node-cron';
 import Bull from 'bull';
 import Redis from 'ioredis';
+import axios from 'axios';
+import db from '../models/index.js';
 
 class SLAMonitoringService {
   constructor() {
@@ -123,7 +125,7 @@ class SLAMonitoringService {
       }
 
       // Store SLA record in database
-      const db = require('../models');
+      // Use imported db
       const slaRecord = await db.SLATracking.create({
         type,
         entityId,
@@ -199,7 +201,7 @@ class SLAMonitoringService {
    */
   async checkSLACompliance(type, entityId, metadata) {
     try {
-      const db = require('../models');
+      // Use imported db
       const slaRecord = await db.SLATracking.findOne({
         where: {
           type,
@@ -253,7 +255,7 @@ class SLAMonitoringService {
    */
   async checkEntityCompletion(type, entityId) {
     try {
-      const db = require('../models');
+      // Use imported db
 
       switch (type) {
         case 'emergency_disbursement':
@@ -309,7 +311,7 @@ class SLAMonitoringService {
       });
 
       // Update SLA record
-      const db = require('../models');
+      // Use imported db
       await db.SLATracking.update(
         {
           lastAlertLevel: alertLevel,
@@ -379,7 +381,7 @@ class SLAMonitoringService {
   async sendSlackAlert(alert) {
     if (!this.alertChannels.slack) return;
 
-    const axios = require('axios');
+    // Use imported axios
     const emoji = alert.level === 'breach' ? '🚨' : alert.level === 'critical' ? '⚠️' : '⏰';
 
     const message = {
@@ -413,7 +415,7 @@ class SLAMonitoringService {
   async sendPagerDutyAlert(alert) {
     if (!this.alertChannels.pagerduty) return;
 
-    const axios = require('axios');
+    // Use imported axios
     const severity = alert.level === 'breach' ? 'critical' : alert.level === 'critical' ? 'error' : 'warning';
 
     await axios.post(
@@ -485,7 +487,7 @@ class SLAMonitoringService {
    */
   async completeSLA(slaId) {
     try {
-      const db = require('../models');
+      // Use imported db
       const slaRecord = await db.SLATracking.findByPk(slaId);
 
       if (!slaRecord) return;
@@ -522,7 +524,7 @@ class SLAMonitoringService {
    */
   async checkAllEmergencyDisbursements() {
     try {
-      const db = require('../models');
+      // Use imported db
       const activeSLAs = await db.SLATracking.findAll({
         where: {
           type: 'emergency_disbursement',
@@ -547,7 +549,7 @@ class SLAMonitoringService {
    */
   async checkAllStandardPayments() {
     try {
-      const db = require('../models');
+      // Use imported db
       const activeSLAs = await db.SLATracking.findAll({
         where: {
           type: 'standard_payment',
@@ -572,7 +574,7 @@ class SLAMonitoringService {
    */
   async generateDailySLAReport() {
     try {
-      const db = require('../models');
+      // Use imported db
       const yesterday = new Date(Date.now() - 24 * 60 * 60 * 1000);
 
       const completedSLAs = await db.SLATracking.findAll({
@@ -635,7 +637,7 @@ class SLAMonitoringService {
   async sendDailyReport(report) {
     // Send via email, Slack, etc.
     if (this.alertChannels.slack) {
-      const axios = require('axios');
+      // Use imported axios
       await axios.post(this.alertChannels.slack, {
         text: 'Daily SLA Report',
         blocks: [
@@ -688,7 +690,7 @@ class SLAMonitoringService {
    */
   async cleanupCompletedSLAs() {
     try {
-      const db = require('../models');
+      // Use imported db
       const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
 
       const deleted = await db.SLATracking.destroy({
@@ -714,7 +716,7 @@ class SLAMonitoringService {
    */
   async getSLAStatistics(type, period = '7d') {
     try {
-      const db = require('../models');
+      // Use imported db
       const periodMs = this.parsePeriod(period);
       const startDate = new Date(Date.now() - periodMs);
 

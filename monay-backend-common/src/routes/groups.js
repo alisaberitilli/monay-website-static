@@ -1,11 +1,11 @@
-const express = require('express');
+import express from 'express';
 const router = express.Router();
-const { Pool } = require('pg');
-const { authenticateToken } = require('../middleware/auth');
-const tenantIsolation = require('../middleware/tenant-isolation');
-const GroupManagementService = require('../services/group-management');
-const { validateRequest } = require('../middleware/validation');
-const { body, param, query } = require('express-validator');
+import { Pool } from 'pg';
+import { authenticateToken } from '../middleware/auth.js';
+import tenantIsolation from '../middleware/tenant-isolation.js';
+import GroupManagementService from '../services/group-management.js';
+import { validateRequest } from '../middleware/validation';
+import { body, param, query } from 'express-validator';
 
 // Initialize service
 const pool = new Pool({
@@ -586,4 +586,4 @@ router.put('/:id/treasury/allocations',
   }
 );
 
-module.exports = router;
+export default router;

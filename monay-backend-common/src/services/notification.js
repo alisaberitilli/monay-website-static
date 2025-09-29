@@ -1,6 +1,6 @@
-import Notification from './base-notification';
-import userRepository from '../repositories/user-repository';
-import accountRepository from '../repositories/account-repository';
+import Notification from './base-notification.js';
+import userRepository from '../repositories/user-repository.js';
+import accountRepository from '../repositories/account-repository.js';
 
 export default {
 

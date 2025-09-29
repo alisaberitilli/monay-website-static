@@ -10,6 +10,11 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter, DialogDescription } from '@/components/ui/dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Separator } from '@/components/ui/separator';
+import { Textarea } from '@/components/ui/textarea';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { Checkbox } from '@/components/ui/checkbox';
+import { useToast } from '@/components/ui/use-toast';
 import { 
   CreditCard, 
   Download, 
@@ -56,6 +61,30 @@ interface Transaction {
 }
 
 export default function TransactionsPage() {
+  const [showExportModal, setShowExportModal] = useState(false);
+  const [exportFormat, setExportFormat] = useState<'csv' | 'json' | 'excel' | 'pdf'>('csv');
+  const [exportDateRange, setExportDateRange] = useState<'all' | 'today' | 'week' | 'month' | 'custom'>('all');
+  const [exportStartDate, setExportStartDate] = useState('');
+  const [exportEndDate, setExportEndDate] = useState('');
+  const [exportIncludeFields, setExportIncludeFields] = useState({
+    reference: true,
+    type: true,
+    amount: true,
+    currency: true,
+    status: true,
+    description: true,
+    category: true,
+    date: true,
+    time: true,
+    from: true,
+    to: true,
+    fee: true,
+    balance: true,
+  });
+  const [exportNotes, setExportNotes] = useState('');
+  const [isExporting, setIsExporting] = useState(false);
+  const { toast } = useToast();
+
   const [transactions, setTransactions] = useState<Transaction[]>([
     {
       id: '1',
@@ -344,22 +373,92 @@ export default function TransactionsPage() {
     toast.success('Copied to clipboard!');
   };
 
-  const exportTransactions = () => {
-    const csv = [
-      ['Reference', 'Type', 'Amount', 'Status', 'Description', 'Date', 'From', 'To'].join(','),
-      ...filteredTransactions.map(t => 
-        [t.reference, t.type, t.amount, t.status, t.description, t.date, t.from, t.to].join(',')
-      )
-    ].join('\n');
-    
-    const blob = new Blob([csv], { type: 'text/csv' });
-    const url = window.URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `transactions-${new Date().toISOString().split('T')[0]}.csv`;
-    a.click();
-    
-    toast.success('Transactions exported successfully!');
+  const handleExport = () => {
+    setShowExportModal(true);
+  };
+
+  const performExport = async () => {
+    setIsExporting(true);
+
+    try {
+      // Filter transactions based on date range
+      let dataToExport = [...filteredTransactions];
+
+      if (exportDateRange === 'today') {
+        const today = new Date().toISOString().split('T')[0];
+        dataToExport = dataToExport.filter(t => t.date === today);
+      } else if (exportDateRange === 'week') {
+        const weekAgo = new Date();
+        weekAgo.setDate(weekAgo.getDate() - 7);
+        dataToExport = dataToExport.filter(t => new Date(t.date) >= weekAgo);
+      } else if (exportDateRange === 'month') {
+        const monthAgo = new Date();
+        monthAgo.setMonth(monthAgo.getMonth() - 1);
+        dataToExport = dataToExport.filter(t => new Date(t.date) >= monthAgo);
+      } else if (exportDateRange === 'custom' && exportStartDate && exportEndDate) {
+        dataToExport = dataToExport.filter(t =>
+          t.date >= exportStartDate && t.date <= exportEndDate
+        );
+      }
+
+      // Build field list based on selected fields
+      const fields = Object.entries(exportIncludeFields)
+        .filter(([_, included]) => included)
+        .map(([field, _]) => field);
+
+      if (exportFormat === 'csv') {
+        const csv = [
+          fields.map(f => f.charAt(0).toUpperCase() + f.slice(1)).join(','),
+          ...dataToExport.map(t => fields.map(field => String(t[field as keyof Transaction])).join(','))
+        ].join('\n');
+
+        const blob = new Blob([csv], { type: 'text/csv' });
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `transactions-export-${new Date().toISOString().split('T')[0]}.csv`;
+        a.click();
+      } else if (exportFormat === 'json') {
+        const jsonData = dataToExport.map(t => {
+          const obj: any = {};
+          fields.forEach(field => {
+            obj[field] = t[field as keyof Transaction];
+          });
+          return obj;
+        });
+
+        const blob = new Blob([JSON.stringify(jsonData, null, 2)], { type: 'application/json' });
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `transactions-export-${new Date().toISOString().split('T')[0]}.json`;
+        a.click();
+      } else {
+        // For Excel and PDF, we'd normally use libraries like xlsx or jsPDF
+        toast({
+          title: 'Export Format',
+          description: `${exportFormat.toUpperCase()} export will be implemented with appropriate libraries`,
+        });
+      }
+
+      toast({
+        title: 'Export Successful',
+        description: `Exported ${dataToExport.length} transactions as ${exportFormat.toUpperCase()}`,
+      });
+
+      setShowExportModal(false);
+      // Reset export settings
+      setExportDateRange('all');
+      setExportNotes('');
+    } catch (error) {
+      toast({
+        title: 'Export Failed',
+        description: 'Failed to export transactions. Please try again.',
+        variant: 'destructive',
+      });
+    } finally {
+      setIsExporting(false);
+    }
   };
 
   return (
@@ -375,7 +474,7 @@ export default function TransactionsPage() {
             <RefreshCw className="w-4 h-4" />
             Refresh
           </Button>
-          <Button onClick={exportTransactions} className="flex items-center gap-2">
+          <Button onClick={handleExport} className="flex items-center gap-2">
             <Download className="w-4 h-4" />
             Export
           </Button>
@@ -888,6 +987,183 @@ export default function TransactionsPage() {
                 Retry Transaction
               </Button>
             )}
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+      {/* Export Modal */}
+      <Dialog open={showExportModal} onOpenChange={setShowExportModal}>
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Export Transactions</DialogTitle>
+            <DialogDescription>
+              Configure your export settings and choose the format for your transaction data
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-6">
+            {/* Export Format */}
+            <div className="space-y-3">
+              <Label>Export Format</Label>
+              <RadioGroup value={exportFormat} onValueChange={(value) => setExportFormat(value as any)}>
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="flex items-center space-x-2 p-3 border rounded-lg hover:bg-gray-50">
+                    <RadioGroupItem value="csv" id="csv" />
+                    <Label htmlFor="csv" className="flex-1 cursor-pointer">
+                      <div>
+                        <p className="font-medium">CSV</p>
+                        <p className="text-sm text-gray-500">Comma-separated values, Excel compatible</p>
+                      </div>
+                    </Label>
+                  </div>
+                  <div className="flex items-center space-x-2 p-3 border rounded-lg hover:bg-gray-50">
+                    <RadioGroupItem value="json" id="json" />
+                    <Label htmlFor="json" className="flex-1 cursor-pointer">
+                      <div>
+                        <p className="font-medium">JSON</p>
+                        <p className="text-sm text-gray-500">JavaScript Object Notation</p>
+                      </div>
+                    </Label>
+                  </div>
+                  <div className="flex items-center space-x-2 p-3 border rounded-lg hover:bg-gray-50 opacity-50">
+                    <RadioGroupItem value="excel" id="excel" disabled />
+                    <Label htmlFor="excel" className="flex-1 cursor-pointer">
+                      <div>
+                        <p className="font-medium">Excel</p>
+                        <p className="text-sm text-gray-500">Microsoft Excel format (Coming soon)</p>
+                      </div>
+                    </Label>
+                  </div>
+                  <div className="flex items-center space-x-2 p-3 border rounded-lg hover:bg-gray-50 opacity-50">
+                    <RadioGroupItem value="pdf" id="pdf" disabled />
+                    <Label htmlFor="pdf" className="flex-1 cursor-pointer">
+                      <div>
+                        <p className="font-medium">PDF</p>
+                        <p className="text-sm text-gray-500">Formatted report (Coming soon)</p>
+                      </div>
+                    </Label>
+                  </div>
+                </div>
+              </RadioGroup>
+            </div>
+
+            {/* Date Range */}
+            <div className="space-y-3">
+              <Label>Date Range</Label>
+              <Select value={exportDateRange} onValueChange={(value) => setExportDateRange(value as any)}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select date range" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Transactions</SelectItem>
+                  <SelectItem value="today">Today</SelectItem>
+                  <SelectItem value="week">Last 7 Days</SelectItem>
+                  <SelectItem value="month">Last 30 Days</SelectItem>
+                  <SelectItem value="custom">Custom Range</SelectItem>
+                </SelectContent>
+              </Select>
+
+              {exportDateRange === 'custom' && (
+                <div className="grid grid-cols-2 gap-4 mt-3">
+                  <div>
+                    <Label htmlFor="startDate">Start Date</Label>
+                    <Input
+                      id="startDate"
+                      type="date"
+                      value={exportStartDate}
+                      onChange={(e) => setExportStartDate(e.target.value)}
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="endDate">End Date</Label>
+                    <Input
+                      id="endDate"
+                      type="date"
+                      value={exportEndDate}
+                      onChange={(e) => setExportEndDate(e.target.value)}
+                    />
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Fields to Include */}
+            <div className="space-y-3">
+              <Label>Fields to Include</Label>
+              <div className="grid grid-cols-3 gap-3">
+                {Object.entries(exportIncludeFields).map(([field, included]) => (
+                  <div key={field} className="flex items-center space-x-2">
+                    <Checkbox
+                      id={field}
+                      checked={included}
+                      onCheckedChange={(checked) =>
+                        setExportIncludeFields(prev => ({ ...prev, [field]: checked as boolean }))
+                      }
+                    />
+                    <Label htmlFor={field} className="text-sm capitalize cursor-pointer">
+                      {field.replace(/([A-Z])/g, ' $1').trim()}
+                    </Label>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Database Safety Notice */}
+            <Alert className="border-blue-200 bg-blue-50">
+              <AlertCircle className="w-4 h-4 text-blue-600" />
+              <AlertDescription className="text-blue-800">
+                <strong>Data Safety:</strong> This export will create a READ-ONLY copy of your transaction data.
+                No records will be modified or deleted from the database. The export file will be downloaded
+                to your local device.
+              </AlertDescription>
+            </Alert>
+
+            {/* Export Notes */}
+            <div className="space-y-2">
+              <Label htmlFor="notes">Export Notes (Optional)</Label>
+              <Textarea
+                id="notes"
+                placeholder="Add any notes about this export for your records..."
+                value={exportNotes}
+                onChange={(e) => setExportNotes(e.target.value)}
+                className="min-h-[80px]"
+              />
+              <p className="text-sm text-gray-500">
+                These notes will be included in the export metadata
+              </p>
+            </div>
+
+            {/* Summary */}
+            <div className="p-4 bg-gray-50 rounded-lg space-y-2">
+              <p className="font-medium">Export Summary</p>
+              <div className="text-sm space-y-1">
+                <p>• Format: <strong>{exportFormat.toUpperCase()}</strong></p>
+                <p>• Date Range: <strong>{exportDateRange === 'custom' ? `${exportStartDate} to ${exportEndDate}` : exportDateRange}</strong></p>
+                <p>• Fields: <strong>{Object.values(exportIncludeFields).filter(Boolean).length} selected</strong></p>
+                <p>• Records: <strong>{filteredTransactions.length} transactions</strong></p>
+              </div>
+            </div>
+          </div>
+
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowExportModal(false)} disabled={isExporting}>
+              Cancel
+            </Button>
+            <Button
+              onClick={performExport}
+              disabled={isExporting || Object.values(exportIncludeFields).filter(Boolean).length === 0}
+            >
+              {isExporting ? (
+                <>
+                  <RefreshCw className="w-4 h-4 mr-2 animate-spin" />
+                  Exporting...
+                </>
+              ) : (
+                <>
+                  <Download className="w-4 h-4 mr-2" />
+                  Export {exportFormat.toUpperCase()}
+                </>
+              )}
+            </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

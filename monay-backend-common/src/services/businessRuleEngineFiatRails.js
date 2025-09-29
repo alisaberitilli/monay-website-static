@@ -1,8 +1,8 @@
-const axios = require('axios');
-const { v4: uuidv4 } = require('uuid');
-const logger = require('../services/logger');
-const db = require('../models');
-const { BusinessRuleEngine } = require('./businessRuleEngine');
+import axios from 'axios';
+import { v4 as uuidv4 } from 'uuid';
+import logger from '../services/logger.js';
+import db from '../models/index.js';
+import { BusinessRuleEngine } from './businessRuleEngine.js';
 
 /**
  * Enhanced Business Rule Engine for Government Benefits with Fiat Rails Integration

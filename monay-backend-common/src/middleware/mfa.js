@@ -1,6 +1,6 @@
-const jwt = require('jsonwebtoken');
-const mfaService = require('../services/mfa');
-const { auditLogService } = require('../services/audit-log');
+import jwt from 'jsonwebtoken';
+import mfaService from '../services/mfa.js';
+import { auditLogService } from '../services/audit-log.js';
 
 /**
  * Middleware to enforce MFA verification for protected routes
@@ -175,7 +175,7 @@ const enforceMFASetup = (gracePeriodDays = 7) => {
         return next();
       }
 
-      const db = require('../models');
+      import db from '../models/index.js';
       const user = await db.User.findByPk(userId, {
         attributes: ['mfaEnabled', 'createdAt', 'mfaEnforcedAt']
       });
@@ -392,7 +392,7 @@ const mfaRateLimit = (options = {}) => {
   };
 };
 
-module.exports = {
+export default {
   requireMFA,
   checkMFA,
   enforceMFASetup,

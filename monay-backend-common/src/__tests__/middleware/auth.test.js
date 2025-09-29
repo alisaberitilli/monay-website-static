@@ -1,4 +1,4 @@
-const { authenticate, authorize, validateApiKey } = require('../../middlewares/auth-exports');
+import { authenticate, authorize, validateApiKey } from '../../middlewares/auth-exports';
 
 // Mock JWT service
 jest.mock('../../services/jwt', () => ({
@@ -22,9 +22,9 @@ jest.mock('../../repositories/account-repository', () => ({
   }
 }));
 
-const jwtService = require('../../services/jwt').default;
-const userRepository = require('../../repositories/user-repository').default;
-const accountRepository = require('../../repositories/account-repository').default;
+import jwtService from '../../services/jwt.js';
+import userRepository from '../../repositories/user-repository.js';
+import accountRepository from '../../repositories/account-repository.js';
 
 describe('Authentication Middleware', () => {
   let req, res, next;

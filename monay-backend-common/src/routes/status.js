@@ -1,7 +1,13 @@
 import express from 'express';
 import path from 'path';
 import os from 'os';
-import { successResponse } from '../helpers';
+import { spawn, exec } from 'child_process';
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
+import { successResponse } from '../helpers/index.js';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 const router = express.Router();
 
@@ -226,7 +232,7 @@ router.post('/api/status/start-app', async (req, res) => {
         return res.status(400).json({ success: false, message: 'Invalid port' });
     }
     
-    const { spawn, exec } = require('child_process');
+    // Use imported spawn and exec
     
     try {
         // First, kill any existing process on this port

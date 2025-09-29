@@ -1,8 +1,8 @@
-const fs = require('fs').promises;
-const path = require('path');
-const { Pool } = require('pg');
-const crypto = require('crypto');
-const moment = require('moment');
+import { promises as fs } from 'fs';
+import path from 'path';
+import { Pool } from 'pg';
+import crypto from 'crypto';
+import moment from 'moment';
 
 /**
  * Compliance Documentation System
@@ -1108,7 +1108,7 @@ Enhanced Due Diligence:
 npm install @monay/fiat-rails-sdk
 
 // 2. Initialize client
-const MonayFiatRails = require('@monay/fiat-rails-sdk');
+import MonayFiatRails from '@monay/fiat-rails-sdk';
 const client = new MonayFiatRails({
   apiKey: process.env.MONAY_API_KEY,
   environment: 'production'
@@ -1191,7 +1191,7 @@ console.log('Payment settled in', payment.settlement_time_ms, 'ms');
       ],
       implementation_example: `
 // Login.gov Integration
-const { Issuer } = require('openid-client');
+import { Issuer } from 'openid-client';
 
 const loginGovIssuer = await Issuer.discover('https://idp.int.identitysandbox.gov');
 const client = new loginGovIssuer.Client({

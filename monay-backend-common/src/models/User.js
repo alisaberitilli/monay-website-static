@@ -1,5 +1,6 @@
 import config from '../config/index.js';
-import utility from '../services/utility.js';
+import fs from 'fs';
+import path from 'path';
 
 const defaultUsermage = `${config.app.baseUrl}public/default-images/user.png`;
 
@@ -196,7 +197,7 @@ export default (sequelize, DataTypes) => {
             imagePathArray.push(imageName);
             if (str && config.app.mediaStorage == 's3') {
               return `${config.media.staticMediaUrl}${imagePathArray.join('/')}`;
-            } else if (str && utility.isFileExist(str)) {
+            } else if (str && fs.existsSync(path.resolve(str))) {
               return `${config.app.baseUrl}${imagePathArray.join('/')}`;
             } else {
               return defaultUsermage;
@@ -212,7 +213,7 @@ export default (sequelize, DataTypes) => {
           let str = this.get('qrCode');
           if (str && config.app.mediaStorage == 's3') {
             return `${config.media.staticMediaUrl}${str}`;
-          } else if (!str || !utility.isFileExist(str)) {
+          } else if (!str || !fs.existsSync(path.resolve(str))) {
             return null;
           }
           return (str && `${config.app.baseUrl}${str}`) || null;

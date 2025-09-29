@@ -1,7 +1,7 @@
 import HttpStatus from 'http-status';
-import repositories from '../repositories';
+import repositories from '../repositories/index.js';
 import utility from '../services/utility.js';
-import models from "../models";
+import models from "../models/index.js";
 
 const { UserCard } = models;
 

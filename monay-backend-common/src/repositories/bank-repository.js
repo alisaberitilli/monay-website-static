@@ -1,6 +1,5 @@
 import models from '../models/index.js';
 import paymentGateway from '../services/payment-gateway.js';
-const { UserBankAccount } = models;
 
 export default {
   /**

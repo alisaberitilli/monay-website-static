@@ -1,7 +1,7 @@
 import { Server } from 'socket.io';
 import jwt from 'jsonwebtoken';
-import config from '../config/index';
-import loggers from './logger';
+import config from '../config/index.js';
+import loggers from './logger.js';
 
 /**
  * Enterprise Wallet WebSocket Service

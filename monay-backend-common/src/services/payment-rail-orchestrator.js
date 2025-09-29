@@ -4,12 +4,13 @@
  * @module services/payment-rail-orchestrator
  */
 
-import dwollaPaymentService from './dwolla-payment';
-import stripePaymentService from './stripe-payment';
+import dwollaPaymentService from './dwolla-payment.js';
+import stripePaymentService from './stripe-payment.js';
 import HttpStatus from 'http-status';
-import { CustomError } from '../middlewares/errors';
-import loggers from './logger';
+import { CustomError } from '../middlewares/errors.js';
+import loggers from './logger.js';
 import db from '../models/index.js';
+import slaMonitoring from './sla-monitoring.js';
 
 class PaymentRailOrchestrator {
   constructor() {
@@ -297,7 +298,7 @@ class PaymentRailOrchestrator {
    */
   async trackEmergencySLA(paymentId, result) {
     try {
-      const slaMonitoring = require('./sla-monitoring').default;
+      // Use imported slaMonitoring
 
       await slaMonitoring.trackSLA(
         'emergency_disbursement',

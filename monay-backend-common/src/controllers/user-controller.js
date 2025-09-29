@@ -1,6 +1,7 @@
 import HttpStatus from 'http-status';
-import { Op } from 'sequelize';
-import repositories from '../repositories';
+import pkg from 'sequelize';
+const { Op } = pkg;
+import repositories from '../repositories/index.js';
 import models from '../models/index.js';
 import utility from '../services/utility.js';
 import logger from '../services/logger.js';

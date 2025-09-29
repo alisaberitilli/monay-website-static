@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import helpers from '../helpers';
+import helpers from '../helpers/index.js';
 
 const router = Router();
 const { successResponse, errorResponse } = helpers;

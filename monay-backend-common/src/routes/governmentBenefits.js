@@ -1,12 +1,12 @@
 import express from 'express';
-import pool from '../config/database';
-import authenticate from '../middlewares/auth-middleware';
+import pool from '../config/database.js';
+import authenticate from '../middlewares/auth-middleware.js';
 import BusinessRuleEngine from '../services/businessRuleEngine.js';
 
 const router = express.Router();
-const MonayFiatRailsClient = require('../services/monayFiatRailsClient');
-const { validateRequest } = require('../middlewares/validation');
-const { body, param, query } = require('express-validator');
+import MonayFiatRailsClient from '../services/monayFiatRailsClient.js';
+import { validateRequest } from '../middlewares/validation.js';
+import { body, param, query } from 'express-validator';
 
 // Benefit enrollment endpoint
 router.post('/enroll',

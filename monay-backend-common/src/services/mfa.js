@@ -1,7 +1,8 @@
-const speakeasy = require('speakeasy');
-const QRCode = require('qrcode');
-const crypto = require('crypto');
-const { auditLogService, AuditActions } = require('./audit-log');
+import speakeasy from 'speakeasy';
+import QRCode from 'qrcode';
+import crypto from 'crypto';
+import { auditLogService, AuditActions } from './audit-log.js';
+import db from '../models/index.js';
 
 class MFAService {
   constructor() {
@@ -234,7 +235,7 @@ class MFAService {
    * Check if user is locked out
    */
   async checkLockout(userId) {
-    const db = require('../models');
+    // Use imported db
     const user = await db.User.findByPk(userId);
     
     if (!user.mfaLockoutUntil) {
@@ -263,7 +264,7 @@ class MFAService {
    * Handle failed MFA attempt
    */
   async handleFailedAttempt(userId) {
-    const db = require('../models');
+    // Use imported db
     const user = await db.User.findByPk(userId);
     
     const attempts = (user.mfaFailedAttempts || 0) + 1;
@@ -310,7 +311,7 @@ class MFAService {
    * Reset failed attempts on successful verification
    */
   async resetFailedAttempts(userId) {
-    const db = require('../models');
+    // Use imported db
     await db.User.update(
       {
         mfaFailedAttempts: 0,
@@ -325,7 +326,7 @@ class MFAService {
    */
   async enableMFA(userId, secret, backupCodes) {
     try {
-      const db = require('../models');
+      // Use imported db
       const encryptedSecret = this.encryptSecret(secret);
       const hashedBackupCodes = backupCodes.map(code => this.hashBackupCode(code));
       
@@ -361,7 +362,7 @@ class MFAService {
    */
   async disableMFA(userId) {
     try {
-      const db = require('../models');
+      // Use imported db
       
       await db.User.update(
         {
@@ -397,7 +398,7 @@ class MFAService {
    */
   async getMFAStatus(userId) {
     try {
-      const db = require('../models');
+      // Use imported db
       const user = await db.User.findByPk(userId, {
         attributes: [
           'mfaEnabled',
@@ -432,7 +433,7 @@ class MFAService {
    */
   async regenerateBackupCodes(userId) {
     try {
-      const db = require('../models');
+      // Use imported db
       const newCodes = this.generateBackupCodes();
       const hashedCodes = newCodes.map(code => this.hashBackupCode(code));
       
@@ -479,7 +480,7 @@ class MFAService {
       return false;
     }
     
-    const db = require('../models');
+    // Use imported db
     const user = await db.User.findByPk(userId, {
       attributes: ['mfaEnabled']
     });
@@ -491,4 +492,4 @@ class MFAService {
 // Singleton instance
 const mfaService = new MFAService();
 
-module.exports = mfaService;
+export default mfaService;

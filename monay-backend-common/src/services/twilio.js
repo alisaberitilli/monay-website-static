@@ -2,8 +2,8 @@
 
 import twilio from 'twilio';
 import config from '../config/index.js';
-import settingRepository from '../repositories/setting-repository';
-import loggers from './logger';
+import settingRepository from '../repositories/setting-repository.js';
+import loggers from './logger.js';
 let infoLogger = loggers.infoLogger;
 let errorLogger = loggers.errorLogger;
 

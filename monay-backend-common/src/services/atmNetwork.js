@@ -1,9 +1,9 @@
-const { Pool } = require('pg');
-const crypto = require('crypto');
-const Redis = require('redis');
-const moment = require('moment');
-const axios = require('axios');
-const QRCode = require('qrcode');
+import { Pool } from 'pg';
+import crypto from 'crypto';
+import Redis from 'redis';
+import moment from 'moment';
+import axios from 'axios';
+import QRCode from 'qrcode';
 
 /**
  * ATM Network Service

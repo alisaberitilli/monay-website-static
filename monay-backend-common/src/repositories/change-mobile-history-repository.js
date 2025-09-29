@@ -4,7 +4,6 @@ import sms from '../services/sms.js';
 import encryptAPIs from '../services/encrypt.js';
 import Email from '../services/email.js';
 import logger from '../services/logger.js';
-const { ChangeMobileHistory, User } = models;
 
 export default {
     /**

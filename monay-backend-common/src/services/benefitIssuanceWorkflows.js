@@ -1,8 +1,8 @@
-const pool = require('../models');
-const MonayFiatRailsClient = require('./monayFiatRailsClient');
-const BusinessRuleEngine = require('./businessRuleEngine');
-const cron = require('node-cron');
-const EventEmitter = require('events');
+import pool from '../models/index.js';
+import MonayFiatRailsClient from './monayFiatRailsClient.js';
+import BusinessRuleEngine from './businessRuleEngine.js';
+import cron from 'node-cron';
+import EventEmitter from 'events';
 
 class BenefitIssuanceWorkflows extends EventEmitter {
   constructor() {

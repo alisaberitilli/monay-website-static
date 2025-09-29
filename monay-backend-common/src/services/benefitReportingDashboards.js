@@ -1,8 +1,9 @@
-const { pool } = require('../models');
-const redis = require('../config/redis');
-const { generatePDF, generateExcel, generateCSV } = require('../utils/reportGenerators');
-const { sendEmail } = require('../utils/emailService');
-const schedule = require('node-schedule');
+import db from '../models/index.js';
+const { pool } = db;
+import redis from '../config/redis';
+import { generatePDF, generateExcel, generateCSV } from '../utils/reportGenerators';
+import { sendEmail } from '../utils/emailService';
+import schedule from 'node-schedule';
 
 class BenefitReportingDashboards {
   constructor() {

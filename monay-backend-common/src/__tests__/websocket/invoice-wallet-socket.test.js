@@ -1,14 +1,14 @@
-const io = require('socket.io-client');
-const http = require('http');
-const express = require('express');
-const { Server } = require('socket.io');
-const jwt = require('jsonwebtoken');
+import io from 'socket.io-client';
+import http from 'http';
+import express from 'express';
+import { Server } from 'socket.io';
+import jwt from 'jsonwebtoken';
 const {
   createTestUser,
   createTestWallet,
   cleanDatabase,
   closeTestDb
-} = require('../utils/database-helpers');
+} from '../utils/database-helpers';
 
 describe('Invoice Wallet WebSocket Tests', () => {
   let server;

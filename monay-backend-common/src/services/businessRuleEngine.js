@@ -4,8 +4,8 @@
  * GENIUS Act Compliant - July 18, 2025 Deadline
  */
 
-const { Pool } = require('pg');
-const logger = require('../services/logger');
+import { Pool } from 'pg';
+import logger from '../services/logger.js';
 
 class BusinessRuleEngine {
   constructor() {

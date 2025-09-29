@@ -15,14 +15,21 @@ import {
   LAMPORTS_PER_SOL
 } from '@solana/web3.js';
 import { TOKEN_PROGRAM_ID } from '@solana/spl-token';
-import logger from '../logger';
-import auditLogger from './AuditLogger';
+import logger from '../logger.js';
+import auditLogger from './AuditLogger.js';
 
 class BlockchainIntegration {
   constructor() {
     this.initialized = false;
     this.baseNetwork = null;
     this.solanaNetwork = null;
+  }
+
+  /**
+   * Initialize method for compatibility with BusinessRuleEngine
+   */
+  async initialize() {
+    await this.initializeNetworks();
   }
 
   /**

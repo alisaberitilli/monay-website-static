@@ -1,9 +1,10 @@
 import HttpStatus from 'http-status';
-import repositories from '../repositories';
+import repositories from '../repositories/index.js';
 import encryptAPIs from '../services/encrypt.js';
 import utility from '../services/utility.js';
 import moment from 'moment';
-import { Op } from 'sequelize';
+import pkg from 'sequelize';
+const { Op } = pkg;
 
 const { userRepository, parentChildRepository, transactionRepository } = repositories;
 

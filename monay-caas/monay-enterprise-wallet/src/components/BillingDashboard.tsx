@@ -57,7 +57,8 @@ export default function BillingDashboard() {
     processPayment,
     setSelectedPaymentMethod,
     downloadInvoice,
-    refreshBilling
+    refreshBilling,
+    calculateUSDXMDiscount
   } = useBillingStore();
 
   useEffect(() => {
@@ -368,7 +369,7 @@ export default function BillingDashboard() {
               
               <div className="flex justify-between items-center text-lg font-semibold pt-2 border-t">
                 <span>Total to Pay</span>
-                <span>{formatCurrency(discountedTotal)}</span>
+                <span>{formatCurrency(paymentMethod === 'USDXM' ? currentTotal - calculateUSDXMDiscount(currentTotal) : currentTotal)}</span>
               </div>
               
               <div className="p-3 bg-gray-50 rounded-lg">

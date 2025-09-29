@@ -5,10 +5,10 @@
  */
 
 import { Router } from 'express';
-import middlewares from '../middlewares';
-const RuleSetService = require('../services/capital-markets/RuleSetService');
-const BusinessRuleEngine = require('../services/business-rule-engine/BusinessRuleEngine');
-const loggers = require('../services/logger');
+import middlewares from '../middlewares/index.js';
+import RuleSetService from '../services/capital-markets/RuleSetService.js';
+import BusinessRuleEngine from '../services/business-rule-engine/BusinessRuleEngine.js';
+import loggers from '../services/logger.js';
 const logger = loggers.logger || loggers;
 
 const router = Router();

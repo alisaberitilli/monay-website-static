@@ -31,7 +31,7 @@ const validateRequest = (req, res, next) => {
  * Get real-time wallet balance with pending amounts
  */
 router.get(
-  '/balance',
+  '/wallet/balance',
   authenticateToken,
   async (req, res) => {
     try {

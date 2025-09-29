@@ -12,7 +12,7 @@
  */
 
 import crypto from 'crypto';
-import logger from '../logger';
+import logger from '../logger.js';
 
 class QuantumCrypto {
   constructor() {

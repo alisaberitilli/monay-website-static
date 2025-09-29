@@ -1,19 +1,20 @@
-import { Op, Sequelize } from 'sequelize';
-import bcrypt from 'bcryptjs';
+import pkg from 'sequelize';
+const { Op, Sequelize } = pkg;
+import bcrypt from 'bcrypt';
 import Email from '../services/email.js';
 import utility from '../services/utility.js';
 import jwt from '../services/jwt.js';
 import models from '../models/index.js';
-import userRepository from './user-repository';
+import userRepository from './user-repository.js';
 import encryptAPIs from '../services/encrypt.js';
 import config from '../config/index.js';
 import path from 'path';
 import fs from 'fs';
 import logger from '../services/logger.js';
-import mediaRepository from './media-repository';
-const { User, UserToken, UserDevice, UserRole, RolePermission, ChildParent, Country, UserKyc } = models;
-const QRCode = require('qrcode')
-var uniqid = require('uniqid');
+import mediaRepository from './media-repository.js';
+// Models will be accessed dynamically from models object
+import QRCode from 'qrcode';
+import uniqid from 'uniqid';
 
 export default {
   /**
@@ -24,7 +25,7 @@ export default {
     try {
       let uniqueCode = uniqid();
       // Skip checking for existing uniqueCode since we're using UUID IDs
-      // let isExist = await User.findOne({
+      // let isExist = await models.User.findOne({
       //   where: { uniqueCode: uniqueCode }
       // });
       // if (!isExist) {
@@ -44,7 +45,7 @@ export default {
       if (config.app.mediaStorage == 's3') {
         await mediaRepository.generateQrCodeOnS3(userId);
       } else {
-        let userInfo = await User.findOne({ where: { id: userId } });
+        let userInfo = await models.User.findOne({ where: { id: userId } });
         if (userInfo && !userInfo.qrCode) {
           let uniqueCode = await this.getUniqueId();
           if (uniqueCode) {
@@ -78,7 +79,7 @@ export default {
   async generateAccounNumber(userId) {
     try {
 
-      let userInfo = await User.findOne({ where: { id: userId } });
+      let userInfo = await models.User.findOne({ where: { id: userId } });
       if (userInfo && !userInfo.accountNumber) {
         let accountNumber = null;
         let padNumber = userId.toString().padStart(7, '0');
@@ -113,7 +114,7 @@ export default {
         // Use mobile number directly (already includes country code)
         where.mobile = username;
       }
-      let user = await User.findOne({
+      let user = await models.User.findOne({
         where: where,
         attributes: {
           exclude: [
@@ -166,7 +167,7 @@ export default {
             };
             await this.addUserDeviceHistory(userDeviceData);
 
-            let userDetail = await User.findOne({
+            let userDetail = await models.User.findOne({
               where: where,
               attributes: {
                 exclude: [
@@ -262,7 +263,7 @@ export default {
   async checkLogin(req) {
     try {
       let { email, password, firebaseToken, deviceType } = req.body;
-      let user = await User.findOne({
+      let user = await models.User.findOne({
         where: {
           email: email,
           role: { [Op.in]: ['platform_admin', 'compliance_officer', 'treasury_manager', 'support_agent'] },
@@ -389,7 +390,7 @@ export default {
  */
   async getUserDeviceToken(userId) {
     try {
-      let userToken = await UserToken.findOne({
+      let userToken = await models.UserToken.findOne({
         where: { userId }
       });
       return userToken;
@@ -417,7 +418,7 @@ export default {
      */
   async addUserDevice(data) {
     try {
-      return await UserToken.create(data);
+      return await models.UserToken.create(data);
     } catch (error) {
       throw Error(error);
     }
@@ -431,7 +432,7 @@ export default {
       const where = {
         token: token  // Use 'token' field instead of 'access_token'
       };
-      return await UserToken.findOne({
+      return await models.UserToken.findOne({
         where
       });
     } catch (error) {
@@ -475,7 +476,7 @@ export default {
   async resetAdminPassword(req) {
     try {
       let { token, newPassword } = req.body;
-      let user = await User.findOne({ where: { passwordResetToken: token } });
+      let user = await models.User.findOne({ where: { passwordResetToken: token } });
       if (user) {
         if (user && (user.role === 'platform_admin' || ['compliance_officer', 'treasury_manager', 'support_agent'].includes(user.role)) && user.status == 'active') {
           const isCompare = await this.compareUserPassword(newPassword, user.password);
@@ -512,7 +513,7 @@ export default {
         where.mobile = username;
         where.verificationOtp = otp
       }
-      let user = await User.findOne({ where: where });
+      let user = await models.User.findOne({ where: where });
       if (user) {
         if (user && user.status == 'active') {
           const isCompare = await this.compareUserPassword(newPassword, user.password);
@@ -568,7 +569,7 @@ export default {
   */
   async addUserDeviceHistory(data) {
     try {
-      return await UserDevice.create(data);
+      return await models.UserDevice.create(data);
     } catch (error) {
       throw Error(error);
     }

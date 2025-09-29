@@ -1,6 +1,6 @@
 import axios from 'axios';
 import crypto from 'crypto';
-import { Logger } from './logger';
+import { Logger } from './logger.js';
 
 class MonayFiatService {
   constructor() {

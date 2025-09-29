@@ -3,10 +3,10 @@
  * Endpoints for evaluating and managing business rules
  */
 
-const express = require('express');
+import express from 'express';
 const router = express.Router();
-const BusinessRuleEngine = require('../services/business-rule-engine/BusinessRuleEngine');
-const logger = require('../services/logger');
+import BusinessRuleEngine from '../services/business-rule-engine/BusinessRuleEngine.js';
+import logger from '../services/logger.js';
 
 /**
  * Initialize Business Rule Engine on startup

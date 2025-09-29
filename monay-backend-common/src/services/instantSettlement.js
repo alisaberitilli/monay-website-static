@@ -1,7 +1,8 @@
-const { pool } = require('../models');
-const redis = require('../config/redis');
-const monayFiatRailsClient = require('./monayFiatRailsClient');
-const { v4: uuidv4 } = require('uuid');
+import db from '../models/index.js';
+const { pool } = db;
+import redis from '../config/redis.js';
+import monayFiatRailsClient from './monayFiatRailsClient.js';
+import { v4 as uuidv4 } from 'uuid';
 
 class InstantSettlement {
   constructor() {

@@ -6,17 +6,19 @@
  * @module BusinessRuleEngine
  */
 
-const RuleDefinition = require('./RuleDefinition');
-const RuleEvaluator = require('./RuleEvaluator');
-const RuleCompiler = require('./RuleCompiler');
-const loggers = require('../logger');
+import RuleDefinition from './RuleDefinition.js';
+import RuleEvaluator from './RuleEvaluator.js';
+import RuleCompiler from './RuleCompiler.js';
+import loggers from '../logger.js';
+import crypto from 'crypto';
+import BlockchainIntegration from '../invoice-wallet/BlockchainIntegration.js';
 const logger = {
-  info: (msg, data) => loggers.logger ? loggers.logger.info(msg, data) : console.log(msg, data),
+  info: (msg, data) => loggers.infoLogger ? loggers.infoLogger.info(msg, data) : console.log(msg, data),
   error: (msg, data) => loggers.errorLogger ? loggers.errorLogger.error(msg, data) : console.error(msg, data),
-  warn: (msg, data) => loggers.logger ? loggers.logger.warn(msg, data) : console.warn(msg, data),
-  debug: (msg, data) => loggers.logger ? loggers.logger.debug(msg, data) : console.debug(msg, data)
+  warn: (msg, data) => loggers.infoLogger ? loggers.infoLogger.warn(msg, data) : console.warn(msg, data),
+  debug: (msg, data) => loggers.infoLogger ? loggers.infoLogger.debug(msg, data) : console.debug(msg, data)
 };
-const EventEmitter = require('events');
+import EventEmitter from 'events';
 
 /**
  * Business Rule Engine (BRE)
@@ -94,7 +96,7 @@ class BusinessRuleEngine extends EventEmitter {
   async initializeChainConnections() {
     // Initialize connections to Base L2 and Solana
     try {
-      const BlockchainIntegration = require('../invoice-wallet/BlockchainIntegration');
+      // Use imported BlockchainIntegration
       await BlockchainIntegration.initialize();
 
       this.blockchainIntegration = BlockchainIntegration;
@@ -609,7 +611,7 @@ class BusinessRuleEngine extends EventEmitter {
    * @returns {string} Hash
    */
   generateHash(data) {
-    const crypto = require('crypto');
+    // Use imported crypto
     return crypto
       .createHash('sha256')
       .update(JSON.stringify(data))

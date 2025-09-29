@@ -1,10 +1,11 @@
-import mediaMiddleware from "./media-middleware";
+import mediaMiddleware from "./media-middleware.js";
 import HttpStatus from "http-status";
-import utility from "../services/utility";
-import userRepository from "../repositories/user-repository";
+import utility from "../services/utility.js";
+import userRepository from "../repositories/user-repository.js";
 import moment from "moment-timezone";
-import { Op } from "sequelize";
-import models from "../models";
+import pkg from 'sequelize';
+const { Op } = pkg;
+import models from "../models/index.js";
 const { ChangeMobileHistory } = models;
 const dateFormat = "YYYY-MM-DD HH:mm:ss";
 

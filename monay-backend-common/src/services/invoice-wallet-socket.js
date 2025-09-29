@@ -1,5 +1,5 @@
 import { Server } from 'socket.io';
-import loggers from './logger';
+import loggers from './logger.js';
 
 class InvoiceWalletSocket {
     constructor() {

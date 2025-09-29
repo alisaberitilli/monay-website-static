@@ -1,6 +1,6 @@
-const pool = require('../models');
-const Redis = require('redis');
-const EventEmitter = require('events');
+import pool from '../models/index.js';
+import Redis from 'redis';
+import EventEmitter from 'events';
 
 class BenefitBalanceTracker extends EventEmitter {
   constructor() {

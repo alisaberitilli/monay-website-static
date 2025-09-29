@@ -2,7 +2,6 @@ import models from '../models/index.js';
 import utility from '../services/utility.js';
 import notification from '../services/notification.js';
 import config from '../config/index.js';
-const { User, Notification } = models;
 const { Op } = models.Sequelize;
 export default {
 

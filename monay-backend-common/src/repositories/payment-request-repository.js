@@ -1,8 +1,7 @@
 import models from '../models/index.js';
 import moment from 'moment-timezone';
 import utility from '../services/utility.js';
-import notificationRepository from '../repositories/notification-repository';
-const { PaymentRequest, User, Transaction } = models;
+import notificationRepository from '../repositories/notification-repository.js';
 const { Op } = models.Sequelize;
 const { Sequelize } = models.sequelize;
 const fromDateTime = ' 00:00:00';

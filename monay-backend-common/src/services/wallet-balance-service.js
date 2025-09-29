@@ -5,7 +5,8 @@
  */
 
 import db from '../models/index.js';
-import { Op } from 'sequelize';
+import pkg from 'sequelize';
+const { Op } = pkg;
 import Redis from 'ioredis';
 import logger from './logger.js';
 

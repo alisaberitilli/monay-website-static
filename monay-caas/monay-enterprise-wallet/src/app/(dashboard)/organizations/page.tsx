@@ -36,8 +36,7 @@ import {
   Home,
   Factory,
   Tv,
-  Plane,
-  HandHeart
+  Plane
 } from 'lucide-react'
 import {
   DropdownMenu,
@@ -365,7 +364,7 @@ export default function OrganizationsPage() {
       case 'Manufacturing & Supply Chain': return Factory
       case 'Entertainment & Media': return Tv
       case 'Travel & Hospitality': return Plane
-      case 'Non-Profit & NGO': return HandHeart
+      case 'Non-Profit & NGO': return Heart
       default: return Building2
     }
   }

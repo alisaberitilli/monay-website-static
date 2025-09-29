@@ -1,15 +1,16 @@
-import { db, sequelize } from '../models/index.js';
-import CircleService from './circle.js';
-import WalletBalanceService from './wallet-balance-service.js';
+import db from '../models/index.js';
+const { sequelize } = db;
+import circleService from './circle.js';
+import walletBalanceService from './wallet-balance-service.js';
 import CircleWalletService from './circle-wallet-service.js';
-import { logger } from './logger.js';
+import logger from './logger.js';
 import crypto from 'crypto';
 
 class BridgeTransferService {
     constructor() {
-        this.circleService = new CircleService();
+        this.circleService = circleService;
         this.circleWalletService = new CircleWalletService();
-        this.walletBalanceService = new WalletBalanceService();
+        this.walletBalanceService = walletBalanceService;
     }
 
     /**

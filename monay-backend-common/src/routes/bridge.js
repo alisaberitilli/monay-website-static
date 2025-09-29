@@ -1,7 +1,7 @@
 import express from 'express';
 import crossRailBridge from '../services/crossRailBridge.js';
-import authMiddleware from '../middlewares/auth-middleware';
-import { successResponse, errorResponse } from '../helpers';
+import authMiddleware from '../middlewares/auth-middleware.js';
+import { successResponse, errorResponse } from '../helpers/index.js';
 
 const router = express.Router();
 

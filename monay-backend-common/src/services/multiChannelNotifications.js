@@ -1,8 +1,9 @@
-const { pool } = require('../models');
-const redis = require('../config/redis');
-const twilio = require('twilio');
-const sgMail = require('@sendgrid/mail');
-const { v4: uuidv4 } = require('uuid');
+import db from '../models/index.js';
+const { pool } = db;
+import redis from '../config/redis.js';
+import twilio from 'twilio';
+import sgMail from '@sendgrid/mail';
+import { v4 as uuidv4 } from 'uuid';
 
 class MultiChannelNotifications {
   constructor() {

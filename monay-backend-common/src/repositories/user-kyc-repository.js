@@ -1,9 +1,9 @@
 
-import mediaRepository from './media-repository';
+import mediaRepository from './media-repository.js';
 import models from '../models/index.js';
-import { Op } from 'sequelize';
-import notificationRepository from './notification-repository';
-const { UserKyc, MediaTemp } = models;
+import pkg from 'sequelize';
+const { Op } = pkg;
+import notificationRepository from './notification-repository.js';
 
 
 export default {

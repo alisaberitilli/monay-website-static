@@ -1,10 +1,12 @@
 import { Circle, CircleEnvironments } from '@circle-fin/circle-sdk';
 import crypto from 'crypto';
-import db from '../db/pool.js';
+import { EventEmitter } from 'events';
+import db from '../models/index.js';
 import circleMock from './circle-mock.js';
 
-class CircleService {
+class CircleService extends EventEmitter {
   constructor() {
+    super();
     // Check if we should use mock mode
     this.isMockMode = !process.env.CIRCLE_API_KEY ||
                        process.env.CIRCLE_API_KEY === 'mock' ||

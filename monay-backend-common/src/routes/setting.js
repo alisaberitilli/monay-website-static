@@ -1,7 +1,7 @@
 import { Router } from 'express';
-import controllers from '../controllers';
-import middlewares from '../middlewares';
-import validations from '../validations';
+import controllers from '../controllers/index.js';
+import middlewares from '../middlewares/index.js';
+import validations from '../validations/index.js';
 const router = Router();
 
 const { settingValidator } = validations;

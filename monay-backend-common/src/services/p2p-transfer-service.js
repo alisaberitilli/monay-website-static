@@ -6,7 +6,8 @@
 
 import { v4 as uuidv4 } from 'uuid';
 import db from '../models/index.js';
-import { Op } from 'sequelize';
+import pkg from 'sequelize';
+const { Op } = pkg;
 import walletBalanceService from './wallet-balance-service.js';
 import logger from './logger.js';
 import Redis from 'ioredis';
@@ -130,11 +131,48 @@ class P2PTransferService {
   }
 
   /**
+   * Check daily transfer limit for a user
+   */
+  async checkDailyLimit(userId, amount) {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    // Get today's total transfers
+    const dailyTotal = await db.sequelize.query(
+      `SELECT COALESCE(SUM(amount), 0) as total
+       FROM p2p_transfers
+       WHERE sender_user_id = :userId
+       AND status IN ('completed', 'pending', 'processing')
+       AND created_at >= :today`,
+      {
+        replacements: { userId, today },
+        type: db.sequelize.QueryTypes.SELECT
+      }
+    );
+
+    const currentTotal = parseFloat(dailyTotal[0].total) || 0;
+    const dailyLimit = 10000; // $10,000 daily limit
+    const remainingLimit = dailyLimit - currentTotal;
+    const wouldExceed = (currentTotal + parseFloat(amount)) > dailyLimit;
+
+    return {
+      dailyLimit,
+      currentTotal,
+      remainingLimit,
+      wouldExceed,
+      isValid: !wouldExceed,
+      message: wouldExceed
+        ? `Daily transfer limit of $${dailyLimit.toLocaleString()} would be exceeded. You have $${remainingLimit.toFixed(2)} remaining today.`
+        : null
+    };
+  }
+
+  /**
    * Create a new P2P transfer with state machine
    */
   async createTransfer(senderId, recipientData, amount, options = {}) {
     const transaction = await db.sequelize.transaction();
-    
+
     try {
       const {
         note = '',
@@ -145,9 +183,15 @@ class P2PTransferService {
         recurringFrequency = null
       } = options;
 
+      // Check daily limit first
+      const dailyLimitCheck = await this.checkDailyLimit(senderId, amount);
+      if (!dailyLimitCheck.isValid) {
+        throw new Error(dailyLimitCheck.message);
+      }
+
       // Get sender wallet
       const senderWallet = await db.Wallet.findOne({
-        where: { 
+        where: {
           user_id: senderId,
           status: 'active',
           type: 'personal'

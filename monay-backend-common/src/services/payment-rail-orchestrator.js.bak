@@ -1,0 +1,498 @@
+/**
+ * Payment Rail Orchestrator
+ * Intelligently routes payments through optimal rails (FedNow, RTP, ACH, Wire)
+ * @module services/payment-rail-orchestrator
+ */
+
+import dwollaPaymentService from './dwolla-payment.js';
+import stripePaymentService from './stripe-payment.js';
+import HttpStatus from 'http-status';
+import { CustomError } from '../middlewares/errors.js';
+import loggers from './logger.js';
+import db from '../models/index.js';
+
+class PaymentRailOrchestrator {
+  constructor() {
+    // Payment rail priorities and characteristics
+    this.rails = {
+      FEDNOW: {
+        priority: 1,
+        speed: 'instant', // < 20 seconds
+        availability: '24/7/365',
+        maxAmount: 100000000, // $1,000,000
+        cost: 0.045, // $0.045 per transaction
+        provider: 'dwolla'
+      },
+      RTP: {
+        priority: 2,
+        speed: 'instant', // < 15 seconds
+        availability: '24/7/365',
+        maxAmount: 100000000, // $1,000,000
+        cost: 0.045,
+        provider: 'dwolla'
+      },
+      SAME_DAY_ACH: {
+        priority: 3,
+        speed: 'same-day',
+        availability: 'business-hours',
+        maxAmount: 10000000, // $100,000
+        cost: 0.30,
+        provider: 'dwolla'
+      },
+      STANDARD_ACH: {
+        priority: 4,
+        speed: '2-3 days',
+        availability: 'business-days',
+        maxAmount: 10000000, // $100,000
+        cost: 0.25,
+        provider: 'dwolla'
+      },
+      WIRE: {
+        priority: 5,
+        speed: 'same-day',
+        availability: 'business-hours',
+        maxAmount: 999999999, // No practical limit
+        cost: 15.00, // $15 per wire
+        provider: 'stripe'
+      }
+    };
+
+    // SLA requirements for different payment types
+    this.slaRequirements = {
+      emergency: 14400, // 4 hours in seconds (GENIUS Act requirement)
+      urgent: 3600, // 1 hour
+      standard: 86400, // 24 hours
+      batch: 259200 // 72 hours
+    };
+  }
+
+  /**
+   * Route payment through optimal rail
+   */
+  async routePayment(paymentRequest) {
+    try {
+      const {
+        amount,
+        priority = 'standard',
+        sourceFundingSourceId,
+        destinationFundingSourceId,
+        paymentType,
+        metadata
+      } = paymentRequest;
+
+      // Determine optimal rail
+      const selectedRail = await this.selectOptimalRail(
+        amount,
+        priority,
+        sourceFundingSourceId,
+        destinationFundingSourceId
+      );
+
+      loggers.infoLogger.info(`Payment routed to ${selectedRail} rail`);
+
+      // Create payment record
+      const payment = await this.createPaymentRecord({
+        amount,
+        rail: selectedRail,
+        priority,
+        metadata
+      });
+
+      // Process payment through selected rail
+      let result;
+      switch (selectedRail) {
+        case 'FEDNOW':
+        case 'RTP':
+          result = await this.processInstantPayment(
+            paymentRequest,
+            selectedRail,
+            payment.id
+          );
+          break;
+
+        case 'SAME_DAY_ACH':
+          result = await this.processSameDayACH(
+            paymentRequest,
+            payment.id
+          );
+          break;
+
+        case 'STANDARD_ACH':
+          result = await this.processStandardACH(
+            paymentRequest,
+            payment.id
+          );
+          break;
+
+        case 'WIRE':
+          result = await this.processWireTransfer(
+            paymentRequest,
+            payment.id
+          );
+          break;
+
+        default:
+          throw new Error(`Unsupported payment rail: ${selectedRail}`);
+      }
+
+      // Update payment record with result
+      await this.updatePaymentRecord(payment.id, {
+        status: result.success ? 'completed' : 'failed',
+        externalId: result.transferId || result.paymentIntentId,
+        completedAt: result.success ? new Date() : null,
+        networkUsed: result.network || selectedRail
+      });
+
+      return {
+        success: true,
+        paymentId: payment.id,
+        rail: selectedRail,
+        ...result
+      };
+    } catch (error) {
+      loggers.errorLogger.error(`Payment routing failed: ${error.message}`);
+      throw new CustomError(
+        'Failed to route payment',
+        HttpStatus.INTERNAL_SERVER_ERROR
+      );
+    }
+  }
+
+  /**
+   * Select optimal payment rail based on criteria
+   */
+  async selectOptimalRail(amount, priority, sourceId, destinationId) {
+    try {
+      // Check instant payment eligibility
+      if (priority === 'emergency' || priority === 'urgent') {
+        // Check if source supports instant payments
+        const sourceEligibility = await dwollaPaymentService.checkInstantPaymentEligibility(sourceId);
+        const destEligibility = await dwollaPaymentService.checkInstantPaymentEligibility(destinationId);
+
+        if (sourceEligibility.eligible && destEligibility.eligible) {
+          // Dwolla automatically selects between FedNow and RTP
+          return 'RTP'; // Dwolla prioritizes RTP currently
+        }
+
+        // Fall back to same-day ACH for urgent payments
+        if (this.isBusinessHours()) {
+          return 'SAME_DAY_ACH';
+        }
+      }
+
+      // For large amounts, consider wire transfer
+      if (amount > this.rails.SAME_DAY_ACH.maxAmount) {
+        return 'WIRE';
+      }
+
+      // Default to standard ACH for non-urgent payments
+      return 'STANDARD_ACH';
+    } catch (error) {
+      loggers.errorLogger.error(`Rail selection failed: ${error.message}`);
+      // Default to standard ACH on error
+      return 'STANDARD_ACH';
+    }
+  }
+
+  /**
+   * Process instant payment through FedNow/RTP
+   */
+  async processInstantPayment(paymentRequest, rail, paymentId) {
+    try {
+      const result = await dwollaPaymentService.processInstantPayment({
+        sourceFundingSourceId: paymentRequest.sourceFundingSourceId,
+        destinationFundingSourceId: paymentRequest.destinationFundingSourceId,
+        amount: paymentRequest.amount,
+        metadata: {
+          ...paymentRequest.metadata,
+          paymentId,
+          rail,
+          priority: paymentRequest.priority
+        },
+        correlationId: `monay_${paymentId}`
+      });
+
+      // Track SLA for emergency payments
+      if (paymentRequest.priority === 'emergency') {
+        await this.trackEmergencySLA(paymentId, result);
+      }
+
+      return result;
+    } catch (error) {
+      loggers.errorLogger.error(`Instant payment failed: ${error.message}`);
+      throw error;
+    }
+  }
+
+  /**
+   * Process same-day ACH payment
+   */
+  async processSameDayACH(paymentRequest, paymentId) {
+    try {
+      return await dwollaPaymentService.processACHPayment({
+        sourceFundingSourceId: paymentRequest.sourceFundingSourceId,
+        destinationFundingSourceId: paymentRequest.destinationFundingSourceId,
+        amount: paymentRequest.amount,
+        clearing: 'same-day',
+        metadata: {
+          ...paymentRequest.metadata,
+          paymentId,
+          priority: paymentRequest.priority
+        },
+        correlationId: `monay_${paymentId}`
+      });
+    } catch (error) {
+      loggers.errorLogger.error(`Same-day ACH failed: ${error.message}`);
+      throw error;
+    }
+  }
+
+  /**
+   * Process standard ACH payment
+   */
+  async processStandardACH(paymentRequest, paymentId) {
+    try {
+      return await dwollaPaymentService.processACHPayment({
+        sourceFundingSourceId: paymentRequest.sourceFundingSourceId,
+        destinationFundingSourceId: paymentRequest.destinationFundingSourceId,
+        amount: paymentRequest.amount,
+        clearing: 'standard',
+        metadata: {
+          ...paymentRequest.metadata,
+          paymentId,
+          priority: paymentRequest.priority
+        },
+        correlationId: `monay_${paymentId}`
+      });
+    } catch (error) {
+      loggers.errorLogger.error(`Standard ACH failed: ${error.message}`);
+      throw error;
+    }
+  }
+
+  /**
+   * Process wire transfer through Stripe
+   */
+  async processWireTransfer(paymentRequest, paymentId) {
+    try {
+      return await stripePaymentService.processWireTransfer({
+        amount: paymentRequest.amount,
+        currency: 'usd',
+        customerId: paymentRequest.stripeCustomerId,
+        description: `Wire transfer - Payment ${paymentId}`,
+        metadata: {
+          ...paymentRequest.metadata,
+          paymentId,
+          priority: paymentRequest.priority
+        }
+      });
+    } catch (error) {
+      loggers.errorLogger.error(`Wire transfer failed: ${error.message}`);
+      throw error;
+    }
+  }
+
+  /**
+   * Track SLA for emergency disbursements (GENIUS Act compliance)
+   */
+  async trackEmergencySLA(paymentId, result) {
+    try {
+      const slaMonitoring = require('./sla-monitoring').default;
+
+      await slaMonitoring.trackSLA(
+        'emergency_disbursement',
+        paymentId,
+        {
+          recipientId: result.destinationId,
+          amount: result.amount,
+          network: result.network,
+          startTime: new Date(),
+          targetSLA: this.slaRequirements.emergency
+        }
+      );
+
+      loggers.infoLogger.info(`Emergency SLA tracking initiated for payment ${paymentId}`);
+    } catch (error) {
+      loggers.errorLogger.error(`Failed to track emergency SLA: ${error.message}`);
+    }
+  }
+
+  /**
+   * Create payment record in database
+   */
+  async createPaymentRecord(paymentData) {
+    try {
+      // This would create a record in your Payment model
+      // For now, returning mock data
+      return {
+        id: `pay_${Date.now()}`,
+        amount: paymentData.amount,
+        rail: paymentData.rail,
+        priority: paymentData.priority,
+        status: 'pending',
+        createdAt: new Date()
+      };
+    } catch (error) {
+      loggers.errorLogger.error(`Failed to create payment record: ${error.message}`);
+      throw error;
+    }
+  }
+
+  /**
+   * Update payment record status
+   */
+  async updatePaymentRecord(paymentId, updates) {
+    try {
+      // This would update the Payment model
+      loggers.infoLogger.info(`Payment ${paymentId} updated: ${updates.status}`);
+      return true;
+    } catch (error) {
+      loggers.errorLogger.error(`Failed to update payment record: ${error.message}`);
+      throw error;
+    }
+  }
+
+  /**
+   * Check if current time is within business hours
+   */
+  isBusinessHours() {
+    const now = new Date();
+    const hour = now.getHours();
+    const day = now.getDay();
+
+    // Business hours: Monday-Friday, 9 AM - 5 PM ET
+    return day >= 1 && day <= 5 && hour >= 9 && hour < 17;
+  }
+
+  /**
+   * Calculate payment cost
+   */
+  calculatePaymentCost(rail, amount) {
+    const railConfig = this.rails[rail];
+    if (!railConfig) return 0;
+
+    // Wire transfers have flat fee, others are per transaction
+    if (rail === 'WIRE') {
+      return railConfig.cost * 100; // Convert to cents
+    }
+
+    return railConfig.cost * 100; // Convert to cents
+  }
+
+  /**
+   * Get available payment rails for amount and priority
+   */
+  getAvailableRails(amount, priority) {
+    const available = [];
+
+    for (const [railName, railConfig] of Object.entries(this.rails)) {
+      if (amount <= railConfig.maxAmount) {
+        available.push({
+          rail: railName,
+          speed: railConfig.speed,
+          cost: this.calculatePaymentCost(railName, amount),
+          availability: railConfig.availability,
+          priority: railConfig.priority
+        });
+      }
+    }
+
+    // Sort by priority
+    available.sort((a, b) => a.priority - b.priority);
+
+    // For emergency payments, filter to only instant/same-day options
+    if (priority === 'emergency' || priority === 'urgent') {
+      return available.filter(rail =>
+        rail.speed === 'instant' || rail.speed === 'same-day'
+      );
+    }
+
+    return available;
+  }
+
+  /**
+   * Handle webhook from payment provider
+   */
+  async handleWebhook(provider, eventData) {
+    try {
+      if (provider === 'dwolla') {
+        // Handle Dwolla webhooks
+        await this.handleDwollaWebhook(eventData);
+      } else if (provider === 'stripe') {
+        // Handle Stripe webhooks
+        await this.handleStripeWebhook(eventData);
+      }
+
+      return { success: true };
+    } catch (error) {
+      loggers.errorLogger.error(`Webhook processing failed: ${error.message}`);
+      throw error;
+    }
+  }
+
+  /**
+   * Handle Dwolla webhook events
+   */
+  async handleDwollaWebhook(event) {
+    const { topic, resourceId } = event;
+
+    switch (topic) {
+      case 'transfer_completed':
+        await this.handleTransferCompleted(resourceId);
+        break;
+      case 'transfer_failed':
+        await this.handleTransferFailed(resourceId);
+        break;
+      case 'transfer_cancelled':
+        await this.handleTransferCancelled(resourceId);
+        break;
+      default:
+        loggers.infoLogger.info(`Unhandled Dwolla webhook topic: ${topic}`);
+    }
+  }
+
+  /**
+   * Handle Stripe webhook events
+   */
+  async handleStripeWebhook(event) {
+    const { type, data } = event;
+
+    switch (type) {
+      case 'payment_intent.succeeded':
+        await this.handlePaymentSucceeded(data.object.id);
+        break;
+      case 'payment_intent.payment_failed':
+        await this.handlePaymentFailed(data.object.id);
+        break;
+      default:
+        loggers.infoLogger.info(`Unhandled Stripe webhook type: ${type}`);
+    }
+  }
+
+  async handleTransferCompleted(transferId) {
+    loggers.infoLogger.info(`Transfer completed: ${transferId}`);
+    // Update payment record status
+  }
+
+  async handleTransferFailed(transferId) {
+    loggers.errorLogger.error(`Transfer failed: ${transferId}`);
+    // Update payment record and trigger retry logic
+  }
+
+  async handleTransferCancelled(transferId) {
+    loggers.infoLogger.info(`Transfer cancelled: ${transferId}`);
+    // Update payment record status
+  }
+
+  async handlePaymentSucceeded(paymentIntentId) {
+    loggers.infoLogger.info(`Payment succeeded: ${paymentIntentId}`);
+    // Update payment record status
+  }
+
+  async handlePaymentFailed(paymentIntentId) {
+    loggers.errorLogger.error(`Payment failed: ${paymentIntentId}`);
+    // Update payment record and trigger retry logic
+  }
+}
+
+export default new PaymentRailOrchestrator();

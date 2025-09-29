@@ -1,6 +1,6 @@
-const EventEmitter = require('events');
-const { Pool } = require('pg');
-const crypto = require('crypto');
+import EventEmitter from 'events';
+import { Pool } from 'pg';
+import crypto from 'crypto';
 
 class MachineLearningModelsService extends EventEmitter {
   constructor() {

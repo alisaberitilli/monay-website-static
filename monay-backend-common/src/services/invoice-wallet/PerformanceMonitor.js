@@ -4,7 +4,8 @@
  */
 
 import EventEmitter from 'events'
-import auditLogger from './AuditLogger'
+import crypto from 'crypto'
+import auditLogger from './AuditLogger.js'
 
 class PerformanceMonitor extends EventEmitter {
   constructor() {
@@ -311,7 +312,7 @@ class PerformanceMonitor extends EventEmitter {
    */
   async triggerAlert(alert) {
     alert.timestamp = new Date().toISOString()
-    alert.id = require('crypto').randomUUID()
+    alert.id = crypto.randomUUID()
 
     // Add to alerts array
     this.alerts.push(alert)

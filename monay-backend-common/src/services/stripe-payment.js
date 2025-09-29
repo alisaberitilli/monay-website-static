@@ -1,8 +1,8 @@
 import Stripe from 'stripe';
 import crypto from 'crypto';
 import HttpStatus from 'http-status';
-import { CustomError } from '../middlewares/errors';
-import loggers from './logger';
+import { CustomError } from '../middlewares/errors.js';
+import loggers from './logger.js';
 
 class StripePaymentService {
   constructor() {

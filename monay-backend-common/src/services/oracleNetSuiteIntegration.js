@@ -4,10 +4,10 @@
  * Created: 2025-01-21
  */
 
-const { EventEmitter } = require('events');
-const axios = require('axios');
-const crypto = require('crypto');
-const { v4: uuidv4 } = require('uuid');
+import { EventEmitter } from 'events';
+import axios from 'axios';
+import crypto from 'crypto';
+import { v4 as uuidv4 } from 'uuid';
 
 class OracleNetSuiteIntegration extends EventEmitter {
   constructor() {

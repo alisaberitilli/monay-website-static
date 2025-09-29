@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import HttpStatus from 'http-status';
-import auth from '../middlewares/auth-middleware';
+import auth from '../middlewares/auth-middleware.js';
 
 const router = Router();
 

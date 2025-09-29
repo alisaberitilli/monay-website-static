@@ -1,5 +1,5 @@
 import express from 'express';
-import authenticate from '../middlewares/auth-middleware';
+import authenticate from '../middlewares/auth-middleware.js';
 import HttpStatus from 'http-status';
 
 const router = express.Router();

@@ -1,5 +1,4 @@
 import models from '../models/index.js';
-const { Cms, Faq } = models;
 
 export default {
 

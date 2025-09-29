@@ -1,10 +1,11 @@
 import HttpStatus from 'http-status';
 import utility from '../services/utility.js';
-import repositories from '../repositories';
+import repositories from '../repositories/index.js';
 import models from '../models/index.js';
 import paymentGatewayAPIs from '../services/payment-gateway.js';
 import moment from 'moment-timezone';
-import { Op } from 'sequelize';
+import pkg from 'sequelize';
+const { Op } = pkg;
 const { Sequelize } = models.sequelize;
 const dateFormat = 'YYYY-MM-DD HH:mm:ss';
 const { paymentRequestRepository, transactionRepository, cardRepository, userRepository, settingRepository } = repositories;

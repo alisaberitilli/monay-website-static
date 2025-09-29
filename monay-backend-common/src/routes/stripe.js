@@ -1,8 +1,8 @@
 import express from 'express';
 import * as stripeController from '../controllers/stripe-controller.js';
-import auth from '../middlewares/auth-middleware';
-import rateLimiter from '../middlewares/rate-limiter-middleware';
-import { validateRequest } from '../middlewares/validate-middleware';
+import auth from '../middlewares/auth-middleware.js';
+import rateLimiter from '../middlewares/rate-limiter-middleware.js';
+import { validateRequest } from '../middlewares/validate-middleware.js';
 import { body, param, query } from 'express-validator';
 
 const router = express.Router();

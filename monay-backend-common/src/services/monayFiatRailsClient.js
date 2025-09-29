@@ -5,9 +5,9 @@
  * QA: qaapi.monay.com
  */
 
-const axios = require('axios');
-const crypto = require('crypto');
-const logger = require('../services/logger');
+import axios from 'axios';
+import crypto from 'crypto';
+import logger from '../services/logger.js';
 
 class MonayFiatRailsClient {
   constructor(config = {}) {

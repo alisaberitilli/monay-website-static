@@ -1,8 +1,8 @@
 import { Router } from 'express';
-import controllers from '../controllers';
-import validations from '../validations';
-import middlewares from '../middlewares';
-// import { rateLimiterPayMiddleware } from '../middlewares/rate-limiter-middleware';
+import controllers from '../controllers/index.js';
+import validations from '../validations/index.js';
+import middlewares from '../middlewares/index.js';
+// import { rateLimiterPayMiddleware } from '../middlewares/rate-limiter-middleware.js';
 
 const router = Router();
 const { paymentRequestValidator } = validations;

@@ -1,6 +1,6 @@
 import HttpStatus from 'http-status';
-import repositories from '../repositories';
-import transactionRepository from '../repositories/transaction-repository';
+import repositories from '../repositories/index.js';
+import transactionRepository from '../repositories/transaction-repository.js';
 import utility from '../services/utility.js';
 import models from '../models/index.js';
 const { PaymentRequest, Transaction } = models;
