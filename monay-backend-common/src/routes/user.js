@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import controllers from '../controllers/index.js';
-import middlewares from '../middlewares/index.js';
+import middlewares from '../middleware-app/index.js';
 import validations from '../validations/index.js';
 
 const router = Router();
@@ -370,8 +370,114 @@ authMiddleware,
 resourceAccessMiddleware(['user']),
 validateMiddleware({
   schema: userValidator.autoToupSchema,
-}), 
+}),
 cardMiddleware.checkAutoTopUpCardIdExists,
 userController.autoToupUpdateStatus
 );
+
+// Tenant context endpoint - returns complete tenant information for the authenticated user
+router.get('/user/context',
+  authMiddleware,
+  async (req, res) => {
+    try {
+      // Tenant context is already extracted in auth middleware
+      const tenantContext = req.tenantContext;
+
+      if (!tenantContext) {
+        return res.status(200).json({
+          success: true,
+          data: {
+            tenantId: null,
+            tenantCode: null,
+            tenantType: null,
+            accessType: 'none',
+            organizationId: null,
+            organizationName: null,
+            role: null,
+            walletType: 'consumer',
+            message: 'No tenant context found. User may need to complete registration.'
+          }
+        });
+      }
+
+      return res.status(200).json({
+        success: true,
+        data: {
+          tenantId: tenantContext.tenant_id,
+          tenantCode: tenantContext.tenant_code,
+          tenantName: tenantContext.tenant_name,
+          tenantType: tenantContext.tenant_type,
+          accessType: tenantContext.access_type,
+          organizationId: tenantContext.organization_id,
+          organizationName: tenantContext.organization_name,
+          organizationType: tenantContext.organization_type,
+          role: tenantContext.user_role,
+          walletType: tenantContext.wallet_type || (tenantContext.isBusinessUser ? 'enterprise' : 'consumer'),
+          isIndividualConsumer: tenantContext.isIndividualConsumer,
+          isBusinessUser: tenantContext.isBusinessUser,
+          billingTier: tenantContext.billing_tier,
+          isolationLevel: tenantContext.isolation_level
+        }
+      });
+    } catch (error) {
+      console.error('Error getting tenant context:', error);
+      return res.status(500).json({
+        success: false,
+        error: 'Failed to get tenant context'
+      });
+    }
+  }
+);
+
+// Switch tenant endpoint for users with multiple tenant access
+router.post('/user/switch-tenant',
+  authMiddleware,
+  validateMiddleware({
+    schema: {
+      type: 'object',
+      properties: {
+        tenantId: { type: 'string', format: 'uuid' }
+      },
+      required: ['tenantId']
+    }
+  }),
+  async (req, res) => {
+    try {
+      const { tenantId } = req.body;
+      const userId = req.user.id;
+
+      // Import tenant middleware functions
+      const { getUserTenants } = await import('../middleware-app/tenant-middleware.js');
+
+      // Check if user has access to the requested tenant
+      const userTenants = await getUserTenants(userId);
+      const hasAccess = userTenants.some(t => t.id === tenantId);
+
+      if (!hasAccess) {
+        return res.status(403).json({
+          success: false,
+          error: 'Access denied to this tenant'
+        });
+      }
+
+      // Update user's current tenant in session or database as needed
+      // This is a placeholder - actual implementation depends on session management
+
+      return res.status(200).json({
+        success: true,
+        message: 'Tenant switched successfully',
+        data: {
+          tenantId: tenantId
+        }
+      });
+    } catch (error) {
+      console.error('Error switching tenant:', error);
+      return res.status(500).json({
+        success: false,
+        error: 'Failed to switch tenant'
+      });
+    }
+  }
+);
+
 export default router;

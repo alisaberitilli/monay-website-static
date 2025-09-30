@@ -12,7 +12,10 @@ export const API_ENDPOINTS = {
   AUTH: {
     LOGIN: '/auth/login',  // Updated to use auth wrapper
     ADMIN_LOGIN: '/admin/login',
-    SIGNUP: '/user/signup',  // Use direct endpoint to avoid auth wrapper issues
+    SIGNUP: '/user/signup',  // User signup endpoint
+    SIGNUP_CONSUMER: '/user/signup',  // Individual consumer registration - uses same endpoint
+    SIGNUP_BUSINESS: '/user/signup',  // Small business registration - uses same endpoint
+    SIGNUP_ENTERPRISE: '/user/signup',  // Enterprise user registration - uses same endpoint
     MERCHANT_SIGNUP: '/merchant/signup',
     LOGOUT: '/auth/logout',  // Updated to use auth wrapper
     SEND_OTP: '/send-otp',
@@ -23,6 +26,17 @@ export const API_ENDPOINTS = {
     CHANGE_PASSWORD: '/account/change-password',
     ME: '/auth/me',  // Updated to use auth wrapper
   },
+
+  // Verification
+  VERIFICATION: {
+    SEND_MOBILE_OTP: '/verification/send-mobile-otp',
+    VERIFY_MOBILE_OTP: '/verification/verify-mobile-otp',
+    SEND_EMAIL_OTP: '/verification/send-email-otp',
+    VERIFY_EMAIL_OTP: '/verification/verify-email-otp',
+    RESEND_OTP: '/verification/resend-otp',
+    SEND_OTP_UNAUTHENTICATED: '/verification/send-otp-unauthenticated',
+    VERIFY_OTP_UNAUTHENTICATED: '/verification/verify-otp-unauthenticated',
+  },
   
   // User Management
   USER: {
@@ -30,6 +44,8 @@ export const API_ENDPOINTS = {
     PROFILE: (userId: string) => `/user/profile/${userId}`,
     UPDATE_PROFILE: '/user/update-profile',
     MERCHANT_UPDATE_PROFILE: '/merchant/update-profile',
+    CONTEXT: '/user/context',  // Get user's tenant context
+    SWITCH_TENANT: '/user/switch-tenant',  // Switch between tenants
     KYC: '/user/kyc',
     CHANGE_PIN: '/user/change-pin',
     FORGOT_PIN: '/user/forgot-pin',

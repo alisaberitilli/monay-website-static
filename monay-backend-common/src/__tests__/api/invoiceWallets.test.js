@@ -1,6 +1,7 @@
 import request from 'supertest';
 import express from 'express';
 import path from 'path';
+import appModule from '../../app.js';
 
 // Import the app after setting up environment
 let app;
@@ -55,8 +56,7 @@ const testInvoice = {
 
 describe('Invoice Wallet API Tests', () => {
   beforeAll(async () => {
-    // Dynamic import of the app
-    import appModule from '../../app';
+    // Initialize the app
     app = appModule.app || appModule;
 
     // Start server for testing

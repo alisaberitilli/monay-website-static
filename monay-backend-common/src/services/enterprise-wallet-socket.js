@@ -55,7 +55,7 @@ class EnterpriseWalletSocket {
                     return next(new Error('Authentication error'));
                 }
 
-                const decoded = jwt.verify(token, config.app.jwtAccessSecret);
+                const decoded = jwt.verify(token, config.jwtSecret);
                 socket.userId = decoded.userId;
                 socket.tenantId = decoded.tenantId;
                 socket.role = decoded.role;

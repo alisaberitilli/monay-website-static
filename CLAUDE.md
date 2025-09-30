@@ -19,6 +19,69 @@
 - **TEST ENVIRONMENT**: Test all queries in development first
 - **RECOVERY SCRIPT**: Use `/monay-backend-common/migrations/DATABASE_RECOVERY_SCRIPT.sh` if needed
 
+## 🔧 CRITICAL DEVELOPMENT PRINCIPLES
+
+### ⚠️ NEVER REMOVE FUNCTIONALITY TO PASS TESTS ⚠️
+**Established: January 2025**
+
+1. **FIX, DON'T REMOVE**: When encountering errors, we ALWAYS fix the underlying issue rather than commenting out or removing functionality
+2. **DATABASE ALIGNMENT**: If a model field doesn't match the database, we either:
+   - Add the missing column to the database (preferred for new features)
+   - Map the field to the correct database column name
+   - Make it a VIRTUAL field if it's computed/derived
+3. **NO SHORTCUTS**: We explicitly fix errors and move forward - no temporary workarounds
+4. **MAINTAIN FEATURES**: All existing functionality must be preserved and working
+5. **DOCUMENT FIXES**: All fixes should be properly documented in code comments and commit messages
+
+**Example**: When the `mpin` field was missing from the database, we added the column rather than removing the field from the model.
+
+### 🎨 MANDATORY ICON REQUIREMENTS - USE MODERN LUCIDE ICONS
+**Established: January 2025**
+
+#### ⚠️ CRITICAL: ALWAYS USE LUCIDE ICONS - NO SHORTCUTS ⚠️
+1. **EXCLUSIVE ICON LIBRARY**: Use ONLY Lucide icons via our optimized @monay/icons library - NO other icon libraries
+2. **MODERN & CONTEMPORARY**: Always select modern, clean, contemporary icon designs
+3. **PERFORMANCE FIRST**: Use local SVG components (@monay/icons) for optimal performance
+4. **NO SHORTCUTS**: Never use placeholder text, emojis, or alternative icons as substitutes
+5. **CONSISTENCY**: Maintain consistent icon usage across all applications
+
+#### Icon Library Location & Setup:
+- **Library Location**: `/shared/icons/` - Optimized local SVG components (75+ icons)
+- **Package Name**: `@monay/icons`
+- **Installation**: Add to package.json: `"@monay/icons": "file:../../shared/icons"`
+- **Performance**: 85% smaller than lucide-react, full tree-shaking support
+
+#### Icon Implementation Standards:
+- **Import Method**: Use `import { IconName } from '@monay/icons'` (optimized local SVGs from `/shared/icons/`)
+- **Fallback**: If @monay/icons not available, use `import { IconName } from 'lucide-react'` (temporary only)
+- **Size Standards**: Default 24px, Small 16px, Large 32px
+- **Color**: Use `currentColor` for automatic theme adaptation
+- **Stroke Width**: Default 2px for consistency
+
+#### Forbidden Practices:
+- ❌ **NO** FontAwesome, Material Icons, Heroicons, or other libraries
+- ❌ **NO** inline SVG code unless creating new icon components
+- ❌ **NO** icon fonts or bitmap images as icons
+- ❌ **NO** mixing different icon libraries
+- ❌ **NO** text placeholders like "[icon]" or "•" as icons
+
+#### Example Usage:
+```typescript
+// ✅ CORRECT - Using optimized local SVG icons
+import { Shield, Users, TrendingUp } from '@monay/icons';
+
+// ✅ CORRECT - Consistent sizing and styling
+<Shield size={24} className="text-blue-500" />
+<Users className="w-5 h-5" />
+
+// ❌ WRONG - Never do this
+import { FaShield } from 'react-icons/fa';  // Wrong library
+<span>🛡️</span>  // No emojis as icons
+<div>[user icon]</div>  // No placeholders
+```
+
+**Remember**: Icons are a critical part of the UI/UX. Never take shortcuts. Always use proper Lucide icons to maintain professional quality and performance.
+
 ### 🎯 Monay-Admin Role
 **Monay-Admin (Port 3002)** is the SUPER ADMIN MANAGER that controls:
 - **Monay-CaaS**: Enterprise Coin-as-a-Service platform management
@@ -372,7 +435,60 @@ npm run test:load
 - **Merchant**: Payment acceptance, POS integration
 - **Payment Processor**: Gateway integration, bulk processing
 
+## Database Field Naming Convention (camelCase vs snake_case)
+
+### Global Sequelize Configuration for Field Names
+To handle the mismatch between JavaScript camelCase and database snake_case conventions, we use Sequelize's global configuration:
+
+```javascript
+// In src/models/index.js
+const sequelize = new Sequelize(dbConfig.db, dbConfig.user, dbConfig.password, {
+  host: dbConfig.host,
+  port: dbConfig.port,
+  dialect: 'postgres',
+  define: {
+    // Global settings for all models
+    underscored: true,              // Automatically convert camelCase to snake_case
+    timestamps: true,                // Enable timestamps
+    createdAt: 'created_at',         // Map createdAt to created_at
+    updatedAt: 'updated_at',         // Map updatedAt to updated_at
+    // This makes all model attributes use snake_case in the database
+    // while keeping camelCase in JavaScript
+  }
+});
+```
+
+**Key Points:**
+- JavaScript code uses `camelCase`: `userId`, `phoneNumber`, `createdAt`
+- Database automatically uses `snake_case`: `user_id`, `phone_number`, `created_at`
+- No manual conversion needed - Sequelize handles it automatically
+- Apply this configuration globally to avoid per-model settings
+- See `SEQUELIZE_NAMING_CONVENTION.md` for detailed implementation guide
+
 ## Code Conventions
+
+### 🔴 MANDATORY: TYPESCRIPT ONLY - NO JAVASCRIPT 🔴
+**⚠️ CRITICAL REQUIREMENT - EFFECTIVE IMMEDIATELY ⚠️**
+- **ALL code MUST be written in TypeScript** (`.ts` or `.tsx` files only)
+- **NO JavaScript files allowed** (`.js` or `.jsx` are FORBIDDEN)
+- **This applies to ALL code**:
+  - ✅ Components: `.tsx` files only
+  - ✅ Utilities/Hooks: `.ts` files (or `.tsx` if containing JSX)
+  - ✅ API routes: `.ts` files only
+  - ✅ Configuration: `.ts` files (or `.cjs` for CommonJS configs)
+  - ✅ Tests: `.test.ts` or `.test.tsx` only
+- **Type Safety Requirements**:
+  - ✅ All variables must have explicit or inferred types
+  - ✅ All function parameters must be typed
+  - ✅ All function return types should be explicit
+  - ✅ No `any` types without explicit justification
+  - ✅ Strict mode enabled in tsconfig.json
+- **Build will FAIL if**:
+  - Any `.js` or `.jsx` files are found in src directories
+  - TypeScript compilation errors exist
+  - Type coverage is below 95%
+- **Enforcement Date**: January 2025
+- **NO EXCEPTIONS**: This is a hard requirement for code quality and maintainability
 
 ### 🔴 MANDATORY: ES MODULES ONLY 🔴
 **CRITICAL REQUIREMENT - NO EXCEPTIONS:**
@@ -389,12 +505,18 @@ npm run test:load
 - **This applies to ALL code**: Frontend, Backend, Tests, Scripts, Everything
 - **Violation = Build Failure**: CI/CD will reject CommonJS code
 
-### TypeScript/JavaScript
-- Use TypeScript for all new code
+### TypeScript Standards
+- **TypeScript ONLY** - NO JavaScript files allowed in any project
+- **Strict TypeScript configuration** - All strict flags enabled
+- **Type all function parameters and return types explicitly**
+- **No implicit `any` types** - Must be explicitly typed if needed
+- **Use interfaces over type aliases** for object shapes
+- **Use enums for constants** with multiple related values
+- **Generic types** for reusable components and utilities
 - Use ES Modules EXCLUSIVELY (native Node.js support) - NO BABEL TRANSPILATION
 - Always include .js file extensions in imports for ES modules
 - Async/await over promises
-- Functional components with hooks in React
+- Functional components with hooks in React (using `.tsx` extension)
 - Proper error handling with try/catch blocks
 - ALL projects use `"type": "module"` in package.json for native ES module support
 

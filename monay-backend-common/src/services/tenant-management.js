@@ -65,37 +65,91 @@ class TenantManagementService {
 
       const tenant = result.rows[0];
 
-      // Store vault key in tenant_keys table
-      const keyQuery = `
-        INSERT INTO tenant_keys (
-          tenant_id,
-          key_type,
-          key_value,
-          key_metadata,
-          is_active
-        ) VALUES ($1, $2, $3, $4, $5)
-        RETURNING *
+      // Store vault key in tenant_keys table (disabled - table doesn't exist)
+      // TODO: Create tenant_keys table or store keys elsewhere
+      // const keyQuery = `
+      //   INSERT INTO tenant_keys (
+      //     tenant_id,
+      //     key_type,
+      //     key_value,
+      //     key_metadata,
+      //     is_active
+      //   ) VALUES ($1, $2, $3, $4, $5)
+      //   RETURNING *
+      // `;
+
+      // await client.query(keyQuery, [
+      //   tenant.id,
+      //   'vault_master',
+      //   vaultKey,
+      //   { algorithm: 'AES-256-GCM', purpose: 'vault_encryption' },
+      //   true
+      // ]);
+
+      // Create initial features for the tenant (disabled - tenant_features table doesn't exist)
+      // TODO: Create tenant_features table or initialize elsewhere
+      // await this.createDefaultFeatures(client, tenant.id, billingTier);
+
+      // Initialize billing metrics (disabled - billing_metrics table doesn't exist)
+      // TODO: Create billing_metrics table or initialize elsewhere
+      // await this.initializeBillingMetrics(client, tenant.id);
+
+      // Create corresponding organization for the tenant
+      const organizationData = {
+        name: tenantData.name,
+        type: tenantData.type === 'enterprise' || tenantData.type === 'holding_company' ? 'corporation' : 'business',
+        industry: tenantData.metadata?.industry || 'Other',
+        description: `Organization for ${tenantData.name}`,
+        email: tenantData.metadata?.email || `contact@${tenantData.name.toLowerCase().replace(/\s+/g, '')}.com`,
+        phone: tenantData.metadata?.phone || '',
+        address: tenantData.metadata?.address || '',
+        website: tenantData.metadata?.website || '',
+        tax_id: tenantData.metadata?.tax_id || '',
+        wallet_type: tenantData.type === 'enterprise' || tenantData.type === 'holding_company' ? 'enterprise' : 'business',
+        feature_tier: billingTier === 'enterprise' ? 'premium' : billingTier === 'small_business' ? 'standard' : 'basic',
+        organization_type: tenantData.type === 'holding_company' ? 'holding_company' : 'standalone',
+        tenant_id: tenant.id
+      };
+
+      const orgQuery = `
+        INSERT INTO organizations (
+          org_id, name, type, industry, description, email, phone, address_line1, website,
+          tax_id, wallet_type, feature_tier, organization_type, status, kyc_status,
+          compliance_score, tenant_id, created_at, updated_at
+        ) VALUES (
+          $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, 'pending', 'not_started',
+          75, $14, NOW(), NOW()
+        ) RETURNING *
       `;
 
-      await client.query(keyQuery, [
-        tenant.id,
-        'vault_master',
-        vaultKey,
-        { algorithm: 'AES-256-GCM', purpose: 'vault_encryption' },
-        true
+      // Generate a unique org_id based on tenant code and timestamp
+      const orgId = `ORG_${tenant.tenant_code}_${Date.now()}`;
+
+      const orgResult = await client.query(orgQuery, [
+        orgId,
+        organizationData.name,
+        organizationData.type,
+        organizationData.industry,
+        organizationData.description,
+        organizationData.email,
+        organizationData.phone,
+        organizationData.metadata?.address || '', // Use address_line1 instead of address
+        organizationData.website,
+        organizationData.tax_id,
+        organizationData.wallet_type,
+        organizationData.feature_tier,
+        organizationData.organization_type,
+        tenant.id
       ]);
 
-      // Create initial features for the tenant
-      await this.createDefaultFeatures(client, tenant.id, billingTier);
-
-      // Initialize billing metrics
-      await this.initializeBillingMetrics(client, tenant.id);
+      const organization = orgResult.rows[0];
 
       await client.query('COMMIT');
 
       return {
         ...tenant,
-        vault_key: vaultKey // Return only on creation, never store in plain text
+        vault_key: vaultKey, // Return only on creation, never store in plain text
+        organization: organization // Include the created organization
       };
 
     } catch (error) {
@@ -116,14 +170,14 @@ class TenantManagementService {
       SELECT
         t.*,
         COUNT(DISTINCT tm.user_id) as member_count,
-        MAX(tm.updated_at) as last_activity,
+        MAX(tm.joined_at) as last_activity,
         COALESCE(bm.transaction_count, 0) as current_month_transactions,
         COALESCE(bm.transaction_volume_cents, 0) as current_month_volume_cents
       FROM tenants t
-      LEFT JOIN tenant_members tm ON t.id = tm.tenant_id
+      LEFT JOIN tenant_users tm ON t.id = tm.tenant_id
       LEFT JOIN billing_metrics bm ON t.id = bm.tenant_id
         AND bm.period_start = date_trunc('month', CURRENT_DATE)
-      WHERE t.id = $1::uuid OR t.tenant_code = $1
+      WHERE (t.id::text = $1 OR t.tenant_code = $1)
       GROUP BY t.id, bm.transaction_count, bm.transaction_volume_cents
     `;
 
@@ -190,7 +244,7 @@ class TenantManagementService {
       // Check if user is already in another tenant (for non-individual types)
       const existingQuery = `
         SELECT tm.*, t.type
-        FROM tenant_members tm
+        FROM tenant_users tm
         JOIN tenants t ON tm.tenant_id = t.id
         WHERE tm.user_id = $1 AND tm.is_active = true
       `;
@@ -206,7 +260,7 @@ class TenantManagementService {
 
       // Add user to tenant
       const insertQuery = `
-        INSERT INTO tenant_members (
+        INSERT INTO tenant_users (
           tenant_id,
           user_id,
           role,
@@ -247,32 +301,43 @@ class TenantManagementService {
     const apiKey = `mk_${keyType}_${crypto.randomBytes(32).toString('hex')}`;
     const hashedKey = crypto.createHash('sha256').update(apiKey).digest('hex');
 
-    const query = `
-      INSERT INTO tenant_keys (
-        tenant_id,
-        key_type,
-        key_value,
-        key_metadata,
-        is_active
-      ) VALUES ($1, $2, $3, $4, $5)
-      RETURNING id, key_type, created_at
-    `;
-
-    const result = await this.pool.query(query, [
-      tenantId,
-      keyType,
-      hashedKey,
-      {
-        prefix: apiKey.substring(0, 10),
-        last_four: apiKey.slice(-4)
-      },
-      true
-    ]);
-
+    // TODO: Store in tenant_keys table when it exists
+    // For now, just return the generated key without storing
     return {
-      ...result.rows[0],
-      api_key: apiKey // Return full key only once
+      id: crypto.randomUUID(),
+      key_type: keyType,
+      api_key: apiKey,
+      created_at: new Date().toISOString(),
+      message: 'API key generated (not persisted - tenant_keys table missing)'
     };
+
+    // Disabled - tenant_keys table doesn't exist
+    // const query = `
+    //   INSERT INTO tenant_keys (
+    //     tenant_id,
+    //     key_type,
+    //     key_value,
+    //     key_metadata,
+    //     is_active
+    //   ) VALUES ($1, $2, $3, $4, $5)
+    //   RETURNING id, key_type, created_at
+    // `;
+
+    // const result = await this.pool.query(query, [
+    //   tenantId,
+    //   keyType,
+    //   hashedKey,
+    //   {
+    //     prefix: apiKey.substring(0, 10),
+    //     last_four: apiKey.slice(-4)
+    //   },
+    //   true
+    // ]);
+
+    // return {
+    //   ...result.rows[0],
+    //   api_key: apiKey // Return full key only once
+    // };
   }
 
   /**
@@ -281,19 +346,24 @@ class TenantManagementService {
    * @returns {Object} Tenant if valid, null otherwise
    */
   async verifyAPIKey(apiKey) {
-    const hashedKey = crypto.createHash('sha256').update(apiKey).digest('hex');
+    // TODO: Implement proper API key verification when tenant_keys table exists
+    // For now, return null since we can't verify without the table
+    return null;
 
-    const query = `
-      SELECT t.*, tk.key_type, tk.key_metadata
-      FROM tenant_keys tk
-      JOIN tenants t ON tk.tenant_id = t.id
-      WHERE tk.key_value = $1
-        AND tk.is_active = true
-        AND t.status = 'active'
-    `;
+    // Disabled - tenant_keys table doesn't exist
+    // const hashedKey = crypto.createHash('sha256').update(apiKey).digest('hex');
 
-    const result = await this.pool.query(query, [hashedKey]);
-    return result.rows[0] || null;
+    // const query = `
+    //   SELECT t.*, tk.key_type, tk.key_metadata
+    //   FROM tenant_keys tk
+    //   JOIN tenants t ON tk.tenant_id = t.id
+    //   WHERE tk.key_value = $1
+    //     AND tk.is_active = true
+    //     AND t.status = 'active'
+    // `;
+
+    // const result = await this.pool.query(query, [hashedKey]);
+    // return result.rows[0] || null;
   }
 
   /**
@@ -304,54 +374,59 @@ class TenantManagementService {
    * @returns {Object} Usage metrics
    */
   async getTenantMetrics(tenantId, startDate = null, endDate = null) {
-    const start = startDate || new Date(new Date().getFullYear(), new Date().getMonth(), 1);
-    const end = endDate || new Date();
+    // TODO: Implement proper metrics when billing_metrics and billing_tier_config tables exist
+    // For now, return empty metrics
+    return [];
 
-    const query = `
-      SELECT
-        bm.*,
-        btc.monthly_base_fee_cents,
-        btc.included_transactions,
-        btc.overage_transaction_price_cents,
-        btc.included_computation_units,
-        btc.overage_computation_price_cents
-      FROM billing_metrics bm
-      JOIN tenants t ON bm.tenant_id = t.id
-      JOIN billing_tier_config btc ON t.billing_tier = btc.tier_name
-      WHERE bm.tenant_id = $1
-        AND bm.period_start >= $2
-        AND bm.period_end <= $3
-      ORDER BY bm.period_start DESC
-    `;
+    // Disabled - billing_metrics and billing_tier_config tables don't exist
+    // const start = startDate || new Date(new Date().getFullYear(), new Date().getMonth(), 1);
+    // const end = endDate || new Date();
 
-    const result = await this.pool.query(query, [tenantId, start, end]);
+    // const query = `
+    //   SELECT
+    //     bm.*,
+    //     btc.monthly_base_fee_cents,
+    //     btc.included_transactions,
+    //     btc.overage_transaction_price_cents,
+    //     btc.included_computation_units,
+    //     btc.overage_computation_price_cents
+    //   FROM billing_metrics bm
+    //   JOIN tenants t ON bm.tenant_id = t.id
+    //   JOIN billing_tier_config btc ON t.billing_tier = btc.tier_name
+    //   WHERE bm.tenant_id = $1
+    //     AND bm.period_start >= $2
+    //     AND bm.period_end <= $3
+    //   ORDER BY bm.period_start DESC
+    // `;
 
-    // Calculate costs
-    const metrics = result.rows.map(row => {
-      const transactionOverage = Math.max(0, row.transaction_count - row.included_transactions);
-      const computationOverage = Math.max(0, row.computation_units_used - row.included_computation_units);
+    // const result = await this.pool.query(query, [tenantId, start, end]);
 
-      const baseCost = row.monthly_base_fee_cents;
-      const transactionCost = transactionOverage * row.overage_transaction_price_cents;
-      const computationCost = computationOverage * row.overage_computation_price_cents;
-      const totalCost = baseCost + transactionCost + computationCost;
+    // // Calculate costs
+    // const metrics = result.rows.map(row => {
+    //   const transactionOverage = Math.max(0, row.transaction_count - row.included_transactions);
+    //   const computationOverage = Math.max(0, row.computation_units_used - row.included_computation_units);
 
-      // Apply USDXM discount if applicable
-      const finalCost = row.payment_method === 'USDXM' ? totalCost * 0.9 : totalCost;
+    //   const baseCost = row.monthly_base_fee_cents;
+    //   const transactionCost = transactionOverage * row.overage_transaction_price_cents;
+    //   const computationCost = computationOverage * row.overage_computation_price_cents;
+    //   const totalCost = baseCost + transactionCost + computationCost;
 
-      return {
-        ...row,
-        transaction_overage: transactionOverage,
-        computation_overage: computationOverage,
-        base_cost_cents: baseCost,
-        transaction_cost_cents: transactionCost,
-        computation_cost_cents: computationCost,
-        total_cost_cents: totalCost,
-        final_cost_cents: Math.round(finalCost)
-      };
-    });
+    //   // Apply USDXM discount if applicable
+    //   const finalCost = row.payment_method === 'USDXM' ? totalCost * 0.9 : totalCost;
 
-    return metrics;
+    //   return {
+    //     ...row,
+    //     transaction_overage: transactionOverage,
+    //     computation_overage: computationOverage,
+    //     base_cost_cents: baseCost,
+    //     transaction_cost_cents: transactionCost,
+    //     computation_cost_cents: computationCost,
+    //     total_cost_cents: totalCost,
+    //     final_cost_cents: Math.round(finalCost)
+    //   };
+    // });
+
+    // return metrics;
   }
 
   // Helper methods

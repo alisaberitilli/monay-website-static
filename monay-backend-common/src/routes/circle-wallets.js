@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { authenticateToken } from '../middlewares/auth.js';
+import { authenticateToken } from '../middleware-app/auth.js';
 import WalletOrchestratorService from '../services/wallet-orchestrator-service.js';
 import CircleWalletService from '../services/circle-wallet-service.js';
 import BridgeTransferService from '../services/bridge-transfer-service.js';

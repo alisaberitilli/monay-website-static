@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import HttpStatus from 'http-status';
-import authenticate from '../middlewares/auth-middleware.js';
-import rateLimiter from '../middlewares/rate-limiter-middleware.js';
+import authenticate from '../middleware-app/auth-middleware.js';
+import rateLimiter from '../middleware-app/rate-limiter-middleware.js';
 
 // Import ERP Connector services
 import QuickBooksConnector from '../services/quickBooksConnector.js';

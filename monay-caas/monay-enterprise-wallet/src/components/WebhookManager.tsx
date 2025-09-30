@@ -463,7 +463,6 @@ export default function WebhookManager() {
                           <Switch
                             checked={webhook.active}
                             onCheckedChange={(checked) => {
-                              e?.stopPropagation();
                               toggleWebhook(webhook.id, checked);
                             }}
                             onClick={(e) => e.stopPropagation()}

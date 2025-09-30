@@ -16,6 +16,7 @@ import {
   X,
   Shield,
   Building,
+  Building2,
   DollarSign,
   Activity,
   Layers,
@@ -80,6 +81,12 @@ const sidebarItems = [
     icon: Building,
     label: 'Tenants',
     href: '/tenants',
+  },
+  {
+    key: '/organizations',
+    icon: Building2,
+    label: 'Organizations',
+    href: '/organizations',
   },
   {
     key: '/users-management',
@@ -197,20 +204,20 @@ export default function DashboardLayout({
 
       {/* Sidebar */}
       <motion.aside
-        className={`fixed top-0 left-0 z-50 h-full w-72 bg-gradient-to-b from-slate-900 to-slate-800 text-white shadow-2xl transform transition-transform duration-300 ease-in-out lg:translate-x-0 ${
+        className={`fixed top-0 left-0 z-50 h-full w-72 bg-gradient-to-b from-slate-900 to-slate-800 text-white shadow-2xl transform transition-transform duration-300 ease-in-out lg:translate-x-0 flex flex-col ${
           sidebarOpen ? 'translate-x-0' : '-translate-x-full'
         }`}
         initial={{ x: -288 }}
         animate={{ x: 0 }}
         transition={{ duration: 0.5, ease: "easeOut" }}
       >
-        {/* Logo */}
-        <div className="h-20 flex items-center justify-center border-b border-slate-700/50">
+        {/* Logo - Fixed at top */}
+        <div className="h-20 flex-shrink-0 flex items-center justify-center border-b border-slate-700/50">
           <MonayLogo />
         </div>
 
-        {/* Navigation */}
-        <nav className="flex-1 p-4 space-y-2 overflow-y-auto">
+        {/* Navigation - Scrollable */}
+        <nav className="flex-1 p-4 space-y-2 overflow-y-auto scrollbar-thin scrollbar-thumb-slate-600 scrollbar-track-slate-800">
           {sidebarItems.map((item) => {
             // Handle dividers
             if (item.type === 'divider') {
@@ -223,7 +230,7 @@ export default function DashboardLayout({
               );
             }
 
-            const Icon = item.icon;
+            const Icon = item.icon as React.ComponentType<{ className?: string }>;
             const isActive = pathname === item.href;
 
             return (
@@ -232,7 +239,7 @@ export default function DashboardLayout({
                 whileHover={{ x: 4 }}
                 whileTap={{ scale: 0.98 }}
               >
-                <Link href={item.href}>
+                <Link href={item.href || '#'}>
                   <Button
                     variant={isActive ? "secondary" : "ghost"}
                     className={`w-full justify-start h-12 text-left transition-all duration-200 ${
@@ -260,8 +267,8 @@ export default function DashboardLayout({
           })}
         </nav>
 
-        {/* User Section */}
-        <div className="p-4 border-t border-slate-700/50">
+        {/* User Section - Fixed at bottom */}
+        <div className="flex-shrink-0 p-4 border-t border-slate-700/50">
           <Card className="bg-white/5 border-slate-700/50 text-white">
             <div className="p-4">
               <div className="flex items-center gap-3 mb-3">
@@ -284,7 +291,7 @@ export default function DashboardLayout({
                 onClick={handleLogout}
               >
                 <LogOut className="w-4 h-4 mr-2" />
-                Sign Out
+                Logout
               </Button>
             </div>
           </Card>

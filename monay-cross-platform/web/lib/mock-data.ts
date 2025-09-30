@@ -3,7 +3,10 @@ export interface User {
   id: string;
   email: string;
   name: string;
+  firstName: string;
+  lastName: string;
   phone?: string;
+  balance: number;
   kycStatus: 'pending' | 'verified' | 'rejected';
   createdAt: Date;
   updatedAt: Date;
@@ -22,7 +25,7 @@ export interface Wallet {
 export interface Transaction {
   id: string;
   walletId: string;
-  type: 'deposit' | 'withdrawal' | 'transfer' | 'payment';
+  type: 'deposit' | 'withdrawal' | 'transfer' | 'payment' | 'p2p_transfer';
   amount: number;
   currency: string;
   status: 'pending' | 'completed' | 'failed' | 'cancelled';
@@ -62,7 +65,10 @@ class MockDataStore {
       id: 'user123',
       email: 'john.doe@example.com',
       name: 'John Doe',
+      firstName: 'John',
+      lastName: 'Doe',
       phone: '+13016821633',  // John Doe's actual mobile number
+      balance: 12450.75,  // Match wallet balance
       kycStatus: 'verified',
       createdAt: new Date('2024-01-01'),
       updatedAt: new Date()
@@ -265,6 +271,52 @@ class MockDataStore {
     return newTransaction;
   }
 
+  getTransaction(id: string): Transaction | undefined {
+    return this.transactions.get(id);
+  }
+
+  getTransactionsByUserId(userId: string, limit: number = 10): Transaction[] {
+    const userWallet = this.getWalletByUserId(userId);
+    if (!userWallet) return [];
+
+    return this.getTransactions(userWallet.id).slice(0, limit);
+  }
+
+  updateUser(id: string, updates: Partial<User>): User | undefined {
+    const user = this.users.get(id);
+    if (user) {
+      const updatedUser = { ...user, ...updates, updatedAt: new Date() };
+      this.users.set(id, updatedUser);
+      return updatedUser;
+    }
+    return undefined;
+  }
+
+  deleteUser(id: string): boolean {
+    return this.users.delete(id);
+  }
+
+  createWallet(wallet: Omit<Wallet, 'id' | 'createdAt' | 'updatedAt'>): Wallet {
+    const newWallet: Wallet = {
+      ...wallet,
+      id: `wallet${Date.now()}`,
+      createdAt: new Date(),
+      updatedAt: new Date()
+    };
+    this.wallets.set(newWallet.id, newWallet);
+    return newWallet;
+  }
+
+  updateWallet(id: string, updates: Partial<Wallet>): Wallet | undefined {
+    const wallet = this.wallets.get(id);
+    if (wallet) {
+      const updatedWallet = { ...wallet, ...updates, updatedAt: new Date() };
+      this.wallets.set(id, updatedWallet);
+      return updatedWallet;
+    }
+    return undefined;
+  }
+
   // Card methods
   getCards(userId: string): Card[] {
     return Array.from(this.cards.values()).filter(c => c.userId === userId);
@@ -278,6 +330,28 @@ class MockDataStore {
     };
     this.cards.set(newCard.id, newCard);
     return newCard;
+  }
+
+  getCard(id: string): Card | undefined {
+    return this.cards.get(id);
+  }
+
+  getCardsByUserId(userId: string): Card[] {
+    return Array.from(this.cards.values()).filter(c => c.userId === userId);
+  }
+
+  updateCard(id: string, updates: Partial<Card>): Card | undefined {
+    const card = this.cards.get(id);
+    if (card) {
+      const updatedCard = { ...card, ...updates };
+      this.cards.set(id, updatedCard);
+      return updatedCard;
+    }
+    return undefined;
+  }
+
+  deleteCard(id: string): boolean {
+    return this.cards.delete(id);
   }
 
   // Analytics methods

@@ -22,6 +22,102 @@ PURGE ...             -- FORBIDDEN - Will destroy data
 5. **TEST FIRST**: Test all queries in development environment
 6. **RECOVERY AVAILABLE**: Emergency recovery at `/migrations/DATABASE_RECOVERY_SCRIPT.sh`
 
+## 🔧 DEVELOPMENT PRINCIPLES
+
+### ⚠️ NEVER REMOVE FUNCTIONALITY TO PASS TESTS ⚠️
+**Established: January 2025**
+
+When encountering errors:
+1. **FIX, DON'T REMOVE**: Always fix the underlying issue rather than commenting out functionality
+2. **DATABASE FIELD MAPPING**: When Sequelize model fields don't match database columns:
+   - Add the missing column: `ALTER TABLE users ADD COLUMN IF NOT EXISTS mpin VARCHAR(255);`
+   - Or map to correct column: `field: 'database_column_name'`
+   - Or use VIRTUAL fields for computed values
+3. **NO SHORTCUTS**: Fix errors properly and move forward
+4. **MAINTAIN ALL FEATURES**: Every existing feature must remain functional
+
+**Example Field Mappings:**
+```javascript
+// In User.js model
+firstName: { type: DataTypes.STRING, field: 'first_name' },
+lastName: { type: DataTypes.STRING, field: 'last_name' },
+mobile: { type: DataTypes.STRING, field: 'phone' },
+password: { type: DataTypes.STRING, field: 'password_hash' },
+mpin: { type: DataTypes.STRING }  // Added column when field was missing
+```
+
+### 🛡️ MIDDLEWARE ARCHITECTURE (FINANCIAL SYSTEM SAFETY)
+**🎉 CONFUSION SOLVED: September 29, 2025 - DIRECTORY RENAMING COMPLETED 🎉**
+
+**✅ PROBLEM ELIMINATED!** Directories have been renamed for crystal-clear purpose:
+- **`src/middleware-core/`** (4 files) - System-critical, security-sensitive implementations
+- **`src/middleware-app/`** (27 files) - Application business logic and features
+
+**NEW GOLDEN RULE**: **Use purpose-specific directory names - no more confusion!**
+
+#### 📋 Quick Decision Tree for Developers
+
+**When working on any route file:**
+
+1. **Check current imports**: `grep -n "import.*middleware" src/routes/your-file.js`
+
+2. **Apply NEW directory strategy**:
+   - **System/security functions** → Use `middleware-core/`
+   - **Business logic** → Use `middleware-app/`
+   - **Broken old paths** → ✅ Fix immediately
+   - **New files** → ✅ Always use purpose-specific directories
+
+3. **Directory purpose guide**:
+   ```
+   middleware-core/: audit.js, tenant-isolation.js, mfa.js, auth.js
+   middleware-app/: validate.js, rate-limiter.js, user.js, payment-request.js
+   ```
+
+4. **Example new import patterns**:
+   ```javascript
+   // Core system functions
+   import { auditAction } from '../middleware-core/audit.js';
+
+   // Application business logic
+   import { validateRequest } from '../middleware-app/validate-middleware.js';
+   ```
+
+#### 🔧 Emergency Fix Protocol
+
+**Broken import found?**
+```javascript
+// ❌ BROKEN (file doesn't exist)
+import { validateRequest } from '../middleware/validation';
+
+// ✅ FIXED (points to real file)
+import { validateRequest } from '../middlewares/validate-middleware.js';
+```
+
+**Test thoroughly after ANY middleware change!**
+
+#### 📊 Progress Tracking Commands
+```bash
+# Count remaining legacy imports
+grep -r "from '../middleware/" src/routes/ | wc -l
+
+# Find broken imports (URGENT)
+grep -r "from '../middleware/validation'" src/routes/
+grep -r "from '../middleware/validateRequest'" src/routes/
+
+# Identify financial routes (be extra careful)
+grep -l "billing\|payment\|auth\|tenant" src/routes/*.js
+```
+
+#### 📚 Detailed Guidelines
+**See `CLAUDE.md` for comprehensive middleware migration strategy including:**
+- Complete decision tree flowchart
+- Emergency rollback procedures
+- Commit message standards
+- Progress tracking system
+- Long-term vision and success metrics
+
+**Remember**: This is a financial system. Stability > Code cleanliness.
+
 ---
 
 ## Overview

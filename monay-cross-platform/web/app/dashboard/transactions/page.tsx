@@ -1,13 +1,13 @@
 'use client';
 
 import { useState } from 'react';
-import { 
-  ArrowDown, 
-  ArrowUp, 
-  Send, 
+import {
+  ArrowDown,
+  ArrowUp,
+  Send,
   Filter,
   Search,
-  Basket,
+  ShoppingBasket,
   Film,
   Car,
   HelpCircle
@@ -99,7 +99,7 @@ export default function TransactionsPage() {
       case 'expense':
         switch (category) {
           case 'Groceries':
-            return Basket;
+            return ShoppingBasket;
           case 'Entertainment':
             return Film;
           case 'Transportation':

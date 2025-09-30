@@ -2,9 +2,24 @@
 
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { User } from '@shared/types/api';
 import { apiService } from '@/lib/api-service';
 import { API_ENDPOINTS } from '@/lib/api-config';
+
+interface User {
+  id: string;
+  email: string;
+  firstName: string;
+  lastName: string;
+  phone?: string;
+  mobileNumber?: string;
+  profileImage?: string;
+  kycStatus?: 'pending' | 'verified' | 'failed' | 'approved';
+  isEmailVerified?: boolean;
+  isMobileVerified?: boolean;
+  userType?: string;
+  createdAt: Date | string;
+  updatedAt: Date | string;
+}
 
 interface AuthContextType {
   user: User | null;
@@ -12,7 +27,7 @@ interface AuthContextType {
   isLoading: boolean;
   login: (email: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
-  register: (userData: RegisterData) => Promise<void>;
+  register: (userData: RegisterData, endpoint?: string) => Promise<void>;
 }
 
 interface RegisterData {
@@ -21,6 +36,14 @@ interface RegisterData {
   firstName: string;
   lastName: string;
   mobileNumber: string;
+  // Business specific fields
+  businessName?: string;
+  businessType?: string;
+  // Enterprise specific fields
+  organizationId?: string;
+  inviteCode?: string;
+  // User type
+  userType?: string;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -223,7 +246,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
-  const register = async (userData: RegisterData) => {
+  const register = async (userData: RegisterData, endpoint?: string) => {
     setIsLoading(true);
     try {
       // Clean and format phone number for backend
@@ -231,21 +254,56 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       if (!cleanPhone.startsWith('+')) {
         cleanPhone = '+1' + cleanPhone;
       }
-      
+
       // Prepare registration data for backend matching the validation schema
-      const registrationData = {
+      const registrationData: any = {
         firstName: userData.firstName,
         lastName: userData.lastName,
         email: userData.email,
         mobile: cleanPhone, // Full phone number with country code (e.g., +13016821633)
         password: userData.password,
         confirmPassword: userData.password, // Required by backend validation
-        deviceType: 'web', // Add deviceType for direct endpoint
+        deviceType: 'WEB', // Must be uppercase for backend validation
       };
-      
+
+      // Add business-specific fields if present
+      if (userData.businessName) {
+        registrationData.businessName = userData.businessName;
+        registrationData.businessType = userData.businessType || 'small_business';
+      }
+
+      // Add enterprise-specific fields if present
+      if (userData.organizationId) {
+        registrationData.organizationId = userData.organizationId;
+      }
+      if (userData.inviteCode) {
+        registrationData.inviteCode = userData.inviteCode;
+      }
+
+      // Add userType if specified
+      if (userData.userType) {
+        registrationData.userType = userData.userType;
+      }
+
+      // Determine the correct endpoint based on user type or custom endpoint
+      let apiEndpoint = endpoint;
+      if (!apiEndpoint) {
+        // Determine endpoint based on user type
+        if (userData.userType === 'individual') {
+          apiEndpoint = API_ENDPOINTS.AUTH.SIGNUP_CONSUMER;
+        } else if (userData.businessName || userData.userType === 'business') {
+          apiEndpoint = API_ENDPOINTS.AUTH.SIGNUP_BUSINESS;
+        } else if (userData.organizationId || userData.inviteCode || userData.userType === 'enterprise') {
+          apiEndpoint = API_ENDPOINTS.AUTH.SIGNUP_ENTERPRISE;
+        } else {
+          // Default to the regular signup endpoint
+          apiEndpoint = API_ENDPOINTS.AUTH.SIGNUP;
+        }
+      }
+
       // Call backend signup API
-      console.log('Sending registration data:', registrationData);
-      const response = await apiService.post(API_ENDPOINTS.AUTH.SIGNUP, registrationData);
+      console.log('Sending registration data to', apiEndpoint, ':', registrationData);
+      const response = await apiService.post(apiEndpoint, registrationData);
       console.log('Backend response:', response);
       
       if (!response.success) {

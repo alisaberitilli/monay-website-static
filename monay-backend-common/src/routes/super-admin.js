@@ -1,6 +1,11 @@
 import { Router } from 'express';
-import { authenticate } from '../middlewares/auth.js';
+import { authenticate } from '../middleware-app/auth.js';
 import * as superAdminController from '../controllers/super-admin-controller.js';
+import models from '../models/index.js';
+import loggers from '../services/logger.js';
+
+const db = models;
+const logger = loggers.infoLogger;
 
 const router = Router();
 
@@ -442,6 +447,138 @@ router.post('/compliance/review-kyc', authenticate, requireSuperAdmin, async (re
 });
 
 // ===========================================
+// USER MANAGEMENT ENDPOINTS
+// ===========================================
+
+/**
+ * @route   GET /api/super-admin/users
+ * @desc    Get all users across the platform
+ * @access  Super Admin
+ */
+router.get('/users', authenticate, requireSuperAdmin, async (req, res) => {
+  try {
+    const { page = 1, limit = 50, role, status, search } = req.query;
+
+    const whereClause = {};
+    if (role && role !== 'all') whereClause.role = role;
+    if (status && status !== 'all') whereClause.status = status;
+    if (search) {
+      whereClause[db.Sequelize.Op.or] = [
+        { email: { [db.Sequelize.Op.iLike]: `%${search}%` } },
+        { firstName: { [db.Sequelize.Op.iLike]: `%${search}%` } },
+        { lastName: { [db.Sequelize.Op.iLike]: `%${search}%` } }
+      ];
+    }
+
+    const users = await db.User.findAndCountAll({
+      where: whereClause,
+      limit: parseInt(limit),
+      offset: (parseInt(page) - 1) * parseInt(limit),
+      order: [['createdAt', 'DESC']],
+      attributes: { exclude: ['password'] }
+    });
+
+    res.json({
+      success: true,
+      data: users
+    });
+  } catch (error) {
+    logger.error('Get users error:', error);
+    res.status(500).json({ success: false, message: 'Failed to fetch users' });
+  }
+});
+
+/**
+ * @route   POST /api/super-admin/users/suspend
+ * @desc    Suspend a user account
+ * @access  Super Admin
+ */
+router.post('/users/suspend', authenticate, requireSuperAdmin, async (req, res) => {
+  try {
+    const { userId, reason, duration } = req.body;
+
+    if (!userId || !reason) {
+      return res.status(400).json({
+        success: false,
+        message: 'User ID and reason are required'
+      });
+    }
+
+    // Calculate suspension end date if duration is provided
+    let suspensionEndsAt = null;
+    if (duration && duration > 0) {
+      suspensionEndsAt = new Date(Date.now() + (duration * 24 * 60 * 60 * 1000));
+    }
+
+    // Update user status
+    await db.User.update(
+      {
+        status: 'suspended',
+        suspensionReason: reason,
+        suspensionStartedAt: new Date(),
+        suspensionEndsAt,
+        suspendedBy: req.user.id
+      },
+      { where: { id: userId } }
+    );
+
+    // Log the suspension action
+    await logAdminAction(req.user.id, 'SUSPEND_USER', { userId, reason, duration });
+
+    res.json({
+      success: true,
+      message: 'User suspended successfully'
+    });
+  } catch (error) {
+    logger.error('Suspend user error:', error);
+    res.status(500).json({ success: false, message: 'Failed to suspend user' });
+  }
+});
+
+/**
+ * @route   POST /api/super-admin/users/activate
+ * @desc    Activate a suspended user account
+ * @access  Super Admin
+ */
+router.post('/users/activate', authenticate, requireSuperAdmin, async (req, res) => {
+  try {
+    const { userId } = req.body;
+
+    if (!userId) {
+      return res.status(400).json({
+        success: false,
+        message: 'User ID is required'
+      });
+    }
+
+    // Update user status
+    await db.User.update(
+      {
+        status: 'active',
+        suspensionReason: null,
+        suspensionStartedAt: null,
+        suspensionEndsAt: null,
+        suspendedBy: null,
+        reactivatedBy: req.user.id,
+        reactivatedAt: new Date()
+      },
+      { where: { id: userId } }
+    );
+
+    // Log the activation action
+    await logAdminAction(req.user.id, 'ACTIVATE_USER', { userId });
+
+    res.json({
+      success: true,
+      message: 'User activated successfully'
+    });
+  } catch (error) {
+    logger.error('Activate user error:', error);
+    res.status(500).json({ success: false, message: 'Failed to activate user' });
+  }
+});
+
+// ===========================================
 // ANALYTICS ENDPOINTS
 // ===========================================
 
@@ -654,6 +791,20 @@ async function getComprehensiveAnalytics(startDate, endDate) {
     providers: {},
     trends: {}
   };
+}
+
+async function logAdminAction(adminId, action, details) {
+  try {
+    await db.AdminAction.create({
+      adminId,
+      action,
+      details: JSON.stringify(details),
+      timestamp: new Date()
+    });
+  } catch (error) {
+    logger.error('Failed to log admin action:', error);
+    // Don't throw error - logging shouldn't break the main operation
+  }
 }
 
 export default router;

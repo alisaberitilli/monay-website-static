@@ -26,6 +26,7 @@ import {
 import { useAuth } from '@/contexts/AuthContext';
 import apiClient from '@/lib/api-client';
 import FamilyGroupIndicator from '@/components/FamilyGroupIndicator';
+import DashboardLayout from '@/components/DashboardLayout';
 
 interface Transaction {
   id: string;
@@ -37,8 +38,6 @@ interface Transaction {
   status: 'completed' | 'pending' | 'failed';
   icon?: string;
 }
-
-import DashboardLayout from '@/components/DashboardLayout';
 
 export default function DashboardPage() {
   const router = useRouter();
@@ -178,7 +177,7 @@ export default function DashboardPage() {
                 {quickActions.map((action) => (
                   <button
                     key={action.name}
-                    onClick={() => router.push(action.path)}
+                    onClick={() => router.push(action.path as any)}
                     className="group relative bg-white rounded-2xl p-6 hover:shadow-xl transition-all duration-300 overflow-hidden"
                   >
                     <div className={`absolute inset-0 bg-gradient-to-br ${action.gradient} opacity-0 group-hover:opacity-100 transition-opacity`}></div>

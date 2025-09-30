@@ -155,10 +155,7 @@ export const MultiRuleSelector: React.FC<MultiRuleSelectorProps> = ({
       // Check for dependencies and auto-add them
       const missingDeps = checkDependencies(rule.id);
       if (missingDeps.length > 0) {
-        toast({
-          title: 'Adding Dependencies',
-          description: `Adding ${missingDeps.length} required dependencies`,
-        });
+        toast.success(`Adding ${missingDeps.length} required dependencies`);
         missingDeps.forEach(depId => newSelectedIds.add(depId));
       }
       

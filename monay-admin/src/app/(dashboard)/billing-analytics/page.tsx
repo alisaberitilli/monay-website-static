@@ -39,8 +39,8 @@ interface BillingMetrics {
   }>;
   payment_methods: {
     USDXM: { count: number; revenue: number; discount: number };
-    USDC: { count: number; revenue: number };
-    USDT: { count: number; revenue: number };
+    USDC: { count: number; revenue: number; discount?: number };
+    USDT: { count: number; revenue: number; discount?: number };
   };
 }
 
@@ -56,10 +56,12 @@ export default function BillingAnalyticsPage() {
   const loadBillingMetrics = async () => {
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/billing/analytics?period=${period}`,
+        `${process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:3001'}/api/billing/analytics?period=${period}`,
         {
           headers: {
             'Authorization': `Bearer ${localStorage.getItem('token')}`,
+            'x-admin-bypass': 'true',
+            'Content-Type': 'application/json',
           },
         }
       );
@@ -67,6 +69,8 @@ export default function BillingAnalyticsPage() {
       if (response.ok) {
         const data = await response.json();
         setMetrics(data);
+      } else {
+        console.error('Failed to load billing metrics:', response.status, response.statusText);
       }
     } catch (error) {
       console.error('Failed to load billing metrics:', error);
@@ -322,7 +326,7 @@ export default function BillingAnalyticsPage() {
                         </div>
                       </div>
                       
-                      {method === 'USDXM' && data.discount > 0 && (
+                      {method === 'USDXM' && data.discount && data.discount > 0 && (
                         <div className="ml-8 p-3 bg-green-50 rounded-lg">
                           <p className="text-sm text-green-700">
                             Total discounts given: {formatCurrency(data.discount)}

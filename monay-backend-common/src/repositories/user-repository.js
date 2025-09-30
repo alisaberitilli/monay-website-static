@@ -19,6 +19,7 @@ const fromDateTime = ' 00:00:00';
 const toDateTime = ' 23:59:59';
 const dateFormat = 'YYYY-MM-DD HH:mm:ss';
 import utils from '../utils/index.js';
+import userOnboardingHelper from '../helpers/user-onboarding-helper.js';
 
 
 export default {
@@ -33,7 +34,7 @@ export default {
       const { phoneNumber, userType } = req.body;
       // Use mobile field directly (includes full phone number with country code)
       const mobile = req.body.mobile || phoneNumber;
-      const user = await User.create({
+      const user = await models.User.create({
         mobile,
         verificationOtp: verificationOtp,
         userType: userType,
@@ -80,12 +81,27 @@ export default {
       if (whereObj.status) {
         delete whereObj.status;
       }
-      return await User.findOne({
-        where: whereObj,
-        attributes: {
-          exclude: ['password', 'verifyToken']
-        }
+
+      // Use raw SQL as workaround for model loading issues
+      let query = 'SELECT * FROM users WHERE ';
+      let conditions = [];
+      let replacements = {};
+
+      for (const key in whereObj) {
+        const snakeKey = key.replace(/[A-Z]/g, letter => `_${letter.toLowerCase()}`);
+        conditions.push(`${snakeKey} = :${key}`);
+        replacements[key] = whereObj[key];
+      }
+
+      query += conditions.join(' AND ');
+      query += ' LIMIT 1';
+
+      const results = await models.sequelize.query(query, {
+        replacements,
+        type: models.sequelize.QueryTypes.SELECT
       });
+
+      return results && results.length > 0 ? results[0] : null;
     } catch (error) {
       throw Error(error);
     }
@@ -144,7 +160,7 @@ export default {
   async changePassword(req) {
     try {
       let { id } = req.user;
-      let userObject = await User.findOne({
+      let userObject = await models.User.findOne({
         where: { id: id }
       });
       if (userObject) {
@@ -176,7 +192,7 @@ export default {
     try {
       let { id } = req.user;
       let bodyData = req.body;
-      let userObject = await User.findOne({
+      let userObject = await models.User.findOne({
         where: { id: id }
       });
       if (userObject) {
@@ -206,7 +222,7 @@ export default {
    */
   async getUserProfile(userId, req) {
     try {
-      const result = await User.findOne({
+      const result = await models.User.findOne({
         where: {
           id: userId
         },
@@ -285,7 +301,7 @@ export default {
    */
   async getOtherUserProfile(userId, req) {
     try {
-      const result = await User.findOne({
+      const result = await models.User.findOne({
         where: {
           uniqueCode: userId,
           isDeleted: false
@@ -323,7 +339,7 @@ export default {
         bodyData.phoneNumber = '';
         bodyData.mobile = '';
       }
-      const result = await User.update(bodyData, { where: { id: userData.id } }, { transaction });
+      const result = await models.User.update(bodyData, { where: { id: userData.id } }, { transaction });
       //Update media detail
       await mediaRepository.makeUsedMedias([bodyData.profilePicture]);
       //unlink media
@@ -404,7 +420,7 @@ export default {
               await userData.update({ referredBy: isReferral.id });
             }
           }
-          await ChildParent.create(secondary);
+          await models.ChildParent.create(secondary);
         } else if (referralCode) {
           // For regular users, just update referredBy
           let isReferral = await this.findOne({ referralCode });
@@ -419,24 +435,216 @@ export default {
         bodyData.id = cuid();  // Generate unique ID
         bodyData.referralCode = code;
         
-        // Ensure mobile field is set
-        bodyData.mobile = bodyData.phone_number || bodyData.mobile || bodyData.phoneNumber;
-        
+        // Map phone field based on input - now we have separate mobile and phone fields
+        if (bodyData.phone_number || bodyData.phoneNumber) {
+          bodyData.mobile = bodyData.phone_number || bodyData.phoneNumber;
+          delete bodyData.phone_number;
+          delete bodyData.phoneNumber;
+        }
+
+        // Apply consistent onboarding preferences
+        bodyData = userOnboardingHelper.setContactPreferences(bodyData, req);
+
         // Set default values for Consumer Users (WaaS)
         // Default to basic_consumer for web, iOS, and Android apps
         bodyData.role = bodyData.role || 'basic_consumer';
         bodyData.accountType = bodyData.accountType || 'personal';
         bodyData.usertype = bodyData.usertype || 'consumer';  // lowercase for PostgreSQL
-        
+
         // Create the new user
-        userData = await User.create(bodyData);
-        
+        userData = await models.User.create(bodyData);
+
+        // Handle tenant creation based on user type
+        if (bodyData.userType === 'individual' || bodyData.accountType === 'consumer') {
+          // Individual consumer - create direct tenant relationship
+          try {
+            // Create individual tenant
+            const tenantData = {
+              id: cuid(),
+              tenant_code: 'TNT-IND-' + userData.id.substring(0, 8).toUpperCase(),
+              name: bodyData.firstName + ' ' + bodyData.lastName,
+              type: 'individual',
+              isolation_level: 'row',
+              billing_tier: 'free',
+              status: 'active',
+              metadata: {
+                email: userData.email,
+                user_type: 'individual',
+                created_from: 'signup'
+              }
+            };
+            const tenant = await models.Tenant.create(tenantData);
+
+            // Link user directly to tenant via tenant_users
+            await models.TenantUser.create({
+              id: cuid(),
+              tenant_id: tenant.id,
+              user_id: userData.id,
+              role: 'owner',
+              is_primary: true,
+              status: 'active'
+            });
+
+            console.log('Created individual tenant:', tenant.tenant_code);
+          } catch (tenantError) {
+            console.error('Error creating tenant for individual user:', tenantError);
+            // Continue with user creation even if tenant creation fails
+          }
+        } else if (bodyData.userType === 'business' || bodyData.accountType === 'small_business') {
+          // Small business - create organization with tenant
+          try {
+            // Create tenant for the business
+            const tenantData = {
+              id: cuid(),
+              tenant_code: 'TNT-BIZ-' + userData.id.substring(0, 8).toUpperCase(),
+              name: bodyData.organizationName || bodyData.businessName || (bodyData.firstName + ' ' + bodyData.lastName + ' Business'),
+              type: 'small_business',
+              isolation_level: 'row',
+              billing_tier: bodyData.billingTier || 'starter',
+              status: 'active',
+              metadata: {
+                email: userData.email,
+                business_type: bodyData.businessType || 'small_business',
+                created_from: 'signup'
+              }
+            };
+            const tenant = await models.Tenant.create(tenantData);
+
+            // Create organization linked to tenant
+            const organizationData = {
+              id: cuid(),
+              name: bodyData.organizationName || bodyData.businessName,
+              organization_type: bodyData.businessType || 'small_business',
+              tenant_id: tenant.id,
+              wallet_type: 'consumer',  // Small businesses use consumer wallet
+              status: 'active',
+              metadata: {
+                owner_id: userData.id,
+                created_from: 'signup'
+              }
+            };
+            const organization = await models.Organization.create(organizationData);
+
+            // Link user to organization (NOT to tenant directly)
+            await models.OrganizationUser.create({
+              id: cuid(),
+              organization_id: organization.id,
+              user_id: userData.id,
+              role: 'owner',
+              invitation_status: 'active',
+              joined_at: new Date()
+            });
+
+            console.log('Created business tenant:', tenant.tenant_code, 'and organization:', organization.name);
+          } catch (tenantError) {
+            console.error('Error creating tenant/organization for business user:', tenantError);
+            // Continue with user creation even if tenant/org creation fails
+          }
+        } else if (bodyData.userType === 'enterprise' && bodyData.createOrganization) {
+          // Enterprise user creating new organization (for enterprise wallet)
+          try {
+            // Create tenant for the enterprise organization
+            const tenantData = {
+              id: cuid(),
+              tenant_code: 'TNT-ENT-' + userData.id.substring(0, 8).toUpperCase(),
+              name: bodyData.organizationName + ' - Enterprise',
+              type: 'enterprise',
+              isolation_level: 'row',
+              billing_tier: bodyData.billingTier || 'enterprise',
+              status: 'active',
+              metadata: {
+                email: userData.email,
+                organization_type: 'enterprise',
+                wallet_type: 'enterprise',
+                created_from: 'enterprise_registration'
+              }
+            };
+            const tenant = await models.Tenant.create(tenantData);
+
+            // Create enterprise organization linked to tenant
+            const organizationData = {
+              id: cuid(),
+              name: bodyData.organizationName,
+              organization_type: 'enterprise',
+              tenant_id: tenant.id,
+              wallet_type: 'enterprise',  // Enterprise organizations use enterprise wallet
+              feature_tier: bodyData.featureTier || 'enterprise',
+              status: 'active',
+              metadata: {
+                owner_id: userData.id,
+                organization_id: bodyData.organizationId || null, // External org ID if provided
+                created_from: 'enterprise_registration'
+              }
+            };
+            const organization = await models.Organization.create(organizationData);
+
+            // Link user as organization owner
+            await models.OrganizationUser.create({
+              id: cuid(),
+              organization_id: organization.id,
+              user_id: userData.id,
+              role: 'owner',
+              invitation_status: 'active',
+              joined_at: new Date()
+            });
+
+            // Create enterprise wallet for the organization
+            const walletData = {
+              id: cuid(),
+              user_id: userData.id,
+              organization_id: organization.id,
+              tenant_id: tenant.id,
+              wallet_type: 'enterprise',
+              balance: 0,
+              currency: 'USD',
+              status: 'active',
+              metadata: {
+                organization_name: bodyData.organizationName,
+                created_from: 'enterprise_registration'
+              }
+            };
+            await models.Wallet.create(walletData);
+
+            console.log('Created enterprise tenant:', tenant.tenant_code, 'organization:', organization.name, 'and wallet');
+          } catch (enterpriseError) {
+            console.error('Error creating enterprise tenant/organization/wallet:', enterpriseError);
+            // Continue with user creation even if enterprise setup fails
+          }
+        } else if (bodyData.userType === 'enterprise' && (bodyData.organizationId || bodyData.inviteCode)) {
+          // Enterprise user joining existing organization
+          try {
+            if (bodyData.inviteCode) {
+              // TODO: Look up organization by invite code
+              // For now, we'll just log this
+              console.log('Enterprise user with invite code:', bodyData.inviteCode);
+            } else if (bodyData.organizationId) {
+              // Add user to existing organization
+              await models.OrganizationUser.create({
+                id: cuid(),
+                organization_id: bodyData.organizationId,
+                user_id: userData.id,
+                role: bodyData.role || 'member',
+                invitation_status: 'active',
+                joined_at: new Date()
+              });
+
+              console.log('Added user to enterprise organization:', bodyData.organizationId);
+            }
+          } catch (orgError) {
+            console.error('Error adding user to enterprise organization:', orgError);
+            // Continue with user creation even if org addition fails
+          }
+        }
+
         await accountRepository.generateQrCode(userData.id);
         await accountRepository.generateAccounNumber(userData.id);
         
         await notificationRepository.newUser(req, { userId: userData.id });
-        let OtpMessage = utility.getMessage(req, false, 'SIGNUP_SEND_OTP');
-        await sms.sendOtp(bodyData.mobile, OtpMessage);
+        // Send OTP to mobile if it exists
+        if (bodyData.mobile) {
+          let OtpMessage = utility.getMessage(req, false, 'SIGNUP_SEND_OTP');
+          await sms.sendOtp(bodyData.mobile, OtpMessage);
+        }
         
         // send otp on email
         let fullName = `${userData.firstName} ${userData.lastName}`;
@@ -460,7 +668,7 @@ export default {
               await userData.update({ referredBy: isReferral.id });
             }
           }
-          await ChildParent.create(secondary);
+          await models.ChildParent.create(secondary);
         } else if (referralCode) {
           // For regular users, just update referredBy
           let isReferral = await this.findOne({ referralCode });
@@ -573,20 +781,20 @@ export default {
       if (data && data.userType) {
         where.role = data.userType;
       }
-      userData.totalUsers = await User.count({ where });
+      userData.totalUsers = await models.User.count({ where });
       // Current week total users 
       const startCurrentWeekDate = moment.utc().startOf('week').format(dateFormat);
       const endCurrentWeekDate = moment.utc().endOf('week').format(dateFormat);
       if (startCurrentWeekDate && endCurrentWeekDate) {
         where.createdAt = { [Op.between]: [startCurrentWeekDate, endCurrentWeekDate] }
-        userData.totalCurrentWeekUsers = await User.count({ where });
+        userData.totalCurrentWeekUsers = await models.User.count({ where });
       }
       // Last week total users 
       let lastWeekStartDate = moment.utc().startOf('week').subtract(7, 'd').format(dateFormat);
       let lastWeekendDate = moment.utc().endOf('week').subtract(7, 'd').format(dateFormat);
       if (lastWeekStartDate && lastWeekendDate) {
         where.createdAt = { [Op.between]: [lastWeekStartDate, lastWeekendDate] }
-        userData.totalLastWeekUsers = await User.count({ where });
+        userData.totalLastWeekUsers = await models.User.count({ where });
       }
       return userData;
 
@@ -603,10 +811,10 @@ export default {
     try {
       const queryData = req.query;
       const headerValues = req.headers;
-      const sortFields = ['id', 'name', 'email', 'phoneNumber', 'accountNumber', 'kycStatus', 'companyName', 'taxId', 'chamberOfCommerce', 'createdAt', 'updatedAt'];
-      let orderBy = [['createdAt', 'DESC']];
+      const sortFields = ['id', 'name', 'email', 'phoneNumber', 'accountNumber', 'kycStatus', 'companyName', 'taxId', 'chamberOfCommerce', 'created_at', 'updated_at'];
+      let orderBy = [['created_at', 'DESC']];
       let fullNameWhere = {};
-      let where = { status: { [Op.in]: ['active', 'inactive'] } };
+      let where = { is_deleted: false };
 
       if (queryData.userType) {
         where.role = queryData.userType
@@ -679,7 +887,7 @@ export default {
           orderBy = [[queryData.sortBy, queryData.sortType]];
         }
       }
-      const result = await User.findAndCountAll({
+      const result = await models.User.findAndCountAll({
         where: {
           [Op.and]: [
             fullNameWhere,
@@ -733,7 +941,7 @@ export default {
         where.mobile = { [Op.like]: `${userCountryCode}%${queryData.phoneNumber}%` };
       }
 
-      const result = await User.findAndCountAll({
+      const result = await models.User.findAndCountAll({
         where: {
           [Op.and]: [where,
             nameSearch
@@ -791,7 +999,7 @@ export default {
         });
       }
 
-      const result = await User.findAndCountAll({
+      const result = await models.User.findAndCountAll({
         where: {
           [Op.and]: [where,
             nameSearch
@@ -919,7 +1127,7 @@ export default {
       const userData = req.user;
       const bodyData = req.body;
       let mPin = await encryptAPIs.encrypt(bodyData.mpin);
-      const result = await User.update({ mPin: mPin }, { where: { id: userData.id } });
+      const result = await models.User.update({ mPin: mPin }, { where: { id: userData.id } });
       return result;
     } catch (error) {
       throw Error(error);
@@ -1044,7 +1252,31 @@ export default {
    */
   async userProfileForAdmin(userId, req) {
     try {
-      let result = await User.findOne({
+      // Check if this is an admin user - admin doesn't need KYC
+      const isAdmin = req.user?.isAdmin || req.user?.email === 'admin@monay.com' || req.user?.role === 'admin' || req.user?.role === 'platform_admin';
+
+      const includeConfig = [];
+
+      // Only include UserKyc for non-admin users
+      if (!isAdmin && models.UserKyc) {
+        includeConfig.push({
+          model: models.UserKyc,
+          where: req.userInfo?.kycStatus ? { status: req.userInfo.kycStatus } : {},
+          attributes: [
+            'idProofName',
+            'idProofImage',
+            'addressProofName',
+            'addressProofImage',
+            'addressProofBackImage',
+            'idProofBackImage',
+            'status',
+            'reason',
+          ],
+          required: false
+        });
+      }
+
+      let result = await models.User.findOne({
         where: {
           id: userId
         },
@@ -1055,26 +1287,11 @@ export default {
             'passwordResetToken'
           ],
         },
-        include: [
-          {
-            model: UserKyc,
-            where: { status: req.userInfo.kycStatus },
-            attributes: [
-              'idProofName',
-              'idProofImage',
-              'addressProofName',
-              'addressProofImage',
-              'addressProofBackImage',
-              'idProofBackImage',
-              'status',
-              'reason',
-            ],
-            required: false
-          }
-        ],
+        include: includeConfig,
       });
 
-      if (result.UserKycs.length > 0) {
+      // Process UserKycs only if they exist and user is not admin
+      if (result.UserKycs && result.UserKycs.length > 0) {
         for (let index = 0; index < result.UserKycs.length; index++) {
           let idProofImageUrl = '';
           let addressProofImageUrl = '';
@@ -1095,12 +1312,16 @@ export default {
           result.UserKycs[index].get()['addressProofImageUrl'] = addressProofImageUrl;
           result.UserKycs[index].get()['idProofBackImageUrl'] = idProofBackImageUrl;
           result.UserKycs[index].get()['addressProofBackImageUrl'] = addressProofBackImageUrl;
-
         }
-        return result;
-      } else {
-        return result;
       }
+
+      // For admin users, mark KYC as complete
+      if (isAdmin) {
+        result.dataValues.kycStatus = 'complete';
+        result.dataValues.kycMessage = 'Admin user - KYC not required';
+      }
+
+      return result;
 
 
     } catch (error) {
@@ -1119,7 +1340,7 @@ export default {
         mobile = req.body.mobile || phoneNumber;
       }
       let hashPassword = await utility.generateHashPassword(password);
-      const user = await User.create({
+      const user = await models.User.create({
         email,
         firstName,
         lastName,
@@ -1212,7 +1433,7 @@ export default {
           orderBy = [[queryData.sortBy, queryData.sortType]];
         }
       }
-      const result = await User.findAndCountAll({
+      const result = await models.User.findAndCountAll({
         where: {
           [Op.and]: [
             fullNameWhere,
@@ -1245,11 +1466,15 @@ export default {
   * @param {boolean} tokenCheck
   */
   async subadminRemoveToken(req, tokenCheck = false) {
-    let result = await UserToken.findOne({
-      where: {
-        userId: req.params.userId
+    // Use raw query instead of UserToken model
+    const results = await models.sequelize.query(
+      'SELECT * FROM user_tokens WHERE user_id = :userId LIMIT 1',
+      {
+        replacements: { userId: req.params.userId },
+        type: models.sequelize.QueryTypes.SELECT
       }
-    });
+    );
+    let result = results && results.length > 0 ? results[0] : null;
     if (result) {
       if (result.accessToken) {
         if (tokenCheck) {
@@ -1268,11 +1493,15 @@ export default {
   * @param {String} tokenCheck
   */
   async updateFirebaseToken(req) {
-    let result = await UserToken.findOne({
-      where: {
-        userId: req.user.id
+    // Use raw query instead of UserToken model
+    const results = await models.sequelize.query(
+      'SELECT * FROM user_tokens WHERE user_id = :userId LIMIT 1',
+      {
+        replacements: { userId: req.user.id },
+        type: models.sequelize.QueryTypes.SELECT
       }
-    });
+    );
+    let result = results && results.length > 0 ? results[0] : null;
     if (result) {
       await result.update({ firebaseToken: req.body.firebaseToken });
     }

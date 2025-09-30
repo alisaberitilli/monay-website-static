@@ -245,13 +245,13 @@ export const usePWA = () => {
 
   // Register background sync
   const registerBackgroundSync = useCallback(async (tag: string) => {
-    if (!pwaState.registration?.sync) {
+    if (!pwaState.registration || !('sync' in pwaState.registration)) {
       console.log('[PWA] Background sync not supported');
       return false;
     }
 
     try {
-      await pwaState.registration.sync.register(tag);
+      await (pwaState.registration as any).sync.register(tag);
       console.log('[PWA] Background sync registered:', tag);
       return true;
     } catch (error) {

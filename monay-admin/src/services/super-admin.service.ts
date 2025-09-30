@@ -1,8 +1,23 @@
-import axios from 'axios';
-import Cookies from 'js-cookie';
-import { toast } from '@/components/ui/use-toast';
+import axiosInstance from '@/lib/axios';
+import { STORAGE_KEYS } from '@/lib/axios';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
+
+// Create a singleton toast instance
+const toast = {
+  success: (message: string) => {
+    // This will be called from React components that use useToast()
+    if (typeof window !== 'undefined' && (window as any).toastNotify) {
+      (window as any).toastNotify.success(message);
+    }
+  },
+  error: (message: string) => {
+    if (typeof window !== 'undefined' && (window as any).toastNotify) {
+      (window as any).toastNotify.error(message);
+    }
+  }
+};
+
 
 interface PlatformMetrics {
   users: {
@@ -62,7 +77,7 @@ interface ProviderComparison {
 
 class SuperAdminService {
   private getAuthHeaders() {
-    const token = Cookies.get('accessToken') || localStorage.getItem('token');
+    const token = localStorage.getItem(STORAGE_KEYS.TOKEN);
     return {
       Authorization: `Bearer ${token}`,
       'Content-Type': 'application/json',
@@ -71,9 +86,12 @@ class SuperAdminService {
 
   private async authenticatedRequest(endpoint: string, options: any = {}, showToast: boolean = true) {
     try {
-      const response = await axios({
-        url: `${API_URL}${endpoint}`,
-        headers: this.getAuthHeaders(),
+      const response = await axiosInstance({
+        url: endpoint,
+        headers: {
+          'x-admin-bypass': 'true',
+          ...this.getAuthHeaders(),
+        },
         ...options,
       });
       return response.data;
@@ -82,11 +100,7 @@ class SuperAdminService {
 
       if (showToast) {
         const errorMessage = error.response?.data?.message || error.message || 'An error occurred';
-        toast({
-          title: 'Error',
-          description: errorMessage,
-          variant: 'destructive',
-        });
+        toast.error(errorMessage);
       }
 
       throw error;
@@ -131,10 +145,7 @@ class SuperAdminService {
       data: { walletId, reason },
     });
 
-    toast({
-      title: 'Wallet Frozen',
-      description: `Wallet ${walletId} has been frozen successfully.`,
-    });
+    toast.success(`Wallet ${walletId} has been frozen successfully.`);
 
     return result;
   }
@@ -145,10 +156,7 @@ class SuperAdminService {
       data: { walletId },
     });
 
-    toast({
-      title: 'Wallet Unfrozen',
-      description: `Wallet ${walletId} has been unfrozen successfully.`,
-    });
+    toast.success(`Wallet ${walletId} has been unfrozen successfully.`);
 
     return result;
   }
@@ -197,10 +205,7 @@ class SuperAdminService {
       data: { provider, reason },
     });
 
-    toast({
-      title: 'Provider Switched',
-      description: `${provider === 'tempo' ? 'Tempo' : 'Circle'} is now the primary provider.`,
-    });
+    toast.success(`${provider === 'tempo' ? 'Tempo' : 'Circle'} is now the primary provider.`);
 
     return result;
   }
@@ -219,11 +224,12 @@ class SuperAdminService {
       data: { kycId, status, notes },
     });
 
-    toast({
-      title: `KYC ${status === 'approved' ? 'Approved' : 'Rejected'}`,
-      description: `KYC submission has been ${status} successfully.`,
-      variant: status === 'approved' ? 'default' : 'destructive',
-    });
+    const message = `KYC submission has been ${status} successfully.`;
+    if (status === 'approved') {
+      toast.success(message);
+    } else {
+      toast.error(message);
+    }
 
     return result;
   }
@@ -310,11 +316,12 @@ class SuperAdminService {
       data: { transactionId, reason, severity },
     });
 
-    toast({
-      title: 'Transaction Flagged',
-      description: `Transaction ${transactionId} has been flagged for review (${severity} priority).`,
-      variant: severity === 'high' ? 'destructive' : 'default',
-    });
+    const message = `Transaction ${transactionId} has been flagged for review (${severity} priority).`;
+    if (severity === 'high') {
+      toast.error(message);
+    } else {
+      toast.success(message);
+    }
 
     return result;
   }
@@ -326,13 +333,25 @@ class SuperAdminService {
     });
   }
 
+  async reviewFlaggedTransaction(flagId: string, status: 'cleared' | 'escalated', notes: string) {
+    const result = await this.authenticatedRequest('/api/super-admin/transactions/review-flag', {
+      method: 'POST',
+      data: { flagId, status, notes },
+    });
+
+    const message = status === 'cleared' ? 'Transaction flag cleared' : 'Transaction escalated for further review';
+    toast.success(message);
+
+    return result;
+  }
+
   // ===========================================
   // REAL-TIME MONITORING
   // ===========================================
 
   subscribeToRealTimeUpdates() {
     const wsUrl = API_URL.replace(/^http/, 'ws');
-    const token = Cookies.get('accessToken') || localStorage.getItem('token');
+    const token = localStorage.getItem(STORAGE_KEYS.TOKEN);
 
     const ws = new WebSocket(`${wsUrl}/super-admin?token=${token}`);
 

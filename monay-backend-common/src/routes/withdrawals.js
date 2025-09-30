@@ -5,9 +5,9 @@
 
 import express from 'express';
 import withdrawalService from '../services/withdrawal-service.js';
-import { authenticateToken } from '../middlewares/auth.js';
-import { validate } from '../middlewares/request-validator.js';
-import { asyncHandler } from '../middlewares/error-handler.js';
+import { authenticateToken } from '../middleware-app/auth.js';
+import { validate } from '../middleware-app/request-validator.js';
+import { asyncHandler } from '../middleware-app/error-handler.js';
 import Joi from 'joi';
 import logger from '../services/enhanced-logger.js';
 

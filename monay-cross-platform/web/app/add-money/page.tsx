@@ -46,18 +46,32 @@ export default function AddMoneyPage() {
   useEffect(() => {
     const fetchBalance = async () => {
       try {
+        const token = localStorage.getItem('token');
+
+        // Skip fetching if no token available (user not authenticated)
+        if (!token) {
+          console.log('No authentication token found, using default balance');
+          return;
+        }
+
         const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/wallet/balance`, {
           headers: {
-            'Authorization': `Bearer ${localStorage.getItem('token')}`
+            'Authorization': `Bearer ${token}`
           }
         });
 
         if (response.ok) {
           const data = await response.json();
-          setCurrentBalance(data.balance || 0);
+          setCurrentBalance(data.balance || data.availableBalance || 0);
+        } else if (response.status === 401 || response.status === 403) {
+          console.log('Authentication failed, using default balance');
+          // Don't show error for auth failures in demo mode
+        } else {
+          console.error('Failed to fetch balance:', response.status);
         }
       } catch (error) {
         console.error('Failed to fetch balance:', error);
+        // Continue with default balance in case of network errors
       }
     };
 

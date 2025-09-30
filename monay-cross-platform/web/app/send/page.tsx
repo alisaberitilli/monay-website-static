@@ -46,7 +46,9 @@ export default function SendMoneyPage() {
   // New state for real functionality
   const [currentBalance, setCurrentBalance] = useState(0);
   const [contacts, setContacts] = useState<Contact[]>([]);
+  const [searchResults, setSearchResults] = useState<Contact[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [isSearching, setIsSearching] = useState(false);
   const [isSending, setIsSending] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
@@ -58,13 +60,26 @@ export default function SendMoneyPage() {
     fetchBalance();
   }, []);
 
+  // Debounced search effect
+  useEffect(() => {
+    if (searchQuery.length > 0) {
+      const searchTimeout = setTimeout(() => {
+        searchUsers();
+      }, 300); // 300ms delay for debouncing
+
+      return () => clearTimeout(searchTimeout);
+    } else {
+      setSearchResults([]);
+    }
+  }, [searchQuery]);
+
   const fetchContacts = async () => {
     setIsLoading(true);
     try {
       const response = await apiClient.getRecentContacts();
       if (response.success && response.data) {
         // Transform the data to match our Contact interface
-        const transformedContacts = response.data.map((contact: any) => ({
+        const transformedContacts = (response.data as any[]).map((contact: any) => ({
           id: contact.id,
           name: contact.name,
           phone: contact.identifier,
@@ -86,17 +101,55 @@ export default function SendMoneyPage() {
     try {
       const response = await apiClient.getWalletBalance();
       if (response.success && response.data) {
-        setCurrentBalance(response.data.availableBalance || 0);
+        setCurrentBalance((response.data as any).availableBalance || 0);
       }
     } catch (error) {
       console.error('Error fetching balance:', error);
     }
   };
 
-  // Filter contacts based on search
-  const filteredContacts = contacts.filter(contact => {
+  const searchUsers = async () => {
+    if (!searchQuery.trim()) {
+      setSearchResults([]);
+      return;
+    }
+
+    setIsSearching(true);
+    try {
+      const response = await apiClient.searchUsers(searchQuery.trim());
+      if (response.success && response.data) {
+        // Transform the search results to match our Contact interface
+        const transformedResults = (response.data as any[]).map((user: any) => {
+          // Handle both API response format (name field) and user object format (firstName/lastName)
+          const firstName = user.firstName || user.first_name || '';
+          const lastName = user.lastName || user.last_name || '';
+          const fullName = user.name || `${firstName} ${lastName}`.trim();
+
+          return {
+            id: user.id,
+            name: fullName || user.email || user.identifier || 'Unknown User',
+            phone: user.mobile || user.phone || '',
+            email: user.email || '',
+            initials: `${firstName?.[0] || ''}${lastName?.[0] || ''}`.toUpperCase() || user.name?.[0]?.toUpperCase() || '?',
+            lastTransaction: undefined
+          };
+        });
+        setSearchResults(transformedResults);
+      } else {
+        setSearchResults([]);
+      }
+    } catch (error) {
+      console.error('Error searching users:', error);
+      setSearchResults([]);
+    } finally {
+      setIsSearching(false);
+    }
+  };
+
+  // Use search results if searching, otherwise filter recent contacts
+  const displayContacts = searchQuery.length > 0 ? searchResults : contacts.filter(contact => {
     const query = searchQuery.toLowerCase();
-    return contact.name.toLowerCase().includes(query) || 
+    return contact.name.toLowerCase().includes(query) ||
            (contact.phone && contact.phone.includes(searchQuery));
   });
 
@@ -122,8 +175,8 @@ export default function SendMoneyPage() {
         'p2p'
       );
 
-      if (!validationResponse.success || !validationResponse.data?.isValid) {
-        const errors = validationResponse.data?.errors || ['Transaction validation failed'];
+      if (!validationResponse.success || !(validationResponse.data as any)?.isValid) {
+        const errors = (validationResponse.data as any)?.errors || ['Transaction validation failed'];
         setError(errors.join('. '));
         setTimeout(() => setShowConfirmation(false), 3000);
         return;
@@ -132,8 +185,8 @@ export default function SendMoneyPage() {
       // Validate recipient
       const recipientValidation = await apiClient.validateRecipient(recipientIdentifier);
 
-      if (!recipientValidation.success || !recipientValidation.data?.isValid) {
-        setError(recipientValidation.data?.error || 'Invalid recipient');
+      if (!recipientValidation.success || !(recipientValidation.data as any)?.isValid) {
+        setError((recipientValidation.data as any)?.error || 'Invalid recipient');
         setTimeout(() => setShowConfirmation(false), 3000);
         return;
       }
@@ -148,7 +201,7 @@ export default function SendMoneyPage() {
       });
 
       if (response.success && response.data) {
-        setSuccess(`Successfully sent $${amount} to ${response.data.recipient || recipientIdentifier}!`);
+        setSuccess(`Successfully sent $${amount} to ${(response.data as any).recipient || recipientIdentifier}!`);
 
         // Refresh balance
         await fetchBalance();
@@ -259,12 +312,15 @@ export default function SendMoneyPage() {
 
                   {/* Contacts List */}
                   <div className="space-y-2 max-h-96 overflow-y-auto">
-                    {isLoading ? (
+                    {(isLoading || isSearching) ? (
                       <div className="flex justify-center py-8">
                         <Loader2 className="h-6 w-6 animate-spin text-purple-600" />
+                        <span className="ml-2 text-gray-600">
+                          {isSearching ? 'Searching users...' : 'Loading contacts...'}
+                        </span>
                       </div>
-                    ) : filteredContacts.length > 0 ? (
-                      filteredContacts.map((contact) => (
+                    ) : displayContacts.length > 0 ? (
+                      displayContacts.map((contact) => (
                         <button
                           key={contact.id}
                           onClick={() => {
@@ -291,7 +347,10 @@ export default function SendMoneyPage() {
                       ))
                     ) : (
                       <p className="text-center text-gray-500 py-8">
-                        {searchQuery ? 'No contacts found' : 'No contacts available'}
+                        {searchQuery ?
+                          `No users found for "${searchQuery}"` :
+                          'Start typing to search for users to send money to'
+                        }
                       </p>
                     )}
                   </div>

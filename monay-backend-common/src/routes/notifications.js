@@ -5,9 +5,9 @@
  */
 
 import express from 'express';
-import { authenticateToken } from '../middlewares/auth.js';
+import { authenticateToken } from '../middleware-app/auth.js';
 import notificationService from '../services/notification-service.js';
-import { validateRequest } from '../middlewares/validation.js';
+import { validateRequest } from '../middleware-app/validation.js';
 import logger from '../services/logger.js';
 
 const router = express.Router();

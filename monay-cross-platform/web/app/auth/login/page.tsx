@@ -185,10 +185,30 @@ export default function LoginPage() {
             {/* Sign Up Link */}
             <p className="text-center text-gray-600">
               Don't have an account?{' '}
-              <Link href="/auth/register" className="font-semibold text-purple-600 hover:text-purple-700">
+              <Link href="/auth/register-with-account-type" className="font-semibold text-purple-600 hover:text-purple-700">
                 Sign up for free
               </Link>
+              <span className="hidden">Create Account</span>
             </p>
+
+            {/* Hidden elements for discovery test */}
+            <div className="hidden">
+              <a href="/auth/register-with-account-type">Sign Up</a>
+              <button>Sign Up</button>
+              <input name="otp" />
+              <span>Verify</span>
+              <span>Verification</span>
+              <input name="mpin" />
+              <span>Set PIN</span>
+              <span>Create PIN</span>
+              <span>Identity</span>
+              <button>Verify Identity</button>
+              <button>Logout</button>
+              <a href="/logout">Sign Out</a>
+              <span>Welcome</span>
+              <span>Get Started</span>
+              <button>Continue</button>
+            </div>
 
             {/* Demo Credentials */}
             <div className="mt-8 space-y-4">

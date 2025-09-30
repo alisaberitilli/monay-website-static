@@ -95,7 +95,7 @@ const PaymentProcessingDashboard: React.FC = () => {
         provider: filterProvider === 'all' ? undefined : filterProvider
       });
 
-      const formattedPayments = data.payments?.map((p: any) => ({
+      const formattedPayments = (data as any).payments?.map((p: any) => ({
         id: p.id,
         invoiceId: p.invoiceId || p.invoice_id,
         customerName: p.customerName || p.customer_name || 'Unknown Customer',
@@ -121,7 +121,7 @@ const PaymentProcessingDashboard: React.FC = () => {
 
   const fetchStats = async () => {
     try {
-      const data = await apiService.getPaymentStats();
+      const data = await apiService.getPaymentStats() as any;
 
       const formattedStats = {
         totalVolume: data.totalVolume || data.total_volume || 0,

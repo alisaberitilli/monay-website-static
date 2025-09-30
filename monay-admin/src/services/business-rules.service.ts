@@ -1,7 +1,4 @@
-import axios from 'axios';
-import Cookies from 'js-cookie';
-
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
+import axiosInstance from '@/lib/axios';
 
 interface BusinessRule {
   id: string;
@@ -76,34 +73,27 @@ interface RuleViolation {
   detectedAt: string;
 }
 
-type BusinessRuleCategory = 
-  | 'KYC_ELIGIBILITY' 
-  | 'SPEND_MANAGEMENT' 
-  | 'TRANSACTION_MONITORING' 
+type BusinessRuleCategory =
+  | 'KYC_ELIGIBILITY'
+  | 'SPEND_MANAGEMENT'
+  | 'TRANSACTION_MONITORING'
   | 'COMPLIANCE'
-  | 'RISK_MANAGEMENT' 
+  | 'RISK_MANAGEMENT'
   | 'GEOGRAPHIC_RESTRICTIONS';
 
 class BusinessRulesService {
-  private getAuthHeader() {
-    const token = Cookies.get('token');
-    return token ? { Authorization: `Bearer ${token}` } : {};
-  }
-
   // Business Rules CRUD
   async getAllBusinessRules(): Promise<BusinessRule[]> {
     try {
-      const response = await axios.get(`${API_URL}/api/business-rules`, {
-        headers: this.getAuthHeader(),
-      });
-      
+      const response = await axiosInstance.get('/api/business-rules');
+
       if (response.data.success) {
         return response.data.data || [];
       }
       return [];
     } catch (error: any) {
       console.error('Error fetching business rules:', error);
-      
+
       // Fallback to mock data if API fails
       const mockRules: BusinessRule[] = [
       {
@@ -220,16 +210,14 @@ class BusinessRulesService {
         lastModified: '2024-01-14T15:00:00Z'
       }
     ];
-      
+
       return mockRules;
     }
   }
 
   async getBusinessRule(id: string): Promise<BusinessRule | null> {
     try {
-      const response = await axios.get(`${API_URL}/api/business-rules/${id}`, {
-        headers: this.getAuthHeader(),
-      });
+      const response = await axiosInstance.get(`/api/business-rules/${id}`);
       return response.data.data;
     } catch (error) {
       console.error('Error fetching business rule:', error);
@@ -239,9 +227,7 @@ class BusinessRulesService {
 
   async createBusinessRule(ruleData: Partial<BusinessRule>): Promise<any> {
     try {
-      const response = await axios.post(`${API_URL}/api/business-rules`, ruleData, {
-        headers: this.getAuthHeader(),
-      });
+      const response = await axiosInstance.post('/api/business-rules', ruleData);
       return response.data;
     } catch (error: any) {
       return {
@@ -253,9 +239,7 @@ class BusinessRulesService {
 
   async updateBusinessRule(id: string, ruleData: Partial<BusinessRule>): Promise<any> {
     try {
-      const response = await axios.patch(`${API_URL}/api/business-rules/${id}`, ruleData, {
-        headers: this.getAuthHeader(),
-      });
+      const response = await axiosInstance.patch(`/api/business-rules/${id}`, ruleData);
       return response.data;
     } catch (error: any) {
       const errorMsg = error.response?.data?.error;
@@ -268,9 +252,7 @@ class BusinessRulesService {
 
   async deleteBusinessRule(id: string): Promise<any> {
     try {
-      const response = await axios.delete(`${API_URL}/api/business-rules/${id}`, {
-        headers: this.getAuthHeader(),
-      });
+      const response = await axiosInstance.delete(`/api/business-rules/${id}`);
       return response.data;
     } catch (error: any) {
       const errorMsg = error.response?.data?.error;
@@ -283,10 +265,7 @@ class BusinessRulesService {
 
   async toggleBusinessRule(id: string, isActive: boolean): Promise<any> {
     try {
-      const response = await axios.patch(`${API_URL}/api/business-rules/${id}/toggle`, 
-        { isActive }, 
-        { headers: this.getAuthHeader() }
-      );
+      const response = await axiosInstance.patch(`/api/business-rules/${id}/toggle`, { isActive });
       return response.data;
     } catch (error: any) {
       const errorMsg = error.response?.data?.error;
@@ -304,12 +283,10 @@ class BusinessRulesService {
     parameters?: Record<string, any>;
   }): Promise<any> {
     try {
-      const response = await axios.post(`${API_URL}/api/business-rules/assign`, {
+      const response = await axiosInstance.post('/api/business-rules/assign', {
         userId,
         businessRuleId,
         ...params,
-      }, {
-        headers: this.getAuthHeader(),
       });
       return response.data;
     } catch (error: any) {
@@ -322,8 +299,7 @@ class BusinessRulesService {
 
   async unassignRuleFromUser(userId: string, businessRuleId: string): Promise<any> {
     try {
-      const response = await axios.delete(`${API_URL}/api/business-rules/assign`, {
-        headers: this.getAuthHeader(),
+      const response = await axiosInstance.delete('/api/business-rules/assign', {
         data: { userId, businessRuleId },
       });
       return response.data;
@@ -337,9 +313,7 @@ class BusinessRulesService {
 
   async getUserBusinessRules(userId: string): Promise<UserBusinessRuleAssignment[]> {
     try {
-      const response = await axios.get(`${API_URL}/api/users/${userId}/business-rules`, {
-        headers: this.getAuthHeader(),
-      });
+      const response = await axiosInstance.get(`/api/users/${userId}/business-rules`);
       return response.data.data || [];
     } catch (error) {
       console.error('Error fetching user business rules:', error);
@@ -349,9 +323,7 @@ class BusinessRulesService {
 
   async getRuleAssignments(businessRuleId: string): Promise<UserBusinessRuleAssignment[]> {
     try {
-      const response = await axios.get(`${API_URL}/api/business-rules/${businessRuleId}/assignments`, {
-        headers: this.getAuthHeader(),
-      });
+      const response = await axiosInstance.get(`/api/business-rules/${businessRuleId}/assignments`);
       return response.data.data || [];
     } catch (error) {
       console.error('Error fetching rule assignments:', error);
@@ -362,9 +334,7 @@ class BusinessRulesService {
   // KYC Management
   async getKycProfile(userId: string): Promise<KycProfile | null> {
     try {
-      const response = await axios.get(`${API_URL}/api/kyc/${userId}`, {
-        headers: this.getAuthHeader(),
-      });
+      const response = await axiosInstance.get(`/api/kyc/${userId}`);
       return response.data.data;
     } catch (error) {
       console.error('Error fetching KYC profile:', error);
@@ -374,9 +344,7 @@ class BusinessRulesService {
 
   async updateKycProfile(userId: string, kycData: Partial<KycProfile>): Promise<any> {
     try {
-      const response = await axios.patch(`${API_URL}/api/kyc/${userId}`, kycData, {
-        headers: this.getAuthHeader(),
-      });
+      const response = await axiosInstance.patch(`/api/kyc/${userId}`, kycData);
       return response.data;
     } catch (error: any) {
       return {
@@ -389,9 +357,7 @@ class BusinessRulesService {
   // Spend Limits Management
   async getSpendLimits(userId: string): Promise<SpendLimit | null> {
     try {
-      const response = await axios.get(`${API_URL}/api/spend-limits/${userId}`, {
-        headers: this.getAuthHeader(),
-      });
+      const response = await axiosInstance.get(`/api/spend-limits/${userId}`);
       return response.data.data;
     } catch (error) {
       console.error('Error fetching spend limits:', error);
@@ -401,11 +367,9 @@ class BusinessRulesService {
 
   async setSpendLimits(userId: string, limits: Partial<SpendLimit>): Promise<any> {
     try {
-      const response = await axios.post(`${API_URL}/api/spend-limits`, {
+      const response = await axiosInstance.post('/api/spend-limits', {
         userId,
         ...limits,
-      }, {
-        headers: this.getAuthHeader(),
       });
       return response.data;
     } catch (error: any) {
@@ -418,9 +382,7 @@ class BusinessRulesService {
 
   async updateSpendLimits(userId: string, limits: Partial<SpendLimit>): Promise<any> {
     try {
-      const response = await axios.patch(`${API_URL}/api/spend-limits/${userId}`, limits, {
-        headers: this.getAuthHeader(),
-      });
+      const response = await axiosInstance.patch(`/api/spend-limits/${userId}`, limits);
       return response.data;
     } catch (error: any) {
       return {
@@ -440,8 +402,7 @@ class BusinessRulesService {
     endDate?: string;
   }): Promise<RuleViolation[]> {
     try {
-      const response = await axios.get(`${API_URL}/api/rule-violations`, {
-        headers: this.getAuthHeader(),
+      const response = await axiosInstance.get('/api/rule-violations', {
         params: filters,
       });
       return response.data.data || [];
@@ -453,10 +414,8 @@ class BusinessRulesService {
 
   async resolveViolation(violationId: string, resolution: string): Promise<any> {
     try {
-      const response = await axios.patch(`${API_URL}/api/rule-violations/${violationId}/resolve`, {
+      const response = await axiosInstance.patch(`/api/rule-violations/${violationId}/resolve`, {
         resolution,
-      }, {
-        headers: this.getAuthHeader(),
       });
       return response.data;
     } catch (error: any) {
@@ -476,11 +435,9 @@ class BusinessRulesService {
     merchantId?: string;
   }): Promise<any> {
     try {
-      const response = await axios.post(`${API_URL}/api/business-rules/evaluate`, {
+      const response = await axiosInstance.post('/api/business-rules/evaluate', {
         userId,
         transactionData,
-      }, {
-        headers: this.getAuthHeader(),
       });
       return response.data;
     } catch (error: any) {
@@ -494,8 +451,7 @@ class BusinessRulesService {
   // Analytics
   async getRuleAnalytics(businessRuleId?: string, timeRange?: string): Promise<any> {
     try {
-      const response = await axios.get(`${API_URL}/api/business-rules/analytics`, {
-        headers: this.getAuthHeader(),
+      const response = await axiosInstance.get('/api/business-rules/analytics', {
         params: { businessRuleId, timeRange },
       });
       return response.data.data;
@@ -512,8 +468,7 @@ class BusinessRulesService {
     userId?: string;
   }): Promise<any> {
     try {
-      const response = await axios.get(`${API_URL}/api/compliance/report`, {
-        headers: this.getAuthHeader(),
+      const response = await axiosInstance.get('/api/compliance/report', {
         params: filters,
       });
       return response.data.data;
@@ -526,8 +481,7 @@ class BusinessRulesService {
   // Rule Templates
   async getRuleTemplates(category?: BusinessRuleCategory): Promise<any[]> {
     try {
-      const response = await axios.get(`${API_URL}/api/business-rules/templates`, {
-        headers: this.getAuthHeader(),
+      const response = await axiosInstance.get('/api/business-rules/templates', {
         params: { category },
       });
       return response.data.data || [];
@@ -539,11 +493,9 @@ class BusinessRulesService {
 
   async createRuleFromTemplate(templateId: string, customizations?: Record<string, any>): Promise<any> {
     try {
-      const response = await axios.post(`${API_URL}/api/business-rules/from-template`, {
+      const response = await axiosInstance.post('/api/business-rules/from-template', {
         templateId,
         customizations,
-      }, {
-        headers: this.getAuthHeader(),
       });
       return response.data;
     } catch (error: any) {

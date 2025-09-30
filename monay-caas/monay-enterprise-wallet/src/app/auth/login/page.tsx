@@ -112,7 +112,7 @@ export default function LoginPage() {
         {/* Login Card */}
         <Card className="shadow-xl">
           <CardHeader>
-            <CardTitle>Sign In</CardTitle>
+            <CardTitle>Login - Sign In</CardTitle>
             <CardDescription>
               Choose your authentication method to access your account
             </CardDescription>
@@ -153,6 +153,7 @@ export default function LoginPage() {
                       <Mail className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
                       <Input
                         id="email"
+                        name="email"
                         type="email"
                         placeholder="admin@monay.com"
                         value={email}
@@ -170,6 +171,7 @@ export default function LoginPage() {
                       <Lock className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
                       <Input
                         id="password"
+                        name="password"
                         type={showPassword ? 'text' : 'password'}
                         placeholder="Enter your password"
                         value={password}

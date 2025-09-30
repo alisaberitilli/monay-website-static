@@ -216,7 +216,7 @@ export default {
         [Op.and]: literal('TIMESTAMPDIFF(MINUTE, `created_at`, NOW()) > 30'),
         status: 'pending',
       };
-      const result = await MediaTemp.findAll(
+      const result = await models.MediaTemp.findAll(
         { where }
       );
 
@@ -227,7 +227,7 @@ export default {
       });
 
       unlinkMediaPromises.push(
-        MediaTemp.destroy({
+        models.MediaTemp.destroy({
           where: {
             id: {
               [Op.in]: pendingMediaIds,
@@ -370,9 +370,9 @@ export default {
       // Upload image on s3
       if (config.app.mediaStorage == 's3') {
         mediaData.baseUrl = config.aws.s3BucketUrl + file.key;
-        result = await MediaTemp.create(mediaData);
+        result = await models.MediaTemp.create(mediaData);
       } else {
-        result = await MediaTemp.create(mediaData);
+        result = await models.MediaTemp.create(mediaData);
       }
       return result;
     } catch (error) {
@@ -399,7 +399,7 @@ export default {
         status: 'pending',
       }));
 
-      const result = await MediaTemp.bulkCreate(mediaDataArray);
+      const result = await models.MediaTemp.bulkCreate(mediaDataArray);
 
       return result;
     } catch (error) {
@@ -419,7 +419,7 @@ export default {
           [Op.in]: paths,
         },
       };
-      const result = await MediaTemp.findAll({ where });
+      const result = await models.MediaTemp.findAll({ where });
       return result;
     } catch (error) {
       throw Error(error);
@@ -432,7 +432,7 @@ export default {
   async findMediaByBasePathAndUnlink(paths) {
     try {
       const where = { basePath: paths };
-      let mediaData = await MediaTemp.findOne({ where });
+      let mediaData = await models.MediaTemp.findOne({ where });
       if (mediaData) {
         await this.unlinkMedia(mediaData);
         await mediaData.update({ status: 'deleted' });
@@ -452,7 +452,7 @@ export default {
       const mediaData = {
         status: 'used',
       };
-      const result = await MediaTemp.update(
+      const result = await models.MediaTemp.update(
         mediaData,
         {
           where: {
@@ -494,7 +494,7 @@ export default {
   },
   async generateQrCodeOnS3(userId) {
     try {
-      let userInfo = await User.findOne({ where: { id: userId } });
+      let userInfo = await models.User.findOne({ where: { id: userId } });
       if (userInfo && !userInfo.qrCode) {
         let uniqueCode = await accountRepository.getUniqueId();
         QRCode.toDataURL(JSON.stringify({ userId: uniqueCode }), async function (err, base64) {

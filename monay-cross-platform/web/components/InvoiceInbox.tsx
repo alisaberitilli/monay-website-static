@@ -22,6 +22,8 @@ import {
   Bell,
   X
 } from 'lucide-react';
+import PaymentFlow from './PaymentFlow';
+import paymentService, { PaymentRequest, PaymentResult } from '@/lib/payment-service';
 
 interface Invoice {
   id: string;
@@ -49,8 +51,8 @@ export default function InvoiceInbox() {
   const [filter, setFilter] = useState('all');
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedInvoice, setSelectedInvoice] = useState<Invoice | null>(null);
-  const [showPaymentModal, setShowPaymentModal] = useState(false);
-  const [paymentMethod, setPaymentMethod] = useState('tempo');
+  const [showPaymentFlow, setShowPaymentFlow] = useState(false);
+  const [currentPaymentRequest, setCurrentPaymentRequest] = useState<PaymentRequest | null>(null);
 
   useEffect(() => {
     fetchInvoices();
@@ -59,7 +61,7 @@ export default function InvoiceInbox() {
   const fetchInvoices = async () => {
     setLoading(true);
     try {
-      // Mock data for demonstration
+      // Mock data for demonstration - Extensive invoice list
       const mockInvoices: Invoice[] = [
         {
           id: '1',
@@ -148,6 +150,351 @@ export default function InvoiceInbox() {
           description: 'Mobile phone plan',
           provider: 'circle',
           urgent: false
+        },
+        {
+          id: '6',
+          invoice_number: 'INV-2024-0789',
+          issuer: {
+            id: '6',
+            name: 'Spotify',
+            logo: '🎵'
+          },
+          amount: 9.99,
+          paid_amount: 9.99,
+          status: 'paid',
+          due_date: '2024-09-28',
+          created_at: '2024-09-20T12:00:00Z',
+          description: 'Premium music subscription',
+          provider: 'tempo',
+          urgent: false
+        },
+        {
+          id: '7',
+          invoice_number: 'INV-2024-1023',
+          issuer: {
+            id: '7',
+            name: 'Amazon Prime',
+            logo: '📦'
+          },
+          amount: 14.99,
+          paid_amount: 0,
+          status: 'pending',
+          due_date: '2024-10-15',
+          created_at: '2024-09-29T16:45:00Z',
+          description: 'Monthly Prime membership',
+          provider: 'circle',
+          urgent: false,
+          discount_available: false
+        },
+        {
+          id: '8',
+          invoice_number: 'INV-2024-0934',
+          issuer: {
+            id: '8',
+            name: 'Gas Company',
+            logo: '🔥'
+          },
+          amount: 87.21,
+          paid_amount: 0,
+          status: 'overdue',
+          due_date: '2024-09-25',
+          created_at: '2024-08-30T09:15:00Z',
+          description: 'Natural gas bill',
+          provider: 'tempo',
+          urgent: true
+        },
+        {
+          id: '9',
+          invoice_number: 'INV-2024-0567',
+          issuer: {
+            id: '9',
+            name: 'Adobe Creative Cloud',
+            logo: '🎨'
+          },
+          amount: 52.99,
+          paid_amount: 0,
+          status: 'pending',
+          due_date: '2024-10-08',
+          created_at: '2024-09-24T14:20:00Z',
+          description: 'Photography plan',
+          provider: 'circle',
+          urgent: false
+        },
+        {
+          id: '10',
+          invoice_number: 'INV-2024-0812',
+          issuer: {
+            id: '10',
+            name: 'Water Department',
+            logo: '💧'
+          },
+          amount: 65.78,
+          paid_amount: 0,
+          status: 'pending',
+          due_date: '2024-10-12',
+          created_at: '2024-09-26T11:30:00Z',
+          description: 'Water & sewer service',
+          provider: 'tempo',
+          urgent: false,
+          discount_available: true,
+          discount_amount: 3.25
+        },
+        {
+          id: '11',
+          invoice_number: 'INV-2024-0453',
+          issuer: {
+            id: '11',
+            name: 'Insurance Company',
+            logo: '🛡️'
+          },
+          amount: 245.00,
+          paid_amount: 0,
+          status: 'pending',
+          due_date: '2024-10-20',
+          created_at: '2024-09-28T08:00:00Z',
+          description: 'Auto insurance premium',
+          provider: 'circle',
+          urgent: false
+        },
+        {
+          id: '12',
+          invoice_number: 'INV-2024-0198',
+          issuer: {
+            id: '12',
+            name: 'GitHub',
+            logo: '👨‍💻'
+          },
+          amount: 20.00,
+          paid_amount: 0,
+          status: 'pending',
+          due_date: '2024-10-03',
+          created_at: '2024-09-21T13:45:00Z',
+          description: 'Pro subscription',
+          provider: 'tempo',
+          urgent: false
+        },
+        {
+          id: '13',
+          invoice_number: 'INV-2024-0721',
+          issuer: {
+            id: '13',
+            name: 'Microsoft 365',
+            logo: '💼'
+          },
+          amount: 6.99,
+          paid_amount: 6.99,
+          status: 'paid',
+          due_date: '2024-09-27',
+          created_at: '2024-09-19T10:15:00Z',
+          description: 'Personal subscription',
+          provider: 'circle',
+          urgent: false
+        },
+        {
+          id: '14',
+          invoice_number: 'INV-2024-0365',
+          issuer: {
+            id: '14',
+            name: 'Waste Management',
+            logo: '🗑️'
+          },
+          amount: 32.50,
+          paid_amount: 0,
+          status: 'pending',
+          due_date: '2024-10-07',
+          created_at: '2024-09-23T07:30:00Z',
+          description: 'Garbage collection',
+          provider: 'tempo',
+          urgent: false
+        },
+        {
+          id: '15',
+          invoice_number: 'INV-2024-0887',
+          issuer: {
+            id: '15',
+            name: 'Hulu',
+            logo: '📺'
+          },
+          amount: 17.99,
+          paid_amount: 0,
+          status: 'pending',
+          due_date: '2024-10-11',
+          created_at: '2024-09-27T19:00:00Z',
+          description: 'No ads plan',
+          provider: 'circle',
+          urgent: false
+        },
+        {
+          id: '16',
+          invoice_number: 'INV-2024-0644',
+          issuer: {
+            id: '16',
+            name: 'Credit Card',
+            logo: '💳'
+          },
+          amount: 1245.67,
+          paid_amount: 500.00,
+          status: 'partial',
+          due_date: '2024-10-05',
+          created_at: '2024-09-15T00:01:00Z',
+          description: 'September statement',
+          provider: 'tempo',
+          urgent: false
+        },
+        {
+          id: '17',
+          invoice_number: 'INV-2024-0912',
+          issuer: {
+            id: '17',
+            name: 'YouTube Premium',
+            logo: '📹'
+          },
+          amount: 11.99,
+          paid_amount: 0,
+          status: 'pending',
+          due_date: '2024-10-14',
+          created_at: '2024-09-28T12:30:00Z',
+          description: 'Ad-free videos',
+          provider: 'circle',
+          urgent: false
+        },
+        {
+          id: '18',
+          invoice_number: 'INV-2024-0334',
+          issuer: {
+            id: '18',
+            name: 'Apple iCloud',
+            logo: '☁️'
+          },
+          amount: 2.99,
+          paid_amount: 2.99,
+          status: 'paid',
+          due_date: '2024-09-29',
+          created_at: '2024-09-20T15:00:00Z',
+          description: '200GB storage',
+          provider: 'tempo',
+          urgent: false
+        },
+        {
+          id: '19',
+          invoice_number: 'INV-2024-0776',
+          issuer: {
+            id: '19',
+            name: 'Rent Payment',
+            logo: '🏠'
+          },
+          amount: 1850.00,
+          paid_amount: 0,
+          status: 'overdue',
+          due_date: '2024-09-30',
+          created_at: '2024-09-01T00:00:00Z',
+          description: 'October rent',
+          provider: 'circle',
+          urgent: true
+        },
+        {
+          id: '20',
+          invoice_number: 'INV-2024-0555',
+          issuer: {
+            id: '20',
+            name: 'Parking Permit',
+            logo: '🅿️'
+          },
+          amount: 75.00,
+          paid_amount: 0,
+          status: 'pending',
+          due_date: '2024-10-16',
+          created_at: '2024-09-26T14:45:00Z',
+          description: 'Monthly parking pass',
+          provider: 'tempo',
+          urgent: false
+        },
+        {
+          id: '21',
+          invoice_number: 'INV-2024-0988',
+          issuer: {
+            id: '21',
+            name: 'Disney+',
+            logo: '🏰'
+          },
+          amount: 13.99,
+          paid_amount: 0,
+          status: 'pending',
+          due_date: '2024-10-09',
+          created_at: '2024-09-25T18:20:00Z',
+          description: 'Streaming subscription',
+          provider: 'circle',
+          urgent: false
+        },
+        {
+          id: '22',
+          invoice_number: 'INV-2024-0123',
+          issuer: {
+            id: '22',
+            name: 'Doctor Visit',
+            logo: '🩺'
+          },
+          amount: 150.00,
+          paid_amount: 0,
+          status: 'pending',
+          due_date: '2024-10-25',
+          created_at: '2024-09-27T10:30:00Z',
+          description: 'Consultation fee',
+          provider: 'tempo',
+          urgent: false
+        },
+        {
+          id: '23',
+          invoice_number: 'INV-2024-0699',
+          issuer: {
+            id: '23',
+            name: 'VPN Service',
+            logo: '🔒'
+          },
+          amount: 8.99,
+          paid_amount: 8.99,
+          status: 'paid',
+          due_date: '2024-09-26',
+          created_at: '2024-09-18T20:15:00Z',
+          description: 'Monthly VPN',
+          provider: 'circle',
+          urgent: false
+        },
+        {
+          id: '24',
+          invoice_number: 'INV-2024-0411',
+          issuer: {
+            id: '24',
+            name: 'Pet Insurance',
+            logo: '🐕'
+          },
+          amount: 29.99,
+          paid_amount: 0,
+          status: 'pending',
+          due_date: '2024-10-18',
+          created_at: '2024-09-28T09:45:00Z',
+          description: 'Dog health plan',
+          provider: 'tempo',
+          urgent: false
+        },
+        {
+          id: '25',
+          invoice_number: 'INV-2024-0833',
+          issuer: {
+            id: '25',
+            name: 'Cloud Storage',
+            logo: '💾'
+          },
+          amount: 19.99,
+          paid_amount: 0,
+          status: 'pending',
+          due_date: '2024-10-13',
+          created_at: '2024-09-24T16:00:00Z',
+          description: '1TB cloud backup',
+          provider: 'circle',
+          urgent: false,
+          discount_available: true,
+          discount_amount: 2.00
         }
       ];
 
@@ -167,40 +514,53 @@ export default function InvoiceInbox() {
 
   const handleQuickPay = (invoice: Invoice) => {
     setSelectedInvoice(invoice);
-    setShowPaymentModal(true);
+
+    // Create payment request using our payment service
+    const paymentRequest: PaymentRequest = {
+      items: [{
+        id: invoice.id,
+        name: `Invoice ${invoice.invoice_number}`,
+        description: `${invoice.issuer.name} - ${invoice.description}`,
+        price: invoice.amount - invoice.paid_amount,
+        quantity: 1,
+        category: 'retail',
+        metadata: {
+          invoiceNumber: invoice.invoice_number,
+          issuer: invoice.issuer.name,
+          dueDate: invoice.due_date,
+          provider: invoice.provider
+        }
+      }],
+      total: invoice.amount - invoice.paid_amount,
+      currency: 'USD',
+      merchantName: invoice.issuer.name,
+      merchantCategory: 'Bills & Utilities',
+      description: `Invoice payment to ${invoice.issuer.name}`
+    };
+
+    setCurrentPaymentRequest(paymentRequest);
+    setShowPaymentFlow(true);
   };
 
-  const processPayment = async () => {
-    if (!selectedInvoice) return;
-
-    try {
-      const token = localStorage.getItem('token');
-      const response = await fetch('http://localhost:3001/api/enterprise-treasury/invoice/pay', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify({
-          invoice_id: selectedInvoice.id,
-          amount: selectedInvoice.amount - selectedInvoice.paid_amount,
-          provider: paymentMethod
-        })
-      });
-
-      if (response.ok) {
-        // Update invoice status locally
-        setInvoices(invoices.map(inv =>
-          inv.id === selectedInvoice.id
-            ? { ...inv, status: 'paid' as const, paid_amount: inv.amount }
-            : inv
-        ));
-        setShowPaymentModal(false);
-        setSelectedInvoice(null);
-      }
-    } catch (error) {
-      console.error('Payment failed:', error);
+  const handlePaymentSuccess = (result: PaymentResult) => {
+    if (selectedInvoice) {
+      // Update invoice status locally
+      setInvoices(invoices.map(inv =>
+        inv.id === selectedInvoice.id
+          ? { ...inv, status: 'paid' as const, paid_amount: inv.amount }
+          : inv
+      ));
     }
+
+    setShowPaymentFlow(false);
+    setCurrentPaymentRequest(null);
+    setSelectedInvoice(null);
+  };
+
+  const handlePaymentCancel = () => {
+    setShowPaymentFlow(false);
+    setCurrentPaymentRequest(null);
+    setSelectedInvoice(null);
   };
 
   const getStatusColor = (status: string) => {
@@ -443,97 +803,15 @@ export default function InvoiceInbox() {
         )}
       </div>
 
-      {/* Payment Modal */}
-      <AnimatePresence>
-        {showPaymentModal && selectedInvoice && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4"
-          >
-            <motion.div
-              initial={{ scale: 0.9, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.9, opacity: 0 }}
-              className="bg-white dark:bg-gray-800 rounded-xl shadow-xl max-w-md w-full p-6"
-            >
-              <div className="flex items-center justify-between mb-4">
-                <h2 className="text-xl font-bold text-gray-900 dark:text-white">
-                  Confirm Payment
-                </h2>
-                <button
-                  onClick={() => setShowPaymentModal(false)}
-                  className="p-1 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg"
-                >
-                  <X className="w-5 h-5" />
-                </button>
-              </div>
-
-              <div className="space-y-4">
-                <div className="p-4 bg-gray-50 dark:bg-gray-900 rounded-lg">
-                  <p className="text-sm text-gray-600 dark:text-gray-400">Paying to</p>
-                  <p className="font-semibold text-gray-900 dark:text-white">
-                    {selectedInvoice.issuer.name}
-                  </p>
-                  <p className="text-sm text-gray-600 dark:text-gray-400 mt-2">Amount</p>
-                  <p className="text-2xl font-bold text-gray-900 dark:text-white">
-                    ${(selectedInvoice.amount - selectedInvoice.paid_amount).toFixed(2)}
-                  </p>
-                </div>
-
-                <div>
-                  <p className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                    Payment Method
-                  </p>
-                  <div className="grid grid-cols-2 gap-2">
-                    <button
-                      onClick={() => setPaymentMethod('tempo')}
-                      className={`p-3 rounded-lg border-2 transition-colors ${
-                        paymentMethod === 'tempo'
-                          ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20'
-                          : 'border-gray-200 dark:border-gray-700'
-                      }`}
-                    >
-                      <Clock className="w-5 h-5 mx-auto mb-1 text-blue-500" />
-                      <p className="text-sm font-medium">Tempo</p>
-                      <p className="text-xs text-gray-500">Instant • $0.01 fee</p>
-                    </button>
-                    <button
-                      onClick={() => setPaymentMethod('circle')}
-                      className={`p-3 rounded-lg border-2 transition-colors ${
-                        paymentMethod === 'circle'
-                          ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20'
-                          : 'border-gray-200 dark:border-gray-700'
-                      }`}
-                    >
-                      <DollarSign className="w-5 h-5 mx-auto mb-1 text-green-500" />
-                      <p className="text-sm font-medium">Circle USDC</p>
-                      <p className="text-xs text-gray-500">2-3 sec • $0.10 fee</p>
-                    </button>
-                  </div>
-                </div>
-
-                <div className="flex gap-3">
-                  <button
-                    onClick={() => setShowPaymentModal(false)}
-                    className="flex-1 px-4 py-2 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg font-medium"
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    onClick={processPayment}
-                    className="flex-1 px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg font-medium flex items-center justify-center gap-2"
-                  >
-                    <Send className="w-4 h-4" />
-                    Pay ${(selectedInvoice.amount - selectedInvoice.paid_amount).toFixed(2)}
-                  </button>
-                </div>
-              </div>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      {/* Unified Payment Flow */}
+      {currentPaymentRequest && (
+        <PaymentFlow
+          paymentRequest={currentPaymentRequest}
+          onSuccess={handlePaymentSuccess}
+          onCancel={handlePaymentCancel}
+          isOpen={showPaymentFlow}
+        />
+      )}
     </div>
   );
 }

@@ -48,6 +48,8 @@ import circleWallets from './circle-wallets.js';  // Circle wallet integration f
 import enterpriseTreasury from './enterprise-treasury.js';  // Enterprise treasury and invoice management
 // import governmentServices from './government-services.js';  // Temporarily disabled - fixing imports
 import aiMlServices from './ai-ml-services.js';
+// import superAppServices from './super-app-services.js'; // TEMPORARILY DISABLED due to auth import issue
+import apiTest from './api-test.js';
 import erpConnectors from './erp-connectors.js';
 import authFederal from './auth-federal.js';
 import customerVerification from './customer-verification.js';
@@ -65,6 +67,9 @@ import webhooks from './webhooks.js';
 import dataExports from './data-exports.js';
 import enterpriseRbac from './enterprise-rbac.js';
 import consumer from './consumer.js';  // Consumer wallet with Tempo priority
+import tenants from './tenants.js';  // Tenant management routes
+import groups from './groups-simple.js';  // Group management routes (simplified)
+import billing from './billing-analytics-minimal.js';  // Billing analytics (minimal version) - no validation issues
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -200,8 +205,9 @@ const register = (app) => {
     oneqa,
     evm,
     bridge,
-    p2pTransfer,  // P2P transfer endpoints for Consumer Wallet
-    consumer  // Consumer wallet with Tempo-first multi-provider support
+    consumer,  // Consumer wallet with Tempo-first multi-provider support
+    billing  // Billing analytics and payment processing routes
+    // Removed tenants - it's mounted separately as /api/tenants
   ]);
   
   // Mount blockchain and treasury routes with their prefixes
@@ -209,6 +215,8 @@ const register = (app) => {
   app.use('/api/treasury', treasury);
   app.use('/api/evm', evm);
   app.use('/api/bridge', bridge);
+  app.use('/api/tenants', tenants); // Tenant management routes
+  app.use('/api/groups', groups); // Group management routes
   app.use('/api', contracts); // Contracts routes already have /contracts prefix
   app.use('/api/invoice-wallets', invoiceWallets); // Invoice-First wallet routes
   app.use('/api/capital-markets', capitalMarkets); // Capital Markets rule sets
@@ -218,7 +226,8 @@ const register = (app) => {
   // app.use('/api/government', governmentServices); // Government services endpoints - temporarily disabled
   app.use('/api/ai-ml', aiMlServices); // AI/ML services endpoints
   app.use('/api/erp', erpConnectors); // ERP connector endpoints
-  app.use('/api/auth', authFederal); // Federal authentication proxy to Monay-ID
+  // app.use('/api', auth); // Removed duplicate - auth routes already mounted in router above
+  app.use('/api/auth-federal', authFederal); // Federal authentication proxy to Monay-ID
   app.use('/api/customer-verification', customerVerification); // Customer KYC/KYB verification
   app.use('/api/payment-rails', paymentRails); // FedNow/RTP payment rails through Dwolla
   app.use('/api/emergency-disbursement', emergencyDisbursement); // Emergency disbursement system (4-hour SLA)
@@ -230,6 +239,9 @@ const register = (app) => {
   app.use('/api/exports', dataExports); // Advanced data export functionality
   app.use('/api/enterprise-rbac', enterpriseRbac); // Enterprise Role-Based Access Control with industry-specific roles
   app.use('/api/super-admin', superAdmin); // Super Admin routes for comprehensive platform management
+  app.use('/api/p2p-transfer', p2pTransfer); // P2P transfer endpoints for Consumer Wallet
+  // app.use(superAppServices); // Super App services for Consumer Wallet (travel, transport, shopping, etc.) - TEMPORARILY DISABLED due to auth import issue
+  app.use(apiTest); // API testing endpoints for verification
 
 
   app.use((error, req, res, next) => {

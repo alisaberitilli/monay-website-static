@@ -49,8 +49,8 @@ export const WalletCard = memo(({ wallet, onClick }: any) => {
     <div className="wallet-card" onClick={() => onClick?.(wallet.id)}>
       <h3>{wallet.name}</h3>
       <p className="balance">{formattedBalance}</p>
-      <p className={`change ${percentageChange >= 0 ? 'positive' : 'negative'}`}>
-        {percentageChange >= 0 ? '+' : ''}{percentageChange}%
+      <p className={`change ${Number(percentageChange) >= 0 ? 'positive' : 'negative'}`}>
+        {Number(percentageChange) >= 0 ? '+' : ''}{percentageChange}%
       </p>
       <div className="wallet-meta">
         <span>{wallet.type}</span>

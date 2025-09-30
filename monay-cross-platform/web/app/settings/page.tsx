@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import DashboardLayout from '@/components/DashboardLayout';
-import { 
+import {
   User,
   Bell,
   Shield,
@@ -20,13 +20,13 @@ import {
   Download,
   Trash2,
   ChevronRight,
-  Toggle,
+  ToggleLeft,
   Check,
   X,
   Eye,
   EyeOff,
   Fingerprint,
-  FaceIcon,
+  Scan,
   Palette,
   Languages
 } from 'lucide-react';

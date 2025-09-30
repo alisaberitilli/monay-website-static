@@ -110,11 +110,14 @@ export default {
 
           userIds = (userIds) ? userIds[0].userIds : null;
           if (userIds) {
-            await UserToken.update({ accessToken: null }, {
-              where: {
-                userId: { [Op.in]: [Sequelize.literal(`${userIds}`)] }
+            // Use raw query instead of UserToken model
+            await models.sequelize.query(
+              'UPDATE user_tokens SET token = NULL WHERE user_id IN (:userIds)',
+              {
+                replacements: { userIds: userIds.split(',') },
+                type: models.QueryTypes.UPDATE
               }
-            });
+            );
           }
         }
       } else {

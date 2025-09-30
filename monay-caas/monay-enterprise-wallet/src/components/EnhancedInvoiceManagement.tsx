@@ -142,8 +142,8 @@ export default function EnhancedInvoiceManagement() {
 
   const handleWalletGenerated = (wallet: any) => {
     // Update the invoice with the generated wallet
-    setInvoices(prevInvoices =>
-      prevInvoices.map(inv =>
+    setInvoices((prevInvoices: any) =>
+      prevInvoices.map((inv: any) =>
         inv.id === selectedInvoiceForWallet?.id
           ? {
               ...inv,
@@ -379,10 +379,10 @@ export default function EnhancedInvoiceManagement() {
                               {(walletMap[invoice.id] || invoice.wallet).mode} wallet
                               {(walletMap[invoice.id] || invoice.wallet).status === 'destroyed' && ' (destroyed)'}
                             </span>
-                            {(walletMap[invoice.id]?.autoCard || invoice.wallet?.autoCard) && (
+                            {(walletMap[invoice.id]?.autoCard || (invoice.wallet as any)?.autoCard) && (
                               <span className="px-2 py-0.5 bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 rounded-full text-xs font-medium flex items-center gap-1">
                                 <CreditCard className="h-3 w-3" />
-                                {(walletMap[invoice.id]?.autoCard || invoice.wallet?.autoCard).cardNumber}
+                                {((walletMap[invoice.id]?.autoCard || (invoice.wallet as any)?.autoCard) as any).cardNumber}
                               </span>
                             )}
                           </div>

@@ -76,7 +76,7 @@ export default function DashboardLayout({
                     return (
                       <Link
                         key={item.name}
-                        href={item.href}
+                        href={item.href as any}
                         className={`px-3 py-2 rounded-md text-sm font-medium flex items-center space-x-1 transition-colors ${
                           isActive
                             ? 'bg-primary-100 text-primary-700'
@@ -128,7 +128,7 @@ export default function DashboardLayout({
               return (
                 <Link
                   key={item.name}
-                  href={item.href}
+                  href={item.href as any}
                   className={`flex flex-col items-center space-y-1 py-4 px-2 min-w-max text-xs font-medium transition-colors ${
                     isActive
                       ? 'text-primary-600 border-b-2 border-primary-600'

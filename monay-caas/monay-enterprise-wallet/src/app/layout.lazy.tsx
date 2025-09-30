@@ -3,7 +3,7 @@ import { Suspense } from 'react';
 
 // Lazy load heavy components
 export const LazyDashboard = dynamic(
-  () => import('./dashboard/page').then(mod => ({ default: mod.default })),
+  () => import('./(dashboard)/dashboard/page').then(mod => ({ default: mod.default })),
   {
     loading: () => <DashboardSkeleton />,
     ssr: false
@@ -11,7 +11,7 @@ export const LazyDashboard = dynamic(
 );
 
 export const LazyTransactions = dynamic(
-  () => import('./transactions/page').then(mod => ({ default: mod.default })),
+  () => import('./(dashboard)/transactions/page').then(mod => ({ default: mod.default })),
   {
     loading: () => <TransactionsSkeleton />,
     ssr: false
@@ -19,7 +19,7 @@ export const LazyTransactions = dynamic(
 );
 
 export const LazyWallets = dynamic(
-  () => import('./wallets/page').then(mod => ({ default: mod.default })),
+  () => import('./(dashboard)/wallets/page').then(mod => ({ default: mod.default })),
   {
     loading: () => <WalletsSkeleton />,
     ssr: false
@@ -27,7 +27,7 @@ export const LazyWallets = dynamic(
 );
 
 export const LazyCompliance = dynamic(
-  () => import('./compliance/page').then(mod => ({ default: mod.default })),
+  () => import('./(dashboard)/compliance/page').then(mod => ({ default: mod.default })),
   {
     loading: () => <ComplianceSkeleton />,
     ssr: false
@@ -35,7 +35,7 @@ export const LazyCompliance = dynamic(
 );
 
 export const LazyPaymentSettings = dynamic(
-  () => import('./payment-settings/page').then(mod => ({ default: mod.default })),
+  () => import('./(dashboard)/payment-settings/page').then(mod => ({ default: mod.default })),
   {
     loading: () => <SettingsSkeleton />,
     ssr: false
@@ -43,7 +43,7 @@ export const LazyPaymentSettings = dynamic(
 );
 
 export const LazyReports = dynamic(
-  () => import('./reports/page').then(mod => ({ default: mod.default })),
+  () => import('./(dashboard)/reports/page').then(mod => ({ default: mod.default })),
   {
     loading: () => <ReportsSkeleton />,
     ssr: false

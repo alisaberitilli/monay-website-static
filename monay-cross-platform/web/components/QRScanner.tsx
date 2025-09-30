@@ -218,9 +218,8 @@ const QRScanner: React.FC<QRScannerProps> = ({
     if (streamRef.current) {
       const track = streamRef.current.getVideoTracks()[0];
       try {
-        // @ts-ignore - torch is not in standard TypeScript definitions yet
         await track.applyConstraints({
-          advanced: [{ torch: !torchEnabled }]
+          advanced: [{ torch: !torchEnabled } as any]
         });
         setTorchEnabled(!torchEnabled);
       } catch (err) {

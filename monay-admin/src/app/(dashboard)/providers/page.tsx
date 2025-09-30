@@ -40,7 +40,6 @@ import {
   Star,
 } from 'lucide-react';
 import {
-  RadialBarChart,
   LineChart,
   BarChart,
   DonutChart,
@@ -173,11 +172,7 @@ export default function ProvidersPage() {
 
   const confirmProviderSwitch = async () => {
     if (!targetProvider || !switchReason || confirmText !== 'CONFIRM') {
-      toast({
-        title: 'Validation Error',
-        description: 'Please fill all required fields and type CONFIRM',
-        variant: 'destructive',
-      });
+      toast.error('Please fill all required fields and type CONFIRM');
       return;
     }
 
@@ -185,18 +180,11 @@ export default function ProvidersPage() {
     try {
       await superAdminService.setPrimaryProvider(targetProvider, switchReason);
       setPrimaryProvider(targetProvider);
-      toast({
-        title: 'Provider Switched Successfully',
-        description: `${targetProvider === 'tempo' ? 'Tempo' : 'Circle'} is now the primary provider`,
-      });
+      toast.success(`${targetProvider === 'tempo' ? 'Tempo' : 'Circle'} is now the primary provider`);
       setShowSwitchModal(false);
       await loadProviderData();
     } catch (error) {
-      toast({
-        title: 'Switch Failed',
-        description: 'Failed to switch provider. Please try again.',
-        variant: 'destructive',
-      });
+      toast.error('Failed to switch provider. Please try again.');
     } finally {
       setIsSwitching(false);
     }

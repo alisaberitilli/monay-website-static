@@ -64,9 +64,9 @@ class ApiService {
     const { skipAuth = false, fallbackToMock = true, ...fetchOptions } = options;
 
     // Build headers
-    const headers: HeadersInit = {
+    const headers: Record<string, string> = {
       'Content-Type': 'application/json',
-      ...fetchOptions.headers,
+      ...(fetchOptions.headers as Record<string, string>),
     };
 
     // Add authentication if needed

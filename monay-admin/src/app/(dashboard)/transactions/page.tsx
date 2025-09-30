@@ -41,7 +41,6 @@ import {
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { AreaChart, BarChart, DonutChart } from '@tremor/react';
-import toast from 'react-hot-toast';
 
 interface Transaction {
   id: string;
@@ -294,17 +293,28 @@ export default function TransactionsPage() {
     { date: 'Aug 23', Credits: 5000, Debits: 2200 },
   ];
 
+  // Shared color mapping for consistency across charts - using simple Tremor color names
+  const categoryColors = ['blue', 'violet', 'amber', 'emerald', 'rose', 'cyan', 'indigo', 'slate'];
+  const categoryColorHex = ['#3b82f6', '#8b5cf6', '#f59e0b', '#10b981', '#f43f5e', '#06b6d4', '#6366f1', '#64748b'];
+
   // For Donut Chart - with dynamic colors
   const categoryData = [
-    { category: 'Housing', amount: 3600, color: 'blue' },
-    { category: 'Shopping', amount: 2200, color: 'violet' },
-    { category: 'Food', amount: 1800, color: 'amber' },
-    { category: 'Transport', amount: 900, color: 'emerald' },
-    { category: 'Entertainment', amount: 650, color: 'rose' },
-    { category: 'Utilities', amount: 450, color: 'cyan' },
-    { category: 'Healthcare', amount: 350, color: 'indigo' },
-    { category: 'Other', amount: 250, color: 'slate' },
+    { category: 'Housing', amount: 3600 },
+    { category: 'Shopping', amount: 2200 },
+    { category: 'Food', amount: 1800 },
+    { category: 'Transport', amount: 900 },
+    { category: 'Entertainment', amount: 650 },
+    { category: 'Utilities', amount: 450 },
+    { category: 'Healthcare', amount: 350 },
+    { category: 'Other', amount: 250 },
   ];
+
+  // Create color mapping for legends
+  const categoryColorMapping = categoryData.map((item, index) => ({
+    ...item,
+    color: categoryColors[index],
+    hexColor: categoryColorHex[index]
+  }));
 
   // For Bar Chart - Monthly spending by category
   const monthlySpending = [
@@ -435,27 +445,17 @@ export default function TransactionsPage() {
         a.click();
       } else {
         // For Excel and PDF, we'd normally use libraries like xlsx or jsPDF
-        toast({
-          title: 'Export Format',
-          description: `${exportFormat.toUpperCase()} export will be implemented with appropriate libraries`,
-        });
+        toast.success(`${exportFormat.toUpperCase()} export will be implemented with appropriate libraries`);
       }
 
-      toast({
-        title: 'Export Successful',
-        description: `Exported ${dataToExport.length} transactions as ${exportFormat.toUpperCase()}`,
-      });
+      toast.success(`Exported ${dataToExport.length} transactions as ${exportFormat.toUpperCase()}`);
 
       setShowExportModal(false);
       // Reset export settings
       setExportDateRange('all');
       setExportNotes('');
     } catch (error) {
-      toast({
-        title: 'Export Failed',
-        description: 'Failed to export transactions. Please try again.',
-        variant: 'destructive',
-      });
+      toast.error('Failed to export transactions. Please try again.');
     } finally {
       setIsExporting(false);
     }
@@ -582,47 +582,24 @@ export default function TransactionsPage() {
                 data={categoryData}
                 category="amount"
                 index="category"
-                colors={["blue", "violet", "amber", "emerald", "rose", "cyan", "indigo", "slate"]}
                 valueFormatter={(value) => `$${value.toLocaleString()}`}
                 showAnimation={true}
                 showLabel={true}
                 showTooltip={true}
+                showLegend={true}
                 label="$10,200"
               />
             </div>
             <div className="mt-4 grid grid-cols-2 gap-2 text-sm">
-              <div className="flex items-center gap-2">
-                <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
-                <span className="text-muted-foreground">Housing: $3,600</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <div className="w-3 h-3 bg-violet-500 rounded-full"></div>
-                <span className="text-muted-foreground">Shopping: $2,200</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <div className="w-3 h-3 bg-amber-500 rounded-full"></div>
-                <span className="text-muted-foreground">Food: $1,800</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <div className="w-3 h-3 bg-emerald-500 rounded-full"></div>
-                <span className="text-muted-foreground">Transport: $900</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <div className="w-3 h-3 bg-rose-500 rounded-full"></div>
-                <span className="text-muted-foreground">Entertainment: $650</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <div className="w-3 h-3 bg-cyan-500 rounded-full"></div>
-                <span className="text-muted-foreground">Utilities: $450</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <div className="w-3 h-3 bg-indigo-500 rounded-full"></div>
-                <span className="text-muted-foreground">Healthcare: $350</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <div className="w-3 h-3 bg-slate-500 rounded-full"></div>
-                <span className="text-muted-foreground">Other: $250</span>
-              </div>
+              {categoryColorMapping.map((item, index) => (
+                <div key={item.category} className="flex items-center gap-2">
+                  <div
+                    className="w-3 h-3 rounded-full"
+                    style={{ backgroundColor: item.hexColor }}
+                  ></div>
+                  <span className="text-muted-foreground">{item.category}: ${item.amount.toLocaleString()}</span>
+                </div>
+              ))}
             </div>
           </CardContent>
         </Card>
@@ -644,13 +621,23 @@ export default function TransactionsPage() {
               data={monthlySpending}
               index="month"
               categories={["Housing", "Shopping", "Food", "Transport", "Entertainment", "Utilities", "Healthcare", "Other"]}
-              colors={["blue", "violet", "amber", "emerald", "rose", "cyan", "indigo", "slate"]}
               valueFormatter={(value) => `$${value.toLocaleString()}`}
               showAnimation={true}
               showLegend={true}
               showGridLines={false}
               stack={true}
             />
+          </div>
+          <div className="mt-4 grid grid-cols-4 gap-2 text-sm">
+            {categoryColorMapping.map((item, index) => (
+              <div key={item.category} className="flex items-center gap-2">
+                <div
+                  className="w-3 h-3 rounded-full"
+                  style={{ backgroundColor: item.hexColor }}
+                ></div>
+                <span className="text-muted-foreground text-xs">{item.category}</span>
+              </div>
+            ))}
           </div>
         </CardContent>
       </Card>

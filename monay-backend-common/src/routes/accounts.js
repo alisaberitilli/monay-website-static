@@ -1,11 +1,12 @@
 import express from 'express';
 import { v4 as uuidv4 } from 'uuid';
-import authenticateToken from '../middlewares/auth-middleware.js';
+import authenticateToken from '../middleware-app/auth-middleware.js';
 import db from '../models/index.js';
 const { User, ChildParent, Transaction, Wallet } = db;
 import pkg from 'sequelize';
 const { Op } = pkg;
 import utility from '../services/utility.js';
+import models from '../models/index.js';
 
 const router = express.Router();
 
@@ -191,11 +192,11 @@ router.post('/secondary/link', authenticateToken, async (req, res) => {
 
     // Find secondary user based on link method
     if (linkMethod === 'phone' && phoneNumber) {
-      secondaryUser = await User.findOne({
+      secondaryUser = await models.User.findOne({
         where: { mobile: phoneNumber }
       });
     } else if (linkMethod === 'email' && email) {
-      secondaryUser = await User.findOne({
+      secondaryUser = await models.User.findOne({
         where: { email: email.toLowerCase() }
       });
     } else if (linkMethod === 'qr') {

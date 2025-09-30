@@ -1,6 +1,6 @@
 import express from 'express';
 import evmService from '../services/evm.js';
-import authMiddleware from '../middlewares/auth-middleware.js';
+import authMiddleware from '../middleware-app/auth-middleware.js';
 import { successResponse, errorResponse } from '../helpers/index.js';
 
 const router = express.Router();

@@ -498,7 +498,8 @@ const closeTestDb = async () => {
   }
 };
 
-export default {
+// Export named functions for ES modules
+export {
   getTestDb,
   cleanDatabase,
   seedUsers,

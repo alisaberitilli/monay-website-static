@@ -182,8 +182,8 @@ export default function InvoiceWalletWizard({ invoice, onComplete, onCancel }: I
         })
 
         // Extract wallet and card from response
-        const generatedWallet = response.wallet || response
-        const autoCard = response.card
+        const generatedWallet = response
+        const autoCard = null // Card generation is optional
 
         // Also save to localStorage for dev/testing
         const localWallets = JSON.parse(localStorage.getItem('invoice_wallets') || '[]')
@@ -200,8 +200,8 @@ export default function InvoiceWalletWizard({ invoice, onComplete, onCancel }: I
           toast.success(
             <div>
               <div className="font-semibold">✅ Wallet & Card Created!</div>
-              <div className="text-sm mt-1">Virtual card {autoCard.cardNumber} auto-issued</div>
-              <div className="text-xs opacity-75">Spending limit: ${autoCard.spendingLimit?.toLocaleString() || '10,000'}</div>
+              <div className="text-sm mt-1">Virtual card {(autoCard as any).cardNumber} auto-issued</div>
+              <div className="text-xs opacity-75">Spending limit: ${(autoCard as any).spendingLimit?.toLocaleString() || '10,000'}</div>
             </div>,
             { duration: 5000 }
           )

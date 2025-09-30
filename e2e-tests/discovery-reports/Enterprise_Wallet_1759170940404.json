@@ -1,0 +1,310 @@
+{
+  "app": "Enterprise Wallet",
+  "timestamp": 1759170940404,
+  "features": {
+    "AUTH_FLOW": {
+      "signup": {
+        "name": "Sign Up Page",
+        "exists": false,
+        "selectors_found": [],
+        "selectors_missing": [
+          "a[href*=\"signup\"]",
+          "button:has-text(\"Sign Up\")",
+          "text=Create Account"
+        ]
+      },
+      "signin": {
+        "name": "Sign In Page",
+        "exists": false,
+        "selectors_found": [],
+        "selectors_missing": [
+          "a[href*=\"login\"]",
+          "button:has-text(\"Sign In\")",
+          "text=Login"
+        ]
+      },
+      "register": {
+        "name": "Registration Form",
+        "exists": false,
+        "selectors_found": [],
+        "selectors_missing": [
+          "form",
+          "input[name=\"email\"]",
+          "input[name=\"password\"]"
+        ]
+      },
+      "verify": {
+        "name": "Email/Phone Verification",
+        "exists": false,
+        "selectors_found": [],
+        "selectors_missing": [
+          "input[name=\"otp\"]",
+          "text=Verify",
+          "text=Verification"
+        ]
+      },
+      "onboard": {
+        "name": "Onboarding Flow",
+        "exists": false,
+        "selectors_found": [],
+        "selectors_missing": [
+          "text=Welcome",
+          "text=Get Started",
+          "button:has-text(\"Continue\")"
+        ]
+      },
+      "mpin": {
+        "name": "MPIN Setup",
+        "exists": false,
+        "selectors_found": [],
+        "selectors_missing": [
+          "input[name=\"mpin\"]",
+          "text=Set PIN",
+          "text=Create PIN"
+        ]
+      },
+      "kyc": {
+        "name": "KYC Verification",
+        "exists": false,
+        "selectors_found": [],
+        "selectors_missing": [
+          "text=Identity",
+          "text=Verification",
+          "button:has-text(\"Verify Identity\")"
+        ]
+      },
+      "logout": {
+        "name": "Logout",
+        "exists": true,
+        "selectors_found": [
+          "text=Sign Out"
+        ],
+        "selectors_missing": [
+          "button:has-text(\"Logout\")",
+          "a[href*=\"logout\"]"
+        ]
+      }
+    },
+    "NAVIGATION": {
+      "dashboard": {
+        "name": "Dashboard",
+        "exists": true,
+        "selectors_found": [
+          "text=Dashboard",
+          "nav :text(\"Dashboard\")"
+        ],
+        "selectors_missing": [
+          "a[href*=\"dashboard\"]"
+        ]
+      },
+      "profile": {
+        "name": "Profile",
+        "exists": false,
+        "selectors_found": [],
+        "selectors_missing": [
+          "a[href*=\"profile\"]",
+          "text=Profile",
+          "nav :text(\"Profile\")"
+        ]
+      },
+      "settings": {
+        "name": "Settings",
+        "exists": true,
+        "selectors_found": [
+          "text=Settings"
+        ],
+        "selectors_missing": [
+          "a[href*=\"settings\"]",
+          "nav :text(\"Settings\")"
+        ]
+      },
+      "help": {
+        "name": "Help/Support",
+        "exists": true,
+        "selectors_found": [
+          "text=Help",
+          "text=Support"
+        ],
+        "selectors_missing": [
+          "a[href*=\"help\"]"
+        ]
+      },
+      "notifications": {
+        "name": "Notifications",
+        "exists": true,
+        "selectors_found": [
+          "text=Notifications"
+        ],
+        "selectors_missing": [
+          "button[aria-label*=\"notification\"]"
+        ]
+      }
+    },
+    "ENTERPRISE_FEATURES": {
+      "wallet": {
+        "name": "Wallet Overview",
+        "exists": true,
+        "selectors_found": [
+          "text=Wallet",
+          "text=Balance"
+        ],
+        "selectors_missing": []
+      },
+      "tokens": {
+        "name": "Token Management",
+        "exists": true,
+        "selectors_found": [
+          "text=Tokens"
+        ],
+        "selectors_missing": [
+          "button:has-text(\"Create Token\")"
+        ]
+      },
+      "treasury": {
+        "name": "Treasury Operations",
+        "exists": true,
+        "selectors_found": [
+          "text=Treasury"
+        ],
+        "selectors_missing": [
+          "text=Liquidity"
+        ]
+      },
+      "transactions": {
+        "name": "Transaction History",
+        "exists": true,
+        "selectors_found": [
+          "text=Transactions"
+        ],
+        "selectors_missing": [
+          "text=History"
+        ]
+      },
+      "mint": {
+        "name": "Mint Tokens",
+        "exists": false,
+        "selectors_found": [],
+        "selectors_missing": [
+          "button:has-text(\"Mint\")",
+          "text=Mint Tokens"
+        ]
+      },
+      "burn": {
+        "name": "Burn Tokens",
+        "exists": false,
+        "selectors_found": [],
+        "selectors_missing": [
+          "button:has-text(\"Burn\")",
+          "text=Burn Tokens"
+        ]
+      },
+      "transfer": {
+        "name": "Transfer/Send",
+        "exists": true,
+        "selectors_found": [
+          "button:has-text(\"Send\")"
+        ],
+        "selectors_missing": [
+          "button:has-text(\"Transfer\")"
+        ]
+      },
+      "crossrail": {
+        "name": "Cross-Rail Operations",
+        "exists": true,
+        "selectors_found": [
+          "text=Cross-Rail"
+        ],
+        "selectors_missing": [
+          "text=Bridge"
+        ]
+      },
+      "compliance-controls": {
+        "name": "Compliance Controls",
+        "exists": true,
+        "selectors_found": [
+          "text=Compliance"
+        ],
+        "selectors_missing": [
+          "text=Controls"
+        ]
+      },
+      "reports": {
+        "name": "Reports",
+        "exists": false,
+        "selectors_found": [],
+        "selectors_missing": [
+          "text=Reports",
+          "a[href*=\"reports\"]"
+        ]
+      }
+    },
+    "CRUD_OPERATIONS": {
+      "create": {
+        "name": "Create Operations",
+        "exists": true,
+        "selectors_found": [
+          "button:has-text(\"Add\")"
+        ],
+        "selectors_missing": [
+          "button:has-text(\"Create\")",
+          "button:has-text(\"New\")"
+        ]
+      },
+      "read": {
+        "name": "View/Read Operations",
+        "exists": true,
+        "selectors_found": [
+          "button:has-text(\"View\")"
+        ],
+        "selectors_missing": [
+          "text=Details",
+          "a[href*=\"view\"]"
+        ]
+      },
+      "update": {
+        "name": "Edit/Update Operations",
+        "exists": false,
+        "selectors_found": [],
+        "selectors_missing": [
+          "button:has-text(\"Edit\")",
+          "button:has-text(\"Update\")",
+          "a[href*=\"edit\"]"
+        ]
+      },
+      "delete": {
+        "name": "Delete Operations",
+        "exists": false,
+        "selectors_found": [],
+        "selectors_missing": [
+          "button:has-text(\"Delete\")",
+          "button:has-text(\"Remove\")",
+          "button[aria-label*=\"delete\"]"
+        ]
+      },
+      "save": {
+        "name": "Save Operations",
+        "exists": false,
+        "selectors_found": [],
+        "selectors_missing": [
+          "button:has-text(\"Save\")",
+          "button[type=\"submit\"]"
+        ]
+      },
+      "cancel": {
+        "name": "Cancel Operations",
+        "exists": false,
+        "selectors_found": [],
+        "selectors_missing": [
+          "button:has-text(\"Cancel\")",
+          "button:has-text(\"Close\")"
+        ]
+      }
+    }
+  },
+  "summary": {
+    "total_features": 29,
+    "features_found": 14,
+    "features_missing": 15,
+    "completion_percentage": 48
+  }
+}

@@ -8,7 +8,7 @@ import { Server } from 'socket.io';
 import jwt from 'jsonwebtoken';
 import redis from './redis.js';
 import logger from './enhanced-logger.js';
-import { AuthenticationError } from '../middlewares/error-handler.js';
+import { AuthenticationError } from '../middleware-app/error-handler.js';
 
 class WebSocketService {
   constructor() {

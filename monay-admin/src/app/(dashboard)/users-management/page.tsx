@@ -117,68 +117,67 @@ export default function UsersManagementPage() {
     try {
       setLoading(true);
 
-      // Mock data for demonstration
-      setUsers([
-        {
-          id: 'usr-001',
-          email: 'john.doe@example.com',
-          firstName: 'John',
-          lastName: 'Doe',
-          phone: '+1 234-567-8900',
-          role: 'consumer',
-          status: 'active',
-          kycStatus: 'verified',
-          createdAt: '2024-01-15T10:00:00Z',
-          lastLoginAt: '2024-01-24T12:00:00Z',
-          walletBalance: 5250.50,
-          totalTransactions: 142,
-          platform: 'consumer',
-          riskScore: 25,
-        },
-        {
-          id: 'usr-002',
-          email: 'jane.smith@company.com',
-          firstName: 'Jane',
-          lastName: 'Smith',
-          phone: '+1 234-567-8901',
-          role: 'enterprise_admin',
-          status: 'active',
-          kycStatus: 'verified',
-          createdAt: '2024-01-10T10:00:00Z',
-          lastLoginAt: '2024-01-24T11:00:00Z',
-          walletBalance: 125000.00,
-          totalTransactions: 523,
-          platform: 'enterprise',
-          riskScore: 15,
-        },
-        {
-          id: 'usr-003',
-          email: 'bob.wilson@example.com',
-          firstName: 'Bob',
-          lastName: 'Wilson',
-          role: 'consumer',
-          status: 'suspended',
-          kycStatus: 'pending',
-          createdAt: '2024-01-20T10:00:00Z',
-          walletBalance: 150.00,
-          totalTransactions: 5,
-          platform: 'consumer',
-          riskScore: 75,
-        },
-      ]);
+      // Get JWT token from localStorage
+      const token = localStorage.getItem('adminToken');
 
-      setMetrics({
-        totalUsers: 12547,
-        activeUsers: 11234,
-        newUsersToday: 87,
-        suspendedUsers: 45,
-        verifiedKYC: 10234,
-        pendingKYC: 892,
-        consumerUsers: 9456,
-        enterpriseUsers: 3091,
+      // Fetch users from API
+      const usersResponse = await fetch('http://localhost:3001/api/admin/user', {
+        headers: {
+          'Authorization': token ? `Bearer ${token}` : '',
+          'Content-Type': 'application/json',
+          'x-admin-bypass': 'true'
+        }
       });
+
+      if (usersResponse.ok) {
+        const usersData = await usersResponse.json();
+
+        // Map API data to frontend interface
+        const mappedUsers = usersData.data?.rows?.map((user: any) => ({
+          id: user.id,
+          email: user.email,
+          firstName: user.firstName || '',
+          lastName: user.lastName || '',
+          phone: user.phone || user.mobile || user.phoneNumber || '',
+          role: user.role || user.userType || 'consumer',
+          status: user.status || 'active',
+          kycStatus: user.kycStatus || (user.isEmailVerified ? 'verified' : 'pending'),
+          createdAt: user.createdAt || new Date().toISOString(),
+          lastLoginAt: user.lastLoginAt,
+          walletBalance: user.wallet_balance || 0,
+          totalTransactions: 0, // Will need to fetch from transactions table
+          platform: user.user_type === 'platform_admin' ? 'enterprise' : 'consumer',
+          riskScore: user.risk_profile === 'high' ? 75 : (user.risk_profile === 'medium' ? 50 : 25),
+        })) || [];
+
+        setUsers(mappedUsers);
+
+        // Calculate metrics from real data
+        const totalUsers = mappedUsers.length;
+        const activeUsers = mappedUsers.filter((u: any) => u.status === 'active').length;
+        const suspendedUsers = mappedUsers.filter((u: any) => u.status === 'suspended').length;
+        const verifiedKYC = mappedUsers.filter((u: any) => u.kycStatus === 'verified').length;
+        const pendingKYC = mappedUsers.filter((u: any) => u.kycStatus === 'pending').length;
+        const consumerUsers = mappedUsers.filter((u: any) => u.platform === 'consumer').length;
+        const enterpriseUsers = mappedUsers.filter((u: any) => u.platform === 'enterprise').length;
+
+        setMetrics({
+          totalUsers,
+          activeUsers,
+          newUsersToday: 0, // Would need to calculate from created_at dates
+          suspendedUsers,
+          verifiedKYC,
+          pendingKYC,
+          consumerUsers,
+          enterpriseUsers,
+        });
+      } else {
+        console.error('Failed to fetch users:', usersResponse.statusText);
+        toast.error('Failed to load users data');
+      }
     } catch (error) {
       console.error('Failed to load users data:', error);
+      toast.error('Failed to load users data');
     } finally {
       setLoading(false);
     }
@@ -194,37 +193,23 @@ export default function UsersManagementPage() {
         parseInt(suspendDuration)
       );
 
-      toast({
-        title: 'Success',
-        description: `User ${selectedUser.email} has been suspended`,
-      });
+      toast.success(`User ${selectedUser.email} has been suspended`);
 
       setShowSuspendDialog(false);
       setSuspendReason('');
       await loadUsersData();
     } catch (error) {
-      toast({
-        title: 'Error',
-        description: 'Failed to suspend user',
-        variant: 'destructive',
-      });
+      toast.error('Failed to suspend user');
     }
   };
 
   const handleActivateUser = async (userId: string) => {
     try {
       await superAdminService.activateUser(userId);
-      toast({
-        title: 'Success',
-        description: 'User has been activated',
-      });
+      toast.success('User has been activated');
       await loadUsersData();
     } catch (error) {
-      toast({
-        title: 'Error',
-        description: 'Failed to activate user',
-        variant: 'destructive',
-      });
+      toast.error('Failed to activate user');
     }
   };
 

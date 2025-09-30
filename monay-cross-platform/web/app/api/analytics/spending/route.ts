@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { DatabaseService, getDatabaseMode } from '@/lib/db-service';
+import { DatabaseService } from '@/lib/db-service';
 
 // GET /api/analytics/spending - Get spending analytics
 export async function GET(request: NextRequest) {
@@ -43,7 +43,7 @@ export async function GET(request: NextRequest) {
         startDate: new Date(Date.now() - days * 24 * 60 * 60 * 1000).toISOString(),
         endDate: new Date().toISOString()
       },
-      mode: getDatabaseMode()
+      mode: 'mock'
     });
   } catch (error) {
     console.error('Error fetching spending analytics:', error);

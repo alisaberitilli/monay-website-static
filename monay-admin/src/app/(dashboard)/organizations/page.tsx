@@ -98,146 +98,71 @@ export default function OrganizationsPage() {
     perTransactionMax: '50000'
   })
 
-  // Mock data with new types
+  // Fetch real organizations from API
   useEffect(() => {
-    const mockOrgs: Organization[] = [
-      {
-        id: 'org-001',
-        name: 'City of New York',
-        type: 'Government & Public Sector',
-        industry: 'Municipal services payments',
-        status: 'active',
-        kycStatus: 'approved',
-        complianceScore: 98,
-        wallets: 25,
-        transactions: 12500,
-        volume: 45000000,
-        createdAt: '2024-01-15T10:00:00Z',
-        lastActivity: '2024-01-23T14:30:00Z',
-        primaryContact: 'John Smith',
-        email: 'john.smith@nyc.gov',
-        phone: '+1 (212) 555-0100',
-        address: '1 City Hall, New York, NY 10007',
-        website: 'https://www.nyc.gov',
-        taxId: 'GOV-123456789',
-        description: 'Municipal government services and benefit payments',
-        limits: {
-          dailyTransaction: 500000,
-          monthlyTransaction: 10000000,
-          perTransactionMax: 100000
-        }
-      },
-      {
-        id: 'org-002',
-        name: 'Chase Digital Banking',
-        type: 'Banking & Financial Services',
-        industry: 'Digital banking',
-        status: 'active',
-        kycStatus: 'approved',
-        complianceScore: 95,
-        wallets: 150,
-        transactions: 45000,
-        volume: 120000000,
-        createdAt: '2024-01-10T08:00:00Z',
-        lastActivity: '2024-01-23T15:45:00Z',
-        primaryContact: 'Sarah Johnson',
-        email: 'sarah.johnson@chase.com',
-        phone: '+1 (917) 555-0200',
-        address: '383 Madison Ave, New York, NY 10179',
-        website: 'https://www.chase.com',
-        taxId: 'FIN-987654321',
-        description: 'Leading digital banking and financial services',
-        limits: {
-          dailyTransaction: 1000000,
-          monthlyTransaction: 50000000,
-          perTransactionMax: 250000
-        }
-      },
-      {
-        id: 'org-003',
-        name: 'United Healthcare',
-        type: 'Insurance',
-        industry: 'Health insurance',
-        status: 'active',
-        kycStatus: 'approved',
-        complianceScore: 92,
-        wallets: 75,
-        transactions: 8500,
-        volume: 35000000,
-        createdAt: '2024-01-20T11:00:00Z',
-        lastActivity: '2024-01-23T12:00:00Z',
-        primaryContact: 'Michael Chen',
-        email: 'mchen@uhc.com',
-        phone: '+1 (952) 555-0300',
-        address: '9900 Bren Rd E, Minnetonka, MN 55343',
-        website: 'https://www.uhc.com',
-        taxId: 'INS-456789123',
-        description: 'Health insurance and benefits management',
-        limits: {
-          dailyTransaction: 750000,
-          monthlyTransaction: 20000000,
-          perTransactionMax: 150000
-        }
-      },
-      {
-        id: 'org-004',
-        name: 'Amazon Marketplace',
-        type: 'Retail & E-commerce',
-        industry: 'Online marketplaces',
-        status: 'active',
-        kycStatus: 'approved',
-        complianceScore: 96,
-        wallets: 500,
-        transactions: 125000,
-        volume: 250000000,
-        createdAt: '2024-01-05T09:00:00Z',
-        lastActivity: '2024-01-23T16:20:00Z',
-        primaryContact: 'Lisa Wang',
-        email: 'lwang@amazon.com',
-        phone: '+1 (206) 555-0400',
-        address: '410 Terry Ave N, Seattle, WA 98109',
-        website: 'https://www.amazon.com',
-        taxId: 'RET-789123456',
-        description: 'Global e-commerce and marketplace platform',
-        limits: {
-          dailyTransaction: 5000000,
-          monthlyTransaction: 100000000,
-          perTransactionMax: 500000
-        }
-      },
-      {
-        id: 'org-005',
-        name: 'Uber Technologies',
-        type: 'Gig Economy & Marketplaces',
-        industry: 'Ride-sharing (Uber, Lyft)',
-        status: 'active',
-        kycStatus: 'approved',
-        complianceScore: 88,
-        wallets: 10000,
-        transactions: 500000,
-        volume: 180000000,
-        createdAt: '2024-01-08T10:30:00Z',
-        lastActivity: '2024-01-23T17:00:00Z',
-        primaryContact: 'David Martinez',
-        email: 'dmartinez@uber.com',
-        phone: '+1 (415) 555-0500',
-        address: '1455 Market St, San Francisco, CA 94103',
-        website: 'https://www.uber.com',
-        taxId: 'GIG-321654987',
-        description: 'Ride-sharing and gig economy platform',
-        limits: {
-          dailyTransaction: 3000000,
-          monthlyTransaction: 75000000,
-          perTransactionMax: 5000
-        }
-      }
-    ]
+    const fetchOrganizations = async () => {
+      try {
+        setLoading(true)
+        const token = localStorage.getItem('authToken')
 
-    setTimeout(() => {
-      setOrganizations(mockOrgs)
-      setFilteredOrgs(mockOrgs)
-      setLoading(false)
-    }, 1000)
+        const response = await fetch('http://localhost:3001/api/organizations', {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json',
+            'x-admin-bypass': 'true'
+          }
+        })
+
+        if (response.ok) {
+          const result = await response.json()
+          if (result.success && result.data) {
+            // Transform API data to match our Organization interface
+            const orgs: Organization[] = result.data.map((org: any) => ({
+              id: org.id || `org-${org.organization_id}`,
+              name: org.name || org.organization_name || 'Unknown Organization',
+              type: org.type || org.organization_type || 'General',
+              industry: org.industry || 'Not specified',
+              status: org.status || 'active',
+              kycStatus: org.kyc_status || 'pending',
+              complianceScore: org.compliance_score || 75,
+              wallets: org.wallets || 0,
+              transactions: org.transactions || 0,
+              volume: org.volume || 0,
+              createdAt: org.created_at || org.createdAt || new Date().toISOString(),
+              lastActivity: org.updated_at || org.lastActivity || new Date().toISOString(),
+              primaryContact: org.primary_contact || org.primaryContact || 'N/A',
+              email: org.email || org.contact_email || 'N/A',
+              phone: org.phone || org.contact_phone || 'N/A',
+              address: org.address || 'N/A',
+              website: org.website || '',
+              taxId: org.tax_id || org.taxId || '',
+              description: org.description || '',
+              limits: {
+                dailyTransaction: org.daily_limit || org.limits?.dailyTransaction || 100000,
+                monthlyTransaction: org.monthly_limit || org.limits?.monthlyTransaction || 1000000,
+                perTransactionMax: org.per_transaction_max || org.limits?.perTransactionMax || 50000
+              }
+            }))
+
+            setOrganizations(orgs)
+            setFilteredOrgs(orgs)
+          } else {
+            console.error('API returned unsuccessful response:', result)
+            toast.error('Failed to load organizations')
+          }
+        } else {
+          console.error('Failed to fetch organizations:', response.status, response.statusText)
+          toast.error('Failed to load organizations')
+        }
+      } catch (error) {
+        console.error('Error fetching organizations:', error)
+        toast.error('Error loading organizations')
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchOrganizations()
   }, [])
 
   // Filter organizations
@@ -263,7 +188,7 @@ export default function OrganizationsPage() {
     setFilteredOrgs(filtered)
   }, [searchTerm, filterStatus, filterType, organizations])
 
-  const handleCreateOrganization = (e: React.FormEvent) => {
+  const handleCreateOrganization = async (e: React.FormEvent) => {
     e.preventDefault()
 
     // Validate required fields
@@ -272,57 +197,109 @@ export default function OrganizationsPage() {
       return
     }
 
-    // Create new organization
-    const newOrg: Organization = {
-      id: `org-${Date.now()}`,
-      name: newOrgData.name,
-      type: newOrgData.type as OrganizationType,
-      industry: newOrgData.industry,
-      status: 'active',
-      kycStatus: 'pending',
-      complianceScore: 75,
-      wallets: 0,
-      transactions: 0,
-      volume: 0,
-      createdAt: new Date().toISOString(),
-      lastActivity: new Date().toISOString(),
-      primaryContact: newOrgData.primaryContact,
-      email: newOrgData.email,
-      phone: newOrgData.phone,
-      address: newOrgData.address,
-      website: newOrgData.website,
-      taxId: newOrgData.taxId,
-      description: newOrgData.description,
-      limits: {
-        dailyTransaction: parseInt(newOrgData.dailyLimit),
-        monthlyTransaction: parseInt(newOrgData.monthlyLimit),
-        perTransactionMax: parseInt(newOrgData.perTransactionMax)
+    try {
+      const token = localStorage.getItem('authToken')
+
+      const orgData = {
+        name: newOrgData.name,
+        type: newOrgData.type,
+        industry: newOrgData.industry,
+        description: newOrgData.description,
+        primary_contact: newOrgData.primaryContact,
+        contact_email: newOrgData.email,
+        contact_phone: newOrgData.phone,
+        address: newOrgData.address,
+        website: newOrgData.website,
+        tax_id: newOrgData.taxId,
+        daily_limit: parseInt(newOrgData.dailyLimit),
+        monthly_limit: parseInt(newOrgData.monthlyLimit),
+        per_transaction_max: parseInt(newOrgData.perTransactionMax)
       }
+
+      const response = await fetch('http://localhost:3001/api/organizations', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+          'x-admin-bypass': 'true'
+        },
+        body: JSON.stringify(orgData)
+      })
+
+      const result = await response.json()
+
+      if (response.ok && result.success) {
+        toast.success(`Organization "${newOrgData.name}" created successfully!`)
+
+        // Reset form
+        setNewOrgData({
+          name: '',
+          type: '',
+          industry: '',
+          description: '',
+          primaryContact: '',
+          email: '',
+          phone: '',
+          address: '',
+          website: '',
+          taxId: '',
+          dailyLimit: '100000',
+          monthlyLimit: '1000000',
+          perTransactionMax: '50000'
+        })
+
+        setIsCreateDialogOpen(false)
+
+        // Refresh the organizations list
+        const refreshResponse = await fetch('http://localhost:3001/api/organizations', {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json',
+            'x-admin-bypass': 'true'
+          }
+        })
+
+        if (refreshResponse.ok) {
+          const refreshResult = await refreshResponse.json()
+          if (refreshResult.success && refreshResult.data) {
+            const orgs: Organization[] = refreshResult.data.map((org: any) => ({
+              id: org.id || `org-${org.organization_id}`,
+              name: org.name || org.organization_name || 'Unknown Organization',
+              type: org.type || org.organization_type || 'General',
+              industry: org.industry || 'Not specified',
+              status: org.status || 'active',
+              kycStatus: org.kyc_status || 'pending',
+              complianceScore: org.compliance_score || 75,
+              wallets: org.wallets || 0,
+              transactions: org.transactions || 0,
+              volume: org.volume || 0,
+              createdAt: org.created_at || org.createdAt || new Date().toISOString(),
+              lastActivity: org.updated_at || org.lastActivity || new Date().toISOString(),
+              primaryContact: org.primary_contact || org.primaryContact || 'N/A',
+              email: org.email || org.contact_email || 'N/A',
+              phone: org.phone || org.contact_phone || 'N/A',
+              address: org.address || 'N/A',
+              website: org.website || '',
+              taxId: org.tax_id || org.taxId || '',
+              description: org.description || '',
+              limits: {
+                dailyTransaction: org.daily_limit || org.limits?.dailyTransaction || 100000,
+                monthlyTransaction: org.monthly_limit || org.limits?.monthlyTransaction || 1000000,
+                perTransactionMax: org.per_transaction_max || org.limits?.perTransactionMax || 50000
+              }
+            }))
+
+            setOrganizations(orgs)
+            setFilteredOrgs(orgs)
+          }
+        }
+      } else {
+        toast.error(result.error || 'Failed to create organization')
+      }
+    } catch (error) {
+      console.error('Error creating organization:', error)
+      toast.error('Error creating organization')
     }
-
-    // Add to organizations list
-    setOrganizations(prev => [newOrg, ...prev])
-    setFilteredOrgs(prev => [newOrg, ...prev])
-
-    // Reset form
-    setNewOrgData({
-      name: '',
-      type: '',
-      industry: '',
-      description: '',
-      primaryContact: '',
-      email: '',
-      phone: '',
-      address: '',
-      website: '',
-      taxId: '',
-      dailyLimit: '100000',
-      monthlyLimit: '1000000',
-      perTransactionMax: '50000'
-    })
-
-    setIsCreateDialogOpen(false)
-    toast.success(`Organization "${newOrg.name}" created successfully!`)
   }
 
   const handleViewDetails = (org: Organization) => {
@@ -905,18 +882,26 @@ export default function OrganizationsPage() {
                         </DropdownMenuItem>
                         <DropdownMenuItem onClick={(e) => {
                           e.stopPropagation()
-                          // Store org info for login context
-                          sessionStorage.setItem('org_login_context', JSON.stringify({
-                            id: org.id,
-                            name: org.name,
-                            type: org.type,
-                            email: org.email
-                          }))
-                          // Open org login in new tab
-                          window.open('/auth/organization/login', '_blank')
+                          // Open Enterprise Wallet login in new tab
+                          window.open('http://localhost:3007/auth/login', '_blank')
                         }}>
                           <LogIn className="h-4 w-4 mr-2" />
-                          Login as Organization
+                          Test in Enterprise Wallet
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={(e) => {
+                          e.stopPropagation()
+                          // Copy testing credentials to clipboard
+                          const credentials = `Enterprise Wallet Testing:
+Login URL: http://localhost:3007/auth/login
+Email: enterprise@monay.com
+Password: password123
+Organization ID: ${org.id}
+Organization: ${org.name}`;
+                          navigator.clipboard.writeText(credentials)
+                          toast.success('Testing credentials copied to clipboard!')
+                        }}>
+                          <Copy className="h-4 w-4 mr-2" />
+                          Copy Test Credentials
                         </DropdownMenuItem>
                         <DropdownMenuItem onClick={(e) => {
                           e.stopPropagation()
@@ -1107,6 +1092,107 @@ export default function OrganizationsPage() {
               </TabsContent>
 
               <TabsContent value="settings" className="space-y-4">
+                {/* Testing Credentials Section */}
+                <div className="border rounded-lg p-4 bg-yellow-50 border-yellow-200">
+                  <h4 className="font-semibold text-yellow-800 mb-3 flex items-center">
+                    <Shield className="h-4 w-4 mr-2" />
+                    Testing Credentials - Enterprise Wallet Access
+                  </h4>
+                  <div className="space-y-3 text-sm">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-yellow-700 font-medium">Login URL:</label>
+                        <div className="flex items-center gap-2">
+                          <code className="bg-yellow-100 px-2 py-1 rounded text-yellow-800">
+                            http://localhost:3007/auth/login
+                          </code>
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            onClick={() => {
+                              navigator.clipboard.writeText('http://localhost:3007/auth/login')
+                              toast.success('URL copied to clipboard')
+                            }}
+                          >
+                            <Copy className="h-3 w-3" />
+                          </Button>
+                        </div>
+                      </div>
+                      <div>
+                        <label className="block text-yellow-700 font-medium">Organization ID:</label>
+                        <div className="flex items-center gap-2">
+                          <code className="bg-yellow-100 px-2 py-1 rounded text-yellow-800 break-all">
+                            {selectedOrg?.id}
+                          </code>
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            onClick={() => {
+                              navigator.clipboard.writeText(selectedOrg?.id || '')
+                              toast.success('Organization ID copied to clipboard')
+                            }}
+                          >
+                            <Copy className="h-3 w-3" />
+                          </Button>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-yellow-700 font-medium">Test Email:</label>
+                        <div className="flex items-center gap-2">
+                          <code className="bg-yellow-100 px-2 py-1 rounded text-yellow-800">
+                            enterprise@monay.com
+                          </code>
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            onClick={() => {
+                              navigator.clipboard.writeText('enterprise@monay.com')
+                              toast.success('Email copied to clipboard')
+                            }}
+                          >
+                            <Copy className="h-3 w-3" />
+                          </Button>
+                        </div>
+                      </div>
+                      <div>
+                        <label className="block text-yellow-700 font-medium">Test Password:</label>
+                        <div className="flex items-center gap-2">
+                          <code className="bg-yellow-100 px-2 py-1 rounded text-yellow-800">
+                            password123
+                          </code>
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            onClick={() => {
+                              navigator.clipboard.writeText('password123')
+                              toast.success('Password copied to clipboard')
+                            }}
+                          >
+                            <Copy className="h-3 w-3" />
+                          </Button>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="mt-3 pt-3 border-t border-yellow-200">
+                      <Button
+                        className="w-full bg-yellow-600 hover:bg-yellow-700 text-white"
+                        onClick={() => {
+                          window.open('http://localhost:3007/auth/login', '_blank')
+                        }}
+                      >
+                        <LogIn className="h-4 w-4 mr-2" />
+                        Open Enterprise Wallet Login
+                      </Button>
+                    </div>
+                    <p className="text-xs text-yellow-600 mt-2">
+                      Note: This enterprise admin user has owner access to all organizations for testing purposes.
+                    </p>
+                  </div>
+                </div>
+
+                {/* Regular Settings */}
                 <div className="space-y-4">
                   <Button className="w-full" variant="outline">
                     <Settings className="h-4 w-4 mr-2" />

@@ -7,6 +7,7 @@ import './commands';
 declare global {
   namespace Cypress {
     interface Chainable {
+      // Custom commands
       login(email?: string, password?: string): Chainable<void>;
       logout(): Chainable<void>;
       createWallet(walletData: any): Chainable<any>;
@@ -18,6 +19,24 @@ declare global {
       seedDatabase(scenario: string): Chainable<void>;
       clearDatabase(): Chainable<void>;
       checkAccessibility(): Chainable<void>;
+
+      // Testing Library commands
+      findByRole(role: string, options?: any): Chainable<JQuery<HTMLElement>>;
+      findByText(text: string | RegExp, options?: any): Chainable<JQuery<HTMLElement>>;
+      findByLabelText(text: string | RegExp, options?: any): Chainable<JQuery<HTMLElement>>;
+      findByPlaceholderText(text: string | RegExp, options?: any): Chainable<JQuery<HTMLElement>>;
+      findByDisplayValue(text: string | RegExp, options?: any): Chainable<JQuery<HTMLElement>>;
+      findByAltText(text: string | RegExp, options?: any): Chainable<JQuery<HTMLElement>>;
+      findByTitle(text: string | RegExp, options?: any): Chainable<JQuery<HTMLElement>>;
+      findByTestId(testId: string, options?: any): Chainable<JQuery<HTMLElement>>;
+      findAllByRole(role: string, options?: any): Chainable<JQuery<HTMLElement>>;
+      findAllByText(text: string | RegExp, options?: any): Chainable<JQuery<HTMLElement>>;
+      findAllByLabelText(text: string | RegExp, options?: any): Chainable<JQuery<HTMLElement>>;
+      findAllByPlaceholderText(text: string | RegExp, options?: any): Chainable<JQuery<HTMLElement>>;
+      findAllByDisplayValue(text: string | RegExp, options?: any): Chainable<JQuery<HTMLElement>>;
+      findAllByAltText(text: string | RegExp, options?: any): Chainable<JQuery<HTMLElement>>;
+      findAllByTitle(text: string | RegExp, options?: any): Chainable<JQuery<HTMLElement>>;
+      findAllByTestId(testId: string, options?: any): Chainable<JQuery<HTMLElement>>;
     }
   }
 }
@@ -40,7 +59,7 @@ beforeEach(() => {
 // Global after each hook
 afterEach(() => {
   // Take screenshot on failure
-  if (Cypress.currentTest.state === 'failed') {
+  if ((Cypress.currentTest as any).state === 'failed') {
     cy.screenshot(`failed-${Cypress.currentTest.title}`);
   }
 });

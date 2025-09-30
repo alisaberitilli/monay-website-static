@@ -5,10 +5,10 @@ import { useRouter } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
-import { 
-  Activity, TrendingUp, Wallet, CreditCard, FileText, Shield, 
-  Zap, PieChart, RefreshCcw, Settings, Search, Bell, User,
-  LogOut, Menu, X, ChevronDown, Globe, Coins, 
+import {
+  Activity, TrendingUp, Wallet, CreditCard, FileText, Shield,
+  Zap, PieChart, RefreshCcw, Settings as SettingsIcon, Search, Bell, User,
+  LogOut, Menu, X, ChevronDown, Globe, Coins,
   ArrowUpDown, BarChart3
 } from 'lucide-react'
 import AnimatedDashboard from '@/components/AnimatedDashboard'
@@ -71,7 +71,7 @@ export default function EnhancedEnterpriseWallet() {
     { id: 'rules', label: 'Business Rules', icon: Zap, color: 'from-yellow-500 to-orange-600' },
     { id: 'analytics', label: 'Analytics', icon: BarChart3, color: 'from-pink-500 to-rose-600' },
     { id: 'cross-rail', label: 'Cross-Rail', icon: RefreshCcw, color: 'from-teal-500 to-cyan-600' },
-    { id: 'settings', label: 'Settings', icon: Settings, color: 'from-gray-500 to-gray-700' }
+    { id: 'settings', label: 'Settings', icon: SettingsIcon, color: 'from-gray-500 to-gray-700' }
   ]
 
   const headerVariants = {

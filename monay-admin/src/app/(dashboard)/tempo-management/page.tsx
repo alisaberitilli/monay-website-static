@@ -99,11 +99,7 @@ export default function TempoManagementPage() {
       setNetworkStats(statusData.metrics);
     } catch (error) {
       console.error('Failed to load Tempo data:', error);
-      toast({
-        title: 'Error',
-        description: 'Failed to load Tempo data',
-        variant: 'destructive',
-      });
+      toast.error('Failed to load Tempo data');
     } finally {
       setLoading(false);
     }
@@ -112,16 +108,9 @@ export default function TempoManagementPage() {
   const handleSetPrimaryProvider = async () => {
     try {
       await superAdminService.setPrimaryProvider('tempo', 'Performance optimization');
-      toast({
-        title: 'Success',
-        description: 'Tempo set as primary provider',
-      });
+      toast.success('Tempo set as primary provider');
     } catch (error) {
-      toast({
-        title: 'Error',
-        description: 'Failed to set primary provider',
-        variant: 'destructive',
-      });
+      toast.error('Failed to set primary provider');
     }
   };
 

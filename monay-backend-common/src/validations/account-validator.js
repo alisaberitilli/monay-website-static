@@ -14,7 +14,7 @@ const loginSchema = Joi.object({
     .empty()
     .allow(''),
   deviceType: Joi.string()
-    .valid('android', 'ios', 'web')
+    .valid('ANDROID', 'IOS', 'WEB')
     .required()
 });
 
@@ -33,7 +33,7 @@ const userAccountloginSchema = Joi.object({
     .empty()
     .allow(''),
   deviceType: Joi.string()
-    .valid('android', 'ios', 'web')
+    .valid('ANDROID', 'IOS', 'WEB')
     .required()
 });
 
@@ -52,7 +52,7 @@ const mPinLoginSchema = Joi.object({
     .empty()
     .allow(''),
   deviceType: Joi.string()
-    .valid('android', 'ios', 'web')
+    .valid('ANDROID', 'IOS', 'WEB')
     .required()
 });
 
@@ -216,10 +216,43 @@ const signupSchema = Joi.object().keys({
     .empty()
     .allow(''),
   deviceType: Joi.string()
-    .valid('android', 'ios', 'web')
+    .valid('ANDROID', 'IOS', 'WEB')
     .required(),
   referralCode:Joi.allow(),
   termsAccepted: Joi.boolean()
+    .optional(),
+  // Tenant-related fields for proper hierarchy
+  userType: Joi.string()
+    .valid('individual', 'business', 'enterprise')
+    .optional(),
+  accountType: Joi.string()
+    .valid('consumer', 'small_business', 'enterprise')
+    .optional(),
+  businessName: Joi.string()
+    .min(3)
+    .max(100)
+    .optional(),
+  organizationName: Joi.string()
+    .min(3)
+    .max(100)
+    .optional(),
+  businessType: Joi.string()
+    .valid('small_business', 'enterprise')
+    .optional(),
+  organizationId: Joi.string()
+    .optional(),
+  inviteCode: Joi.string()
+    .optional(),
+  createOrganization: Joi.boolean()
+    .optional(),
+  // Allow transformed fields from frontend
+  first_name: Joi.string()
+    .min(3)
+    .max(25)
+    .optional(),
+  last_name: Joi.string()
+    .min(3)
+    .max(25)
     .optional()
 });
 const merchantSignupSchema = Joi.object().keys({
@@ -297,7 +330,7 @@ const merchantSignupSchema = Joi.object().keys({
     .empty()
     .allow(''),
   deviceType: Joi.string()
-    .valid('android', 'ios', 'web')
+    .valid('ANDROID', 'IOS', 'WEB')
     .required()
 });
 const verifyOtpSchema = Joi.object({

@@ -2,7 +2,7 @@ import express from 'express';
 import pg from 'pg';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
-import { authenticateToken } from '../middlewares/auth-middleware.js';
+import { authenticateToken } from '../middleware-app/auth-middleware.js';
 import { Logger } from '../services/logger.js';
 
 const router = express.Router();
@@ -36,13 +36,18 @@ router.get('/', verifyToken, async (req, res) => {
     let query = `
       SELECT
         o.*,
+        t.tenant_code,
+        t.name as tenant_name,
+        t.type as tenant_type,
+        t.billing_tier as tenant_billing_tier,
         COUNT(DISTINCT ou.user_id) as user_count,
         COUNT(DISTINCT w.id) as wallet_count,
-        COALESCE(SUM(t.amount), 0) as total_volume
+        COALESCE(SUM(tr.amount), 0) as total_volume
       FROM organizations o
+      LEFT JOIN tenants t ON o.tenant_id = t.id
       LEFT JOIN organization_users ou ON o.id = ou.organization_id
       LEFT JOIN wallets w ON o.id = w.organization_id
-      LEFT JOIN transactions t ON o.id = t.organization_id AND t.created_at > NOW() - INTERVAL '30 days'
+      LEFT JOIN transactions tr ON w.id = tr.wallet_id AND tr.created_at > NOW() - INTERVAL '30 days'
       WHERE 1=1
     `;
 
@@ -64,7 +69,7 @@ router.get('/', verifyToken, async (req, res) => {
       params.push(parent_organization_id);
     }
 
-    query += ` GROUP BY o.id ORDER BY o.created_at DESC`;
+    query += ` GROUP BY o.id, t.id ORDER BY o.created_at DESC`;
 
     const result = await pool.query(query, params);
 
@@ -91,16 +96,21 @@ router.get('/:id', verifyToken, async (req, res) => {
     const query = `
       SELECT
         o.*,
+        tn.tenant_code,
+        tn.name as tenant_name,
+        tn.type as tenant_type,
+        tn.billing_tier as tenant_billing_tier,
         COUNT(DISTINCT ou.user_id) as user_count,
         COUNT(DISTINCT w.id) as wallet_count,
         COALESCE(SUM(t.amount), 0) as total_volume,
         array_agg(DISTINCT ou.user_id) as user_ids
       FROM organizations o
+      LEFT JOIN tenants tn ON o.tenant_id = tn.id
       LEFT JOIN organization_users ou ON o.id = ou.organization_id
       LEFT JOIN wallets w ON o.id = w.organization_id
       LEFT JOIN transactions t ON o.id = t.organization_id AND t.created_at > NOW() - INTERVAL '30 days'
       WHERE o.id = $1
-      GROUP BY o.id
+      GROUP BY o.id, tn.id
     `;
 
     const result = await pool.query(query, [id]);
@@ -143,7 +153,8 @@ router.post('/', verifyToken, async (req, res) => {
       feature_tier = 'basic',
       parent_organization_id,
       organization_type,
-      limits
+      limits,
+      tenant_id
     } = req.body;
 
     // Check if organization with same email exists
@@ -159,50 +170,133 @@ router.post('/', verifyToken, async (req, res) => {
       });
     }
 
+    // If tenant_id is 'auto', create a new tenant for this organization
+    let actualTenantId = tenant_id;
+    if (tenant_id === 'auto' || !tenant_id) {
+      // Create a new tenant for this organization
+      const tenantResult = await pool.query(`
+        INSERT INTO tenants (
+          tenant_code,
+          name,
+          type,
+          isolation_level,
+          billing_tier,
+          status,
+          metadata
+        ) VALUES (
+          $1, $2, $3, 'row', $4, 'active', $5
+        ) RETURNING id
+      `, [
+        'TNT-' + Date.now().toString(36).toUpperCase(),
+        name + ' Tenant',
+        wallet_type === 'enterprise' ? 'enterprise' : 'small_business',
+        feature_tier === 'premium' ? 'enterprise' : feature_tier === 'standard' ? 'professional' : 'free',
+        JSON.stringify({ organization_name: name, created_from: 'org_creation' })
+      ]);
+      actualTenantId = tenantResult.rows[0].id;
+    }
+
+    // Generate org_id
+    const orgType = wallet_type === 'enterprise' ? 'ENT' : 'SMB';
+    const randomId = Math.random().toString(36).substring(2, 10).toUpperCase();
+    const orgId = `ORG_${orgType}-${randomId}_${Date.now()}`;
+
     // Create organization
     const insertQuery = `
       INSERT INTO organizations (
-        name, type, industry, description, email, phone, address, website,
+        org_id, name, type, industry, description, email, phone, address_line1, website,
         tax_id, wallet_type, feature_tier, parent_organization_id,
         organization_type, status, kyc_status, compliance_score,
-        consumer_limits, created_at, updated_at
+        consumer_limits, tenant_id, created_at, updated_at
       ) VALUES (
-        $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13,
+        $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14,
         'pending', 'not_started', 75,
-        $14, NOW(), NOW()
+        $15, $16, NOW(), NOW()
       ) RETURNING *
     `;
 
-    const consumerLimits = wallet_type === 'consumer' ? {
-      daily_transaction_limit: limits?.daily_transaction_limit || 10000,
-      monthly_transaction_limit: limits?.monthly_transaction_limit || 100000,
+    // Handle transaction limits from frontend
+    const { daily_limit, monthly_limit, per_transaction_max } = req.body;
+
+    const consumerLimits = {
+      daily_transaction_limit: daily_limit || limits?.daily_transaction_limit || 10000,
+      monthly_transaction_limit: monthly_limit || limits?.monthly_transaction_limit || 100000,
       max_cards: limits?.max_cards || 5,
       max_users: limits?.max_users || 10,
-      per_transaction_max: limits?.per_transaction_max || 5000
-    } : null;
+      per_transaction_max: per_transaction_max || limits?.per_transaction_max || 5000
+    };
 
     const params = [
-      name, type, industry, description, email, phone, address, website,
+      orgId, name, type, industry, description, email, phone, address, website,
       tax_id, wallet_type, feature_tier, parent_organization_id,
-      organization_type || 'standalone', JSON.stringify(consumerLimits)
+      organization_type || 'standalone', JSON.stringify(consumerLimits),
+      actualTenantId
     ];
 
     const result = await pool.query(insertQuery, params);
     const newOrg = result.rows[0];
 
+    // Create organization_users entry to link the creating user as owner/admin
+    const orgUserInsert = `
+      INSERT INTO organization_users (
+        organization_id, user_id, role, permissions, is_primary, invitation_status
+      ) VALUES ($1, $2, $3, $4, $5, $6)
+      RETURNING id
+    `;
+
+    const orgUserResult = await pool.query(orgUserInsert, [
+      newOrg.id,
+      req.user.id,
+      'owner', // Set as owner role
+      JSON.stringify({
+        admin: true,
+        manage_users: true,
+        manage_wallets: true,
+        view_analytics: true,
+        manage_settings: true
+      }),
+      true, // is_primary
+      'active'
+    ]);
+
+    // Create primary wallet for the organization
+    const walletInsert = `
+      INSERT INTO wallets (
+        organization_id, wallet_name, wallet_type, blockchain,
+        is_smart_wallet, kyc_status, is_active
+      ) VALUES ($1, $2, $3, $4, $5, $6, $7)
+      RETURNING id, wallet_address
+    `;
+
+    const walletResult = await pool.query(walletInsert, [
+      newOrg.id,
+      `${newOrg.name} Primary Wallet`,
+      wallet_type === 'enterprise' ? 'enterprise' : 'consumer',
+      'base', // Default blockchain
+      true, // is_smart_wallet for organizations
+      'not_started', // KYC will be done separately
+      true // is_active
+    ]);
+
     // Log the creation
-    logger.logInfo('Organization created', {
+    logger.logInfo('Organization created with dependencies', {
       orgId: newOrg.id,
       name: newOrg.name,
       type: newOrg.type,
       wallet_type: newOrg.wallet_type,
-      createdBy: req.user.id
+      createdBy: req.user.id,
+      orgUserId: orgUserResult.rows[0].id,
+      walletId: walletResult.rows[0].id
     });
 
     res.status(201).json({
       success: true,
-      message: 'Organization created successfully',
-      data: newOrg
+      message: 'Organization created successfully with wallet and user access',
+      data: {
+        ...newOrg,
+        primary_wallet_id: walletResult.rows[0].id,
+        created_by_user: req.user.id
+      }
     });
   } catch (error) {
     logger.logError('Create organization error', error);

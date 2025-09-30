@@ -1,8 +1,8 @@
 import express from 'express';
 import dataExportService from '../services/data-export.js';
-import authenticate from '../middlewares/auth-middleware.js';
-// import { authorize } from '../middleware/auth.js';  // TODO: Add role-based authorization
-// import { auditAction } from '../middleware/audit.js';  // TODO: Add audit logging
+import authenticate from '../middleware-app/auth-middleware.js';
+// import { authorize } from '../middleware-core/auth.js';  // TODO: Add role-based authorization
+// import { auditAction } from '../middleware-app/audit.js';  // TODO: Add audit logging
 import fs from 'fs';
 import path from 'path';
 

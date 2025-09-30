@@ -2,22 +2,26 @@ import express from 'express';
 const router = express.Router();
 import { Pool } from 'pg';
 import jwt from 'jsonwebtoken';
-import { authenticateToken } from '../middleware/auth.js';
-import tenantIsolation from '../middleware/tenant-isolation.js';
+import authenticate from '../middleware-app/tenant-user-auth.js';
+import tenantIsolation from '../middleware-app/tenant-middleware.js';
 import TenantManagementService from '../services/tenant-management.js';
-import { validateRequest } from '../middleware/validation.js';
+import { validateRequest } from '../middleware-app/validate-middleware.js';
 import { body, param, query } from 'express-validator';
 
-// Initialize service
+// Initialize service - use same database config as main app
 const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
+  host: process.env.DB_HOST || 'localhost',
+  port: process.env.DB_PORT || 5432,
+  user: process.env.DB_USERNAME || 'alisaberi',
+  password: process.env.DB_PASSWORD || '',
+  database: process.env.DB_NAME || 'monay',
   ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false
 });
 
 const tenantService = new TenantManagementService(pool);
 
 // Apply authentication to all routes
-router.use(authenticateToken);
+router.use(authenticate);
 
 // ================================================================
 // TENANT MANAGEMENT ENDPOINTS
@@ -29,13 +33,12 @@ router.use(authenticateToken);
  * @access  Private/Admin
  */
 router.get('/',
-  validateRequest([
-    query('type').optional().isIn(['individual', 'household_member', 'small_business', 'enterprise', 'holding_company']),
-    query('billing_tier').optional().isIn(['free', 'small_business', 'enterprise', 'custom']),
-    query('status').optional().isIn(['pending', 'active', 'suspended', 'terminated']),
-    query('limit').optional().isInt({ min: 1, max: 100 }).default(20),
-    query('offset').optional().isInt({ min: 0 }).default(0)
-  ]),
+  query('type').optional().isIn(['individual', 'household_member', 'small_business', 'enterprise', 'holding_company']),
+  query('billing_tier').optional().isIn(['free', 'small_business', 'enterprise', 'custom']),
+  query('status').optional().isIn(['pending', 'active', 'suspended', 'terminated']),
+  query('limit').optional().isInt({ min: 1, max: 100 }).default(20),
+  query('offset').optional().isInt({ min: 0 }).default(0),
+  validateRequest,
   async (req, res) => {
     try {
       // Check admin permission
@@ -52,13 +55,10 @@ router.get('/',
         SELECT
           t.*,
           COUNT(DISTINCT tm.user_id) as member_count,
-          COUNT(DISTINCT gm.group_id) as group_count,
-          COALESCE(bm.transaction_count, 0) as current_month_transactions
+          0 as group_count,
+          0 as current_month_transactions
         FROM tenants t
-        LEFT JOIN tenant_members tm ON t.id = tm.tenant_id AND tm.is_active = true
-        LEFT JOIN group_members gm ON t.id = gm.tenant_id AND gm.is_active = true
-        LEFT JOIN billing_metrics bm ON t.id = bm.tenant_id
-          AND bm.period_start = date_trunc('month', CURRENT_DATE)
+        LEFT JOIN tenant_users tm ON t.id = tm.tenant_id AND tm.status = 'active'
         WHERE 1=1
       `;
 
@@ -83,7 +83,7 @@ router.get('/',
         params.push(status);
       }
 
-      queryStr += ` GROUP BY t.id, bm.transaction_count`;
+      queryStr += ` GROUP BY t.id`;
       queryStr += ` ORDER BY t.created_at DESC`;
 
       paramCount++;
@@ -119,7 +119,7 @@ router.get('/',
  * @access  Private
  */
 router.get('/current',
-  tenantIsolation.middleware(),
+  tenantIsolation.enforceTenantIsolation(),
   async (req, res) => {
     try {
       if (!req.tenant) {
@@ -157,29 +157,48 @@ router.get('/current',
 router.get('/users/me/tenants',
   async (req, res) => {
     try {
-      // Get all tenants where user is a member
-      const query = `
-        SELECT
-          t.*,
-          tm.role,
-          tm.permissions,
-          tm.joined_at
-        FROM tenant_members tm
-        JOIN tenants t ON tm.tenant_id = t.id
-        WHERE tm.user_id = $1 AND tm.is_active = true
-        ORDER BY
-          CASE WHEN tm.role = 'owner' THEN 0
-               WHEN tm.role = 'admin' THEN 1
-               ELSE 2 END,
-          tm.joined_at DESC
-      `;
+      let query;
+      let params;
 
-      const result = await pool.query(query, [req.user.id]);
+      // Platform admins get access to ALL tenants (global access)
+      if (req.user.isAdmin) {
+        query = `
+          SELECT
+            t.*,
+            'platform_admin' as role,
+            '{}' as permissions,
+            t.created_at as joined_at
+          FROM tenants t
+          ORDER BY t.created_at DESC
+        `;
+        params = [];
+      } else {
+        // Regular users only get tenants they're members of via tenant_users
+        query = `
+          SELECT
+            t.*,
+            tu.role,
+            tu.permissions,
+            tu.joined_at
+          FROM tenant_users tu
+          JOIN tenants t ON tu.tenant_id = t.id
+          WHERE tu.user_id = $1 AND tu.status = 'active'
+          ORDER BY
+            CASE WHEN tu.role = 'owner' THEN 0
+                 WHEN tu.role = 'admin' THEN 1
+                 ELSE 2 END,
+            tu.joined_at DESC
+        `;
+        params = [req.user.id];
+      }
+
+      const result = await pool.query(query, params);
 
       res.json({
         tenants: result.rows,
         total: result.rowCount,
-        current_tenant_id: req.user.current_tenant_id
+        current_tenant_id: req.user.current_tenant_id,
+        access_type: req.user.isAdmin ? 'global_admin' : 'member_access'
       });
 
     } catch (error) {
@@ -192,45 +211,6 @@ router.get('/users/me/tenants',
   }
 );
 
-/**
- * @route   GET /api/tenants/:id
- * @desc    Get tenant by ID
- * @access  Private
- */
-router.get('/:id',
-  validateRequest([
-    param('id').isUUID()
-  ]),
-  async (req, res) => {
-    try {
-      const { id } = req.params;
-
-      // Check permission
-      if (!req.user.isAdmin && req.user.tenant_id !== id) {
-        return res.status(403).json({
-          error: 'Insufficient permissions'
-        });
-      }
-
-      const tenant = await tenantService.getTenant(id);
-
-      if (!tenant) {
-        return res.status(404).json({
-          error: 'Tenant not found'
-        });
-      }
-
-      res.json(tenant);
-
-    } catch (error) {
-      console.error('Error fetching tenant:', error);
-      res.status(500).json({
-        error: 'Failed to fetch tenant',
-        message: error.message
-      });
-    }
-  }
-);
 
 /**
  * @route   POST /api/tenants
@@ -238,12 +218,11 @@ router.get('/:id',
  * @access  Private/Admin
  */
 router.post('/',
-  validateRequest([
-    body('name').notEmpty().trim(),
-    body('type').isIn(['individual', 'household_member', 'small_business', 'enterprise', 'holding_company']),
-    body('billing_tier').optional().isIn(['free', 'small_business', 'enterprise', 'custom']),
-    body('metadata').optional().isObject()
-  ]),
+  body('name').notEmpty().trim(),
+  body('type').isIn(['individual', 'household_member', 'small_business', 'enterprise', 'holding_company']),
+  body('billing_tier').optional().isIn(['free', 'small_business', 'enterprise', 'custom']),
+  body('metadata').optional().isObject(),
+  validateRequest,
   async (req, res) => {
     try {
       // Check admin permission for non-individual tenants
@@ -277,14 +256,13 @@ router.post('/',
  * @access  Private
  */
 router.put('/:id',
-  validateRequest([
-    param('id').isUUID(),
-    body('name').optional().trim(),
-    body('billing_tier').optional().isIn(['free', 'small_business', 'enterprise', 'custom']),
-    body('status').optional().isIn(['active', 'suspended', 'terminated']),
-    body('metadata').optional().isObject(),
-    body('settings').optional().isObject()
-  ]),
+  param('id').isUUID(),
+  body('name').optional().trim(),
+  body('billing_tier').optional().isIn(['free', 'small_business', 'enterprise', 'custom']),
+  body('status').optional().isIn(['active', 'suspended', 'terminated']),
+  body('metadata').optional().isObject(),
+  body('settings').optional().isObject(),
+  validateRequest,
   async (req, res) => {
     try {
       const { id } = req.params;
@@ -319,17 +297,16 @@ router.put('/:id',
  * @access  Private
  */
 router.post('/:id/switch',
-  validateRequest([
-    param('id').isUUID()
-  ]),
+  param('id').isUUID(),
+  validateRequest,
   async (req, res) => {
     try {
       const { id } = req.params;
 
       // Verify user has access to this tenant
       const memberQuery = `
-        SELECT * FROM tenant_members
-        WHERE tenant_id = $1 AND user_id = $2 AND is_active = true
+        SELECT * FROM tenant_users
+        WHERE tenant_id = $1 AND user_id = $2 AND status = 'active'
       `;
 
       const memberResult = await pool.query(memberQuery, [id, req.user.id]);
@@ -387,9 +364,8 @@ router.post('/:id/switch',
  * @access  Private
  */
 router.get('/:id/members',
-  validateRequest([
-    param('id').isUUID()
-  ]),
+  param('id').isUUID(),
+  validateRequest,
   async (req, res) => {
     try {
       const { id } = req.params;
@@ -403,15 +379,15 @@ router.get('/:id/members',
 
       const query = `
         SELECT
-          tm.*,
+          tu.*,
           u.email,
           u.first_name,
           u.last_name,
           u.profile_picture_url
-        FROM tenant_members tm
-        JOIN users u ON tm.user_id = u.id
-        WHERE tm.tenant_id = $1 AND tm.is_active = true
-        ORDER BY tm.created_at DESC
+        FROM tenant_users tu
+        JOIN users u ON tu.user_id = u.id
+        WHERE tu.tenant_id = $1 AND tu.status = 'active'
+        ORDER BY tu.created_at DESC
       `;
 
       const result = await pool.query(query, [id]);
@@ -437,11 +413,10 @@ router.get('/:id/members',
  * @access  Private
  */
 router.post('/:id/members',
-  validateRequest([
-    param('id').isUUID(),
-    body('user_id').isUUID(),
-    body('role').isIn(['owner', 'admin', 'member', 'viewer', 'billing'])
-  ]),
+  param('id').isUUID(),
+  body('user_id').isUUID(),
+  body('role').isIn(['owner', 'admin', 'member', 'viewer', 'billing']),
+  validateRequest,
   async (req, res) => {
     try {
       const { id } = req.params;
@@ -482,10 +457,9 @@ router.post('/:id/members',
  * @access  Private
  */
 router.post('/:id/api-keys',
-  validateRequest([
-    param('id').isUUID(),
-    body('key_type').optional().isIn(['api_key', 'webhook_key', 'admin_key'])
-  ]),
+  param('id').isUUID(),
+  body('key_type').optional().isIn(['api_key', 'webhook_key', 'admin_key']),
+  validateRequest,
   async (req, res) => {
     try {
       const { id } = req.params;
@@ -529,11 +503,10 @@ router.post('/:id/api-keys',
  * @access  Private
  */
 router.get('/:id/metrics',
-  validateRequest([
-    param('id').isUUID(),
-    query('start_date').optional().isISO8601(),
-    query('end_date').optional().isISO8601()
-  ]),
+  param('id').isUUID(),
+  query('start_date').optional().isISO8601(),
+  query('end_date').optional().isISO8601(),
+  validateRequest,
   async (req, res) => {
     try {
       const { id } = req.params;
@@ -573,10 +546,9 @@ router.get('/:id/metrics',
  * @access  Private
  */
 router.get('/:id/limits',
-  validateRequest([
-    param('id').isUUID()
-  ]),
-  tenantIsolation.middleware(),
+  param('id').isUUID(),
+  validateRequest,
+  tenantIsolation.enforceTenantIsolation(),
   async (req, res) => {
     try {
       const { id } = req.params;
@@ -603,14 +575,53 @@ router.get('/:id/limits',
   }
 );
 
+/**
+ * @route   GET /api/tenants/:id
+ * @desc    Get tenant by ID
+ * @access  Private
+ */
+router.get('/:id',
+  param('id').isUUID(),
+  validateRequest,
+  async (req, res) => {
+    try {
+      const { id } = req.params;
+
+      // Check permission
+      if (!req.user.isAdmin && req.user.tenant_id !== id) {
+        return res.status(403).json({
+          error: 'Insufficient permissions'
+        });
+      }
+
+      const tenant = await tenantService.getTenant(id);
+
+      if (!tenant) {
+        return res.status(404).json({
+          error: 'Tenant not found'
+        });
+      }
+
+      res.json(tenant);
+
+    } catch (error) {
+      console.error('Error fetching tenant:', error);
+      res.status(500).json({
+        error: 'Failed to fetch tenant',
+        message: error.message
+      });
+    }
+  }
+);
+
 // ================================================================
 // HELPER FUNCTIONS
 // ================================================================
 
 async function checkTenantPermission(userId, tenantId, permission) {
   const query = `
-    SELECT permissions FROM tenant_members
-    WHERE user_id = $1 AND tenant_id = $2 AND is_active = true
+    SELECT permissions FROM tenant_users
+    WHERE user_id = $1 AND tenant_id = $2 AND status = 'active'
   `;
 
   const result = await pool.query(query, [userId, tenantId]);

@@ -6,7 +6,7 @@
 import express from 'express';
 import { validationResult } from 'express-validator';
 import ConsumerWalletService from '../services/consumer-wallet-service.js';
-import authenticate from '../middlewares/auth-middleware.js';
+import authenticate from '../middleware-app/auth-middleware.js';
 import { body, query, param } from 'express-validator';
 import db from '../models/index.js';
 // import logger from '../services/logger.js';  // Removed - using console

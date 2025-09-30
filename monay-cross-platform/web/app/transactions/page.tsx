@@ -3,7 +3,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import DashboardLayout from '@/components/DashboardLayout';
 import { useRouter } from 'next/navigation';
-import { 
+import {
   Search,
   Filter,
   Download,
@@ -16,7 +16,7 @@ import {
   Car,
   Home,
   Briefcase,
-  GameController2,
+  Gamepad2,
   Music,
   Heart,
   Plane,

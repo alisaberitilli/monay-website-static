@@ -1,7 +1,4 @@
-import axios from 'axios';
-import Cookies from 'js-cookie';
-
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
+import axiosInstance from '@/lib/axios';
 
 interface User {
   id: string;
@@ -36,13 +33,13 @@ interface RolePermission {
 
 class UsersService {
   private getAuthHeader() {
-    const token = Cookies.get('token');
+    const token = localStorage.getItem("monay_admin_token")
     return token ? { Authorization: `Bearer ${token}` } : {};
   }
 
   async getAllUsers(): Promise<User[]> {
     try {
-      const response = await axios.get(`${API_URL}/api/admin/user`, {
+      const response = await axiosInstance.get(`/api/admin/user`, {
         headers: this.getAuthHeader(),
       });
       
@@ -183,7 +180,7 @@ class UsersService {
 
   async getUser(id: string): Promise<User | null> {
     try {
-      const response = await axios.get(`${API_URL}/api/users/${id}`, {
+      const response = await axiosInstance.get(`/api/admin/user-profile/${id}`, {
         headers: this.getAuthHeader(),
       });
       const userData = response.data.data;
@@ -200,7 +197,7 @@ class UsersService {
 
   async createUser(userData: any): Promise<any> {
     try {
-      const response = await axios.post(`${API_URL}/api/users`, userData, {
+      const response = await axiosInstance.post(`/api/users`, userData, {
         headers: this.getAuthHeader(),
       });
       return response.data;
@@ -214,7 +211,7 @@ class UsersService {
 
   async updateUser(id: string, userData: any): Promise<any> {
     try {
-      const response = await axios.patch(`${API_URL}/api/users/${id}`, userData, {
+      const response = await axiosInstance.patch(`/api/users/${id}`, userData, {
         headers: this.getAuthHeader(),
       });
       return response.data;
@@ -228,7 +225,7 @@ class UsersService {
 
   async deleteUser(id: string): Promise<any> {
     try {
-      const response = await axios.delete(`${API_URL}/api/users/${id}`, {
+      const response = await axiosInstance.delete(`/api/users/${id}`, {
         headers: this.getAuthHeader(),
       });
       return response.data;
@@ -242,7 +239,7 @@ class UsersService {
 
   async getRoles(): Promise<any[]> {
     try {
-      const response = await axios.get(`${API_URL}/api/roles`, {
+      const response = await axiosInstance.get(`/api/roles`, {
         headers: this.getAuthHeader(),
       });
       
@@ -299,7 +296,7 @@ class UsersService {
 
   async getRolePermissions(role: string): Promise<RolePermission[]> {
     try {
-      const response = await axios.get(`${API_URL}/api/roles/${role}/permissions`, {
+      const response = await axiosInstance.get(`/api/roles/${role}/permissions`, {
         headers: this.getAuthHeader(),
       });
       const permissionsData = response.data.data;
@@ -316,7 +313,7 @@ class UsersService {
 
   async updateUserRole(userId: string, roleId: string): Promise<any> {
     try {
-      const response = await axios.post(`${API_URL}/api/users/${userId}/role`, 
+      const response = await axiosInstance.post(`/api/users/${userId}/role`, 
         { roleId }, 
         { headers: this.getAuthHeader() }
       );

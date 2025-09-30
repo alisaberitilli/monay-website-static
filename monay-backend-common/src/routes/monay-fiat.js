@@ -1,8 +1,8 @@
 import express from 'express';
 import * as monayFiatController from '../controllers/monay-fiat-controller.js';
-import auth from '../middlewares/auth-middleware.js';
-import rateLimiter from '../middlewares/rate-limiter-middleware.js';
-import { validateRequest } from '../middlewares/validate-middleware.js';
+import auth from '../middleware-app/auth-middleware.js';
+import rateLimiter from '../middleware-app/rate-limiter-middleware.js';
+import { validateRequest } from '../middleware-app/validate-middleware.js';
 import { body, param, query } from 'express-validator';
 
 const router = express.Router();

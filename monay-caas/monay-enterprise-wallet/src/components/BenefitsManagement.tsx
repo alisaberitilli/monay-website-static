@@ -357,8 +357,8 @@ export default function BenefitsManagement() {
 
                 <Button
                   onClick={() => checkEligibility({
-                    ssn: document.getElementById('checkSsn')?.value,
-                    income: document.getElementById('checkIncome')?.value
+                    ssn: (document.getElementById('checkSsn') as HTMLInputElement)?.value,
+                    income: (document.getElementById('checkIncome') as HTMLInputElement)?.value
                   })}
                   disabled={isProcessing}
                   className="w-full"

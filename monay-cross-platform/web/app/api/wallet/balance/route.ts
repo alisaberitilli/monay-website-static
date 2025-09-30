@@ -8,7 +8,11 @@ export async function GET(request: NextRequest) {
     const authHeader = request.headers.get('authorization');
     
     // Try both home endpoint and wallet endpoint to get balance
-    let balanceData = { balance: 0, currency: 'USD', status: 'active' };
+    let balanceData: { balance: number; currency: string; status: string; lastUpdated?: string } = {
+      balance: 0,
+      currency: 'USD',
+      status: 'active'
+    };
     
     try {
       // First try the wallet endpoint

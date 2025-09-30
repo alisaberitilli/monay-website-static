@@ -520,11 +520,11 @@ export default function EnhancedTreasury() {
                   <div className="pt-3 space-y-2">
                     <div className="flex items-center text-xs">
                       <Zap className="h-3 w-3 mr-2 text-gray-500" />
-                      <span>FedNow: < 60s</span>
+                      <span>FedNow: &lt; 60s</span>
                     </div>
                     <div className="flex items-center text-xs">
                       <Clock className="h-3 w-3 mr-2 text-gray-500" />
-                      <span>RTP: < 60s</span>
+                      <span>RTP: &lt; 60s</span>
                     </div>
                   </div>
                 </CardContent>
@@ -597,7 +597,7 @@ export default function EnhancedTreasury() {
                   <div className="grid grid-cols-4 gap-4 text-sm">
                     <span className="font-medium">Dwolla</span>
                     <span className="text-gray-600">Instant transfers</span>
-                    <span className="text-green-600">< 60 seconds</span>
+                    <span className="text-green-600">&lt; 60 seconds</span>
                     <span className="text-blue-600">$0.045 flat</span>
                   </div>
                   <div className="grid grid-cols-4 gap-4 text-sm">

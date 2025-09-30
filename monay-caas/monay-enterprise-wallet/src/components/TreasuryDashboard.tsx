@@ -110,7 +110,7 @@ export default function TreasuryDashboard() {
       const [invoices, payments] = await Promise.all([
         apiService.getInvoices(),
         apiService.getPayments()
-      ]);
+      ]) as [any, any];
 
       // Calculate stats from real data
       const stats = {
@@ -158,13 +158,13 @@ export default function TreasuryDashboard() {
 
       setTreasuryData({
         treasury: {
-          solana_tree_address: data.solanaTreeAddress || 'mock-address',
-          tree_capacity: data.treeCapacity || 10000,
-          invoices_created: data.invoicesCreated || 156,
-          tempo_balance: data.tempoBalance || data.availableBalance || 850000,
-          circle_balance: data.circleBalance || data.pendingBalance || 150000,
-          tempo_wallet_id: data.tempoWalletId || 'tempo-wallet-1',
-          circle_wallet_id: data.circleWalletId || 'circle-wallet-1'
+          solana_tree_address: (data as any).solanaTreeAddress || 'mock-address',
+          tree_capacity: (data as any).treeCapacity || 10000,
+          invoices_created: (data as any).invoicesCreated || 156,
+          tempo_balance: (data as any).tempoBalance || (data as any).availableBalance || 850000,
+          circle_balance: (data as any).circleBalance || (data as any).pendingBalance || 150000,
+          tempo_wallet_id: (data as any).tempoWalletId || 'tempo-wallet-1',
+          circle_wallet_id: (data as any).circleWalletId || 'circle-wallet-1'
         },
         stats,
         recent_activity: recentActivity

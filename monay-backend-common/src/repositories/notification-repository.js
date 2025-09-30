@@ -14,7 +14,7 @@ export default {
     try {
       let result = {};
       let adminId = null;
-      const adminData = await User.findOne({ where: { role: 'platform_admin', isActive: true } });
+      const adminData = await models.User.findOne({ where: { role: 'platform_admin', isActive: true } });
       if (adminData) {
         adminId = adminData.id;
       }
@@ -41,7 +41,7 @@ export default {
     try {
       let result = {};
       let adminId = null;
-      const adminData = await User.findOne({ where: { role: 'platform_admin', isActive: true } });
+      const adminData = await models.User.findOne({ where: { role: 'platform_admin', isActive: true } });
       if (adminData) {
         adminId = adminData.id;
       }
@@ -168,7 +168,7 @@ export default {
       let amount = utility.formatMoney(req.body.amount)
       let result = {};
       let adminId = null;
-      const adminData = await User.findOne({ where: { role: 'platform_admin', isActive: true } });
+      const adminData = await models.User.findOne({ where: { role: 'platform_admin', isActive: true } });
       if (adminData) {
         adminId = adminData.id;
       }
@@ -198,7 +198,7 @@ export default {
   async saveUserNotification(req, data) {
     try {
       let result = {};
-      let fromUserInfo = await User.findOne({ where: { id: data.fromId } });
+      let fromUserInfo = await models.User.findOne({ where: { id: data.fromId } });
 
       result = {
         type: data.type,
@@ -223,12 +223,12 @@ export default {
         profilePictureThumbUrl: (fromUserInfo) ? fromUserInfo.profilePictureThumbUrl : ''
       };
 
-      let userInfo = await User.findOne({ where: { id: data.toId } });
+      let userInfo = await models.User.findOne({ where: { id: data.toId } });
       if (userInfo && userInfo.userType != 'admin') {
         //send push notification
         await notification.sendToNotificationUser(data.toId, notificationObj);
       }
-      await Notification.create(result);
+      await models.Notification.create(result);
     } catch (error) {
       throw Error(error);
     }
@@ -304,7 +304,7 @@ export default {
         offset: parseInt(queryData.offset || 0)
       });
 
-      await Notification.update({ receiverRead: 'read' }, { where: { toUserId: userId } });
+      await models.Notification.update({ receiverRead: 'read' }, { where: { toUserId: userId } });
 
       return results;
     } catch (error) {
@@ -317,7 +317,7 @@ export default {
    */
   async getAdminNotificationList(req) {
     try {
-      let adminData = await User.findOne({
+      let adminData = await models.User.findOne({
         where: {
           role: 'platform_admin',
           status: 'active'
@@ -379,7 +379,7 @@ export default {
         offset: parseInt(queryData.offset || 0)
       });
 
-      await Notification.update({ receiverRead: 'read' }, { where: { toUserId: userId } });
+      await models.Notification.update({ receiverRead: 'read' }, { where: { toUserId: userId } });
 
       return results;
     } catch (error) {
@@ -395,7 +395,7 @@ export default {
     try {
       let result = {};
       let adminId = null;
-      const adminData = await User.findOne({ where: { role: 'platform_admin', isActive: true } });
+      const adminData = await models.User.findOne({ where: { role: 'platform_admin', isActive: true } });
       if (adminData) {
         adminId = adminData.id;
       }
@@ -424,7 +424,7 @@ export default {
     try {
       let result = {};
       let adminId = null;
-      const adminData = await User.findOne({ where: { role: 'platform_admin', isActive: true } });
+      const adminData = await models.User.findOne({ where: { role: 'platform_admin', isActive: true } });
       if (adminData) {
         adminId = adminData.id;
       }
@@ -454,7 +454,7 @@ export default {
     try {
       let result = {};
       let adminId = null;
-      const adminData = await User.findOne({ where: { role: 'platform_admin', isActive: true } });
+      const adminData = await models.User.findOne({ where: { role: 'platform_admin', isActive: true } });
       if (adminData) {
         adminId = adminData.id;
       }
@@ -484,7 +484,7 @@ export default {
     try {
       let result = {};
       let adminId = null;
-      const adminData = await User.findOne({ where: { role: 'platform_admin', isActive: true } });
+      const adminData = await models.User.findOne({ where: { role: 'platform_admin', isActive: true } });
       if (adminData) {
         adminId = adminData.id;
       }
@@ -514,7 +514,7 @@ export default {
     try {
       let result = {};
       let adminId = null;
-      const adminData = await User.findOne({ where: { role: 'platform_admin', isActive: true } });
+      const adminData = await models.User.findOne({ where: { role: 'platform_admin', isActive: true } });
       if (adminData) {
         adminId = adminData.id;
       }
@@ -547,7 +547,7 @@ export default {
     try {
       let result = {};
       let adminId = null;
-      const adminData = await User.findOne({ where: { role: 'platform_admin', isActive: true } });
+      const adminData = await models.User.findOne({ where: { role: 'platform_admin', isActive: true } });
       if (adminData) {
         adminId = adminData.id;
       }

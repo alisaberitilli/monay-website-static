@@ -1,8 +1,8 @@
 import express from 'express';
 const router = express.Router();
 import { auditLogService, AuditActions } from '../services/audit-log.js';
-import { authenticate, authorize } from '../middleware/auth.js';
-import { auditAction } from '../middleware/audit.js';
+import { authenticate, authorize } from '../middleware-app/platform-admin-auth.js';
+import { auditAction } from '../middleware-core/audit.js';
 import db from '../models/index.js';
 import pkg from 'sequelize';
 const { Op } = pkg;

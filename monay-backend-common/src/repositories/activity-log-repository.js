@@ -72,11 +72,16 @@ export default {
         }
       }
 
-      const result = await ActivityLog.findAndCountAll({
+      // Skip if ActivityLog model not loaded
+      if (!models.ActivityLog) {
+        return { count: 0, rows: [] };
+      }
+
+      const result = await models.ActivityLog.findAndCountAll({
         where: where,
         include: [
           {
-            model: User,
+            model: models.User,
             as: 'adminUser',
             where: userWhere,
             attributes: [
@@ -91,7 +96,7 @@ export default {
             ],
           },
           {
-            model: User,
+            model: models.User,
             attributes: [
               'id',
               'firstName',
@@ -196,7 +201,11 @@ export default {
         message = utility.getMessage(req, false, 'ACTIVITY_LOGOUT')
       }
 
-      return await ActivityLog.create({
+      // Skip activity logging if model not loaded
+      if (!models.ActivityLog) {
+        return { success: true };
+      }
+      return await models.ActivityLog.create({
         adminId: (userData) ? userData.id : userId,
         userId: userId,
         transactionId: transactionId,

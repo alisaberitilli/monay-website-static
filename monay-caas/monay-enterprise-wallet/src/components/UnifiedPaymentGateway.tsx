@@ -174,11 +174,9 @@ export default function UnifiedPaymentGateway({
         }
       ],
       fees: {
-        crypto: 'No fees',
         wire: '$25'
       },
       processingTime: {
-        crypto: 'Instant',
         wire: '1-2 business days'
       }
     },

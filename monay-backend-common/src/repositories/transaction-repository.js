@@ -492,7 +492,7 @@ export default {
     try {
       let orderBy = [["id", "DESC"]];
       let where = { [Op.or]: [{ toUserId: userId }, { fromUserId: userId }, { parentId: userId }] };
-      const user = await User.findOne({ where: { id: userId } });
+      const user = await models.User.findOne({ where: { id: userId } });
       const queryData = {};
 
       if (user?.userType === "secondary_user") {
@@ -773,7 +773,7 @@ export default {
           result.createdAt,
           "DD/MM/YYYY hh:mm A"
         );
-        const adminData = await User.findAll({
+        const adminData = await models.User.findAll({
           where: {
             userType: { [Op.in]: ["admin", "subadmin"] },
             status: "active",
@@ -815,7 +815,7 @@ export default {
             );
           });
       }
-      const payUserDetails = await User.findOne({
+      const payUserDetails = await models.User.findOne({
         where: { id: result?.toUserId },
         attributes: [
           "firstName",
@@ -1309,7 +1309,7 @@ export default {
         user: { userType, id },
       } = req;
       const userId = userType === "secondary_user" ? parentId : id;
-      const userData = await User.findOne({
+      const userData = await models.User.findOne({
         where: {
           id: userId,
           status: "active",

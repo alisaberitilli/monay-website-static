@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import middlewares from '../middlewares/index.js';
+import middlewares from '../middleware-app/index.js';
 import BusinessRuleEngine from '../services/business-rule-engine/BusinessRuleEngine.js';
 import loggers from '../services/logger.js';
 const logger = loggers.logger || loggers;

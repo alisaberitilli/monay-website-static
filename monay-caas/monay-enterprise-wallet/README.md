@@ -17,6 +17,108 @@
 - **TEST FIRST**: Always test queries in development
 - **USE TRANSACTIONS**: Wrap modifications in transactions with ROLLBACK
 
+## 🔧 DEVELOPMENT PRINCIPLES
+
+### ⚠️ NEVER COMMENT OUT CODE - FIX THE ERROR ⚠️
+**Established: January 2025**
+
+We NEVER remove or comment out functionality to pass tests. We explicitly fix errors and move forward.
+
+**Enterprise Wallet Development Rules:**
+1. **DON'T** comment out problematic code
+2. **DON'T** remove features to make builds pass
+3. **DON'T** use `any` type to bypass TypeScript
+4. **DON'T** skip API integrations
+5. **DO** fix the underlying issue properly
+6. **DO** maintain all existing functionality
+
+**Common Enterprise Fixes:**
+- Missing API endpoint? Implement it in the backend
+- WebSocket error? Fix the connection, don't disable real-time features
+- Chart rendering issue? Fix the data format, don't remove analytics
+- Smart contract error? Debug the contract, don't bypass blockchain features
+- Multi-sig validation failing? Fix the logic, don't reduce security
+
+**Example:** When API service methods were missing, we implemented all 30+ endpoints rather than removing the component features that needed them.
+
+### 🎨 MANDATORY: USE MODERN LUCIDE ICONS - NO SHORTCUTS
+**Established: January 2025**
+
+**CRITICAL REQUIREMENT**: Always use modern, contemporary Lucide icons from our optimized @monay/icons library at `/shared/icons/`. Never take shortcuts.
+
+**Enterprise Icon Library:**
+- 📍 **Location**: `/shared/icons/` - Centralized optimized SVG library (75+ icons)
+- 📦 **Package**: `@monay/icons` - Enterprise-grade icon library
+- 🔧 **Setup**: In package.json: `"@monay/icons": "file:../../shared/icons"`
+- ⚡ **Performance**: 85% smaller bundle, full tree-shaking, optimized for enterprise apps
+
+**Enterprise Icon Standards:**
+- ✅ **ONLY @monay/icons** from `/shared/icons/` directory
+- ✅ **Modern, professional designs** for enterprise UI
+- ✅ **Performance-optimized** SVG components
+- ✅ **Consistent sizing**: 16px (small), 24px (default), 32px (large)
+- ✅ **Theme-aware**: Use currentColor for adaptability
+
+**Strictly Prohibited:**
+- ❌ **NO** FontAwesome, Material Icons, or other libraries
+- ❌ **NO** emojis in production UI (🔒 ❌)
+- ❌ **NO** text placeholders ([icon], *, •)
+- ❌ **NO** mixing icon libraries
+- ❌ **NO** raster images as icons
+
+**Enterprise Implementation:**
+```typescript
+// ✅ CORRECT - Professional enterprise icons
+import { Shield, TrendingUp, DollarSign, Building } from '@monay/icons';
+<Shield size={24} className="text-enterprise-primary" />
+
+// ❌ WRONG - Unprofessional shortcuts
+import { FaBuilding } from 'react-icons/fa';
+<span>🏢</span>
+<div>[building icon]</div>
+```
+
+### 🔴 TYPESCRIPT ONLY - NO JAVASCRIPT ALLOWED 🔴
+**Effective: January 2025 - MANDATORY**
+
+**This project uses TypeScript exclusively. JavaScript files are FORBIDDEN.**
+
+**TypeScript Requirements:**
+- ✅ **ALL files must be `.ts` or `.tsx`** (NO `.js` or `.jsx`)
+- ✅ **Strict mode enabled** in tsconfig.json
+- ✅ **All functions must have typed parameters and return types**
+- ✅ **No implicit `any` types** - Be explicit
+- ✅ **Interfaces for all data structures**
+- ✅ **Type guards for runtime validation**
+- ✅ **Generic types for reusable components**
+
+**File Extensions:**
+- Components: `.tsx` only
+- Hooks/Utils: `.ts` (or `.tsx` if JSX)
+- API Routes: `.ts` only
+- Tests: `.test.ts` or `.test.tsx`
+- Config: `.ts` (or `.cjs` for CommonJS)
+
+**Build will FAIL if:**
+- Any `.js` or `.jsx` files exist in `/src`
+- TypeScript compilation has errors
+- Type coverage is below 95%
+
+**Example tsconfig.json settings:**
+```json
+{
+  "compilerOptions": {
+    "strict": true,
+    "noImplicitAny": true,
+    "strictNullChecks": true,
+    "strictFunctionTypes": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noImplicitReturns": true
+  }
+}
+```
+
 ---
 
 ## 📋 Overview

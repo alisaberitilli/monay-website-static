@@ -204,11 +204,7 @@ export default function CompliancePage() {
     if (!selectedKYC) return;
 
     if (!reviewNotes.trim()) {
-      toast({
-        title: 'Error',
-        description: 'Please provide review notes',
-        variant: 'destructive',
-      });
+      toast.error('Please provide review notes');
       return;
     }
 
@@ -217,10 +213,7 @@ export default function CompliancePage() {
       // Update KYC status in database (UPDATE only, no deletions)
       await superAdminService.reviewKYC(selectedKYC.id, status, reviewNotes);
 
-      toast({
-        title: 'Success',
-        description: `KYC ${status} successfully. Database updated safely.`,
-      });
+      toast.success(`KYC ${status} successfully. Database updated safely.`);
 
       setShowKYCModal(false);
       setSelectedKYC(null);
@@ -229,11 +222,7 @@ export default function CompliancePage() {
       await loadComplianceData();
     } catch (error) {
       console.error('KYC review error:', error);
-      toast({
-        title: 'Error',
-        description: `Failed to ${status} KYC. Database remains intact.`,
-        variant: 'destructive',
-      });
+      toast.error(`Failed to ${status} KYC. Database remains intact.`);
     } finally {
       setProcessingReview(false);
     }
@@ -243,11 +232,7 @@ export default function CompliancePage() {
     if (!selectedTransaction) return;
 
     if (!transactionReviewNotes.trim()) {
-      toast({
-        title: 'Error',
-        description: 'Please provide review notes for the transaction',
-        variant: 'destructive',
-      });
+      toast.error('Please provide review notes for the transaction');
       return;
     }
 
@@ -260,10 +245,7 @@ export default function CompliancePage() {
         transactionReviewNotes
       );
 
-      toast({
-        title: 'Success',
-        description: `Transaction ${status} successfully. Database updated safely.`,
-      });
+      toast.success(`Transaction ${status} successfully. Database updated safely.`);
 
       setShowTransactionModal(false);
       setSelectedTransaction(null);
@@ -271,11 +253,7 @@ export default function CompliancePage() {
       await loadComplianceData();
     } catch (error) {
       console.error('Transaction review error:', error);
-      toast({
-        title: 'Error',
-        description: `Failed to ${status} transaction. Database remains intact.`,
-        variant: 'destructive',
-      });
+      toast.error(`Failed to ${status} transaction. Database remains intact.`);
     } finally {
       setProcessingReview(false);
     }

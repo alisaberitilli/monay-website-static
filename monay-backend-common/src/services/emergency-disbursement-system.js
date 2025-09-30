@@ -8,7 +8,7 @@ import dwollaPaymentService from './dwolla-payment.js';
 import paymentRailOrchestrator from './payment-rail-orchestrator.js';
 import loggers from './logger.js';
 import db from '../models/index.js';
-import { CustomError } from '../middlewares/errors.js';
+import { CustomError } from '../middleware-app/errors.js';
 import HttpStatus from 'http-status';
 
 class EmergencyDisbursementSystem {

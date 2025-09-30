@@ -734,8 +734,8 @@ const businessRulesData = {
 
 export default function BusinessRulesFramework() {
   const [selectedIndustry, setSelectedIndustry] = useState('finance');
-  const [selectedGovernment, setSelectedGovernment] = useState('usa');
-  const [selectedUseCase, setSelectedUseCase] = useState('crossBorder');
+  const [selectedGovernment, setSelectedGovernment] = useState<keyof typeof businessRulesData.governments>('usa');
+  const [selectedUseCase, setSelectedUseCase] = useState<keyof typeof businessRulesData.useCases>('crossBorder');
   const [activeRules, setActiveRules] = useState([]);
   const [ruleEngine, setRuleEngine] = useState({
     status: 'running',
@@ -921,15 +921,15 @@ export default function BusinessRulesFramework() {
                 <div className="space-y-4">
                   <div className="flex items-center gap-4 p-4 bg-gray-50 rounded-lg">
                     {(() => {
-                      const Icon = businessRulesData.industries[selectedIndustry].icon;
+                      const Icon = businessRulesData.industries[selectedIndustry as keyof typeof businessRulesData.industries].icon;
                       return <Icon className="h-8 w-8 text-blue-600" />;
                     })()}
                     <div>
                       <h3 className="font-semibold text-lg">
-                        {businessRulesData.industries[selectedIndustry].name}
+                        {businessRulesData.industries[selectedIndustry as keyof typeof businessRulesData.industries].name}
                       </h3>
                       <div className="flex gap-2 mt-1">
-                        {businessRulesData.industries[selectedIndustry].regulations.map((reg) => (
+                        {businessRulesData.industries[selectedIndustry as keyof typeof businessRulesData.industries].regulations.map((reg: string) => (
                           <Badge key={reg} variant="secondary">
                             {reg}
                           </Badge>
@@ -939,15 +939,15 @@ export default function BusinessRulesFramework() {
                   </div>
 
                   <div className="space-y-3">
-                    {businessRulesData.industries[selectedIndustry].rules
-                      .filter(rule =>
+                    {businessRulesData.industries[selectedIndustry as keyof typeof businessRulesData.industries].rules
+                      .filter((rule: any) =>
                         (filterSeverity === 'all' || rule.severity === filterSeverity) &&
                         (!showActiveOnly || rule.status === 'active') &&
                         (searchTerm === '' ||
                           rule.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
                           rule.description.toLowerCase().includes(searchTerm.toLowerCase()))
                       )
-                      .map((rule) => (
+                      .map((rule: any) => (
                         <Card key={rule.id} className="shadow-sm">
                           <CardContent className="p-4">
                             <div className="flex justify-between items-start">
@@ -1058,7 +1058,7 @@ export default function BusinessRulesFramework() {
                     className={`cursor-pointer transition-all ${
                       selectedGovernment === key ? 'ring-2 ring-blue-500' : ''
                     }`}
-                    onClick={() => setSelectedGovernment(key)}
+                    onClick={() => setSelectedGovernment(key as keyof typeof businessRulesData.governments)}
                   >
                     <CardContent className="p-4">
                       <div className="flex items-center gap-3 mb-3">
@@ -1066,13 +1066,13 @@ export default function BusinessRulesFramework() {
                         <h3 className="font-semibold">{govt.name}</h3>
                       </div>
 
-                      {govt.regulations && (
+                      {'regulations' in govt && govt.regulations && (
                         <div className="space-y-2">
-                          {govt.regulations.federal && (
+                          {'federal' in govt.regulations && govt.regulations.federal && (
                             <div>
                               <p className="text-xs font-medium text-gray-600">Federal</p>
                               <div className="flex flex-wrap gap-1 mt-1">
-                                {govt.regulations.federal.slice(0, 3).map((reg) => (
+                                {govt.regulations.federal.slice(0, 3).map((reg: string) => (
                                   <Badge key={reg} variant="outline" className="text-xs">
                                     {reg}
                                   </Badge>
@@ -1088,11 +1088,11 @@ export default function BusinessRulesFramework() {
                         </div>
                       )}
 
-                      {govt.requirements && (
+                      {'requirements' in govt && govt.requirements && (
                         <div className="mt-3">
                           <p className="text-xs font-medium text-gray-600">Requirements</p>
                           <p className="text-xs text-gray-500 mt-1">
-                            {govt.requirements.length} compliance requirements
+                            {(govt.requirements as string[]).length} compliance requirements
                           </p>
                         </div>
                       )}
@@ -1101,26 +1101,29 @@ export default function BusinessRulesFramework() {
                 ))}
               </div>
 
-              {selectedGovernment && (
-                <div className="mt-6 space-y-4">
-                  <Alert>
-                    <Shield className="h-4 w-4" />
-                    <AlertTitle>Compliance Requirements</AlertTitle>
-                    <AlertDescription>
-                      {businessRulesData.governments[selectedGovernment].requirements?.length || 0} active requirements for {businessRulesData.governments[selectedGovernment].name}
-                    </AlertDescription>
-                  </Alert>
+              {selectedGovernment && (() => {
+                const government = businessRulesData.governments[selectedGovernment];
+                return (
+                  <div className="mt-6 space-y-4">
+                    <Alert>
+                      <Shield className="h-4 w-4" />
+                      <AlertTitle>Compliance Requirements</AlertTitle>
+                      <AlertDescription>
+                        {('requirements' in government ? government.requirements.length : 0)} active requirements for {government.name}
+                      </AlertDescription>
+                    </Alert>
 
-                  <div className="space-y-3">
-                    {businessRulesData.governments[selectedGovernment].requirements?.map((req, idx) => (
-                      <div key={idx} className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
-                        <CheckCircle2 className="h-5 w-5 text-green-600" />
-                        <span className="text-sm">{req}</span>
-                      </div>
-                    ))}
+                    <div className="space-y-3">
+                      {('requirements' in government ? government.requirements : []).map((req: string, idx: number) => (
+                        <div key={idx} className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
+                          <CheckCircle2 className="h-5 w-5 text-green-600" />
+                          <span className="text-sm">{req}</span>
+                        </div>
+                      ))}
+                    </div>
                   </div>
-                </div>
-              )}
+                );
+              })()}
             </CardContent>
           </Card>
         </TabsContent>
@@ -1143,7 +1146,7 @@ export default function BusinessRulesFramework() {
                       className={`cursor-pointer transition-all ${
                         selectedUseCase === key ? 'ring-2 ring-blue-500' : ''
                       }`}
-                      onClick={() => setSelectedUseCase(key)}
+                      onClick={() => setSelectedUseCase(key as keyof typeof businessRulesData.useCases)}
                     >
                       <CardContent className="p-4">
                         <div className="flex items-center gap-3">
@@ -1161,7 +1164,7 @@ export default function BusinessRulesFramework() {
                 </div>
 
                 <div className="space-y-3">
-                  {selectedUseCase && businessRulesData.useCases[selectedUseCase].rules.map((rule, idx) => (
+                  {selectedUseCase && businessRulesData.useCases[selectedUseCase].rules.map((rule: any, idx: number) => (
                     <Card key={idx}>
                       <CardContent className="p-4">
                         <h4 className="font-semibold mb-3">{rule.name}</h4>
@@ -1170,7 +1173,7 @@ export default function BusinessRulesFramework() {
                           <div>
                             <p className="text-xs font-medium text-gray-600 mb-1">Conditions</p>
                             <div className="space-y-1">
-                              {rule.conditions.map((condition, cidx) => (
+                              {rule.conditions.map((condition: string, cidx: number) => (
                                 <div key={cidx} className="text-sm text-gray-600 flex items-center gap-2">
                                   <Filter className="h-3 w-3" />
                                   {condition}
@@ -1182,7 +1185,7 @@ export default function BusinessRulesFramework() {
                           <div>
                             <p className="text-xs font-medium text-gray-600 mb-1">Requirements</p>
                             <div className="space-y-1">
-                              {rule.requirements.map((req, ridx) => (
+                              {rule.requirements.map((req: string, ridx: number) => (
                                 <div key={ridx} className="text-sm text-gray-600 flex items-center gap-2">
                                   <FileCheck className="h-3 w-3" />
                                   {req}

@@ -1,7 +1,7 @@
 import express from 'express';
 import webhookService, { WebhookEvents } from '../services/webhook.js';
-import authenticate from '../middlewares/auth-middleware.js';
-// import { auditAction } from '../middlewares/audit.js';  // TODO: Create audit middleware if needed
+import authenticate from '../middleware-app/auth-middleware.js';
+// import { auditAction } from '../middleware-app/audit.js';  // TODO: Create audit middleware if needed
 
 const router = express.Router();
 

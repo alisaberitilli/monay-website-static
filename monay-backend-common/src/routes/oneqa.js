@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import OneQAService from '../services/oneqa-service.js';
-import middlewares from '../middlewares/index.js';
+import middlewares from '../middleware-app/index.js';
 import helpers from '../helpers/index.js';
 import logger from '../services/logger.js';
 

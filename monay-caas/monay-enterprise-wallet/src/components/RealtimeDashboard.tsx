@@ -63,11 +63,7 @@ const RealtimeDashboard: React.FC = () => {
 
     // Show notification for large transactions
     if (data.amount > 100000) {
-      addNotification({
-        type: 'info',
-        message: `Large transaction: ${data.currency} ${data.amount.toLocaleString()}`,
-        autoClose: true
-      });
+      addNotification('info', `Large transaction: ${data.currency} ${data.amount.toLocaleString()}`);
     }
   });
 
@@ -93,11 +89,7 @@ const RealtimeDashboard: React.FC = () => {
 
     // Show notification for high severity alerts
     if (alert.severity === 'high' || alert.severity === 'critical') {
-      addNotification({
-        type: 'error',
-        message: `Compliance Alert: ${alert.message}`,
-        autoClose: false
-      });
+      addNotification('error', `Compliance Alert: ${alert.message}`);
     }
   });
 

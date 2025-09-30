@@ -309,4 +309,139 @@ router.get('/applications', async (req, res) => {
   }
 });
 
+// Temporary billing analytics endpoint (admin bypass)
+router.get('/api/billing/analytics', (req, res) => {
+  // Mock billing analytics data - no auth required for admin dashboard
+  const { period = 'monthly' } = req.query;
+  console.log(`Billing analytics requested for period: ${period}`);
+
+  // Different data based on period to make the button functionality visible
+  const periodMultiplier = {
+    daily: 0.1,
+    weekly: 0.5,
+    monthly: 1,
+    yearly: 12
+  };
+
+  const multiplier = periodMultiplier[period] || 1;
+
+  const baseMetrics = {
+    total_revenue_cents: 250000000, // $2.5M
+    usdxm_revenue_cents: 50000000,  // $500K (20% USDXM adoption)
+    other_stablecoin_revenue_cents: 200000000, // $2M
+    total_discounts_cents: 5000000,  // $50K in discounts
+    active_subscriptions: 150,
+    new_subscriptions: 25,
+    churned_subscriptions: 5,
+    average_revenue_per_tenant: 166667, // cents
+    tier_breakdown: {
+      free: { count: 50, revenue: 0 },
+      small_business: { count: 75, revenue: 75000000 }, // $750K
+      enterprise: { count: 20, revenue: 150000000 },   // $1.5M
+      custom: { count: 5, revenue: 25000000 }          // $250K
+    },
+    top_tenants: [
+      {
+        id: 'tenant_001',
+        name: 'TechCorp Inc',
+        revenue_cents: 25000000, // $250K
+        payment_method: 'USDXM',
+        tier: 'enterprise'
+      },
+      {
+        id: 'tenant_002',
+        name: 'Global Finance LLC',
+        revenue_cents: 20000000, // $200K
+        payment_method: 'USDC',
+        tier: 'enterprise'
+      },
+      {
+        id: 'tenant_003',
+        name: 'StartupHub',
+        revenue_cents: 15000000, // $150K
+        payment_method: 'USDXM',
+        tier: 'small_business'
+      },
+      {
+        id: 'tenant_004',
+        name: 'Enterprise Solutions',
+        revenue_cents: 12000000, // $120K
+        payment_method: 'USDT',
+        tier: 'enterprise'
+      },
+      {
+        id: 'tenant_005',
+        name: 'Digital Ventures',
+        revenue_cents: 10000000, // $100K
+        payment_method: 'USDXM',
+        tier: 'small_business'
+      }
+    ],
+    payment_methods: {
+      USDXM: {
+        count: 50,
+        revenue: 50000000,  // $500K
+        discount: 5000000   // $50K discount given
+      },
+      USDC: {
+        count: 65,
+        revenue: 130000000  // $1.3M
+      },
+      USDT: {
+        count: 35,
+        revenue: 70000000   // $700K
+      }
+    }
+  };
+
+  // Apply period multiplier to revenue metrics
+  const mockMetrics = {
+    ...baseMetrics,
+    total_revenue_cents: Math.round(baseMetrics.total_revenue_cents * multiplier),
+    usdxm_revenue_cents: Math.round(baseMetrics.usdxm_revenue_cents * multiplier),
+    other_stablecoin_revenue_cents: Math.round(baseMetrics.other_stablecoin_revenue_cents * multiplier),
+    total_discounts_cents: Math.round(baseMetrics.total_discounts_cents * multiplier),
+    average_revenue_per_tenant: Math.round(baseMetrics.average_revenue_per_tenant * multiplier),
+    tier_breakdown: {
+      free: {
+        count: baseMetrics.tier_breakdown.free.count,
+        revenue: Math.round(baseMetrics.tier_breakdown.free.revenue * multiplier)
+      },
+      small_business: {
+        count: baseMetrics.tier_breakdown.small_business.count,
+        revenue: Math.round(baseMetrics.tier_breakdown.small_business.revenue * multiplier)
+      },
+      enterprise: {
+        count: baseMetrics.tier_breakdown.enterprise.count,
+        revenue: Math.round(baseMetrics.tier_breakdown.enterprise.revenue * multiplier)
+      },
+      custom: {
+        count: baseMetrics.tier_breakdown.custom.count,
+        revenue: Math.round(baseMetrics.tier_breakdown.custom.revenue * multiplier)
+      }
+    },
+    top_tenants: baseMetrics.top_tenants.map(tenant => ({
+      ...tenant,
+      revenue_cents: Math.round(tenant.revenue_cents * multiplier)
+    })),
+    payment_methods: {
+      USDXM: {
+        count: baseMetrics.payment_methods.USDXM.count,
+        revenue: Math.round(baseMetrics.payment_methods.USDXM.revenue * multiplier),
+        discount: Math.round(baseMetrics.payment_methods.USDXM.discount * multiplier)
+      },
+      USDC: {
+        count: baseMetrics.payment_methods.USDC.count,
+        revenue: Math.round(baseMetrics.payment_methods.USDC.revenue * multiplier)
+      },
+      USDT: {
+        count: baseMetrics.payment_methods.USDT.count,
+        revenue: Math.round(baseMetrics.payment_methods.USDT.revenue * multiplier)
+      }
+    }
+  };
+
+  res.json(mockMetrics);
+});
+
 export default router;

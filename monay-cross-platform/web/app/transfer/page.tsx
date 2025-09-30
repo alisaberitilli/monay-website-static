@@ -40,6 +40,7 @@ import {
 } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import apiClient from '@/lib/api-client'
+import DashboardLayout from '@/components/DashboardLayout'
 
 interface Contact {
   id: string
@@ -138,9 +139,14 @@ export default function TransferPage() {
   const searchRecipient = async (query: string) => {
     setIsSearching(true)
     try {
-      const response = await apiClient.searchUsers(query, transferMethod)
+      // Map transferMethod to API type parameter
+      const searchType = transferMethod === 'monay' ? undefined : transferMethod
+      const response = await apiClient.searchUsers(query, searchType)
       if (response.success && response.data) {
         setSearchResults(response.data)
+      } else {
+        console.error('Search failed:', response.error)
+        setSearchResults([])
       }
     } catch (error) {
       console.error('Failed to search recipients:', error)
@@ -171,10 +177,23 @@ export default function TransferPage() {
 
   const handleContinue = () => {
     if (step === 'recipient') {
-      if (!recipient || !recipientDetails) {
-        setErrors({ recipient: 'Please select a recipient' })
+      if (!recipient) {
+        setErrors({ recipient: 'Please enter a recipient' })
         return
       }
+
+      // If no recipientDetails selected from search, create a basic one from the input
+      if (!recipientDetails && recipient) {
+        const basicRecipient = {
+          id: recipient, // Use the identifier as ID for non-Monay users
+          name: recipient, // Use the identifier as display name
+          identifier: recipient,
+          type: transferMethod === 'phone' ? 'phone' : transferMethod === 'email' ? 'email' : 'username',
+          isMonayUser: false // Will be determined during transfer processing
+        }
+        setRecipientDetails(basicRecipient)
+      }
+
       setErrors({})
       setStep('amount')
     } else if (step === 'amount') {
@@ -219,87 +238,92 @@ export default function TransferPage() {
 
   if (step === 'success') {
     return (
-      <div className="container max-w-2xl mx-auto p-6">
-        <Card className="text-center">
-          <CardContent className="py-12">
-            <div className="mb-6">
-              <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <CheckCircle className="h-12 w-12 text-green-600" />
-              </div>
-              <h2 className="text-2xl font-bold mb-2">Transfer Successful!</h2>
-              <p className="text-muted-foreground">
-                {formatCurrency(parseFloat(amount))} sent to {recipientDetails?.name}
-              </p>
-            </div>
-
-            <div className="bg-gray-50 rounded-lg p-4 mb-6 text-left">
-              <div className="space-y-2">
-                <div className="flex justify-between">
-                  <span className="text-sm text-muted-foreground">Amount</span>
-                  <span className="font-medium">{formatCurrency(parseFloat(amount))}</span>
+      <DashboardLayout>
+        <div className="container max-w-2xl mx-auto p-6">
+          <Card className="text-center">
+            <CardContent className="py-12">
+              <div className="mb-6">
+                <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <CheckCircle className="h-12 w-12 text-green-600" />
                 </div>
-                {transferFee > 0 && (
+                <h2 className="text-2xl font-bold mb-2">Transfer Successful!</h2>
+                <p className="text-muted-foreground">
+                  {formatCurrency(parseFloat(amount))} sent to {recipientDetails?.name}
+                </p>
+              </div>
+
+              <div className="bg-gray-50 rounded-lg p-4 mb-6 text-left">
+                <div className="space-y-2">
                   <div className="flex justify-between">
-                    <span className="text-sm text-muted-foreground">Fee</span>
-                    <span className="font-medium">{formatCurrency(transferFee)}</span>
+                    <span className="text-sm text-muted-foreground">Amount</span>
+                    <span className="font-medium">{formatCurrency(parseFloat(amount))}</span>
                   </div>
-                )}
-                <div className="flex justify-between pt-2 border-t">
-                  <span className="text-sm font-medium">Total</span>
-                  <span className="font-bold">{formatCurrency(totalAmount)}</span>
+                  {transferFee > 0 && (
+                    <div className="flex justify-between">
+                      <span className="text-sm text-muted-foreground">Fee</span>
+                      <span className="font-medium">{formatCurrency(transferFee)}</span>
+                    </div>
+                  )}
+                  <div className="flex justify-between pt-2 border-t">
+                    <span className="text-sm font-medium">Total</span>
+                    <span className="font-bold">{formatCurrency(totalAmount)}</span>
+                  </div>
                 </div>
               </div>
-            </div>
 
-            <div className="flex gap-4">
-              <Button
-                variant="outline"
-                className="flex-1"
-                onClick={() => {
-                  setStep('recipient')
-                  setRecipient('')
-                  setRecipientDetails(null)
-                  setAmount('')
-                  setNote('')
-                }}
-              >
-                Send Again
-              </Button>
-              <Button
-                className="flex-1"
-                onClick={() => router.push('/dashboard')}
-              >
-                Back to Dashboard
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
+              <div className="flex gap-4">
+                <Button
+                  variant="outline"
+                  className="flex-1"
+                  onClick={() => {
+                    setStep('recipient')
+                    setRecipient('')
+                    setRecipientDetails(null)
+                    setAmount('')
+                    setNote('')
+                  }}
+                >
+                  Send Again
+                </Button>
+                <Button
+                  className="flex-1"
+                  onClick={() => router.push('/dashboard')}
+                >
+                  Back to Dashboard
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </DashboardLayout>
     )
   }
 
   if (step === 'processing') {
     return (
-      <div className="container max-w-2xl mx-auto p-6">
-        <Card className="text-center">
-          <CardContent className="py-12">
-            <div className="mb-6">
-              <div className="w-20 h-20 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4 animate-pulse">
-                <Zap className="h-12 w-12 text-blue-600" />
+      <DashboardLayout>
+        <div className="container max-w-2xl mx-auto p-6">
+          <Card className="text-center">
+            <CardContent className="py-12">
+              <div className="mb-6">
+                <div className="w-20 h-20 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4 animate-pulse">
+                  <Zap className="h-12 w-12 text-blue-600" />
+                </div>
+                <h2 className="text-2xl font-bold mb-2">Processing Transfer...</h2>
+                <p className="text-muted-foreground">
+                  This will only take a moment
+                </p>
               </div>
-              <h2 className="text-2xl font-bold mb-2">Processing Transfer...</h2>
-              <p className="text-muted-foreground">
-                This will only take a moment
-              </p>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
+            </CardContent>
+          </Card>
+        </div>
+      </DashboardLayout>
     )
   }
 
   return (
-    <div className="container max-w-4xl mx-auto p-6 space-y-6">
+    <DashboardLayout>
+      <div className="container max-w-4xl mx-auto p-6 space-y-6">
       {/* Header */}
       <div>
         <h1 className="text-3xl font-bold">Send Money</h1>
@@ -383,8 +407,11 @@ export default function TransferPage() {
                       value={recipient}
                       onChange={(e) => {
                         setRecipient(e.target.value)
-                        if (e.target.value.length > 3) {
+                        setRecipientDetails(null) // Clear selection when typing
+                        if (e.target.value.length > 2) {
                           searchRecipient(e.target.value)
+                        } else {
+                          setSearchResults([]) // Clear results for short queries
                         }
                       }}
                       className={errors.recipient ? 'border-red-500' : ''}
@@ -399,6 +426,14 @@ export default function TransferPage() {
                   </div>
                   {errors.recipient && (
                     <p className="text-sm text-red-500 mt-1">{errors.recipient}</p>
+                  )}
+                  {recipientDetails && (
+                    <div className="flex items-center gap-2 mt-2 p-2 bg-green-50 border border-green-200 rounded">
+                      <CheckCircle className="h-4 w-4 text-green-600" />
+                      <span className="text-sm text-green-700">
+                        {recipientDetails.isMonayUser ? 'Monay user found' : 'Recipient ready'}: {recipientDetails.name}
+                      </span>
+                    </div>
                   )}
                 </div>
 
@@ -696,6 +731,7 @@ export default function TransferPage() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
-    </div>
+      </div>
+    </DashboardLayout>
   )
 }

@@ -1,4 +1,4 @@
-import { authenticate, authorize, validateApiKey } from '../../middlewares/auth-exports';
+import { authenticate, authorize, validateApiKey } from '../../middleware-app/auth-exports.js';
 
 // Mock JWT service
 jest.mock('../../services/jwt', () => ({

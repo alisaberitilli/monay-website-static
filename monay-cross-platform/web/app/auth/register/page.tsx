@@ -21,6 +21,7 @@ export default function RegisterPage() {
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
+    email: '',
     mobileNumber: '',
     password: '',
     confirmPassword: '',
@@ -38,17 +39,18 @@ export default function RegisterPage() {
   };
 
   // Check if form is valid and ready to submit
-  const isFormValid = agreedToTerms && 
-    formData.firstName && 
-    formData.lastName && 
-    formData.mobileNumber && 
-    formData.password && 
+  const isFormValid = agreedToTerms &&
+    formData.firstName &&
+    formData.lastName &&
+    formData.email &&
+    formData.mobileNumber &&
+    formData.password &&
     formData.confirmPassword;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!formData.firstName || !formData.lastName || !formData.mobileNumber || 
+    if (!formData.firstName || !formData.lastName || !formData.email || !formData.mobileNumber ||
         !formData.password || !formData.confirmPassword) {
       setError('Please fill in all fields');
       return;
@@ -89,7 +91,7 @@ export default function RegisterPage() {
       await register({
         firstName: formData.firstName,
         lastName: formData.lastName,
-        email: '', // Email is optional for mobile apps
+        email: formData.email,
         mobileNumber: formData.mobileNumber,
         password: formData.password,
       });
@@ -105,7 +107,7 @@ export default function RegisterPage() {
       }
     } catch (error) {
       console.error('Registration error:', error);
-      setError(`Registration failed: ${error.message || 'Please try again.'}`);
+      setError(`Registration failed: ${(error as Error).message || 'Please try again.'}`);
     } finally {
       setIsLoading(false);
     }
@@ -189,6 +191,26 @@ export default function RegisterPage() {
                     autoCapitalize="words"
                   />
                 </div>
+              </div>
+            </div>
+
+            {/* Email Field */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Email Address
+              </label>
+              <div className="relative">
+                <User className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+                <input
+                  name="email"
+                  type="email"
+                  placeholder="Enter your email address"
+                  value={formData.email}
+                  onChange={handleChange}
+                  className="input-modern pl-12"
+                  required
+                  autoComplete="email"
+                />
               </div>
             </div>
 
@@ -281,16 +303,16 @@ export default function RegisterPage() {
                 className="ml-3 text-sm text-gray-600 cursor-pointer select-none"
               >
                 I agree to the{' '}
-                <Link 
-                  href="/terms" 
+                <Link
+                  href={"/terms" as any}
                   className="text-purple-600 hover:text-purple-700 font-medium"
                   onClick={(e) => e.stopPropagation()}
                 >
                   Terms & Conditions
                 </Link>
                 {' '}and{' '}
-                <Link 
-                  href="/privacy" 
+                <Link
+                  href={"/privacy" as any}
                   className="text-purple-600 hover:text-purple-700 font-medium"
                   onClick={(e) => e.stopPropagation()}
                 >

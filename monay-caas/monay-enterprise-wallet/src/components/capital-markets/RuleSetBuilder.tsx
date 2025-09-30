@@ -167,8 +167,8 @@ export const RuleSetBuilder: React.FC<RuleSetBuilderProps> = ({
       
       const result = {
         valid: ruleSet.rules.length > 0 && ruleSet.name && ruleSet.description,
-        errors: [],
-        warnings: [],
+        errors: [] as string[],
+        warnings: [] as string[],
       };
       
       if (!ruleSet.name) result.errors.push('Rule set name is required');

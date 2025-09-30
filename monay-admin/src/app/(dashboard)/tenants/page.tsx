@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { Plus, Search, Filter, Building, Users, Home, Briefcase, Shield } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -37,6 +38,7 @@ interface Tenant {
 }
 
 export default function TenantsPage() {
+  const router = useRouter();
   const [tenants, setTenants] = useState<Tenant[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
@@ -61,11 +63,14 @@ export default function TenantsPage() {
       if (tierFilter !== 'all') params.append('billing_tier', tierFilter);
       if (statusFilter !== 'all') params.append('status', statusFilter);
 
+      const token = typeof window !== 'undefined' ? localStorage.getItem('monay_admin_token') : null;
+      const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:3001';
+
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/tenants?${params}`,
+        `${backendUrl}/api/tenants?${params}`,
         {
           headers: {
-            'Authorization': `Bearer ${localStorage.getItem('token')}`,
+            'Authorization': `Bearer ${token}`,
           },
         }
       );
@@ -159,7 +164,10 @@ export default function TenantsPage() {
           <h1 className="text-3xl font-bold">Tenant Management</h1>
           <p className="text-gray-600 mt-1">Manage all tenants and their billing</p>
         </div>
-        <Button className="flex items-center gap-2">
+        <Button
+          className="flex items-center gap-2"
+          onClick={() => router.push('/tenants/create')}
+        >
           <Plus className="w-4 h-4" />
           Create Tenant
         </Button>
@@ -346,10 +354,18 @@ export default function TenantsPage() {
                     </TableCell>
                     <TableCell>
                       <div className="flex items-center gap-2">
-                        <Button size="sm" variant="outline">
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => router.push(`/tenants/${tenant.id}`)}
+                        >
                           View
                         </Button>
-                        <Button size="sm" variant="outline">
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => router.push(`/tenants/${tenant.id}/edit`)}
+                        >
                           Edit
                         </Button>
                       </div>

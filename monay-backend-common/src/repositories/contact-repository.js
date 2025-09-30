@@ -15,7 +15,7 @@ export default {
         role: { [Op.in]: ['basic_consumer', 'verified_consumer', 'premium_consumer', 'merchant', 'enterprise_admin', 'enterprise_developer'] },
         status: 'active'
       }
-      return await User.findAll({
+      return await models.User.findAll({
         where: whereObj,
         attributes: [
           [

@@ -6,8 +6,8 @@
 import express from 'express';
 const router = express.Router();
 import { StablecoinProviderFactory } from '../services/stablecoin-provider-factory.js';
-import auth from '../middleware/auth.js';
-import validateRequest from '../middleware/validateRequest';
+import auth from '../middleware-core/auth.js';
+import { validateRequest } from '../middleware-app/validate-middleware.js';
 import { body, query, param } from 'express-validator';
 
 // Initialize provider factory

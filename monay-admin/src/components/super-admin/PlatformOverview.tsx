@@ -43,7 +43,7 @@ const cardVariants = {
 };
 
 const StatusIndicator = ({ status }: { status: string }) => {
-  const colors = {
+  const colors: Record<string, string> = {
     healthy: 'bg-green-500',
     degraded: 'bg-yellow-500',
     down: 'bg-red-500',
@@ -51,7 +51,7 @@ const StatusIndicator = ({ status }: { status: string }) => {
 
   return (
     <div className="flex items-center gap-2">
-      <div className={`w-2 h-2 rounded-full ${colors[status as keyof typeof colors]} animate-pulse`} />
+      <div className={`w-2 h-2 rounded-full ${colors[status] || 'bg-gray-500'} animate-pulse`} />
       <span className="text-sm capitalize">{status}</span>
     </div>
   );
@@ -67,13 +67,13 @@ const MetricCard = ({
   suffix = '',
   color = 'blue'
 }: any) => {
-  const trendColors = {
+  const trendColors: Record<string, string> = {
     up: 'text-green-600',
     down: 'text-red-600',
     stable: 'text-gray-600',
   };
 
-  const bgColors = {
+  const bgColors: Record<string, string> = {
     blue: 'from-blue-500 to-blue-600',
     green: 'from-green-500 to-green-600',
     purple: 'from-purple-500 to-purple-600',
@@ -89,7 +89,7 @@ const MetricCard = ({
       transition={{ duration: 0.2 }}
     >
       <Card className="relative overflow-hidden border-0 shadow-lg">
-        <div className={`absolute inset-0 bg-gradient-to-br ${bgColors[color]} opacity-5`} />
+        <div className={`absolute inset-0 bg-gradient-to-br ${bgColors[color] || bgColors.blue} opacity-5`} />
         <CardContent className="p-6">
           <div className="flex items-center justify-between">
             <div>
@@ -106,14 +106,14 @@ const MetricCard = ({
                   {suffix}
                 </h3>
                 {change && (
-                  <div className={`flex items-center gap-1 text-sm ${trendColors[trend]}`}>
+                  <div className={`flex items-center gap-1 text-sm ${trendColors[trend] || 'text-gray-600'}`}>
                     {trend === 'up' ? <ArrowUpRight className="w-4 h-4" /> : <ArrowDownRight className="w-4 h-4" />}
                     {Math.abs(change)}%
                   </div>
                 )}
               </div>
             </div>
-            <div className={`p-3 rounded-lg bg-gradient-to-br ${bgColors[color]} bg-opacity-10`}>
+            <div className={`p-3 rounded-lg bg-gradient-to-br ${bgColors[color] || bgColors.blue} bg-opacity-10`}>
               <Icon className="w-6 h-6 text-white" />
             </div>
           </div>
@@ -160,8 +160,8 @@ export default function PlatformOverview() {
         superAdminService.getProviderComparison(),
       ]);
 
-      setMetrics(platformMetrics.data);
-      setSystemHealth(formatSystemHealth(health.data));
+      setMetrics((platformMetrics as any).data || platformMetrics);
+      setSystemHealth(formatSystemHealth((health as any).data || health));
       setProviderComparison(comparison);
     } catch (error) {
       console.error('Failed to load platform data:', error);

@@ -19,6 +19,7 @@ export default {
     environment: process.env.NODE_ENV,
     swaggerHost: process.env.SWAGGER_HOST,
     cryptrSecretKey: process.env.CRYPTR_SECRET,
+    jwtAccessSecret: process.env.JWT_SECRET, // Added for auth middleware
     languages: ["en"],
     setBaseUrl(url) {
       this.baseUrl = url;

@@ -39,7 +39,13 @@ export class ComprehensiveTestRunner {
   private knownIssues: Map<string, string> = new Map();
   private flakyTests: Map<string, number> = new Map();
   private testDependencies: Map<string, string[]> = new Map();
-  private failureLog: string[] = [];
+  private failureLog: Array<{
+    timestamp: string;
+    test: string;
+    severity: string;
+    error?: string;
+    action: string;
+  }> = [];
 
   constructor() {
     this.initializeTestDependencies();
@@ -583,6 +589,8 @@ export class ComprehensiveTestRunner {
     console.log('-------------------');
 
     const passRate = (totalPassed / totalTests) * 100;
+    const p0FailureCount = this.failureLog.filter(f => f.severity === 'P0').length;
+
     if (passRate < 80) {
       console.log('  ⚠️  Pass rate below 80% - Review test stability');
     }
@@ -591,7 +599,7 @@ export class ComprehensiveTestRunner {
       console.log('  ⚠️  Multiple flaky tests detected - Schedule test review');
     }
 
-    if (p0Failures.length > 0) {
+    if (p0FailureCount > 0) {
       console.log('  🚨 Critical failures require immediate attention');
     }
 

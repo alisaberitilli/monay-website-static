@@ -1,7 +1,19 @@
 import axios from 'axios'
 import { invoiceWalletAPI } from '../invoiceWalletAPI'
 
+jest.mock('axios')
+
 const mockedAxios = axios as jest.Mocked<typeof axios>
+const mockApiClient = {
+  post: jest.fn(),
+  get: jest.fn(),
+  put: jest.fn(),
+  delete: jest.fn(),
+  patch: jest.fn(),
+}
+
+// Mock axios.create to return our mock client
+mockedAxios.create = jest.fn(() => mockApiClient as any)
 
 describe('InvoiceWalletAPI', () => {
   beforeEach(() => {
@@ -20,8 +32,6 @@ describe('InvoiceWalletAPI', () => {
         status: 'active',
       }
 
-      // Get the mocked axios instance
-      const mockApiClient = (axios.create as jest.Mock).mock.results[0].value
       mockApiClient.post.mockResolvedValue({
         data: { wallet: mockWallet },
       })
@@ -32,7 +42,6 @@ describe('InvoiceWalletAPI', () => {
         features: ['quantum', 'compliance'],
       })
 
-      const mockApiClient = (axios.create as jest.Mock).mock.results[0].value
       expect(mockApiClient.post).toHaveBeenCalledWith('/invoice-wallets/generate', {
         invoiceId: 'inv_123',
         mode: 'ephemeral',

@@ -12,7 +12,7 @@ import cardRepository from '../repositories/card-repository.js';
 const { walletFactory, ephemeralManager, aiModeSelector } = invoiceWallet;
 import auditLogger from '../services/invoice-wallet/AuditLogger.js';
 import blockchainIntegration from '../services/invoice-wallet/BlockchainIntegration.js';
-import authMiddleware from '../middlewares/auth-middleware.js';
+import authMiddleware from '../middleware-app/auth-middleware.js';
 import db from '../models/index.js';
 
 // Use console for now since logger import is causing issues

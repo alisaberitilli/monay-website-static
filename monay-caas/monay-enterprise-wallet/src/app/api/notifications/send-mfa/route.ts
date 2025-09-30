@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { notificationService } from '@/lib/notifications'
 
-export async function POST(request: NextRequest) {
+export async function POST(request: Request) {
   try {
     const body = await request.json()
     const { email, phone, organizationName } = body

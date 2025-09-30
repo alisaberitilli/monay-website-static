@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
 import { motion } from 'framer-motion'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -17,6 +18,7 @@ import invoiceWalletAPI from '@/lib/api/invoiceWalletAPI'
 import { WebSocketStatus, WebSocketIndicator } from '@/components/WebSocketStatus'
 
 export default function InvoiceWalletsPage() {
+  const router = useRouter()
   const [wallets, setWallets] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
   const [filter, setFilter] = useState<'all' | 'ephemeral' | 'persistent' | 'adaptive'>('all')
@@ -271,7 +273,7 @@ export default function InvoiceWalletsPage() {
             <Button
               variant="gradient"
               className="mt-4"
-              onClick={() => window.location.href = '/invoices'}
+              onClick={() => router.push('/invoices')}
             >
               <Plus className="h-4 w-4 mr-2" />
               Go to Invoices

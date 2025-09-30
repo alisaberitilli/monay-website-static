@@ -86,6 +86,10 @@ const addMoneyByBankSchema = Joi.object().keys({
     }),
   bankId: Joi.number().empty()
     .allow('').optional(),
+  accountId: Joi.string()
+    .empty()
+    .allow('')
+    .optional(),
   accountNumber: Joi.string()
     .max(250)
     .empty()
@@ -96,6 +100,10 @@ const addMoneyByBankSchema = Joi.object().keys({
     .allow('')
     .optional(),
   routingNumber: Joi.string()
+    .empty()
+    .allow('')
+    .optional(),
+  paymentMethod: Joi.string()
     .empty()
     .allow('')
     .optional(),

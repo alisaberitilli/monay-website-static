@@ -1,0 +1,33 @@
+{
+  "name": "@monay/icon-migration",
+  "version": "1.0.0",
+  "description": "Safe migration scripts for converting lucide-react to @monay/icons",
+  "type": "module",
+  "scripts": {
+    "1-analyze": "node 1-analyze-icons.ts",
+    "2-backup": "node 2-backup-files.ts",
+    "3-migrate-dry": "node 3-migrate-icons.ts",
+    "3-migrate-live": "node 3-migrate-icons.ts --live",
+    "4-update-packages-dry": "node 4-update-package-json.ts",
+    "4-update-packages-live": "node 4-update-package-json.ts --live",
+    "5-verify": "node 5-verify-migration.ts",
+    "migrate:full": "npm run 1-analyze && npm run 2-backup && npm run 3-migrate-live && npm run 4-update-packages-live && npm run 5-verify",
+    "migrate:dry-run": "npm run 1-analyze && npm run 3-migrate-dry && npm run 4-update-packages-dry",
+    "help": "node migrate.ts --help"
+  },
+  "keywords": [
+    "icons",
+    "migration",
+    "lucide",
+    "svg",
+    "monay"
+  ],
+  "author": "Monay Development Team",
+  "license": "PROPRIETARY",
+  "dependencies": {
+    "typescript": "^5.3.3"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.0"
+  }
+}

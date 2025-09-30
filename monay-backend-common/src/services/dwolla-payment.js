@@ -6,7 +6,7 @@
 
 import dwolla from 'dwolla-v2';
 import HttpStatus from 'http-status';
-import { CustomError } from '../middlewares/errors.js';
+import { CustomError } from '../middleware-app/errors.js';
 import loggers from './logger.js';
 import crypto from 'crypto';
 

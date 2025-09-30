@@ -16,10 +16,10 @@ export default {
       if (req.query.settingType) {
         where.settingType = req.query.settingType;
       }
-      const results = await Setting.findAll({
+      const results = await models.Setting.findAll({
         where: where
       });
-      const country = await Country.findOne({
+      const country = await models.Country.findOne({
         where: { countryCallingCode: config.region.countryPhoneCode }
       });
       results.forEach((data, index) => {
@@ -47,7 +47,7 @@ export default {
   async updateSettings(req) {
     try {
       for (const [key, value] of Object.entries(req.body)) {
-        await Setting.update({ value: value }, { where: { key: key } });
+        await models.Setting.update({ value: value }, { where: { key: key } });
       }
       return true;
     } catch (error) {
@@ -63,10 +63,10 @@ export default {
     try {
       let res = '';
       let envKey = '';
-      let isSetting = await Setting.findOne({ where: { key: 'is_country_setting' } });
+      let isSetting = await models.Setting.findOne({ where: { key: 'is_country_setting' } });
       if (isSetting.value == 0) {
         for (const [key, value] of Object.entries(req.body)) {
-          res = await Setting.update({ value: value }, { where: { key: key } });
+          res = await models.Setting.update({ value: value }, { where: { key: key } });
           if (key === 'country_phone_code') {
             envKey = 'COUNTRY_PHONE_CODE';
           }
@@ -76,7 +76,7 @@ export default {
           utility.setEnvValue(envKey, value);
         }
         if (res) {
-          await Setting.update({ value: 1 }, { where: { key: 'is_country_setting' } });
+          await models.Setting.update({ value: 1 }, { where: { key: 'is_country_setting' } });
           exec(
             `sudo pm2 restart src/index.js`,
             { maxBuffer: 1024 * 2084 }, async (err, stdout, stderr) => {
@@ -100,7 +100,7 @@ export default {
   */
   async getCountryList(req) {
     try {
-      return await Country.findAll();
+      return await models.Country.findAll();
 
     } catch (error) {
       throw Error(error);
@@ -112,7 +112,7 @@ export default {
   */
    async getActiveCountryList(req) {
     try {
-      return await Country.findAll({ where : { status: 'active'}});
+      return await models.Country.findAll({ where : { status: 'active'}});
 
     } catch (error) {
       throw Error(error);
@@ -130,8 +130,8 @@ export default {
         if (countryCode) {
           where.countryCode = countryCode;
         }
-        const picture = await KycDocument.findAll({ where: { type: 'picture', ...where } });
-        const address = await KycDocument.findAll({ where: { type: 'address', ...where } });
+        const picture = await models.KycDocument.findAll({ where: { type: 'picture', ...where } });
+        const address = await models.KycDocument.findAll({ where: { type: 'address', ...where } });
         return { picture, address };
       } catch (error) {
         throw Error(error);

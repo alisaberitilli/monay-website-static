@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test LocalStorage Implementation</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .test-section { margin: 20px 0; padding: 15px; border: 1px solid #ccc; }
+        .success { color: green; }
+        .error { color: red; }
+        button { margin: 5px; padding: 10px; cursor: pointer; }
+        pre { background: #f4f4f4; padding: 10px; overflow-x: auto; }
+    </style>
+</head>
+<body>
+    <h1>Monay Admin - LocalStorage Authentication Test</h1>
+
+    <div class="test-section">
+        <h2>1. Login Test</h2>
+        <button onclick="testLogin()">Test Admin Login</button>
+        <div id="loginResult"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>2. LocalStorage Content</h2>
+        <button onclick="showStorageContent()">Show LocalStorage</button>
+        <button onclick="clearStorage()">Clear LocalStorage</button>
+        <pre id="storageContent"></pre>
+    </div>
+
+    <div class="test-section">
+        <h2>3. Token Persistence Test</h2>
+        <button onclick="testTokenPersistence()">Test Token Persistence</button>
+        <div id="persistenceResult"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>4. API Call with Token</h2>
+        <button onclick="testAuthenticatedCall()">Test Authenticated API Call</button>
+        <div id="apiResult"></div>
+    </div>
+
+    <script>
+        const API_URL = 'http://localhost:3001';
+        const STORAGE_KEYS = {
+            TOKEN: 'monay_admin_token',
+            REFRESH_TOKEN: 'monay_admin_refresh_token',
+            USER: 'monay_admin_user'
+        };
+
+        async function testLogin() {
+            const resultDiv = document.getElementById('loginResult');
+            resultDiv.innerHTML = 'Testing login...';
+
+            try {
+                const response = await fetch(`${API_URL}/api/admin/login`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        email: 'admin@monay.com',
+                        password: 'Admin123!',
+                        deviceType: 'WEB'
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    // Store in localStorage (mimicking the auth service)
+                    const token = data.data.token;
+                    const refreshToken = data.data.refreshToken || token;
+                    const user = {
+                        id: data.data.id,
+                        email: data.data.email,
+                        firstName: data.data.firstName,
+                        lastName: data.data.lastName,
+                        role: data.data.role || data.data.userType,
+                        profileImage: data.data.profileImage || data.data.profilePicture,
+                        walletBalance: data.data.walletBalance
+                    };
+
+                    localStorage.setItem(STORAGE_KEYS.TOKEN, token);
+                    localStorage.setItem(STORAGE_KEYS.REFRESH_TOKEN, refreshToken);
+                    localStorage.setItem(STORAGE_KEYS.USER, JSON.stringify(user));
+
+                    resultDiv.innerHTML = `<div class="success">✅ Login successful! Token stored in localStorage.</div>
+                        <div>User: ${user.email} (${user.role})</div>`;
+                } else {
+                    resultDiv.innerHTML = `<div class="error">❌ Login failed: ${data.error}</div>`;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `<div class="error">❌ Error: ${error.message}</div>`;
+            }
+        }
+
+        function showStorageContent() {
+            const contentDiv = document.getElementById('storageContent');
+            const token = localStorage.getItem(STORAGE_KEYS.TOKEN);
+            const refreshToken = localStorage.getItem(STORAGE_KEYS.REFRESH_TOKEN);
+            const user = localStorage.getItem(STORAGE_KEYS.USER);
+
+            const content = {
+                token: token ? token.substring(0, 50) + '...' : null,
+                refreshToken: refreshToken ? refreshToken.substring(0, 50) + '...' : null,
+                user: user ? JSON.parse(user) : null,
+                hasToken: !!token,
+                hasRefreshToken: !!refreshToken,
+                hasUser: !!user
+            };
+
+            contentDiv.textContent = JSON.stringify(content, null, 2);
+        }
+
+        function clearStorage() {
+            localStorage.removeItem(STORAGE_KEYS.TOKEN);
+            localStorage.removeItem(STORAGE_KEYS.REFRESH_TOKEN);
+            localStorage.removeItem(STORAGE_KEYS.USER);
+            showStorageContent();
+            alert('LocalStorage cleared!');
+        }
+
+        function testTokenPersistence() {
+            const resultDiv = document.getElementById('persistenceResult');
+            const token = localStorage.getItem(STORAGE_KEYS.TOKEN);
+
+            if (token) {
+                // Parse JWT to check expiration
+                try {
+                    const payload = JSON.parse(atob(token.split('.')[1]));
+                    const exp = new Date(payload.exp * 1000);
+                    const now = new Date();
+
+                    if (exp > now) {
+                        resultDiv.innerHTML = `<div class="success">✅ Token is valid and persisted!</div>
+                            <div>Expires at: ${exp.toLocaleString()}</div>`;
+                    } else {
+                        resultDiv.innerHTML = `<div class="error">⚠️ Token is expired!</div>`;
+                    }
+                } catch (e) {
+                    resultDiv.innerHTML = `<div class="error">❌ Invalid token format</div>`;
+                }
+            } else {
+                resultDiv.innerHTML = `<div class="error">❌ No token found in localStorage</div>`;
+            }
+        }
+
+        async function testAuthenticatedCall() {
+            const resultDiv = document.getElementById('apiResult');
+            const token = localStorage.getItem(STORAGE_KEYS.TOKEN);
+
+            if (!token) {
+                resultDiv.innerHTML = `<div class="error">❌ No token found. Please login first.</div>`;
+                return;
+            }
+
+            resultDiv.innerHTML = 'Making authenticated API call...';
+
+            try {
+                const response = await fetch(`${API_URL}/api/auth/me`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    resultDiv.innerHTML = `<div class="success">✅ Authenticated API call successful!</div>
+                        <pre>${JSON.stringify(data.data, null, 2)}</pre>`;
+                } else {
+                    resultDiv.innerHTML = `<div class="error">❌ API call failed: ${data.error}</div>`;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `<div class="error">❌ Error: ${error.message}</div>`;
+            }
+        }
+
+        // Check initial state on load
+        window.onload = function() {
+            showStorageContent();
+            testTokenPersistence();
+        };
+    </script>
+</body>
+</html>

@@ -5,6 +5,7 @@
 
 import EventEmitter from 'events'
 import crypto from 'crypto'
+import os from 'os'
 import auditLogger from './AuditLogger.js'
 
 class PerformanceMonitor extends EventEmitter {
@@ -222,7 +223,7 @@ class PerformanceMonitor extends EventEmitter {
     this.metrics.systemResources.cpuUsage = Math.min(100, cpuPercent)
 
     // Calculate memory percentage
-    import totalMem from 'os'.totalmem()
+    const totalMem = os.totalmem()
     const memPercent = (memUsage.heapUsed / totalMem) * 100
     this.metrics.systemResources.memoryUsage = memPercent
 

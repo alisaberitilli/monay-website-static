@@ -43,7 +43,7 @@ export default function EnhancedBusinessRulesEngine() {
     actions: [],
     priority: 50
   })
-  const [businessRules, setBusinessRules] = useState([])
+  const [businessRules, setBusinessRules] = useState<any[]>([])
 
   const rules = [
     {

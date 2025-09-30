@@ -335,7 +335,7 @@ export function MFASetup({ onComplete, onCancel }: MFASetupProps) {
               </p>
             </div>
 
-            <Alert variant="warning">
+            <Alert>
               <AlertTriangle className="h-4 w-4" />
               <AlertDescription>
                 Each backup code can only be used once. Save them securely!

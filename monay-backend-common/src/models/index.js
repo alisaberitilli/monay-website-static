@@ -29,6 +29,15 @@ sequelize = new Sequelize(dbConfig.db, dbConfig.user, dbConfig.password, {
   timezone: dbConfig.timezone,
   logging: console.log,
   dialect: dbConfig.dialect,
+  define: {
+    // Global settings for all models
+    underscored: true,  // Automatically convert camelCase to snake_case
+    timestamps: true,   // Enable timestamps
+    createdAt: 'created_at',  // Map createdAt to created_at
+    updatedAt: 'updated_at',  // Map updatedAt to updated_at
+    // This will make all model attributes use snake_case in the database
+    // while keeping camelCase in JavaScript
+  }
 });
 
 // Initialize models asynchronously

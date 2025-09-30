@@ -1,0 +1,38 @@
+{
+  "name": "@monay/icons",
+  "version": "1.0.0",
+  "description": "Optimized SVG icon library for Monay applications",
+  "main": "index.ts",
+  "types": "index.ts",
+  "type": "module",
+  "exports": {
+    ".": {
+      "import": "./index.ts",
+      "types": "./index.ts"
+    },
+    "./Icon": {
+      "import": "./Icon.tsx",
+      "types": "./Icon.tsx"
+    }
+  },
+  "scripts": {
+    "type-check": "tsc --noEmit"
+  },
+  "keywords": [
+    "icons",
+    "svg",
+    "react",
+    "typescript",
+    "monay"
+  ],
+  "author": "Monay Development Team",
+  "license": "PROPRIETARY",
+  "peerDependencies": {
+    "react": "^18.0.0",
+    "react-dom": "^18.0.0"
+  },
+  "devDependencies": {
+    "@types/react": "^18.3.24",
+    "typescript": "^5.9.2"
+  }
+}

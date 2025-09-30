@@ -1,8 +1,8 @@
 import express from 'express';
 const router = express.Router();
 import mfaService from '../services/mfa.js';
-import { authenticate } from '../middleware/auth.js';
-import { auditAction } from '../middleware/audit.js';
+import { authenticate } from '../middleware-core/auth.js';
+import { auditAction } from '../middleware-core/audit.js';
 import { AuditActions } from '../services/audit-log.js';
 import db from '../models/index.js';
 import bcrypt from 'bcryptjs';

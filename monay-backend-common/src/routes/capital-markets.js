@@ -5,7 +5,7 @@
  */
 
 import { Router } from 'express';
-import middlewares from '../middlewares/index.js';
+import middlewares from '../middleware-app/index.js';
 import RuleSetService from '../services/capital-markets/RuleSetService.js';
 import BusinessRuleEngine from '../services/business-rule-engine/BusinessRuleEngine.js';
 import loggers from '../services/logger.js';

@@ -1,5 +1,5 @@
 export default (sequelize, DataTypes) => {
-  const UserTokens = sequelize.define(
+  const UserToken = sequelize.define(
     'UserToken',
     {
       id: {
@@ -57,10 +57,10 @@ export default (sequelize, DataTypes) => {
       timestamps: false
     }
   );
-  UserTokens.associate = function (models) {
-    UserTokens.belongsTo(models.User, {
+  UserToken.associate = function (models) {
+    UserToken.belongsTo(models.User, {
       foreignKey: 'userId', onDelete: 'cascade'
     });
   };
-  return UserTokens;
+  return UserToken;
 };

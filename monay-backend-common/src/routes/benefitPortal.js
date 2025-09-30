@@ -1,7 +1,7 @@
 import express from 'express';
 import pool from '../config/database.js';
-import authenticate from '../middlewares/auth-middleware.js';
-import { validateRequest } from '../middlewares/validation.js';
+import authenticate from '../middleware-app/auth-middleware.js';
+import { validateRequest } from '../middleware-app/validation.js';
 
 const router = express.Router();
 import { body, param, query } from 'express-validator';
@@ -15,7 +15,7 @@ import BenefitBalanceTracker from '../services/benefitBalanceTracker.js';
 
 // Get user dashboard data
 router.get('/dashboard',
-  verifyToken,
+  authenticate,
   async (req, res) => {
     const client = await pool.connect();
     try {
@@ -107,7 +107,7 @@ router.get('/dashboard',
 
 // Get available programs for enrollment
 router.get('/available-programs',
-  verifyToken,
+  authenticate,
   async (req, res) => {
     const client = await pool.connect();
     try {
@@ -178,7 +178,7 @@ router.get('/available-programs',
 
 // Start benefit application
 router.post('/apply',
-  verifyToken,
+  authenticate,
   [
     body('program_type').isIn(['SNAP', 'TANF', 'MEDICAID', 'WIC', 'VETERANS', 'SECTION_8',
       'LIHEAP', 'UI', 'SCHOOL_CHOICE_ESA', 'CHILD_CARE', 'TRANSPORTATION',
@@ -245,7 +245,7 @@ router.post('/apply',
 
 // Upload documents for application
 router.post('/upload-documents/:applicationId',
-  verifyToken,
+  authenticate,
   [
     param('applicationId').isUUID(),
     body('documents').isArray(),
@@ -312,7 +312,7 @@ router.post('/upload-documents/:applicationId',
 
 // Get application status
 router.get('/application/:applicationId',
-  verifyToken,
+  authenticate,
   [param('applicationId').isUUID()],
   validateRequest,
   async (req, res) => {
@@ -363,7 +363,7 @@ router.get('/application/:applicationId',
 
 // Get benefit details
 router.get('/benefit/:benefitId',
-  verifyToken,
+  authenticate,
   [param('benefitId').isUUID()],
   validateRequest,
   async (req, res) => {
@@ -424,7 +424,7 @@ router.get('/benefit/:benefitId',
 
 // Request emergency assistance
 router.post('/emergency-assistance',
-  verifyToken,
+  authenticate,
   [
     body('program_type').isIn(['SNAP', 'TANF', 'LIHEAP', 'EMERGENCY_RENTAL']),
     body('emergency_type').isIn(['NATURAL_DISASTER', 'MEDICAL_EMERGENCY',
@@ -510,7 +510,7 @@ router.post('/emergency-assistance',
 
 // Get spending insights
 router.get('/insights/:programType',
-  verifyToken,
+  authenticate,
   [
     param('programType').isIn(['SNAP', 'TANF', 'WIC', 'ALL']),
     query('period').optional().isIn(['week', 'month', 'quarter', 'year'])

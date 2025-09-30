@@ -3,6 +3,7 @@ import config from '../config/index.js';
 
 export default {
   createToken(payload) {
+    console.log('JWT Service - JWT secret:', config.jwtSecret);
     return jwt.sign(payload, config.jwtSecret, {
       expiresIn: config.jwtExpireIn,
     });

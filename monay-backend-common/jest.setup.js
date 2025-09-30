@@ -1,6 +1,12 @@
 // Load test environment variables
-const dotenv = require('dotenv');
-const path = require('path');
+import dotenv from 'dotenv';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import { jest } from '@jest/globals';
+import jsonwebtoken from 'jsonwebtoken';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 // Load .env.test file
 dotenv.config({ path: path.resolve(__dirname, '.env.test') });
@@ -70,8 +76,7 @@ afterEach(() => {
 // Global test utilities
 global.testUtils = {
   generateAuthToken: (userId) => {
-    const jwt = require('jsonwebtoken');
-    return jwt.sign({ id: userId }, process.env.JWT_SECRET, { expiresIn: '1h' });
+    return jsonwebtoken.sign({ id: userId }, process.env.JWT_SECRET, { expiresIn: '1h' });
   },
 
   createMockRequest: (overrides = {}) => ({

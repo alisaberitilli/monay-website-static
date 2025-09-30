@@ -1,0 +1,291 @@
+{
+  "config": {
+    "configFile": "/Users/alisaberi/Data/0ProductBuild/monay/e2e-tests/playwright.config.ts",
+    "rootDir": "/Users/alisaberi/Data/0ProductBuild/monay/e2e-tests/tests",
+    "forbidOnly": false,
+    "fullyParallel": false,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "reporter": [
+      [
+        "html",
+        null
+      ],
+      [
+        "line",
+        null
+      ],
+      [
+        "json",
+        {
+          "outputFile": "test-results.json"
+        }
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "quiet": false,
+    "projects": [
+      {
+        "outputDir": "/Users/alisaberi/Data/0ProductBuild/monay/e2e-tests/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "chromium",
+        "name": "chromium",
+        "testDir": "/Users/alisaberi/Data/0ProductBuild/monay/e2e-tests/tests",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 120000
+      }
+    ],
+    "shard": null,
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.55.1",
+    "workers": 1,
+    "webServer": null
+  },
+  "suites": [
+    {
+      "title": "consumer-wallet-login-test.spec.ts",
+      "file": "consumer-wallet-login-test.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "Consumer Wallet Login Test",
+          "file": "consumer-wallet-login-test.spec.ts",
+          "line": 7,
+          "column": 6,
+          "specs": [
+            {
+              "title": "Register user and then login with same credentials",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 16750,
+                      "errors": [],
+                      "stdout": [
+                        {
+                          "text": "\n🎯 Testing Consumer Wallet Registration + Login Flow\n"
+                        },
+                        {
+                          "text": "======================================================================\n"
+                        },
+                        {
+                          "text": "📧 Email: jane.smith.1759194134456@example.com\n"
+                        },
+                        {
+                          "text": "📱 Mobile: 5554846925\n"
+                        },
+                        {
+                          "text": "🔐 Password: TestLogin123!\n"
+                        },
+                        {
+                          "text": "======================================================================\n"
+                        },
+                        {
+                          "text": "\n1️⃣ REGISTRATION PHASE\n"
+                        },
+                        {
+                          "text": "----------------------------------------\n"
+                        },
+                        {
+                          "text": "   🎯 Selecting Personal Account...\n"
+                        },
+                        {
+                          "text": "   ✅ Personal account selected\n"
+                        },
+                        {
+                          "text": "   📍 After selection URL: http://localhost:3003/auth/register-with-account-type\n"
+                        },
+                        {
+                          "text": "   📝 Looking for registration form...\n"
+                        },
+                        {
+                          "text": "   ✅ Registration form found\n"
+                        },
+                        {
+                          "text": "   📝 Filling registration form...\n"
+                        },
+                        {
+                          "text": "   ✅ First name filled\n"
+                        },
+                        {
+                          "text": "   ✅ Last name filled\n"
+                        },
+                        {
+                          "text": "   ✅ Email filled\n"
+                        },
+                        {
+                          "text": "   ✅ Found mobile field with: input[name=\"mobileNumber\"]\n"
+                        },
+                        {
+                          "text": "   ✅ Mobile filled\n"
+                        },
+                        {
+                          "text": "   ✅ Found password field with: input[name=\"password\"]\n"
+                        },
+                        {
+                          "text": "   ✅ Password filled\n"
+                        },
+                        {
+                          "text": "   ✅ Found confirm password field with: input[name=\"confirmPassword\"]\n"
+                        },
+                        {
+                          "text": "   ✅ Confirm password filled\n"
+                        },
+                        {
+                          "text": "   ✅ Terms accepted\n"
+                        },
+                        {
+                          "text": "   🚀 Submitting registration...\n"
+                        },
+                        {
+                          "text": "   📍 After registration URL: http://localhost:3003/auth/verify?email=jane.smith.1759194134456%40example.com&mobile=5554846925\n"
+                        },
+                        {
+                          "text": "   ⚠️ Registration result unclear\n"
+                        },
+                        {
+                          "text": "\n2️⃣ LOGIN PHASE\n"
+                        },
+                        {
+                          "text": "----------------------------------------\n"
+                        },
+                        {
+                          "text": "   🌐 Navigating to login page...\n"
+                        },
+                        {
+                          "text": "   📧 Entering login credentials...\n"
+                        },
+                        {
+                          "text": "   ❌ Could not find email field\n"
+                        },
+                        {
+                          "text": "   ✅ Password filled: input[type=\"password\"]\n"
+                        },
+                        {
+                          "text": "   🔑 Attempting login...\n"
+                        },
+                        {
+                          "text": "   ✅ Login submitted: button[type=\"submit\"]\n"
+                        },
+                        {
+                          "text": "   📍 Final URL: http://localhost:3003/auth/login\n"
+                        },
+                        {
+                          "text": "\n3️⃣ LOGIN RESULT ANALYSIS\n"
+                        },
+                        {
+                          "text": "----------------------------------------\n"
+                        },
+                        {
+                          "text": "   ✅ Login success indicator found: text=welcome - \"Welcome back\"\n"
+                        },
+                        {
+                          "text": "\n📊 COMPLETE TEST RESULTS\n"
+                        },
+                        {
+                          "text": "======================================================================\n"
+                        },
+                        {
+                          "text": "👤 User: Jane Smith\n"
+                        },
+                        {
+                          "text": "📧 Email: jane.smith.1759194134456@example.com\n"
+                        },
+                        {
+                          "text": "📱 Mobile: 5554846925\n"
+                        },
+                        {
+                          "text": "🌐 Registration URL: http://localhost:3003/auth/register-with-account-type\n"
+                        },
+                        {
+                          "text": "🌐 Login URL: http://localhost:3003/auth/login\n"
+                        },
+                        {
+                          "text": "🌐 Final URL: http://localhost:3003/auth/login\n"
+                        },
+                        {
+                          "text": "\n"
+                        },
+                        {
+                          "text": "⚠️ REGISTRATION: Unclear\n"
+                        },
+                        {
+                          "text": "✅ LOGIN: Successful\n"
+                        },
+                        {
+                          "text": "🎉 OVERALL RESULT: Registration + Login flow working perfectly!\n"
+                        },
+                        {
+                          "text": "💬 Final Message: Welcome back\n"
+                        },
+                        {
+                          "text": "======================================================================\n"
+                        },
+                        {
+                          "text": "\n🔍 Backend Verification...\n"
+                        },
+                        {
+                          "text": "   ⚠️ Backend request failed: 401\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-09-30T01:02:13.272Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "695121bee06b9e4bc752-f717ef053ecbc006d1c9",
+              "file": "consumer-wallet-login-test.spec.ts",
+              "line": 8,
+              "column": 3
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2025-09-30T01:02:12.904Z",
+    "duration": 18023.598,
+    "expected": 1,
+    "skipped": 0,
+    "unexpected": 0,
+    "flaky": 0
+  }
+}

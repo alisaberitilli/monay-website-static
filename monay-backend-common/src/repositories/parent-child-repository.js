@@ -310,7 +310,7 @@ export default {
         params,
       } = req;
       body.cardId = params?.cardId;
-      return await User.update(body, {
+      return await models.User.update(body, {
         where: { id, status: { [Op.ne]: "deleted" }, userType: "user" },
       });
     } catch (error) {

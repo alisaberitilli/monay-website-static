@@ -1,5 +1,5 @@
 import express from 'express';
-import { authenticate } from '../middlewares/auth.js';
+import { authenticate } from '../middleware-app/auth.js';
 import * as superAdminController from '../controllers/super-admin-controller.js';
 
 const router = express.Router();

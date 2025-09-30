@@ -3,7 +3,7 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { authService } from '@/services/auth.service';
 import { usersService } from '@/services/users.service';
-import Cookies from 'js-cookie';
+import { STORAGE_KEYS } from '@/lib/axios';
 
 interface User {
   id: string;
@@ -54,9 +54,10 @@ export function UserProvider({ children }: UserProviderProps) {
     try {
       // Decode JWT to get user info
       const payload = JSON.parse(atob(token.split('.')[1]));
-      const userId = payload.userId;
+      const userId = payload.userId || payload.id || payload.user_id;
 
       if (!userId) {
+        console.error('Token payload:', payload);
         throw new Error('No user ID in token');
       }
 
@@ -64,16 +65,16 @@ export function UserProvider({ children }: UserProviderProps) {
       const userData = await usersService.getUser(userId);
       if (userData && typeof userData === 'object' && !(userData as any).error && !(userData as any).status) {
         // Fetch user permissions
-        const permissions = await usersService.getRolePermissions((userData as User).role);
+        const permissions = await usersService.getRolePermissions((userData as any).role);
         console.log('UserContext - permissions data:', permissions);
         
         // Ensure permissions is always an array
         const validPermissions = Array.isArray(permissions) ? permissions : [];
         
         setUser({
-          ...userData,
+          ...(userData as any),
           permissions: validPermissions,
-        });
+        } as User);
       } else {
         console.log('Invalid user data received:', userData);
         throw new Error('Invalid user data');
@@ -82,8 +83,8 @@ export function UserProvider({ children }: UserProviderProps) {
       console.error('Error fetching current user:', error);
       // Clear invalid token and user data
       setUser(null);
-      Cookies.remove('token');
-      Cookies.remove('refreshToken');
+      localStorage.removeItem(STORAGE_KEYS.TOKEN);
+      localStorage.removeItem(STORAGE_KEYS.REFRESH_TOKEN);
     } finally {
       setLoading(false);
     }

@@ -6,8 +6,13 @@ import { Providers } from './providers';
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-  title: 'Monay Wallet - Digital Payment Solution',
-  description: 'Secure digital wallet for seamless payments and money transfers',
+  title: 'Monay Admin - Super Admin Dashboard',
+  description: 'Central control panel for Monay ecosystem management',
+  icons: {
+    icon: '/favicon.png',
+    shortcut: '/favicon.png',
+    apple: '/favicon.png',
+  },
 };
 
 export default function RootLayout({

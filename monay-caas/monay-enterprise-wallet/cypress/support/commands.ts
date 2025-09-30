@@ -125,7 +125,7 @@ Cypress.Commands.add('clearDatabase', () => {
 // Accessibility check command
 Cypress.Commands.add('checkAccessibility', () => {
   cy.injectAxe();
-  cy.checkA11y(null, {
+  cy.checkA11y(undefined, {
     rules: {
       'color-contrast': { enabled: false } // Disable if using custom theme
     }

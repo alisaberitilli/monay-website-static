@@ -1,0 +1,50 @@
+{
+  "name": "monay-e2e-tests",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "test": "playwright test",
+    "test:headed": "playwright test --headed",
+    "test:debug": "playwright test --debug",
+    "test:report": "playwright show-report",
+    "test:invoice-flow": "playwright test invoice-payment-flow.spec.ts --headed",
+    "test:complete": "playwright test complete-invoice-flow.spec.ts --headed",
+    "test:complete:debug": "playwright test complete-invoice-flow.spec.ts --debug",
+    "test:comprehensive": "playwright test comprehensive-industry-flow.spec.ts --headed",
+    "test:comprehensive:debug": "playwright test comprehensive-industry-flow.spec.ts --debug",
+    "test:comprehensive:headless": "playwright test comprehensive-industry-flow.spec.ts",
+    "test:mock": "playwright test mock-account-flow.spec.ts --headed",
+    "test:mock:debug": "playwright test mock-account-flow.spec.ts --debug",
+    "test:admin": "playwright test admin-portal-test.spec.ts --headed",
+    "test:admin:debug": "playwright test admin-portal-test.spec.ts --debug",
+    "test:discovery": "playwright test application-discovery.spec.ts --headed",
+    "test:discovery:headless": "playwright test application-discovery.spec.ts",
+    "test:tenant": "playwright test simple-tenant-test.spec.ts --headed",
+    "test:tenant:headless": "playwright test simple-tenant-test.spec.ts",
+    "test:consumer:registration": "playwright test consumer-wallet-registration.spec.ts --headed",
+    "test:consumer:registration:headless": "playwright test consumer-wallet-registration.spec.ts",
+    "test:consumer:complete": "playwright test consumer-wallet-complete-flow.spec.ts --headed",
+    "test:consumer:complete:headless": "playwright test consumer-wallet-complete-flow.spec.ts",
+    "test:consumer:login": "playwright test consumer-wallet-login-test.spec.ts --headed",
+    "test:consumer:login:headless": "playwright test consumer-wallet-login-test.spec.ts",
+    "seed:admin": "node ./scripts/seed-admin.js",
+    "seed:tenants": "playwright test seed-tenants-ui.spec.ts --headed",
+    "seed:tenants:headless": "playwright test seed-tenants-ui.spec.ts",
+    "seed:hierarchy": "playwright test seed-complete-hierarchy.spec.ts --headed",
+    "seed:hierarchy:headless": "playwright test seed-complete-hierarchy.spec.ts",
+    "test:setup": "node ./setup/test-data-setup.js",
+    "test:cleanup": "node ./setup/test-data-cleanup.js",
+    "pretest": "node ./scripts/check-services.js",
+    "install:browsers": "npx playwright install chromium"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.40.0",
+    "@types/node": "^20.0.0",
+    "dotenv": "^16.0.0",
+    "typescript": "^5.0.0"
+  },
+  "dependencies": {
+    "pg": "^8.11.0",
+    "bcrypt": "^5.1.0"
+  }
+}

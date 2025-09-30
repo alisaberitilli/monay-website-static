@@ -1,5 +1,5 @@
 import HttpStatus from 'http-status';
-import { CustomError } from '../middlewares/errors.js';
+import { CustomError } from '../middleware-app/errors.js';
 import loggers from './logger.js';
 import axios from 'axios';
 import crypto from 'crypto';

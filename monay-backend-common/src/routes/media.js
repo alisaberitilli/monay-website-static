@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import controllers from '../controllers/index.js';
 import validations from '../validations/index.js';
-import middlewares from '../middlewares/index.js';
+import middlewares from '../middleware-app/index.js';
 
 const router = Router();
 const { mediaValidator } = validations;

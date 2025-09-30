@@ -5,9 +5,25 @@ import EphemeralWalletCard from '../EphemeralWalletCard'
 import { invoiceWalletAPI } from '@/lib/api/invoiceWalletAPI'
 import toast from 'react-hot-toast'
 
+// Mock react-hot-toast
+jest.mock('react-hot-toast', () => ({
+  __esModule: true,
+  default: {
+    success: jest.fn(),
+    error: jest.fn(),
+  },
+  success: jest.fn(),
+  error: jest.fn(),
+}))
+
 // Mock the API
 jest.mock('@/lib/api/invoiceWalletAPI', () => ({
   __esModule: true,
+  invoiceWalletAPI: {
+    transformWallet: jest.fn(),
+    destroyWallet: jest.fn(),
+    extendWalletTTL: jest.fn(),
+  },
   default: {
     transformWallet: jest.fn(),
     destroyWallet: jest.fn(),
@@ -201,7 +217,7 @@ describe('EphemeralWalletCard', () => {
 
   describe('Actions', () => {
     it('should handle wallet transformation', async () => {
-      ;(invoiceWalletAPI.default.transformWallet as jest.Mock).mockResolvedValue({
+      ;(invoiceWalletAPI.transformWallet as jest.Mock).mockResolvedValue({
         ...mockEphemeralWallet,
         mode: 'persistent',
       })
@@ -219,7 +235,7 @@ describe('EphemeralWalletCard', () => {
       fireEvent.click(transformButton)
 
       await waitFor(() => {
-        expect(invoiceWalletAPI.default.transformWallet).toHaveBeenCalledWith(
+        expect(invoiceWalletAPI.transformWallet).toHaveBeenCalledWith(
           'wallet_123',
           'User requested transformation'
         )
@@ -229,7 +245,7 @@ describe('EphemeralWalletCard', () => {
     })
 
     it('should handle wallet destruction with confirmation', async () => {
-      ;(invoiceWalletAPI.default.destroyWallet as jest.Mock).mockResolvedValue(undefined)
+      ;(invoiceWalletAPI.destroyWallet as jest.Mock).mockResolvedValue(undefined)
 
       // Mock window.confirm
       const confirmSpy = jest.spyOn(window, 'confirm').mockReturnValue(true)
@@ -251,7 +267,7 @@ describe('EphemeralWalletCard', () => {
       )
 
       await waitFor(() => {
-        expect(invoiceWalletAPI.default.destroyWallet).toHaveBeenCalledWith('wallet_123')
+        expect(invoiceWalletAPI.destroyWallet).toHaveBeenCalledWith('wallet_123')
         expect(toast.success).toHaveBeenCalledWith('Wallet destroyed successfully')
         expect(mockOnDestroy).toHaveBeenCalled()
       })
@@ -274,14 +290,14 @@ describe('EphemeralWalletCard', () => {
       const destroyButton = screen.getByRole('button', { name: /Destroy Wallet/i })
       fireEvent.click(destroyButton)
 
-      expect(invoiceWalletAPI.default.destroyWallet).not.toHaveBeenCalled()
+      expect(invoiceWalletAPI.destroyWallet).not.toHaveBeenCalled()
       expect(mockOnDestroy).not.toHaveBeenCalled()
 
       confirmSpy.mockRestore()
     })
 
     it('should handle TTL extension', async () => {
-      ;(invoiceWalletAPI.default.extendWalletTTL as jest.Mock).mockResolvedValue(undefined)
+      ;(invoiceWalletAPI.extendWalletTTL as jest.Mock).mockResolvedValue(undefined)
 
       render(
         <EphemeralWalletCard
@@ -296,7 +312,7 @@ describe('EphemeralWalletCard', () => {
       fireEvent.click(extendButton)
 
       await waitFor(() => {
-        expect(invoiceWalletAPI.default.extendWalletTTL).toHaveBeenCalledWith('wallet_123', 86400)
+        expect(invoiceWalletAPI.extendWalletTTL).toHaveBeenCalledWith('wallet_123', 86400)
         expect(toast.success).toHaveBeenCalledWith('Wallet TTL extended by 24 hours')
         expect(mockOnExtend).toHaveBeenCalled()
       })
@@ -412,7 +428,7 @@ describe('EphemeralWalletCard', () => {
 
   describe('Error Handling', () => {
     it('should show error toast when transformation fails', async () => {
-      ;(invoiceWalletAPI.default.transformWallet as jest.Mock).mockRejectedValue(
+      ;(invoiceWalletAPI.transformWallet as jest.Mock).mockRejectedValue(
         new Error('Network error')
       )
 
@@ -435,7 +451,7 @@ describe('EphemeralWalletCard', () => {
     })
 
     it('should show error toast when destruction fails', async () => {
-      ;(invoiceWalletAPI.default.destroyWallet as jest.Mock).mockRejectedValue(
+      ;(invoiceWalletAPI.destroyWallet as jest.Mock).mockRejectedValue(
         new Error('Permission denied')
       )
 
@@ -464,7 +480,7 @@ describe('EphemeralWalletCard', () => {
 
   describe('localStorage Fallback', () => {
     it('should update localStorage when API fails during transformation', async () => {
-      ;(invoiceWalletAPI.default.transformWallet as jest.Mock).mockRejectedValue(
+      ;(invoiceWalletAPI.transformWallet as jest.Mock).mockRejectedValue(
         new Error('API Error')
       )
 

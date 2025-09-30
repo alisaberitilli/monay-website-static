@@ -6,7 +6,7 @@
 import express from 'express';
 import Joi from 'joi';
 import { v4 as uuidv4 } from 'uuid';
-import { authenticateJWT } from '../middlewares/authenticate.js';
+import { authenticateJWT } from '../middleware-app/authenticate.js';
 import rewardsService from '../services/rewards-service.js';
 import logger from '../services/logger.js';
 import db from '../models/index.js';

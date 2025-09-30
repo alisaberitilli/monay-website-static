@@ -6,8 +6,11 @@
 import React from 'react';
 import { render, screen, fireEvent, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { InvoiceWalletWizard } from '@/components/InvoiceWalletWizard';
+import InvoiceWalletWizard from '@/components/InvoiceWalletWizard';
 import '@testing-library/jest-dom';
+
+// Ensure Jest globals are available
+declare const expect: jest.Expect;
 
 // Mock the API calls - use the actual module that exists
 jest.mock('@/lib/api/invoiceWalletAPI', () => ({
@@ -40,6 +43,18 @@ describe('InvoiceWalletWizard Component', () => {
   const mockOnComplete = jest.fn();
   const mockOnCancel = jest.fn();
 
+  const mockInvoice = {
+    id: 'inv-123',
+    amount: 1000,
+    currency: 'USD',
+    customer: {
+      name: 'Test Customer',
+      email: 'test@example.com'
+    },
+    items: [],
+    status: 'pending'
+  };
+
   beforeEach(() => {
     jest.clearAllMocks();
   });
@@ -48,6 +63,7 @@ describe('InvoiceWalletWizard Component', () => {
     test('should render the wizard with initial step', () => {
       render(
         <InvoiceWalletWizard
+          invoice={mockInvoice}
           onComplete={mockOnComplete}
           onCancel={mockOnCancel}
         />
@@ -61,6 +77,7 @@ describe('InvoiceWalletWizard Component', () => {
     test('should display all wizard steps in the stepper', () => {
       render(
         <InvoiceWalletWizard
+          invoice={mockInvoice}
           onComplete={mockOnComplete}
           onCancel={mockOnCancel}
         />
@@ -81,6 +98,7 @@ describe('InvoiceWalletWizard Component', () => {
 
       render(
         <InvoiceWalletWizard
+          invoice={mockInvoice}
           onComplete={mockOnComplete}
           onCancel={mockOnCancel}
         />
@@ -107,6 +125,7 @@ describe('InvoiceWalletWizard Component', () => {
 
       render(
         <InvoiceWalletWizard
+          invoice={mockInvoice}
           onComplete={mockOnComplete}
           onCancel={mockOnCancel}
         />
@@ -131,6 +150,7 @@ describe('InvoiceWalletWizard Component', () => {
 
       render(
         <InvoiceWalletWizard
+          invoice={mockInvoice}
           onComplete={mockOnComplete}
           onCancel={mockOnCancel}
         />
@@ -154,6 +174,7 @@ describe('InvoiceWalletWizard Component', () => {
 
       render(
         <InvoiceWalletWizard
+          invoice={mockInvoice}
           onComplete={mockOnComplete}
           onCancel={mockOnCancel}
         />
@@ -179,6 +200,7 @@ describe('InvoiceWalletWizard Component', () => {
 
       render(
         <InvoiceWalletWizard
+          invoice={mockInvoice}
           onComplete={mockOnComplete}
           onCancel={mockOnCancel}
         />
@@ -210,6 +232,7 @@ describe('InvoiceWalletWizard Component', () => {
 
       render(
         <InvoiceWalletWizard
+          invoice={mockInvoice}
           onComplete={mockOnComplete}
           onCancel={mockOnCancel}
         />
@@ -236,6 +259,7 @@ describe('InvoiceWalletWizard Component', () => {
 
       render(
         <InvoiceWalletWizard
+          invoice={mockInvoice}
           onComplete={mockOnComplete}
           onCancel={mockOnCancel}
         />
@@ -264,6 +288,7 @@ describe('InvoiceWalletWizard Component', () => {
 
       render(
         <InvoiceWalletWizard
+          invoice={mockInvoice}
           onComplete={mockOnComplete}
           onCancel={mockOnCancel}
         />
@@ -286,6 +311,7 @@ describe('InvoiceWalletWizard Component', () => {
 
       render(
         <InvoiceWalletWizard
+          invoice={mockInvoice}
           onComplete={mockOnComplete}
           onCancel={mockOnCancel}
         />
@@ -308,6 +334,7 @@ describe('InvoiceWalletWizard Component', () => {
 
       render(
         <InvoiceWalletWizard
+          invoice={mockInvoice}
           onComplete={mockOnComplete}
           onCancel={mockOnCancel}
         />
@@ -330,6 +357,7 @@ describe('InvoiceWalletWizard Component', () => {
 
       render(
         <InvoiceWalletWizard
+          invoice={mockInvoice}
           onComplete={mockOnComplete}
           onCancel={mockOnCancel}
         />
@@ -369,6 +397,7 @@ describe('InvoiceWalletWizard Component', () => {
 
       render(
         <InvoiceWalletWizard
+          invoice={mockInvoice}
           onComplete={mockOnComplete}
           onCancel={mockOnCancel}
         />
@@ -405,6 +434,7 @@ describe('InvoiceWalletWizard Component', () => {
 
       render(
         <InvoiceWalletWizard
+          invoice={mockInvoice}
           onComplete={mockOnComplete}
           onCancel={mockOnCancel}
         />
@@ -431,6 +461,7 @@ describe('InvoiceWalletWizard Component', () => {
 
       render(
         <InvoiceWalletWizard
+          invoice={mockInvoice}
           onComplete={mockOnComplete}
           onCancel={mockOnCancel}
         />
@@ -463,6 +494,7 @@ describe('InvoiceWalletWizard Component', () => {
 
       render(
         <InvoiceWalletWizard
+          invoice={mockInvoice}
           onComplete={mockOnComplete}
           onCancel={mockOnCancel}
         />
@@ -495,6 +527,7 @@ describe('InvoiceWalletWizard Component', () => {
 
       render(
         <InvoiceWalletWizard
+          invoice={mockInvoice}
           onComplete={mockOnComplete}
           onCancel={mockOnCancel}
         />
@@ -522,6 +555,7 @@ describe('InvoiceWalletWizard Component', () => {
 
       render(
         <InvoiceWalletWizard
+          invoice={mockInvoice}
           onComplete={mockOnComplete}
           onCancel={mockOnCancel}
         />
@@ -544,6 +578,7 @@ describe('InvoiceWalletWizard Component', () => {
 
       render(
         <InvoiceWalletWizard
+          invoice={mockInvoice}
           onComplete={mockOnComplete}
           onCancel={mockOnCancel}
         />
@@ -564,6 +599,7 @@ describe('InvoiceWalletWizard Component', () => {
 
       render(
         <InvoiceWalletWizard
+          invoice={mockInvoice}
           onComplete={mockOnComplete}
           onCancel={mockOnCancel}
         />
@@ -581,6 +617,7 @@ describe('InvoiceWalletWizard Component', () => {
 
       render(
         <InvoiceWalletWizard
+          invoice={mockInvoice}
           onComplete={mockOnComplete}
           onCancel={mockOnCancel}
         />
@@ -599,13 +636,14 @@ describe('InvoiceWalletWizard Component', () => {
     });
 
     test('should restore draft on mount', () => {
-      localStorage.getItem.mockReturnValue(JSON.stringify({
+      (localStorage.getItem as jest.Mock).mockReturnValue(JSON.stringify({
         customer: { name: 'Saved Corp', email: 'saved@example.com' },
         lineItems: [{ description: 'Saved Item', quantity: 1, price: 100 }],
       }));
 
       render(
         <InvoiceWalletWizard
+          invoice={mockInvoice}
           onComplete={mockOnComplete}
           onCancel={mockOnCancel}
         />
@@ -629,6 +667,7 @@ describe('InvoiceWalletWizard Component', () => {
 
       render(
         <InvoiceWalletWizard
+          invoice={mockInvoice}
           onComplete={mockOnComplete}
           onCancel={mockOnCancel}
         />
@@ -650,6 +689,7 @@ describe('InvoiceWalletWizard Component', () => {
 
       render(
         <InvoiceWalletWizard
+          invoice={mockInvoice}
           onComplete={mockOnComplete}
           onCancel={mockOnCancel}
         />

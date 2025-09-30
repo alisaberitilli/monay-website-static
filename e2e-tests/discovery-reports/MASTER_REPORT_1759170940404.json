@@ -1,0 +1,65 @@
+{
+  "timestamp": 1759170940404,
+  "applications": [
+    {
+      "name": "Admin Portal",
+      "completion": 50,
+      "features_found": 4,
+      "features_missing": 4,
+      "missing_features": [
+        "AUTH_FLOW → Email/Phone Verification",
+        "AUTH_FLOW → MPIN Setup",
+        "AUTH_FLOW → KYC Verification",
+        "AUTH_FLOW → Logout"
+      ]
+    },
+    {
+      "name": "Enterprise Wallet",
+      "completion": 48,
+      "features_found": 14,
+      "features_missing": 15,
+      "missing_features": [
+        "AUTH_FLOW → Sign Up Page",
+        "AUTH_FLOW → Sign In Page",
+        "AUTH_FLOW → Registration Form",
+        "AUTH_FLOW → Email/Phone Verification",
+        "AUTH_FLOW → Onboarding Flow",
+        "AUTH_FLOW → MPIN Setup",
+        "AUTH_FLOW → KYC Verification",
+        "NAVIGATION → Profile",
+        "ENTERPRISE_FEATURES → Mint Tokens",
+        "ENTERPRISE_FEATURES → Burn Tokens",
+        "ENTERPRISE_FEATURES → Reports",
+        "CRUD_OPERATIONS → Edit/Update Operations",
+        "CRUD_OPERATIONS → Delete Operations",
+        "CRUD_OPERATIONS → Save Operations",
+        "CRUD_OPERATIONS → Cancel Operations"
+      ]
+    },
+    {
+      "name": "Consumer Wallet",
+      "completion": 50,
+      "features_found": 4,
+      "features_missing": 4,
+      "missing_features": [
+        "AUTH_FLOW → Email/Phone Verification",
+        "AUTH_FLOW → MPIN Setup",
+        "AUTH_FLOW → KYC Verification",
+        "AUTH_FLOW → Logout"
+      ]
+    }
+  ],
+  "overall_summary": {
+    "total_features_across_apps": 45,
+    "features_implemented": 22,
+    "features_missing": 23,
+    "average_completion": 49
+  },
+  "recommendations": [
+    "🔴 HIGH PRIORITY: Fix authentication flow in Admin Portal",
+    "🔴 HIGH PRIORITY: Fix authentication flow in Enterprise Wallet",
+    "🔴 HIGH PRIORITY: Fix authentication flow in Consumer Wallet",
+    "🟡 MEDIUM: Implement navigation menu in Enterprise Wallet",
+    "🟡 MEDIUM: Consumer Wallet needs feature completion"
+  ]
+}

@@ -37,52 +37,57 @@ export const LazyPieChart = lazyLoad(
 );
 
 // Lazy load modal components
-export const LazyTransactionModal = lazyLoad(
-  () => import('./TransactionModal').then(mod => ({ default: mod.default }))
-);
+// TODO: Uncomment when components are implemented
+// export const LazyTransactionModal = lazyLoad(
+//   () => import('./TransactionModal').then(mod => ({ default: mod.default }))
+// );
 
-export const LazyWalletModal = lazyLoad(
-  () => import('./WalletModal').then(mod => ({ default: mod.default }))
-);
+// export const LazyWalletModal = lazyLoad(
+//   () => import('./WalletModal').then(mod => ({ default: mod.default }))
+// );
 
-export const LazyComplianceModal = lazyLoad(
-  () => import('./ComplianceModal').then(mod => ({ default: mod.default }))
-);
+// export const LazyComplianceModal = lazyLoad(
+//   () => import('./ComplianceModal').then(mod => ({ default: mod.default }))
+// );
 
 // Lazy load form components
-export const LazyPaymentForm = lazyLoad(
-  () => import('./PaymentForm').then(mod => ({ default: mod.default }))
-);
+// TODO: Uncomment when components are implemented
+// export const LazyPaymentForm = lazyLoad(
+//   () => import('./PaymentForm').then(mod => ({ default: mod.default }))
+// );
 
-export const LazyTokenCreationForm = lazyLoad(
-  () => import('./TokenCreationForm').then(mod => ({ default: mod.default }))
-);
+// export const LazyTokenCreationForm = lazyLoad(
+//   () => import('./TokenCreationForm').then(mod => ({ default: mod.default }))
+// );
 
-export const LazyKYCForm = lazyLoad(
-  () => import('./KYCForm').then(mod => ({ default: mod.default }))
-);
+// export const LazyKYCForm = lazyLoad(
+//   () => import('./KYCForm').then(mod => ({ default: mod.default }))
+// );
 
 // Lazy load data-heavy components
-export const LazyTransactionTable = lazyLoad(
-  () => import('./TransactionTable').then(mod => ({ default: mod.default }))
-);
+// TODO: Uncomment when components are implemented
+// export const LazyTransactionTable = lazyLoad(
+//   () => import('./TransactionTable').then(mod => ({ default: mod.default }))
+// );
 
-export const LazyWalletGrid = lazyLoad(
-  () => import('./WalletGrid').then(mod => ({ default: mod.default }))
-);
+// export const LazyWalletGrid = lazyLoad(
+//   () => import('./WalletGrid').then(mod => ({ default: mod.default }))
+// );
 
-export const LazyComplianceReports = lazyLoad(
-  () => import('./ComplianceReports').then(mod => ({ default: mod.default }))
-);
+// TODO: Uncomment when component is implemented
+// export const LazyComplianceReports = lazyLoad(
+//   () => import('./ComplianceReports').then(mod => ({ default: mod.default }))
+// );
 
 // Lazy load third-party integrations
-export const LazyStripeElements = lazyLoad(
-  () => import('@stripe/react-stripe-js').then(mod => ({ default: mod.Elements as any }))
-);
+// TODO: Install and uncomment when needed
+// export const LazyStripeElements = lazyLoad(
+//   () => import('@stripe/react-stripe-js').then(mod => ({ default: mod.Elements as any }))
+// );
 
-export const LazyWalletConnect = lazyLoad(
-  () => import('@walletconnect/ethereum-provider').then(mod => ({ default: mod.default as any }))
-);
+// export const LazyWalletConnect = lazyLoad(
+//   () => import('@walletconnect/ethereum-provider').then(mod => ({ default: mod.default as any }))
+// );
 
 // Lazy load invoice management (large component)
 export const LazyEnhancedInvoiceManagement = lazyLoad(
@@ -95,26 +100,35 @@ export const LazyAnalyticsDashboard = lazyLoad(
 );
 
 // Lazy load file upload components
-export const LazyFileUploader = lazyLoad(
-  () => import('./FileUploader').then(mod => ({ default: mod.default }))
-);
+// TODO: Uncomment when components are implemented
+// export const LazyFileUploader = lazyLoad(
+//   () => import('./FileUploader').then(mod => ({ default: mod.default }))
+// );
 
-// Lazy load data export components
-export const LazyDataExporter = lazyLoad(
-  () => import('./DataExporter').then(mod => ({ default: mod.default }))
-);
+// // Lazy load data export components
+// export const LazyDataExporter = lazyLoad(
+//   () => import('./DataExporter').then(mod => ({ default: mod.default }))
+// );
 
 // Prefetch helper for critical components
 export const prefetchComponent = (componentName: string) => {
   switch (componentName) {
     case 'TransactionTable':
-      import('./TransactionTable');
+      // TODO: Uncomment when TransactionTable component is implemented
+      // import('./TransactionTable');
       break;
     case 'WalletGrid':
-      import('./WalletGrid');
+      // TODO: Uncomment when WalletGrid component is implemented
+      // import('./WalletGrid');
       break;
     case 'EnhancedInvoiceManagement':
       import('./EnhancedInvoiceManagement');
+      break;
+    case 'PaymentReconciliation':
+      import('./PaymentReconciliation');
+      break;
+    case 'FraudDetectionSettings':
+      import('./FraudDetectionSettings');
       break;
     default:
       break;

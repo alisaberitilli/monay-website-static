@@ -1,11 +1,11 @@
 import express from 'express';
 import pool from '../config/database.js';
-import authenticate from '../middlewares/auth-middleware.js';
+import authenticate from '../middleware-app/auth-middleware.js';
 import BusinessRuleEngine from '../services/businessRuleEngine.js';
 
 const router = express.Router();
 import MonayFiatRailsClient from '../services/monayFiatRailsClient.js';
-import { validateRequest } from '../middlewares/validation.js';
+import { validateRequest } from '../middleware-app/validation.js';
 import { body, param, query } from 'express-validator';
 
 // Benefit enrollment endpoint

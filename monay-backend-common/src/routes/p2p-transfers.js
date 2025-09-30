@@ -5,7 +5,7 @@
 
 import express from 'express';
 import Joi from 'joi';
-import { authenticateJWT } from '../middlewares/authenticate.js';
+import { authenticateJWT } from '../middleware-app/authenticate.js';
 import p2pAdvancedService from '../services/p2p-advanced-service.js';
 import logger from '../services/logger.js';
 

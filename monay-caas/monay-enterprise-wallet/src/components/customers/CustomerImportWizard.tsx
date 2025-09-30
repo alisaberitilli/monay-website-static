@@ -98,7 +98,7 @@ export default function CustomerImportWizard() {
       valid: 0,
       warnings: 0,
       errors: 0,
-      issues: []
+      issues: [] as { row: number; field: string; message: string }[]
     }
 
     importData.forEach((row, index) => {

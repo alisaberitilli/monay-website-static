@@ -211,7 +211,7 @@ export default function WithdrawPage() {
                     <Clock className="h-4 w-4 mr-2 text-gray-500" />
                     FedNow/RTP
                   </span>
-                  <span className="font-medium text-green-600">< 60 seconds</span>
+                  <span className="font-medium text-green-600">&lt; 60 seconds</span>
                 </div>
                 <div className="flex items-center justify-between text-sm">
                   <span className="flex items-center">

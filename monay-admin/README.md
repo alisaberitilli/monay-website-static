@@ -21,6 +21,104 @@ PURGE ...             -- FORBIDDEN
 - **USE TRANSACTIONS**: Wrap changes in BEGIN/COMMIT/ROLLBACK
 - **RECOVERY SCRIPT**: `/monay-backend-common/migrations/DATABASE_RECOVERY_SCRIPT.sh`
 
+## 🔧 DEVELOPMENT PRINCIPLES
+
+### ⚠️ NEVER COMMENT OUT CODE - FIX THE ERROR ⚠️
+**Established: January 2025**
+
+We NEVER remove or comment out functionality to pass tests. We explicitly fix errors and move forward.
+
+**When you encounter an error:**
+1. **DON'T** comment out the problematic code
+2. **DON'T** remove features to make tests pass
+3. **DO** fix the underlying issue properly
+4. **DO** maintain all existing functionality
+
+**Common Fixes:**
+- Missing database column? Add it: `ALTER TABLE users ADD COLUMN mpin VARCHAR(255);`
+- API endpoint not found? Create it in the backend
+- Component error? Fix the import or prop issue
+- Type mismatch? Correct the types, don't bypass TypeScript
+
+**Example:** When `mpin` field was missing from database, we added the column rather than removing the field from the code.
+
+### 🎨 MANDATORY: MODERN LUCIDE ICONS ONLY - NO SHORTCUTS
+**Established: January 2025**
+
+**CRITICAL**: Always use modern, contemporary Lucide icons from our optimized @monay/icons library at `/shared/icons/`. Never take shortcuts with placeholders, emojis, or alternative icon libraries.
+
+**Icon Library Configuration:**
+- 📍 **Location**: `/shared/icons/` - Centralized optimized SVG library (75+ icons)
+- 📦 **Package**: `@monay/icons` - Use this package exclusively
+- 🔧 **Setup**: In package.json: `"@monay/icons": "file:../shared/icons"`
+- ⚡ **Benefits**: 85% smaller than lucide-react, full tree-shaking support
+
+**Icon Requirements:**
+- ✅ **EXCLUSIVELY @monay/icons** from `/shared/icons/` location
+- ✅ **Modern designs** for professional, contemporary UI
+- ✅ **Performance-optimized** local SVG components
+- ✅ **Consistent implementation** across all admin pages
+
+**Absolutely Forbidden:**
+- ❌ **NO** other icon libraries (FontAwesome, Material Icons, etc.)
+- ❌ **NO** emojis as interface icons
+- ❌ **NO** placeholder text ([icon], *, •)
+- ❌ **NO** mixing icon libraries
+- ❌ **NO** bitmap/PNG icons
+
+**Correct Usage:**
+```typescript
+// ✅ CORRECT - Modern Lucide icons
+import { Shield, Settings, Users, Building } from '@monay/icons';
+<Shield className="w-5 h-5 text-primary" />
+
+// ❌ WRONG - Never use these
+<span>⚙️</span>  // No emojis
+<FaGear />  // Wrong library
+<div>[settings]</div>  // No placeholders
+```
+
+### 🔴 TYPESCRIPT ONLY - NO JAVASCRIPT ALLOWED 🔴
+**Effective: January 2025 - MANDATORY**
+
+**This project uses TypeScript exclusively. JavaScript files are FORBIDDEN.**
+
+**TypeScript Requirements:**
+- ✅ **ALL files must be `.ts` or `.tsx`** (NO `.js` or `.jsx`)
+- ✅ **Strict mode enabled** in tsconfig.json
+- ✅ **All functions must have typed parameters and return types**
+- ✅ **No implicit `any` types** - Be explicit
+- ✅ **Interfaces for all data structures**
+- ✅ **Type guards for runtime validation**
+- ✅ **Generic types for reusable components**
+
+**File Extensions:**
+- Components: `.tsx` only
+- Hooks/Utils: `.ts` (or `.tsx` if JSX)
+- API Routes: `.ts` only
+- Tests: `.test.ts` or `.test.tsx`
+- Config: `.ts` (or `.cjs` for CommonJS)
+
+**Build will FAIL if:**
+- Any `.js` or `.jsx` files exist in `/src`
+- TypeScript compilation has errors
+- Type coverage is below 95%
+
+**Example tsconfig.json settings:**
+```json
+{
+  "compilerOptions": {
+    "strict": true,
+    "noImplicitAny": true,
+    "strictNullChecks": true,
+    "strictFunctionTypes": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noImplicitReturns": true
+  }
+}
+```
+
 ---
 
 ## Overview

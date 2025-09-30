@@ -5,12 +5,13 @@
  */
 
 import express from 'express';
-import { authenticateToken } from '../middlewares/auth.js';
+import middlewares from '../middleware-app/index.js';
 import walletBalanceService from '../services/wallet-balance-service.js';
 import { body, param, validationResult } from 'express-validator';
 import logger from '../services/logger.js';
 
 const router = express.Router();
+const { authMiddleware } = middlewares;
 
 /**
  * Validation middleware
@@ -32,7 +33,7 @@ const validateRequest = (req, res, next) => {
  */
 router.get(
   '/wallet/balance',
-  authenticateToken,
+  authMiddleware,
   async (req, res) => {
     try {
       const userId = req.user.id;
@@ -67,7 +68,7 @@ router.get(
  */
 router.get(
   '/balance/:walletId',
-  authenticateToken,
+  authMiddleware,
   param('walletId').isString().notEmpty(),
   validateRequest,
   async (req, res) => {
@@ -97,7 +98,7 @@ router.get(
  */
 router.get(
   '/limits',
-  authenticateToken,
+  authMiddleware,
   async (req, res) => {
     try {
       const userId = req.user.id;
@@ -132,7 +133,7 @@ router.get(
  */
 router.put(
   '/limits',
-  authenticateToken,
+  authMiddleware,
   [
     body('walletId').optional().isString(),
     body('daily_spending_limit').optional().isFloat({ min: 0 }),
@@ -190,7 +191,7 @@ router.put(
  */
 router.post(
   '/validate-transaction',
-  authenticateToken,
+  authMiddleware,
   [
     body('walletId').optional().isString(),
     body('amount').isFloat({ min: 0.01 }),
@@ -235,7 +236,7 @@ router.post(
  */
 router.get(
   '/all-balances',
-  authenticateToken,
+  authMiddleware,
   async (req, res) => {
     try {
       const userId = req.user.id;
@@ -297,7 +298,7 @@ router.get(
  */
 router.post(
   '/refresh-balance',
-  authenticateToken,
+  authMiddleware,
   [
     body('walletId').optional().isString()
   ],
@@ -320,7 +321,7 @@ router.post(
         host: process.env.REDIS_HOST || 'localhost',
         port: process.env.REDIS_PORT || 6379
       });
-      
+
       await redis.del(`balance:${walletId}`);
       redis.disconnect();
 
@@ -336,6 +337,131 @@ router.post(
       res.status(500).json({
         success: false,
         message: error.message || 'Failed to refresh balance'
+      });
+    }
+  }
+);
+
+/**
+ * POST /api/user/wallet/pay
+ * Process payment using wallet balance
+ */
+router.post(
+  '/user/wallet/pay',
+  authMiddleware,
+  [
+    body('amount').isFloat({ min: 0.01 }).withMessage('Amount must be greater than 0'),
+    body('currency').optional().isString().withMessage('Currency must be a string'),
+    body('description').optional().isString().withMessage('Description must be a string'),
+    body('category').optional().isString().withMessage('Category must be a string'),
+    body('merchant').optional().isString().withMessage('Merchant must be a string'),
+    body('metadata').optional().isObject().withMessage('Metadata must be an object')
+  ],
+  validateRequest,
+  async (req, res) => {
+    try {
+      const userId = req.user.id;
+      const {
+        amount,
+        currency = 'USD',
+        description = 'Payment',
+        category = 'payment',
+        merchant = 'Unknown Merchant',
+        metadata = {}
+      } = req.body;
+
+      // Get user's primary wallet
+      const db = req.app.get('db');
+      const wallet = await db.Wallet.findOne({
+        where: { user_id: userId, is_primary: true },
+        attributes: ['id', 'balance']
+      });
+
+      if (!wallet) {
+        return res.status(404).json({
+          success: false,
+          message: 'Wallet not found'
+        });
+      }
+
+      // Check if user has sufficient balance
+      const currentBalance = await walletBalanceService.getWalletBalance(wallet.id, userId);
+      if (currentBalance.availableBalance < amount) {
+        return res.status(400).json({
+          success: false,
+          message: 'Insufficient wallet balance'
+        });
+      }
+
+      // Validate transaction against limits
+      const validation = await walletBalanceService.validateTransactionLimits(
+        wallet.id,
+        amount,
+        'payment'
+      );
+
+      if (!validation.allowed) {
+        return res.status(400).json({
+          success: false,
+          message: validation.reason
+        });
+      }
+
+      // Create transaction record
+      const transactionId = `pay_${Date.now()}_${userId.substring(0, 8)}`;
+      const transaction = await db.Transaction.create({
+        id: transactionId,
+        from_wallet_id: wallet.id,
+        to_wallet_id: null, // External payment
+        user_id: userId,
+        amount: amount,
+        currency: currency,
+        transaction_type: 'payment',
+        status: 'completed',
+        description: description,
+        category: category,
+        merchant_name: merchant,
+        metadata: metadata,
+        created_at: new Date(),
+        updated_at: new Date()
+      });
+
+      // Update wallet balance
+      await db.Wallet.update(
+        {
+          balance: db.sequelize.literal(`balance - ${amount}`),
+          updated_at: new Date()
+        },
+        { where: { id: wallet.id } }
+      );
+
+      // Clear balance cache
+      const Redis = (await import('ioredis')).default;
+      const redis = new Redis({
+        host: process.env.REDIS_HOST || 'localhost',
+        port: process.env.REDIS_PORT || 6379
+      });
+      await redis.del(`balance:${wallet.id}`);
+      redis.disconnect();
+
+      // Get updated balance
+      const updatedBalance = await walletBalanceService.getWalletBalance(wallet.id, userId);
+
+      res.json({
+        success: true,
+        transactionId: transaction.id,
+        amount: amount,
+        currency: currency,
+        newBalance: updatedBalance.availableBalance,
+        status: 'completed',
+        message: 'Payment processed successfully'
+      });
+
+    } catch (error) {
+      logger.error('Error processing wallet payment:', error);
+      res.status(500).json({
+        success: false,
+        message: error.message || 'Failed to process payment'
       });
     }
   }

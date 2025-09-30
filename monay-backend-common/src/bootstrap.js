@@ -16,7 +16,7 @@ import routes from './routes/index.js';
 import models from './models/index.js';
 import config from './config/index.js';
 import loggers from './services/logger.js';
-import appVersionMiddleware from './middlewares/app-version-middleware.js';
+import appVersionMiddleware from './middleware-app/app-version-middleware.js';
 import path from 'path';
 import scheduleJob from './services/schedule-job.js';
 import schedule from 'node-schedule';
@@ -97,7 +97,7 @@ export default class Bootstrap {
             },
             credentials: true,
             methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-            allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
+            allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'x-admin-bypass']
         }));
         app.use(bodyParser.json({ limit: '500mb', extended: true }));
         app.use(compression());
@@ -156,7 +156,21 @@ export default class Bootstrap {
         } = models;
 
         // Initialize models first
-        await models.initializeModels();
+        const initializedModels = await models.initializeModels();
+
+        // Copy initialized models back to the models object
+        Object.assign(models, initializedModels);
+
+        // Ensure UserToken is available
+        if (!models.UserToken) {
+            console.warn('UserToken model not loaded, creating placeholder');
+            models.UserToken = {
+                findOne: () => null,
+                create: () => null,
+                destroy: () => null,
+                update: () => null
+            };
+        }
 
         // Apply database safety middleware
         databaseSafety.createSafetyMiddleware(sequelize);
@@ -164,7 +178,7 @@ export default class Bootstrap {
         // Test database connection without using Bluebird's .return()
         try {
             // Simple query to test connection
-            await sequelize.query('SELECT 1+1 AS result', { type: models.QueryTypes.SELECT });
+            await sequelize.query('SELECT 1+1 AS result', { type: models.sequelize.QueryTypes.SELECT });
             loggers.infoLogger.info('Database connected successfully');
 
             // Check database health

@@ -5,7 +5,7 @@
 
 import { Router } from 'express';
 import HttpStatus from 'http-status';
-import authenticate from '../middlewares/auth-middleware.js';
+import authenticate from '../middleware-app/auth-middleware.js';
 import snapTanfSystem from '../services/snap-tanf-benefit-system.js';
 import emergencyDisbursementSystem from '../services/emergency-disbursement-system.js';
 import loggers from '../services/logger.js';

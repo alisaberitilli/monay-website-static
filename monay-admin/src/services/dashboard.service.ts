@@ -1,21 +1,9 @@
-import axios from 'axios';
-import Cookies from 'js-cookie';
-
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
+import axiosInstance from '@/lib/axios';
 
 class DashboardService {
-  private getHeaders() {
-    const token = Cookies.get('token');
-    return {
-      Authorization: token ? `Bearer ${token}` : '',
-    };
-  }
-
   async getStats() {
     try {
-      const response = await axios.get(`${API_URL}/api/dashboard/stats`, {
-        headers: this.getHeaders(),
-      });
+      const response = await axiosInstance.get('/api/dashboard/stats');
       return response.data;
     } catch (error) {
       console.error('Failed to fetch dashboard stats:', error);
@@ -25,9 +13,7 @@ class DashboardService {
 
   async getRecentTransactions() {
     try {
-      const response = await axios.get(`${API_URL}/api/transactions?limit=10`, {
-        headers: this.getHeaders(),
-      });
+      const response = await axiosInstance.get('/api/transactions?limit=10');
       return response.data;
     } catch (error) {
       console.error('Failed to fetch recent transactions:', error);
@@ -37,9 +23,7 @@ class DashboardService {
 
   async getChartData(period: 'week' | 'month' | 'year' = 'month') {
     try {
-      const response = await axios.get(`${API_URL}/api/dashboard/chart-data?period=${period}`, {
-        headers: this.getHeaders(),
-      });
+      const response = await axiosInstance.get(`/api/dashboard/chart-data?period=${period}`);
       return response.data;
     } catch (error) {
       console.error('Failed to fetch chart data:', error);

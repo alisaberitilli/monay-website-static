@@ -58,6 +58,18 @@
     --border: 217.2 32.6% 17.5%;
     --input: 217.2 32.6% 17.5%;
     --ring: 224.3 76.3% 94.1%;
+
+    /* Tremor dark mode color variables */
+    --tremor-content: #d1d5db;
+    --tremor-background: #111827;
+    --tremor-border: #374151;
+    --tremor-ring: #3b82f6;
+    --tremor-content-emphasis: #f9fafb;
+    --tremor-content-default: #9ca3af;
+    --tremor-content-subtle: #6b7280;
+    --tremor-brand: #3b82f6;
+    --tremor-brand-emphasis: #60a5fa;
+    --tremor-brand-subtle: #1e3a8a;
   }
 }
 
@@ -87,6 +99,32 @@
 
 ::-webkit-scrollbar-thumb:hover {
   background: hsl(var(--primary));
+}
+
+/* Tremor Chart Colors Override */
+.tremor-BarChart-bar,
+.tremor-DonutChart-slice,
+[data-tremor-chart] {
+  --tremor-brand-blue: #3b82f6 !important;
+  --tremor-brand-violet: #8b5cf6 !important;
+  --tremor-brand-amber: #f59e0b !important;
+  --tremor-brand-emerald: #10b981 !important;
+  --tremor-brand-rose: #f43f5e !important;
+  --tremor-brand-cyan: #06b6d4 !important;
+  --tremor-brand-indigo: #6366f1 !important;
+  --tremor-brand-slate: #64748b !important;
+}
+
+/* Force Tremor chart colors */
+.tremor-base {
+  --blue-500: #3b82f6 !important;
+  --violet-500: #8b5cf6 !important;
+  --amber-500: #f59e0b !important;
+  --emerald-500: #10b981 !important;
+  --rose-500: #f43f5e !important;
+  --cyan-500: #06b6d4 !important;
+  --indigo-500: #6366f1 !important;
+  --slate-500: #64748b !important;
 }
 
 /* Animations */

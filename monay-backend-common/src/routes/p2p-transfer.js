@@ -1,6 +1,6 @@
 import express from 'express';
 import { v4 as uuidv4 } from 'uuid';
-import authenticateToken from '../middlewares/auth-middleware.js';
+import authenticateToken from '../middleware-app/auth-middleware.js';
 import db from '../models/index.js';
 const { User, Transaction, Wallet, Notification, sequelize } = db;
 import pkg from 'sequelize';
@@ -9,6 +9,7 @@ import utility from '../services/utility.js';
 import p2pTransferService from '../services/p2p-transfer-service.js';
 import { body, param, query, validationResult } from 'express-validator';
 import logger from '../services/logger.js';
+import models from '../models/index.js';
 
 const router = express.Router();
 
@@ -51,7 +52,7 @@ router.post('/search', authenticateToken, async (req, res) => {
     // Exclude current user from results
     whereClause.id = { [Op.ne]: userId };
 
-    const users = await User.findAll({
+    const users = await models.User.findAll({
       where: whereClause,
       attributes: ['id', 'firstName', 'lastName', 'email', 'mobile', 'username', 'profileImage'],
       limit: 10
@@ -476,7 +477,7 @@ router.post('/search', authenticateToken, async (req, res) => {
     // Exclude current user from results
     whereClause.id = { [Op.ne]: userId };
 
-    const users = await User.findAll({
+    const users = await models.User.findAll({
       where: whereClause,
       attributes: ['id', 'firstName', 'lastName', 'email', 'mobile', 'username', 'profileImage'],
       limit: 10
@@ -543,7 +544,7 @@ router.get('/recent-contacts', authenticateToken, async (req, res) => {
       return res.json({ success: true, data: { transfers: [] } });
     }
 
-    const users = await User.findAll({
+    const users = await models.User.findAll({
       where: { id: { [Op.in]: recipientIds } },
       attributes: ['id', 'firstName', 'lastName', 'email', 'mobile', 'username', 'profileImage']
     });
@@ -729,9 +730,9 @@ router.post('/request', authenticateToken, async (req, res) => {
     // Find payer
     let payer = null;
     if (payerId) {
-      payer = await User.findByPk(payerId);
+      payer = await models.User.findByPk(payerId);
     } else if (payerIdentifier) {
-      payer = await User.findOne({
+      payer = await models.User.findOne({
         where: {
           [Op.or]: [
             { email: payerIdentifier.toLowerCase() },

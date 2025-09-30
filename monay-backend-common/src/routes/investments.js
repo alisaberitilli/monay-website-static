@@ -5,7 +5,7 @@
 
 import express from 'express';
 import Joi from 'joi';
-import { authenticateJWT } from '../middlewares/authenticate.js';
+import { authenticateJWT } from '../middleware-app/authenticate.js';
 import investmentService from '../services/investment-service.js';
 import logger from '../services/logger.js';
 import db from '../models/index.js';

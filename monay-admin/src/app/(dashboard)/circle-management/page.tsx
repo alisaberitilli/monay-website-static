@@ -107,11 +107,7 @@ export default function CircleManagementPage() {
       setMetrics(metricsData);
     } catch (error) {
       console.error('Failed to load Circle data:', error);
-      toast({
-        title: 'Error',
-        description: 'Failed to load Circle data',
-        variant: 'destructive',
-      });
+      toast.error('Failed to load Circle data');
     } finally {
       setLoading(false);
     }
@@ -119,31 +115,20 @@ export default function CircleManagementPage() {
 
   const handleFreezeWallet = async () => {
     if (!selectedWallet || !freezeReason.trim()) {
-      toast({
-        title: 'Error',
-        description: 'Please provide a reason for freezing the wallet',
-        variant: 'destructive',
-      });
+      toast.error('Please provide a reason for freezing the wallet');
       return;
     }
 
     setProcessingAction(true);
     try {
       await superAdminService.freezeCircleWallet(selectedWallet.walletId, freezeReason);
-      toast({
-        title: 'Success',
-        description: `Wallet ${selectedWallet.walletId} has been frozen`,
-      });
+      toast.success(`Wallet ${selectedWallet.walletId} has been frozen`);
       setShowFreezeModal(false);
       setFreezeReason('');
       await loadCircleData();
     } catch (error) {
       console.error('Failed to freeze wallet:', error);
-      toast({
-        title: 'Error',
-        description: 'Failed to freeze wallet',
-        variant: 'destructive',
-      });
+      toast.error('Failed to freeze wallet');
     } finally {
       setProcessingAction(false);
     }
@@ -155,19 +140,12 @@ export default function CircleManagementPage() {
     setProcessingAction(true);
     try {
       await superAdminService.unfreezeCircleWallet(selectedWallet.walletId);
-      toast({
-        title: 'Success',
-        description: `Wallet ${selectedWallet.walletId} has been unfrozen`,
-      });
+      toast.success(`Wallet ${selectedWallet.walletId} has been unfrozen`);
       setShowUnfreezeModal(false);
       await loadCircleData();
     } catch (error) {
       console.error('Failed to unfreeze wallet:', error);
-      toast({
-        title: 'Error',
-        description: 'Failed to unfreeze wallet',
-        variant: 'destructive',
-      });
+      toast.error('Failed to unfreeze wallet');
     } finally {
       setProcessingAction(false);
     }

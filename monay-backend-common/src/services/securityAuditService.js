@@ -135,7 +135,7 @@ class SecurityAuditService extends EventEmitter {
         },
         // Path traversal
         {
-          pattern: /\.\.\/|\.\.\\\/gi,
+          pattern: /\.\.\/|\.\.\\/gi,
           severity: 'medium',
           issue: 'Potential path traversal vulnerability'
         },

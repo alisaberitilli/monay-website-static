@@ -88,7 +88,7 @@ export default function InvoiceCreationForm() {
 
   const fetchCustomers = async () => {
     try {
-      const data = await apiService.getCustomers();
+      const data = await apiService.getCustomers() as any;
 
       if (data.customers && data.customers.length > 0) {
         // Map API response to our Customer interface
@@ -180,7 +180,7 @@ export default function InvoiceCreationForm() {
         provider
       };
 
-      const data = await apiService.createInvoice(invoiceData);
+      const data = await apiService.createInvoice(invoiceData) as any;
 
       setCreatedInvoice({
         ...data,

@@ -3,12 +3,12 @@ import http from 'http';
 import express from 'express';
 import { Server } from 'socket.io';
 import jwt from 'jsonwebtoken';
-const {
+import {
   createTestUser,
   createTestWallet,
   cleanDatabase,
   closeTestDb
-} from '../utils/database-helpers';
+} from '../utils/database-helpers.js';
 
 describe('Invoice Wallet WebSocket Tests', () => {
   let server;

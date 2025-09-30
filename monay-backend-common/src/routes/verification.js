@@ -3,7 +3,7 @@ import HttpStatus from 'http-status';
 import nudgeOTPService from '../services/nudge-otp.js';
 import models from '../models/index.js';
 import utility from '../services/utility.js';
-import middlewares from '../middlewares/index.js';
+import middlewares from '../middleware-app/index.js';
 
 const { User } = models;
 
@@ -14,7 +14,7 @@ const { authMiddleware } = middlewares;
 router.post('/verification/send-mobile-otp', authMiddleware, async (req, res, next) => {
   try {
     const userId = req.user.id;
-    const user = await User.findByPk(userId);
+    const user = await models.User.findByPk(userId);
     
     if (!user) {
       return res.status(HttpStatus.NOT_FOUND).json({
@@ -70,7 +70,7 @@ router.post('/verification/verify-mobile-otp', authMiddleware, async (req, res, 
       });
     }
     
-    const user = await User.findByPk(userId);
+    const user = await models.User.findByPk(userId);
     
     if (!user) {
       return res.status(HttpStatus.NOT_FOUND).json({
@@ -119,7 +119,7 @@ router.post('/verification/verify-mobile-otp', authMiddleware, async (req, res, 
 router.post('/verification/send-email-otp', authMiddleware, async (req, res, next) => {
   try {
     const userId = req.user.id;
-    const user = await User.findByPk(userId);
+    const user = await models.User.findByPk(userId);
     
     if (!user) {
       return res.status(HttpStatus.NOT_FOUND).json({
@@ -176,7 +176,7 @@ router.post('/verification/verify-email-otp', authMiddleware, async (req, res, n
       });
     }
     
-    const user = await User.findByPk(userId);
+    const user = await models.User.findByPk(userId);
     
     if (!user) {
       return res.status(HttpStatus.NOT_FOUND).json({
@@ -234,7 +234,7 @@ router.post('/verification/resend-otp', authMiddleware, async (req, res, next) =
       });
     }
     
-    const user = await User.findByPk(userId);
+    const user = await models.User.findByPk(userId);
     
     if (!user) {
       return res.status(HttpStatus.NOT_FOUND).json({
@@ -299,9 +299,9 @@ router.post('/verification/send-otp-unauthenticated', async (req, res, next) => 
     // Find user by email or mobile
     let user;
     if (type === 'email') {
-      user = await User.findOne({ where: { email: identifier } });
+      user = await models.User.findOne({ where: { email: identifier } });
     } else {
-      user = await User.findOne({ where: { mobile: identifier } });
+      user = await models.User.findOne({ where: { mobile: identifier } });
     }
     
     if (!user) {
@@ -341,20 +341,39 @@ router.post('/verification/send-otp-unauthenticated', async (req, res, next) => 
 router.post('/verification/verify-otp-unauthenticated', async (req, res, next) => {
   try {
     const { identifier, type, otp, userId } = req.body;
-    
-    if (!identifier || !type || !otp || !userId) {
+
+    if (!identifier || !type || !otp) {
       return res.status(HttpStatus.BAD_REQUEST).json({
         success: false,
-        message: 'All fields are required'
+        message: 'Identifier, type, and OTP are required'
       });
     }
-    
+
+    // Find user by identifier if userId not provided
+    let actualUserId = userId;
+    if (!actualUserId) {
+      let user;
+      if (type === 'sms') {
+        user = await models.User.findOne({ where: { mobile: identifier } });
+      } else {
+        user = await models.User.findOne({ where: { email: identifier } });
+      }
+
+      if (!user) {
+        return res.status(HttpStatus.NOT_FOUND).json({
+          success: false,
+          message: 'User not found'
+        });
+      }
+      actualUserId = user.id;
+    }
+
     // Verify OTP
-    const result = nudgeOTPService.verifyOTP(type, identifier, userId, otp);
+    const result = nudgeOTPService.verifyOTP(type, identifier, actualUserId, otp);
     
     if (result.success) {
       // Update user's verification status
-      const user = await User.findByPk(userId);
+      const user = await models.User.findByPk(actualUserId);
       if (user) {
         if (type === 'sms') {
           await user.update({ isMobileVerified: true });

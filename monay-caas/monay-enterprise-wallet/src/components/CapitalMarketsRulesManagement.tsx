@@ -579,6 +579,7 @@ const capitalMarketsRulesData = {
 };
 
 export default function CapitalMarketsRulesManagement() {
+  const [rules, setRules] = useState(capitalMarketsRulesData.rules);
   const [selectedRule, setSelectedRule] = useState<string | null>(null);
   const [filterCategory, setFilterCategory] = useState('all');
   const [filterStatus, setFilterStatus] = useState('all');
@@ -597,7 +598,7 @@ export default function CapitalMarketsRulesManagement() {
     actions: []
   });
 
-  const filteredRules = capitalMarketsRulesData.rules.filter(rule => {
+  const filteredRules = rules.filter(rule => {
     const matchesCategory = filterCategory === 'all' || rule.category === filterCategory;
     const matchesStatus = filterStatus === 'all' || rule.status === filterStatus;
     const matchesSearch = searchTerm === '' ||
@@ -608,7 +609,7 @@ export default function CapitalMarketsRulesManagement() {
     return matchesCategory && matchesStatus && matchesSearch;
   });
 
-  const categories = [...new Set(capitalMarketsRulesData.rules.map(r => r.category))];
+  const categories = [...new Set(rules.map(r => r.category))];
   const regulations = Object.values(capitalMarketsRulesData.regulations);
 
   return (
@@ -633,7 +634,7 @@ export default function CapitalMarketsRulesManagement() {
             <CardContent>
               <div className="flex items-center justify-between">
                 <div>
-                  {key === 'var' && (
+                  {key === 'var' && 'current' in metric && 'limit' in metric && (
                     <>
                       <p className="text-2xl font-bold">
                         ${(metric.current / 1000000).toFixed(1)}M
@@ -644,7 +645,7 @@ export default function CapitalMarketsRulesManagement() {
                       />
                     </>
                   )}
-                  {key === 'stressTest' && (
+                  {key === 'stressTest' && 'passed' in metric && 'scenarios' in metric && (
                     <>
                       <p className="text-2xl font-bold">
                         {metric.passed}/{metric.scenarios}
@@ -652,7 +653,7 @@ export default function CapitalMarketsRulesManagement() {
                       <p className="text-xs text-muted-foreground">Scenarios passed</p>
                     </>
                   )}
-                  {key === 'concentration' && (
+                  {key === 'concentration' && 'topExposure' in metric && 'topCounterparty' in metric && (
                     <>
                       <p className="text-2xl font-bold">
                         {(metric.topExposure * 100).toFixed(0)}%
@@ -660,7 +661,7 @@ export default function CapitalMarketsRulesManagement() {
                       <p className="text-xs text-muted-foreground">{metric.topCounterparty}</p>
                     </>
                   )}
-                  {key === 'liquidity' && (
+                  {key === 'liquidity' && 'ratio' in metric && (
                     <>
                       <p className="text-2xl font-bold">{metric.ratio.toFixed(2)}</p>
                       <p className="text-xs text-muted-foreground">Coverage ratio</p>
@@ -669,12 +670,12 @@ export default function CapitalMarketsRulesManagement() {
                 </div>
                 <Badge
                   className={
-                    metric.status === 'healthy' || metric.status === 'within_limits' || metric.status === 'acceptable'
+                    ('status' in metric && (metric.status === 'healthy' || metric.status === 'within_limits' || metric.status === 'acceptable'))
                       ? 'bg-green-500 text-white hover:bg-green-600'
                       : 'bg-red-500 text-white hover:bg-red-600'
                   }
                 >
-                  {metric.status || `${metric.failed} failed`}
+                  {'status' in metric ? metric.status : 'failed' in metric ? `${metric.failed} failed` : 'Unknown'}
                 </Badge>
               </div>
             </CardContent>
@@ -733,7 +734,7 @@ export default function CapitalMarketsRulesManagement() {
                             dataPoints: []
                           }
                         };
-                        setRules([...rules, newRuleWithId]);
+                        setRules([...rules, newRuleWithId as any]);
                         setShowCreateModal(false);
                         // Reset form
                         setNewRule({

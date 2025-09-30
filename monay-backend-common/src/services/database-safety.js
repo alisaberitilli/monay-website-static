@@ -72,6 +72,11 @@ const auditLogger = new DatabaseAuditLogger();
  * Check if an SQL query contains dangerous operations
  */
 export function isDangerousQuery(query) {
+  // Handle non-string queries (Sequelize sometimes passes objects)
+  if (typeof query !== 'string') {
+    return false;
+  }
+
   const normalizedQuery = query.toUpperCase().replace(/\s+/g, ' ');
 
   for (const pattern of DANGEROUS_OPERATIONS) {

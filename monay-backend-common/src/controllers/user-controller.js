@@ -7,7 +7,14 @@ import utility from '../services/utility.js';
 import logger from '../services/logger.js';
 import Email from '../services/email.js';
 
-const { UserToken, UserKyc, ChildParent } = models;
+// Lazy load models to avoid initialization issues
+const getModels = () => {
+  return {
+    UserToken: models.UserToken || {},
+    UserKyc: models.UserKyc || {},
+    ChildParent: models.ChildParent || {}
+  };
+};
 const {
   userRepository,
   accountRepository,
@@ -56,11 +63,14 @@ export default {
       await userRepository.updateUser(userObject, bodyData);
       if (bodyData.status != 'active') {
         await userRepository.subadminRemoveToken(req);
-        await UserToken.destroy({
-          where: {
-            userId: req.params.userId
+        // Use raw query instead of UserToken model
+        await models.sequelize.query(
+          'DELETE FROM user_tokens WHERE user_id = :userId',
+          {
+            replacements: { userId: req.params.userId },
+            type: models.sequelize.QueryTypes.DELETE
           }
-        });
+        );
       }
       if (userObject.userType = 'subadmin') {
         await activityLogRepository.saveActivityLog('subadmin_change_status', req);

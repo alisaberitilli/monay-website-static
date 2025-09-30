@@ -1,0 +1,35 @@
+{
+  "timestamp": 1759169143125,
+  "applications": [
+    {
+      "name": "Admin Portal",
+      "completion": 38,
+      "features_found": 3,
+      "features_missing": 5,
+      "missing_features": [
+        "AUTH_FLOW → Sign Up Page",
+        "AUTH_FLOW → Email/Phone Verification",
+        "AUTH_FLOW → MPIN Setup",
+        "AUTH_FLOW → KYC Verification",
+        "AUTH_FLOW → Logout"
+      ]
+    },
+    {
+      "name": "Enterprise Wallet",
+      "completion": 0,
+      "features_found": 0,
+      "features_missing": 0,
+      "missing_features": []
+    }
+  ],
+  "overall_summary": {
+    "total_features_across_apps": 8,
+    "features_implemented": 3,
+    "features_missing": 5,
+    "average_completion": 19
+  },
+  "recommendations": [
+    "🔴 HIGH PRIORITY: Fix authentication flow in Admin Portal",
+    "🔴 HIGH PRIORITY: Admin Portal needs core features implementation"
+  ]
+}

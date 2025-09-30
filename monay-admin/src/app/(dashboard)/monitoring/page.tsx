@@ -106,7 +106,7 @@ export default function MonitoringPage() {
   const [errorRate, setErrorRate] = useState(0.02);
 
   // Animation interval
-  const animationInterval = useRef<NodeJS.Timer>();
+  const animationInterval = useRef<NodeJS.Timeout>();
 
   useEffect(() => {
     if (isLive) {
@@ -129,10 +129,7 @@ export default function MonitoringPage() {
 
       websocket.onopen = () => {
         setConnected(true);
-        toast({
-          title: 'Connected',
-          description: 'Real-time monitoring active',
-        });
+        toast.success('Real-time monitoring active');
       };
 
       websocket.onmessage = (event) => {
@@ -142,11 +139,7 @@ export default function MonitoringPage() {
 
       websocket.onerror = () => {
         setConnected(false);
-        toast({
-          title: 'Connection Error',
-          description: 'Failed to connect to monitoring service',
-          variant: 'destructive',
-        });
+        toast.error('Failed to connect to monitoring service');
       };
 
       websocket.onclose = () => {

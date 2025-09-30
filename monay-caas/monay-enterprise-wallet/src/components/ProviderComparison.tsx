@@ -110,7 +110,7 @@ export default function ProviderComparison() {
   const fetchProviderData = async () => {
     try {
       // Try to fetch from API
-      const data = await apiService.getProviderMetrics();
+      const data = await apiService.getProviderMetrics() as any;
       if (data && data.providers) {
         setProviders(data.providers);
         setPerformanceData(data.performanceHistory || generateMockPerformanceData());
