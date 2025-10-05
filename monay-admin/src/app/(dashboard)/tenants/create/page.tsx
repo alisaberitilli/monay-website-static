@@ -25,7 +25,12 @@ interface TenantFormData {
   billing_tier: 'free' | 'small_business' | 'enterprise' | 'custom';
   email: string;
   phone: string;
-  address: string;
+  address_line1: string;
+  address_line2: string;
+  city: string;
+  state: string;
+  postal_code: string;
+  country: string;
   description: string;
   gross_margin_percent: number;
 }
@@ -41,7 +46,12 @@ export default function CreateTenantPage() {
     billing_tier: 'free',
     email: '',
     phone: '',
-    address: '',
+    address_line1: '',
+    address_line2: '',
+    city: '',
+    state: '',
+    postal_code: '',
+    country: 'US',
     description: '',
     gross_margin_percent: 20,
   });
@@ -93,7 +103,6 @@ export default function CreateTenantPage() {
           metadata: {
             contact_email: formData.email,
             phone: formData.phone,
-            address: formData.address,
             description: formData.description
           }
         }),
@@ -225,16 +234,60 @@ export default function CreateTenantPage() {
               </div>
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="address">Address</Label>
-              <Textarea
-                id="address"
-                name="address"
-                value={formData.address}
-                onChange={handleInputChange}
-                placeholder="Enter full address"
-                rows={3}
-              />
+            <div className="space-y-3">
+              <Label className="text-base font-semibold">Address</Label>
+
+              <div className="space-y-3">
+                <Input
+                  id="address_line1"
+                  name="address_line1"
+                  value={formData.address_line1}
+                  onChange={handleInputChange}
+                  placeholder="Street Address Line 1"
+                />
+
+                <Input
+                  id="address_line2"
+                  name="address_line2"
+                  value={formData.address_line2}
+                  onChange={handleInputChange}
+                  placeholder="Street Address Line 2 (Optional)"
+                />
+
+                <div className="grid grid-cols-2 gap-3">
+                  <Input
+                    id="city"
+                    name="city"
+                    value={formData.city}
+                    onChange={handleInputChange}
+                    placeholder="City"
+                  />
+                  <Input
+                    id="state"
+                    name="state"
+                    value={formData.state}
+                    onChange={handleInputChange}
+                    placeholder="State/Province"
+                  />
+                </div>
+
+                <div className="grid grid-cols-2 gap-3">
+                  <Input
+                    id="postal_code"
+                    name="postal_code"
+                    value={formData.postal_code}
+                    onChange={handleInputChange}
+                    placeholder="ZIP/Postal Code"
+                  />
+                  <Input
+                    id="country"
+                    name="country"
+                    value={formData.country}
+                    onChange={handleInputChange}
+                    placeholder="Country (e.g., US)"
+                  />
+                </div>
+              </div>
             </div>
 
             <div className="space-y-2">

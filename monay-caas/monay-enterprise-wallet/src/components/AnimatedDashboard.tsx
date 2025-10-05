@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -12,6 +12,8 @@ import {
 import TransactionDetailModal from '@/components/modals/TransactionDetailModal'
 import TransferModal from '@/components/modals/TransferModal'
 import CreateInvoiceModal from '@/components/modals/CreateInvoiceModal'
+import OnboardingBanner from '@/components/OnboardingBanner'
+import WalletAddressCard from '@/components/WalletAddressCard'
 import { mockTransactions, getRecentTransactions, Transaction } from '@/lib/mock-data/transactions'
 import toast from 'react-hot-toast'
 import { useRouter } from 'next/navigation'
@@ -48,7 +50,34 @@ export default function AnimatedDashboard({ blockchainStatus, onNavigate }: Anim
   const [selectedTransaction, setSelectedTransaction] = useState<Transaction | null>(null)
   const [isTransferModalOpen, setIsTransferModalOpen] = useState(false)
   const [isInvoiceModalOpen, setIsInvoiceModalOpen] = useState(false)
+  const [onboardingStatus, setOnboardingStatus] = useState<any>(null)
   const recentTransactions = getRecentTransactions(5)
+
+  // Fetch onboarding status to show banner if incomplete
+  useEffect(() => {
+    const fetchOnboardingStatus = async () => {
+      try {
+        const authToken = localStorage.getItem('auth_token') || localStorage.getItem('authToken')
+        if (!authToken) return
+
+        const response = await fetch('http://localhost:3001/api/onboarding/status', {
+          headers: {
+            'Authorization': `Bearer ${authToken}`,
+            'Content-Type': 'application/json'
+          }
+        })
+
+        if (response.ok) {
+          const status = await response.json()
+          setOnboardingStatus(status)
+        }
+      } catch (error) {
+        console.error('Failed to fetch onboarding status:', error)
+      }
+    }
+
+    fetchOnboardingStatus()
+  }, [])
   
   const stats = [
     {
@@ -178,6 +207,9 @@ export default function AnimatedDashboard({ blockchainStatus, onNavigate }: Anim
         animate="visible"
         className="space-y-8"
       >
+        {/* Onboarding Banner - Shows only if KYC incomplete */}
+        <OnboardingBanner onboardingStatus={onboardingStatus} />
+
         {/* Welcome Section */}
         <motion.div variants={itemVariants}>
           <h2 className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
@@ -237,13 +269,25 @@ export default function AnimatedDashboard({ blockchainStatus, onNavigate }: Anim
           ))}
         </div>
 
-        {/* Quick Actions */}
-        <motion.div variants={itemVariants}>
-          <Card>
-            <CardHeader>
-              <CardTitle>Quick Actions</CardTitle>
-              <CardDescription>Frequently used operations</CardDescription>
-            </CardHeader>
+        {/* Wallet Address Card + Quick Actions Grid */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {/* My Wallet Address */}
+          <motion.div variants={itemVariants} className="lg:col-span-1">
+            <WalletAddressCard
+              address="0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb1"
+              network="Base Sepolia"
+              rail="evm"
+              balance="$425,850.00"
+            />
+          </motion.div>
+
+          {/* Quick Actions */}
+          <motion.div variants={itemVariants} className="lg:col-span-2">
+            <Card>
+              <CardHeader>
+                <CardTitle>Quick Actions</CardTitle>
+                <CardDescription>Frequently used operations</CardDescription>
+              </CardHeader>
             <CardContent>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 {quickActions.map((action, index) => (
@@ -267,7 +311,8 @@ export default function AnimatedDashboard({ blockchainStatus, onNavigate }: Anim
               </div>
             </CardContent>
           </Card>
-        </motion.div>
+          </motion.div>
+        </div>
 
         {/* Blockchain Status Cards */}
         <motion.div variants={itemVariants} className="grid grid-cols-1 lg:grid-cols-2 gap-6">

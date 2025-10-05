@@ -37,7 +37,7 @@ import {
 import { motion } from 'framer-motion';
 import { AreaChart, BarChart, LineChart } from '@tremor/react';
 import { superAdminService } from '@/services/super-admin.service';
-import { useToast } from '@/components/ui/use-toast';
+import toast from 'react-hot-toast';
 
 interface TempoMetrics {
   tps: number;
@@ -68,7 +68,6 @@ export default function TempoManagementPage() {
   const [transactions, setTransactions] = useState<TempoTransaction[]>([]);
   const [loading, setLoading] = useState(true);
   const [networkStats, setNetworkStats] = useState<any>(null);
-  const { toast } = useToast();
 
   useEffect(() => {
     loadTempoData();

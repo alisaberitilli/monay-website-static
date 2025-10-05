@@ -49,4 +49,22 @@ router.delete(
   cardController.deleteSpecificCard
 );
 
+// Alias routes for frontend compatibility (/api/cards instead of /api/user/cards)
+router.get(
+  '/cards',
+  authMiddleware,
+  resourceAccessMiddleware(['user', 'merchant']),
+  cardController.getUserCards
+);
+
+router.post(
+  '/cards',
+  authMiddleware,
+  resourceAccessMiddleware(['user', 'merchant']),
+  validateMiddleware({
+    schema: cardRequestValidator.createRequestSchema,
+  }),
+  cardController.saveCardRequest
+);
+
 export default router;

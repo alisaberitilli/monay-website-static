@@ -171,15 +171,21 @@ export default function LoginPage() {
               <button>Continue</button>
             </div>
 
-            <div className="mt-6 p-4 bg-muted rounded-lg">
-              <p className="text-xs text-muted-foreground">
-                <strong>Test Credentials:</strong>
-                <br />
-                Admin: admin@monay.com / Admin@123
-                <br />
-                User: john@example.com / Admin@123
-              </p>
-            </div>
+            {/* Development credentials - only show in development mode */}
+            {process.env.NODE_ENV === 'development' && (
+              <div className="mt-6 p-4 bg-muted rounded-lg">
+                <p className="text-xs text-muted-foreground">
+                  <strong>Development Credentials:</strong>
+                  <br />
+                  Admin: {process.env.NEXT_PUBLIC_ADMIN_EMAIL || 'admin@monay.com'} / {process.env.NEXT_PUBLIC_ADMIN_PASSWORD || 'SecureAdmin123!@#'}
+                  <br />
+                  User: {process.env.NEXT_PUBLIC_DEFAULT_USER_EMAIL || 'user@monay.com'} / {process.env.NEXT_PUBLIC_DEFAULT_USER_PASSWORD || 'SecureUser123!@#'}
+                </p>
+                <p className="text-xs text-muted-foreground mt-2">
+                  ⚠️ <strong>Note:</strong> These credentials are for development only and are automatically hidden in production.
+                </p>
+              </div>
+            )}
           </CardContent>
         </Card>
       </motion.div>

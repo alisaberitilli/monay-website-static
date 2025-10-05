@@ -55,10 +55,13 @@ import authFederal from './auth-federal.js';
 import customerVerification from './customer-verification.js';
 import paymentRails from './payment-rails.js';
 import superAdmin from './super-admin.js';  // Super Admin routes for platform management
+import superAdminUsers from './super-admin-users.js';  // Super Admin user management routes
 import emergencyDisbursement from './emergency-disbursement.js';
 import snapTanfBenefits from './snap-tanf-benefits.js';
 import industryVerticals from './industry-verticals.js';
 import authPlaceholder from './auth-placeholder.js';
+import adminLogin from './admin-login.js';  // Dedicated admin login endpoint
+import onboarding from './onboarding.js';  // Onboarding flow with KYC verification
 import customers from './customers.js';
 import p2pTransfer from './p2p-transfer.js';
 import organizations from './organizations.js';
@@ -70,6 +73,7 @@ import consumer from './consumer.js';  // Consumer wallet with Tempo priority
 import tenants from './tenants.js';  // Tenant management routes
 import groups from './groups-simple.js';  // Group management routes (simplified)
 import billing from './billing-analytics-minimal.js';  // Billing analytics (minimal version) - no validation issues
+import contacts from './contacts.js';  // Unified contacts endpoint for organizations and individuals
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -142,6 +146,10 @@ const register = (app) => {
             color: #FFD700;
             margin: 0 1rem;
             text-decoration: none;
+            font-weight: 600;
+          }
+          .links a:hover {
+            text-decoration: underline;
           }
         </style>
       </head>
@@ -157,8 +165,10 @@ const register = (app) => {
           <p>Unified backend for CaaS & WaaS platforms</p>
           <div class="status">✓ Server Running on Port ${process.env.PORT || 3001}</div>
           <div class="links">
+            <a href="/status">Platform Status</a>
             <a href="/api/status">API Status</a>
             <a href="/api/health">Health Check</a>
+            <a href="/api-viewer">API Viewer</a>
             ${process.env.NODE_ENV === 'development' ? '<a href="/api-docs">API Documentation</a>' : ''}
           </div>
         </div>
@@ -173,8 +183,10 @@ const register = (app) => {
   app.use('/', apiHealth); // Add API health monitoring
 
   router.use('/api', [
+    adminLogin,  // Dedicated admin login endpoint (must be before authPlaceholder)
     authPlaceholder,  // Placeholder auth with simulation (development mode)
     auth,  // Add auth routes first for priority
+    onboarding,  // Onboarding flow with KYC verification
     verification, // Add verification routes
     account,
     accounts,  // Consumer wallet Primary/Secondary account management
@@ -235,11 +247,14 @@ const register = (app) => {
   app.use('/api/verticals', industryVerticals); // Industry-specific payment solutions for 15 business sectors
   app.use('/api/customers', customers); // Customer management system with KYC/AML
   app.use('/api/organizations', organizations); // Organization management system
+  app.use('/api/contacts', contacts); // Unified contacts endpoint (organizations + individuals)
   app.use('/api/webhooks', webhooks); // Webhook management system for integrations
   app.use('/api/exports', dataExports); // Advanced data export functionality
   app.use('/api/enterprise-rbac', enterpriseRbac); // Enterprise Role-Based Access Control with industry-specific roles
   app.use('/api/super-admin', superAdmin); // Super Admin routes for comprehensive platform management
+  app.use('/api/super-admin/users', superAdminUsers); // Super Admin user management routes
   app.use('/api/p2p-transfer', p2pTransfer); // P2P transfer endpoints for Consumer Wallet
+  app.use('/api/user', user); // User management routes for admin portal
   // app.use(superAppServices); // Super App services for Consumer Wallet (travel, transport, shopping, etc.) - TEMPORARILY DISABLED due to auth import issue
   app.use(apiTest); // API testing endpoints for verification
 

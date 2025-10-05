@@ -208,6 +208,17 @@ export default function TransferPage() {
   const processTransfer = async () => {
     setStep('processing')
     try {
+      console.log('Processing transfer with data:', {
+        recipientId: recipientDetails?.id,
+        recipientIdentifier: recipientDetails?.identifier,
+        amount: parseFloat(amount),
+        currency: 'USD',
+        note,
+        transferMethod,
+        schedule,
+        scheduleDate
+      })
+
       const response = await apiClient.initiateTransfer({
         recipientId: recipientDetails?.id,
         recipientIdentifier: recipientDetails?.identifier,
@@ -219,15 +230,20 @@ export default function TransferPage() {
         scheduleDate
       })
 
+      console.log('Transfer response:', response)
+
       if (response.success) {
         setStep('success')
       } else {
+        console.error('Transfer failed:', response.error)
         setErrors({ transfer: response.error || 'Transfer failed' })
         setStep('review')
       }
     } catch (error) {
       console.error('Failed to process transfer:', error)
-      setErrors({ transfer: 'Network error. Please try again.' })
+      // Show more detailed error information
+      const errorMessage = error instanceof Error ? error.message : 'Network error. Please try again.'
+      setErrors({ transfer: errorMessage })
       setStep('review')
     }
   }
@@ -380,15 +396,17 @@ export default function TransferPage() {
                       <button
                         key={method.id}
                         onClick={() => setTransferMethod(method.id as any)}
-                        className={`p-4 rounded-lg border-2 transition-all ${
+                        className={`p-4 rounded-lg border-2 transition-all text-center ${
                           transferMethod === method.id
-                            ? 'border-primary bg-primary/5'
-                            : 'border-gray-200 hover:border-gray-300'
+                            ? 'border-blue-500 bg-blue-50 text-blue-900'
+                            : 'border-gray-200 hover:border-gray-300 bg-white'
                         }`}
                       >
-                        <Icon className="h-6 w-6 mb-2" />
-                        <p className="font-medium">{method.name}</p>
-                        <p className="text-xs text-muted-foreground">{method.description}</p>
+                        <div className="flex flex-col items-center">
+                          <Icon className="h-6 w-6 mb-2 text-gray-600" />
+                          <p className="font-medium text-sm">{method.name}</p>
+                          <p className="text-xs text-gray-500 mt-1">{method.description}</p>
+                        </div>
                       </button>
                     )
                   })}
@@ -621,6 +639,19 @@ export default function TransferPage() {
                     <span className="text-2xl font-bold text-primary">{formatCurrency(totalAmount)}</span>
                   </div>
                 </div>
+
+                {/* Error Display */}
+                {errors.transfer && (
+                  <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+                    <div className="flex items-start space-x-2">
+                      <AlertCircle className="h-5 w-5 text-red-600 mt-0.5" />
+                      <div className="text-sm">
+                        <p className="font-medium text-red-900">Transfer Error</p>
+                        <p className="text-red-700 mt-1">{errors.transfer}</p>
+                      </div>
+                    </div>
+                  </div>
+                )}
 
                 <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
                   <div className="flex items-start space-x-2">

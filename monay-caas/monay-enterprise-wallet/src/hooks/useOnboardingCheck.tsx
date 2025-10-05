@@ -25,15 +25,47 @@ export function useOnboardingCheck() {
 
   const checkOnboardingStatus = async () => {
     try {
-      // Check if user is authenticated
-      const authToken = localStorage.getItem('authToken')
+      // Check if user is authenticated (try both auth_token and authToken for compatibility)
+      const authToken = localStorage.getItem('auth_token') || localStorage.getItem('authToken')
       if (!authToken) {
+        console.log('No auth token found in localStorage - skipping onboarding check')
         setIsLoading(false)
         return
       }
 
+      // Don't redirect to onboarding from login/auth pages or if already on onboarding
+      const currentPath = window.location.pathname
+      if (currentPath === '/login' ||
+          currentPath === '/auth/login' ||
+          currentPath.startsWith('/auth/') ||
+          currentPath === '/onboarding' ||
+          currentPath.startsWith('/onboarding/')) {
+        console.log('On auth/onboarding page - skipping onboarding redirect')
+        setIsLoading(false)
+        return
+      }
+
+      // CRITICAL: Check if user just skipped onboarding
+      // If yes, DON'T call the API at all - just allow dashboard access
+      const justSkipped = localStorage.getItem('onboarding_skipped')
+      if (justSkipped === 'true') {
+        console.log('🚫 User skipped onboarding - BLOCKING API call, allowing dashboard access')
+        localStorage.removeItem('onboarding_skipped') // Clear flag after use
+
+        // Set a permissive status to prevent any redirect
+        setOnboardingStatus({
+          isFirstLogin: false,
+          hasCompletedOnboarding: false, // They haven't completed, but we're allowing access
+          currentStep: 'skipped'
+        })
+
+        setIsLoading(false)
+        return // EXIT IMMEDIATELY - DO NOT CALL API OR REDIRECT
+      }
+
       // Fetch user's onboarding status from backend
-      const response = await fetch('/api/onboarding/status', {
+      console.log('Fetching onboarding status from API...')
+      const response = await fetch('http://localhost:3001/api/onboarding/status', {
         headers: {
           'Authorization': `Bearer ${authToken}`,
           'Content-Type': 'application/json'
@@ -41,26 +73,34 @@ export function useOnboardingCheck() {
       })
 
       if (!response.ok) {
+        console.error('Failed to fetch onboarding status:', response.status, response.statusText)
+        // If unauthorized, don't redirect to onboarding
+        if (response.status === 401 || response.status === 403) {
+          setIsLoading(false)
+          return
+        }
         throw new Error('Failed to fetch onboarding status')
       }
 
       const status: OnboardingStatus = await response.json()
+      console.log('Onboarding status received:', status)
       setOnboardingStatus(status)
 
       // Check if this is first login and onboarding not completed
+      console.log('Checking onboarding requirements:', {
+        isFirstLogin: status.isFirstLogin,
+        hasCompletedOnboarding: status.hasCompletedOnboarding,
+        shouldRedirect: status.isFirstLogin && !status.hasCompletedOnboarding
+      })
+
+      // REMOVED FORCED REDIRECT - Onboarding is now optional
+      // Users can choose to complete onboarding via banner on dashboard
       if (status.isFirstLogin && !status.hasCompletedOnboarding) {
-        // Store current intended path to redirect after onboarding
-        const currentPath = window.location.pathname
-        if (currentPath !== '/onboarding' && !currentPath.startsWith('/onboarding/')) {
-          sessionStorage.setItem('postOnboardingRedirect', currentPath)
-        }
+        console.log('⚠️ Onboarding incomplete, but allowing dashboard access (no forced redirect)')
+        // Just set the status - no redirect
+      }
 
-        // Determine which step to show based on current progress
-        const onboardingPath = getOnboardingPath(status.currentStep)
-
-        // Redirect to onboarding wizard
-        router.push(onboardingPath)
-      } else if (status.hasCompletedOnboarding) {
+      if (status.hasCompletedOnboarding) {
         // Check if there's a redirect path after completing onboarding
         const redirectPath = sessionStorage.getItem('postOnboardingRedirect')
         if (redirectPath) {
@@ -101,10 +141,10 @@ export function useOnboardingCheck() {
 
   const markOnboardingComplete = async () => {
     try {
-      const authToken = localStorage.getItem('authToken')
+      const authToken = localStorage.getItem('auth_token') || localStorage.getItem('authToken')
       if (!authToken) return
 
-      const response = await fetch('/api/onboarding/complete', {
+      const response = await fetch('http://localhost:3001/api/onboarding/complete', {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${authToken}`,
@@ -131,11 +171,11 @@ export function useOnboardingCheck() {
 
   const skipOnboarding = async () => {
     try {
-      const authToken = localStorage.getItem('authToken')
+      const authToken = localStorage.getItem('auth_token') || localStorage.getItem('authToken')
       if (!authToken) return
 
       // Mark as skipped (but can be resumed later)
-      const response = await fetch('/api/onboarding/skip', {
+      const response = await fetch('http://localhost:3001/api/onboarding/skip', {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${authToken}`,

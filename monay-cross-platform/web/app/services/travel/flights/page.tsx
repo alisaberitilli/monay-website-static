@@ -1,5 +1,6 @@
 'use client';
 
+import DashboardLayout from '@/components/DashboardLayout';
 import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -105,6 +106,7 @@ export default function FlightsPage() {
   };
 
   return (
+    <DashboardLayout>
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-sky-100 p-4">
       <div className="max-w-7xl mx-auto space-y-6">
         {/* Header */}
@@ -368,5 +370,6 @@ export default function FlightsPage() {
         </Card>
       </div>
     </div>
+    </DashboardLayout>
   );
 }

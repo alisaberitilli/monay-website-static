@@ -9,7 +9,7 @@ import db from '../models/index.js';
 import pkg from 'sequelize';
 const { Op } = pkg;
 import walletBalanceService from './wallet-balance-service.js';
-import logger from './logger.js';
+import { errorLogger as logger, infoLogger } from './logger.js';
 import Redis from 'ioredis';
 
 const redis = new Redis({
@@ -72,7 +72,7 @@ class P2PTransferService {
 
       const recipient = await db.User.findOne({
         where: whereClause,
-        attributes: ['id', 'firstName', 'lastName', 'email', 'mobile', 'username', 'kyc_status', 'status']
+        attributes: ['id', 'first_name', 'last_name', 'email', 'mobile', 'username', 'kyc_verified', 'state']
       });
 
       if (!recipient) {
@@ -85,7 +85,7 @@ class P2PTransferService {
       }
 
       // Check if recipient account is active
-      if (recipient.status !== 'active') {
+      if (recipient.state !== 'active') {
         return {
           isValid: false,
           isMonayUser: true,
@@ -96,22 +96,19 @@ class P2PTransferService {
 
       // Get or create recipient wallet
       let recipientWallet = await db.Wallet.findOne({
-        where: { 
-          user_id: recipient.id,
-          currency: 'USD',
-          type: 'personal'
+        where: {
+          userId: recipient.id,
+          walletType: 'virtual'
         }
       });
 
       if (!recipientWallet) {
         recipientWallet = await db.Wallet.create({
           id: uuidv4(),
-          user_id: recipient.id,
-          currency: 'USD',
-          balance: 0,
-          type: 'personal',
-          name: 'Primary Wallet',
-          status: 'active'
+          userId: recipient.id,
+          walletAddress: `wallet_${uuidv4()}`,
+          walletType: 'virtual',
+          balance: 0
         });
       }
 
@@ -120,9 +117,9 @@ class P2PTransferService {
         isMonayUser: true,
         recipientId: recipient.id,
         recipientWalletId: recipientWallet.id,
-        recipientName: `${recipient.firstName} ${recipient.lastName}`,
+        recipientName: `${recipient.first_name} ${recipient.last_name}`,
         recipientIdentifier: recipient.email || recipient.mobile || recipient.username,
-        kycStatus: recipient.kyc_status
+        kycStatus: recipient.kyc_verified
       };
     } catch (error) {
       logger.error('Error validating recipient:', error);
@@ -497,7 +494,7 @@ class P2PTransferService {
       );
 
       // Log state change
-      logger.info(`Transfer ${transferId} state changed from ${currentState} to ${newState}`);
+      infoLogger.info(`Transfer ${transferId} state changed from ${currentState} to ${newState}`);
 
       return true;
     } catch (error) {

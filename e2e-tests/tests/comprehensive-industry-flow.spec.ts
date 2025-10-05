@@ -22,7 +22,7 @@ const TEST_CONFIG = {
   },
   adminCredentials: {
     email: 'admin@monay.com',
-    password: 'Admin@123',
+    password: 'SecureAdmin123',
     mpin: '123456'
   },
   mockTestAccount: {

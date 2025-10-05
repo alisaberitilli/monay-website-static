@@ -903,5 +903,174 @@ export default {
       console.error('Error getting consumer users:', error);
       next(error);
     }
+  },
+
+  /**
+   * Get current user information
+   * @param {Object} req
+   * @param {Object} res
+   * @param {Function} next
+   */
+  async getCurrentUser(req, res, next) {
+    try {
+      const userId = req.user.id;
+
+      // Get user information from database
+      const user = await models.User.findByPk(userId, {
+        attributes: ['id', 'email', 'first_name', 'last_name', 'mobile', 'username', 'profile_image', 'role'],
+        include: [
+          {
+            model: models.Wallet,
+            as: 'wallets',
+            attributes: ['id', 'wallet_name', 'balance', 'is_primary', 'wallet_type'],
+            where: { is_active: true },
+            required: false
+          }
+        ]
+      });
+
+      if (!user) {
+        return res.status(404).json({
+          success: false,
+          message: 'User not found'
+        });
+      }
+
+      res.status(HttpStatus.OK).json({
+        success: true,
+        data: {
+          id: user.id,
+          email: user.email,
+          firstName: user.first_name,
+          lastName: user.last_name,
+          mobile: user.mobile,
+          username: user.username,
+          profileImage: user.profile_image,
+          role: user.role,
+          wallets: user.wallets || [],
+          primaryWallet: user.wallets?.find(w => w.is_primary) || null
+        },
+        message: 'User information retrieved successfully'
+      });
+    } catch (error) {
+      console.error('Error getting current user:', error);
+      next(error);
+    }
+  },
+
+  /**
+   * Update user profile by admin
+   * Allows admin to update any user's information
+   */
+  updateUserByAdmin: async (req, res, next) => {
+    try {
+      const { userId } = req.params;
+      const updates = req.body;
+
+      // Map frontend field names to database column names
+      const fieldMapping = {
+        'firstName': 'first_name',
+        'lastName': 'last_name',
+        'phone': 'phone',
+        'mobile': 'mobile',
+        'role': 'role',
+        'status': 'is_active',
+        'platform': 'user_type',
+        'kycStatus': 'kyc_verified',
+        'address': 'address',
+        'city': 'city',
+        'state': 'state',
+        'zipCode': 'zip_code',
+        'country': 'country'
+      };
+
+      // Build update query dynamically
+      const updateFields = [];
+      const params = [];
+      let paramIndex = 1;
+
+      Object.keys(updates).forEach(field => {
+        const dbField = fieldMapping[field] || field;
+
+        // Skip email and userId fields for safety
+        if (dbField === 'email' || dbField === 'id' || updates[field] === undefined) {
+          return;
+        }
+
+        // Handle status conversion (frontend sends 'active'/'suspended', db expects boolean)
+        if (field === 'status') {
+          updateFields.push(`is_active = $${paramIndex++}`);
+          params.push(updates[field] === 'active');
+        }
+        // Handle KYC status (convert to boolean)
+        else if (field === 'kycStatus') {
+          updateFields.push(`kyc_verified = $${paramIndex++}`);
+          params.push(updates[field] === 'verified');
+        }
+        // Handle other fields
+        else {
+          updateFields.push(`${dbField} = $${paramIndex++}`);
+          params.push(updates[field]);
+        }
+      });
+
+      if (updateFields.length === 0) {
+        return res.status(400).json({
+          success: false,
+          message: 'No valid fields to update'
+        });
+      }
+
+      // Add updated_at timestamp
+      updateFields.push(`updated_at = NOW()`);
+      params.push(userId);
+
+      const updateQuery = `
+        UPDATE users
+        SET ${updateFields.join(', ')}
+        WHERE id = $${paramIndex}
+        RETURNING id, email, first_name, last_name, phone, mobile, role, is_active,
+                  kyc_verified, address, city, state, zip_code, country, user_type,
+                  created_at, updated_at
+      `;
+
+      const result = await pool.query(updateQuery, params);
+
+      if (result.rows.length === 0) {
+        return res.status(404).json({
+          success: false,
+          message: 'User not found'
+        });
+      }
+
+      const updatedUser = result.rows[0];
+
+      res.status(200).json({
+        success: true,
+        message: 'User updated successfully',
+        data: {
+          id: updatedUser.id,
+          email: updatedUser.email,
+          firstName: updatedUser.first_name,
+          lastName: updatedUser.last_name,
+          phone: updatedUser.phone,
+          mobile: updatedUser.mobile,
+          role: updatedUser.role,
+          status: updatedUser.is_active ? 'active' : 'suspended',
+          kycStatus: updatedUser.kyc_verified ? 'verified' : 'pending',
+          platform: updatedUser.user_type,
+          address: updatedUser.address,
+          city: updatedUser.city,
+          state: updatedUser.state,
+          zipCode: updatedUser.zip_code,
+          country: updatedUser.country,
+          createdAt: updatedUser.created_at,
+          updatedAt: updatedUser.updated_at
+        }
+      });
+    } catch (error) {
+      console.error('Error updating user by admin:', error);
+      next(error);
+    }
   }
 };

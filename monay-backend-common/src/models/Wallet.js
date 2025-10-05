@@ -9,16 +9,19 @@ export default (sequelize, DataTypes) => {
       userId: {
         type: DataTypes.STRING,
         allowNull: false,
+        field: 'user_id',
       },
       walletAddress: {
         type: DataTypes.STRING,
         allowNull: false,
         unique: true,
+        field: 'wallet_address',
       },
       walletType: {
         type: DataTypes.ENUM('solana', 'evm', 'bitcoin', 'virtual'),
         allowNull: false,
         defaultValue: 'solana',
+        field: 'wallet_type',
       },
       balance: {
         type: DataTypes.DECIMAL(20, 8),

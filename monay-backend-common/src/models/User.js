@@ -86,6 +86,26 @@ export default (sequelize, DataTypes) => {
           return 'user';
         }
       },
+      currentTenantId: {
+        type: DataTypes.UUID,
+        allowNull: true,
+        field: 'current_tenant_id',
+        references: {
+          model: 'tenants',
+          key: 'id'
+        }
+      },
+      phoneNumber: {
+        type: DataTypes.STRING(50),
+        allowNull: true,
+        field: 'phone_number'
+      },
+      accountType: {
+        type: DataTypes.STRING(50),
+        allowNull: true,
+        defaultValue: 'individual',
+        field: 'account_type'
+      },
       password: {
         type: DataTypes.STRING,
         field: 'password_hash'  // Database uses password_hash

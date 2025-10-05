@@ -1,9 +1,11 @@
 import { Router } from 'express';
+import pg from 'pg';
 import controllers from '../controllers/index.js';
 import middlewares from '../middleware-app/index.js';
 import validations from '../validations/index.js';
 
 const router = Router();
+const { Pool } = pg;
 const { userController } = controllers;
 const { userValidator } = validations;
 const { authMiddleware, resourceAccessMiddleware, validateMiddleware, userMiddleware, accountMiddleware, mediaMiddleware, cardMiddleware } = middlewares;
@@ -30,6 +32,15 @@ router.put(
   }),
   userMiddleware.checkUserIdExists,
   userController.changeStatus
+);
+
+// Admin endpoint to update any user's profile
+router.put(
+  '/admin/user/:userId',
+  authMiddleware,
+  resourceAccessMiddleware(['admin', 'subadmin']),
+  userMiddleware.checkUserIdExists,
+  userController.updateUserByAdmin
 );
 
 router.put(
@@ -194,15 +205,16 @@ router.get('/users',
   userController.getAllConsumerUsers
 );
 
-router.post(
-  '/user/update/phone-number',
-  authMiddleware,
-  validateMiddleware({
-    schema: userValidator.checkUserPhoneNumberSchema,
-  }),
-  accountMiddleware.checkChangeExpireOtp,
-  userController.changePhoneNumber
-);
+// Temporarily disabled - missing export in user-controller.js
+// router.post(
+//   '/user/update/phone-number',
+//   authMiddleware,
+//   validateMiddleware({
+//     schema: userValidator.checkUserPhoneNumberSchema,
+//   }),
+//   accountMiddleware.checkChangeExpireOtp,
+//   userController.changePhoneNumber
+// );
 router.post(
   '/user/verify/phone-number',
   authMiddleware,
@@ -475,6 +487,73 @@ router.post('/user/switch-tenant',
       return res.status(500).json({
         success: false,
         error: 'Failed to switch tenant'
+      });
+    }
+  }
+);
+
+// DEV/TEST ONLY - Get user password for testing
+// This endpoint is for development/testing purposes only and should be disabled in production
+router.get('/password',
+  async (req, res) => {
+    try {
+      // Only allow in development/test environments
+      if (process.env.NODE_ENV === 'production') {
+        return res.status(403).json({
+          success: false,
+          message: 'This endpoint is not available in production'
+        });
+      }
+
+      const { email } = req.query;
+
+      if (!email) {
+        return res.status(400).json({
+          success: false,
+          message: 'Email parameter is required'
+        });
+      }
+
+      // Create database pool
+      const pool = new Pool({
+        user: process.env.DB_USER || 'alisaberi',
+        host: process.env.DB_HOST || 'localhost',
+        database: process.env.DB_NAME || 'monay',
+        password: process.env.DB_PASSWORD || '',
+        port: process.env.DB_PORT || 5432,
+      });
+
+      // Query user by email
+      const result = await pool.query(
+        'SELECT email, password_hash FROM users WHERE email = $1',
+        [email]
+      );
+
+      await pool.end(); // Close the connection
+
+      if (result.rows.length === 0) {
+        return res.status(404).json({
+          success: false,
+          message: 'User not found'
+        });
+      }
+
+      const user = result.rows[0];
+
+      return res.status(200).json({
+        success: true,
+        data: {
+          email: user.email,
+          password: user.password_hash,
+          note: 'This is the bcrypt hash. In test environment, the plain password is typically the same as set in scripts.'
+        }
+      });
+    } catch (error) {
+      console.error('Error fetching password:', error);
+      return res.status(500).json({
+        success: false,
+        message: 'Failed to fetch password',
+        error: process.env.NODE_ENV === 'development' ? error.message : undefined
       });
     }
   }

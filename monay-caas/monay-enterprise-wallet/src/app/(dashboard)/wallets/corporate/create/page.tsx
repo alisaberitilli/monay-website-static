@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -10,6 +11,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Switch } from '@/components/ui/switch';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 import {
   Building,
   Plus,
@@ -22,7 +24,8 @@ import {
   CheckCircle,
   AlertCircle,
   Info,
-  Settings
+  Settings,
+  Loader2
 } from 'lucide-react';
 
 interface CreateWalletForm {
@@ -46,7 +49,10 @@ interface CreateWalletForm {
 }
 
 export default function CreateCorporateWalletPage() {
+  const router = useRouter();
   const [currentStep, setCurrentStep] = useState(1);
+  const [isCreating, setIsCreating] = useState(false);
+  const [error, setError] = useState('');
   const [formData, setFormData] = useState<CreateWalletForm>({
     name: '',
     description: '',
@@ -127,10 +133,41 @@ export default function CreateCorporateWalletPage() {
     }
   };
 
-  const handleCreateWallet = () => {
-    // Handle wallet creation logic here
-    console.log('Creating wallet with data:', formData);
-    // Redirect to success page or wallet overview
+  const handleCreateWallet = async () => {
+    setIsCreating(true);
+    setError('');
+
+    try {
+      // Validate required fields
+      if (!formData.name || !formData.department) {
+        setError('Please fill in all required fields');
+        setIsCreating(false);
+        return;
+      }
+
+      // Simulate wallet creation (replace with actual API call)
+      console.log('Creating wallet with data:', formData);
+
+      // In a real implementation, you would call the backend API here:
+      // const response = await fetch('http://localhost:3001/api/wallets/corporate', {
+      //   method: 'POST',
+      //   headers: {
+      //     'Authorization': `Bearer ${localStorage.getItem('auth_token')}`,
+      //     'Content-Type': 'application/json'
+      //   },
+      //   body: JSON.stringify(formData)
+      // });
+
+      // Simulate API delay
+      await new Promise(resolve => setTimeout(resolve, 1500));
+
+      // Redirect to corporate wallets overview
+      router.push('/wallets/corporate/overview');
+    } catch (err) {
+      console.error('Wallet creation error:', err);
+      setError('Failed to create wallet. Please try again.');
+      setIsCreating(false);
+    }
   };
 
   const formatCurrency = (amount: number) => {
@@ -492,6 +529,14 @@ export default function CreateCorporateWalletPage() {
         </CardContent>
       </Card>
 
+      {/* Error Alert */}
+      {error && (
+        <Alert variant="destructive">
+          <AlertCircle className="h-4 w-4" />
+          <AlertDescription>{error}</AlertDescription>
+        </Alert>
+      )}
+
       {/* Step Content */}
       <Card>
         <CardHeader>
@@ -537,10 +582,20 @@ export default function CreateCorporateWalletPage() {
         ) : (
           <Button
             onClick={handleCreateWallet}
+            disabled={isCreating}
             className="flex items-center gap-2 bg-orange-400 hover:bg-orange-500 text-white border-orange-400 hover:border-orange-500"
           >
-            <CheckCircle className="w-4 h-4" />
-            Create Wallet
+            {isCreating ? (
+              <>
+                <Loader2 className="w-4 h-4 animate-spin" />
+                Creating Wallet...
+              </>
+            ) : (
+              <>
+                <CheckCircle className="w-4 h-4" />
+                Create Wallet
+              </>
+            )}
           </Button>
         )}
       </div>

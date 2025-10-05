@@ -24,8 +24,12 @@ import {
   TrendingUp,
   Users,
   Receipt,
-  Repeat
+  Repeat,
+  Mail,
+  Phone,
+  ExternalLink
 } from 'lucide-react';
+import apiClient from '@/lib/api-client';
 
 interface PaymentRequest {
   id: string;
@@ -63,6 +67,7 @@ interface Contact {
   avatar?: string;
   last_transaction?: string;
   frequent?: boolean;
+  isRegistered?: boolean; // Whether user has a Monay account
 }
 
 const PAYMENT_CATEGORIES = [
@@ -91,10 +96,16 @@ export default function P2PRequestToPay() {
   const [searchTerm, setSearchTerm] = useState('');
   const [showQRCode, setShowQRCode] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [showInviteModal, setShowInviteModal] = useState(false);
+  const [inviteMethod, setInviteMethod] = useState<'email' | 'phone'>('email');
+  const [inviteValue, setInviteValue] = useState('');
+  const [isSearching, setIsSearching] = useState(false);
 
   useEffect(() => {
     fetchRequests();
     fetchContacts();
+    // Load all consumer users initially for contact selection
+    searchConsumerUsers('');
   }, []);
 
   const fetchRequests = async () => {
@@ -177,45 +188,61 @@ export default function P2PRequestToPay() {
   };
 
   const fetchContacts = async () => {
-    // Mock contacts
-    const mockContacts: Contact[] = [
-      {
-        id: '2',
-        name: 'John Smith',
-        email: 'john@example.com',
-        phone: '+1234567890',
-        avatar: '👤',
-        last_transaction: '2 days ago',
-        frequent: true
-      },
-      {
-        id: '3',
-        name: 'Sarah Johnson',
-        email: 'sarah@example.com',
-        phone: '+0987654321',
-        avatar: '👩',
-        last_transaction: 'Yesterday',
-        frequent: true
-      },
-      {
-        id: '4',
-        name: 'Mike Wilson',
-        email: 'mike@example.com',
-        avatar: '🧑',
-        last_transaction: '1 week ago',
-        frequent: false
-      },
-      {
-        id: '5',
-        name: 'Emma Davis',
-        email: 'emma@example.com',
-        avatar: '👱‍♀️',
-        last_transaction: '3 weeks ago',
-        frequent: false
+    try {
+      // Fetch recent contacts from backend
+      const response = await apiClient.getRecentContacts();
+      if (response.success && response.data && Array.isArray(response.data)) {
+        const contactList = response.data
+          .filter((contact: any) => contact && (contact.email || contact.identifier || contact.userId || contact.id))
+          .map((contact: any) => ({
+            id: contact.userId || contact.id || `contact-${Date.now()}`,
+            name: contact.name || `${contact.firstName || ''} ${contact.lastName || ''}`.trim() || contact.email || contact.identifier || 'Unknown User',
+            email: contact.email || contact.identifier || '',
+            phone: contact.phoneNumber || contact.phone || '',
+            avatar: contact.avatar || '👤',
+            last_transaction: contact.lastTransaction,
+            frequent: contact.frequent || false,
+            isRegistered: true
+          }));
+        setContacts(contactList);
+      } else {
+        // No contacts found, set empty array
+        setContacts([]);
       }
-    ];
+    } catch (error) {
+      console.error('Failed to fetch contacts:', error);
+      // Use empty array as fallback
+      setContacts([]);
+    }
+  };
 
-    setContacts(mockContacts);
+  const searchConsumerUsers = async (query: string) => {
+    setIsSearching(true);
+    try {
+      // Call the search API regardless of query length - backend will handle empty queries by returning all users
+      const response = await apiClient.searchUsers(query || '', 'consumer');
+      if (response.success && response.data && Array.isArray(response.data)) {
+        const userList = response.data
+          .filter((user: any) => user && (user.email || user.identifier || user.userId || user.id))
+          .map((user: any) => ({
+            id: user.userId || user.id || `user-${Date.now()}`,
+            name: user.name || `${user.firstName || ''} ${user.lastName || ''}`.trim() || user.email || user.identifier || 'Unknown User',
+            email: user.email || user.identifier || '',
+            phone: user.phoneNumber || user.phone || '',
+            avatar: user.avatar || '👤',
+            isRegistered: true
+          }));
+        setContacts(userList);
+      } else {
+        setContacts([]);
+      }
+    } catch (error) {
+      console.error('User search failed:', error);
+      // Fallback to recent contacts if search fails
+      fetchContacts();
+    } finally {
+      setIsSearching(false);
+    }
   };
 
   const handleSendRequest = async () => {
@@ -223,27 +250,25 @@ export default function P2PRequestToPay() {
 
     setLoading(true);
     try {
-      const token = localStorage.getItem('token');
-      const response = await fetch('http://localhost:3001/api/payment-request/create', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify({
-          recipient_id: selectedContact.id,
-          amount: parseFloat(amount),
-          reason, // Required for audit
-          category,
-          notes,
-          recurring,
-          recurring_frequency: recurring ? recurringFrequency : undefined,
-          provider,
-          type: 'P2P_REQUEST'
-        })
-      });
+      const requestData = {
+        recipientId: selectedContact.id,
+        recipientIdentifier: selectedContact.email || selectedContact.phone || selectedContact.id,
+        amount: parseFloat(amount),
+        note: reason, // Required for audit
+        category,
+        notes,
+        recurring,
+        recurring_frequency: recurring ? recurringFrequency : undefined,
+        provider,
+        type: 'P2P_REQUEST',
+        is_invite: !selectedContact.isRegistered // Mark if this is an invitation
+      };
 
-      if (response.ok) {
+      const response = await apiClient.initiateTransfer(requestData);
+
+      if (response.success) {
+        // Success - show success message in UI instead of alert
+        console.log(`Payment request sent successfully!${!selectedContact.isRegistered ? ' An invitation email/SMS has been sent.' : ''}`);
         // Reset form
         setSelectedContact(null);
         setAmount('');
@@ -253,12 +278,35 @@ export default function P2PRequestToPay() {
         setRecurring(false);
         // Refresh requests
         fetchRequests();
+      } else {
+        console.error(`Failed to send request:`, response.error);
+        // Error will be handled by the catch block below
+        throw new Error(response.error || 'Failed to send request');
       }
     } catch (error) {
       console.error('Failed to send request:', error);
+      // Error is now logged to console instead of showing system alert
+      // The error will be displayed in the UI when we add error state management
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleInviteNonUser = () => {
+    if (!inviteValue) return;
+
+    const newContact: Contact = {
+      id: `invite-${Date.now()}`,
+      name: inviteMethod === 'email' ? inviteValue.split('@')[0] : inviteValue,
+      email: inviteMethod === 'email' ? inviteValue : `${inviteValue}@sms.monay.com`,
+      phone: inviteMethod === 'phone' ? inviteValue : undefined,
+      avatar: '📧',
+      isRegistered: false
+    };
+
+    setSelectedContact(newContact);
+    setShowInviteModal(false);
+    setInviteValue('');
   };
 
   const handlePayRequest = async (request: PaymentRequest) => {
@@ -310,10 +358,12 @@ export default function P2PRequestToPay() {
     }
   };
 
-  const filteredContacts = contacts.filter(contact =>
-    contact.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    contact.email.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filteredContacts = contacts.filter(contact => {
+    const name = contact.name || '';
+    const email = contact.email || '';
+    const search = searchTerm.toLowerCase();
+    return name.toLowerCase().includes(search) || email.toLowerCase().includes(search);
+  });
 
   const pendingRequests = requests.filter(req => req.status === 'pending');
   const totalPending = pendingRequests.reduce((sum, req) =>
@@ -453,16 +503,43 @@ export default function P2PRequestToPay() {
                     <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
                     <input
                       type="text"
-                      placeholder="Search contacts..."
+                      placeholder="Search consumer users by name or email..."
                       value={searchTerm}
-                      onChange={(e) => setSearchTerm(e.target.value)}
+                      onChange={(e) => {
+                        setSearchTerm(e.target.value);
+                        searchConsumerUsers(e.target.value);
+                      }}
                       className="w-full pl-10 pr-4 py-2 border border-gray-200 dark:border-gray-700 rounded-lg dark:bg-gray-900"
                     />
+                    {isSearching && (
+                      <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
+                        <Clock className="w-5 h-5 text-gray-400 animate-spin" />
+                      </div>
+                    )}
                   </div>
+                  <button
+                    onClick={() => setShowInviteModal(true)}
+                    className="w-full mt-2 p-2 border-2 border-dashed border-blue-300 hover:border-blue-500 rounded-lg text-blue-600 flex items-center justify-center gap-2 transition-colors"
+                  >
+                    <UserPlus className="w-4 h-4" />
+                    Invite via Email or Phone
+                  </button>
                 </div>
 
                 <div className="space-y-2 max-h-64 overflow-y-auto">
-                  {filteredContacts.map((contact) => (
+                  {filteredContacts.length === 0 && !isSearching ? (
+                    <div className="text-center py-8 text-gray-500">
+                      <Users className="w-12 h-12 mx-auto mb-2 opacity-50" />
+                      <p>No contacts found</p>
+                      <button
+                        onClick={() => setShowInviteModal(true)}
+                        className="mt-2 text-blue-600 hover:underline text-sm"
+                      >
+                        Invite someone new
+                      </button>
+                    </div>
+                  ) : (
+                    filteredContacts.map((contact) => (
                     <button
                       key={contact.id}
                       onClick={() => setSelectedContact(contact)}
@@ -487,9 +564,16 @@ export default function P2PRequestToPay() {
                             Frequent
                           </span>
                         )}
+                        {!contact.isRegistered && (
+                          <span className="px-2 py-1 bg-orange-100 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400 text-xs rounded-full flex items-center gap-1">
+                            <Mail className="w-3 h-3" />
+                            Invite
+                          </span>
+                        )}
                       </div>
                     </button>
-                  ))}
+                  ))
+                  )}
                 </div>
               </div>
 
@@ -768,6 +852,111 @@ export default function P2PRequestToPay() {
                   <Copy className="w-4 h-4" />
                   Copy Link
                 </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Invite Non-User Modal */}
+      <AnimatePresence>
+        {showInviteModal && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4"
+            onClick={() => setShowInviteModal(false)}
+          >
+            <motion.div
+              initial={{ scale: 0.9 }}
+              animate={{ scale: 1 }}
+              exit={{ scale: 0.9 }}
+              className="bg-white dark:bg-gray-800 rounded-xl p-6 max-w-md w-full"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-xl font-bold text-gray-900 dark:text-white">Invite to Monay</h3>
+                <button
+                  onClick={() => setShowInviteModal(false)}
+                  className="text-gray-400 hover:text-gray-600"
+                >
+                  <XCircle className="w-6 h-6" />
+                </button>
+              </div>
+
+              <p className="text-sm text-gray-600 dark:text-gray-400 mb-6">
+                Invite someone to join Monay and receive your payment request. They'll get a link to download the app and pay you.
+              </p>
+
+              <div className="space-y-4">
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => setInviteMethod('email')}
+                    className={`flex-1 p-3 rounded-lg border-2 transition-colors ${
+                      inviteMethod === 'email'
+                        ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20'
+                        : 'border-gray-200 dark:border-gray-700'
+                    }`}
+                  >
+                    <Mail className="w-6 h-6 mx-auto mb-1 text-blue-500" />
+                    <p className="text-sm font-medium">Email</p>
+                  </button>
+                  <button
+                    onClick={() => setInviteMethod('phone')}
+                    className={`flex-1 p-3 rounded-lg border-2 transition-colors ${
+                      inviteMethod === 'phone'
+                        ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20'
+                        : 'border-gray-200 dark:border-gray-700'
+                    }`}
+                  >
+                    <Phone className="w-6 h-6 mx-auto mb-1 text-green-500" />
+                    <p className="text-sm font-medium">Phone</p>
+                  </button>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    {inviteMethod === 'email' ? 'Email Address' : 'Phone Number'}
+                  </label>
+                  <input
+                    type={inviteMethod === 'email' ? 'email' : 'tel'}
+                    placeholder={inviteMethod === 'email' ? 'example@email.com' : '+1 (555) 123-4567'}
+                    value={inviteValue}
+                    onChange={(e) => setInviteValue(e.target.value)}
+                    className="w-full px-4 py-2 border border-gray-200 dark:border-gray-700 rounded-lg dark:bg-gray-900"
+                  />
+                </div>
+
+                <div className="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-4">
+                  <div className="flex items-start gap-3">
+                    <ExternalLink className="w-5 h-5 text-blue-500 mt-0.5" />
+                    <div className="flex-1">
+                      <p className="text-sm font-medium text-blue-900 dark:text-blue-100 mb-1">
+                        How it works
+                      </p>
+                      <p className="text-xs text-blue-700 dark:text-blue-300">
+                        They'll receive your payment request with a link to download Monay. Once they sign up and verify their account, they can pay you instantly.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex gap-3">
+                  <button
+                    onClick={() => setShowInviteModal(false)}
+                    className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={handleInviteNonUser}
+                    disabled={!inviteValue}
+                    className="flex-1 px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    Continue
+                  </button>
+                </div>
               </div>
             </motion.div>
           </motion.div>

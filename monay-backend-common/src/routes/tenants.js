@@ -7,6 +7,7 @@ import tenantIsolation from '../middleware-app/tenant-middleware.js';
 import TenantManagementService from '../services/tenant-management.js';
 import { validateRequest } from '../middleware-app/validate-middleware.js';
 import { body, param, query } from 'express-validator';
+import emailService from '../services/email.js';
 
 // Initialize service - use same database config as main app
 const pool = new Pool({
@@ -214,13 +215,14 @@ router.get('/users/me/tenants',
 
 /**
  * @route   POST /api/tenants
- * @desc    Create new tenant
+ * @desc    Create new tenant and automatically create admin user with provided email
  * @access  Private/Admin
  */
 router.post('/',
   body('name').notEmpty().trim(),
   body('type').isIn(['individual', 'household_member', 'small_business', 'enterprise', 'holding_company']),
   body('billing_tier').optional().isIn(['free', 'small_business', 'enterprise', 'custom']),
+  body('email').notEmpty().isEmail().withMessage('Valid email required for tenant admin user'),
   body('metadata').optional().isObject(),
   validateRequest,
   async (req, res) => {
@@ -232,11 +234,153 @@ router.post('/',
         });
       }
 
+      // Create tenant first (this also creates the organization)
       const tenant = await tenantService.createTenant(req.body);
+      const organization = tenant.organization;
+
+      // Automatically create admin user with the provided email
+      const bcrypt = await import('bcrypt');
+      const defaultPassword = 'password123'; // Default password - user should change on first login
+      const passwordHash = await bcrypt.hash(defaultPassword, 10);
+
+      const createUserQuery = `
+        INSERT INTO users (
+          id, email, first_name, last_name, password_hash, mobile, phone,
+          user_type, is_active, email_verified, mobile_verified, kyc_verified,
+          primary_organization_id, created_at, updated_at
+        ) VALUES (
+          $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, NOW(), NOW()
+        )
+        ON CONFLICT (email) DO UPDATE SET
+          primary_organization_id = $13,
+          updated_at = NOW()
+        RETURNING *
+      `;
+
+      const userEmail = req.body.email.toLowerCase();
+      const userType = req.body.type === 'enterprise' ? 'enterprise' :
+                       req.body.type === 'small_business' ? 'business' : 'individual';
+      const firstName = req.body.name.split(' ')[0] || req.body.name;
+      const lastName = req.body.name.split(' ').slice(1).join(' ') || 'Admin';
+      const phoneNumber = req.body.metadata?.phone || '+15555555555'; // Default if not provided
+      const userId = `${userType}-${tenant.id}`;
+
+      let userResult;
+      try {
+        userResult = await pool.query(createUserQuery, [
+          userId,
+          userEmail,
+          firstName,
+          lastName,
+          passwordHash,
+          phoneNumber,  // mobile column
+          phoneNumber,  // phone column
+          userType,
+          true,  // is_active
+          true,  // email_verified
+          false, // mobile_verified
+          false, // kyc_verified - needs to be completed
+          organization.id // Link to organization
+        ]);
+
+        console.log('User created successfully:', userResult.rows[0]);
+      } catch (userError) {
+        console.error('Error creating user:', userError);
+        throw userError;
+      }
+
+      // Use the actual user ID from the database (in case email already existed and was updated)
+      const actualUserId = userResult.rows[0].id;
+
+      // For BUSINESS tenants (enterprise, small_business, holding_company):
+      // Users are linked ONLY to organization, NOT to tenant_users
+      // For INDIVIDUAL tenants: Users are linked directly to tenant via tenant_users
+
+      if (req.body.type === 'individual' || req.body.type === 'household_member') {
+        // Individual consumers: Add to tenant_users (direct tenant relationship)
+        await tenantService.addTenantMember(tenant.id, actualUserId, 'owner');
+      } else {
+        // Business users: Add ONLY to organization (indirect tenant relationship via organization)
+        const addOrgMemberQuery = `
+          INSERT INTO organization_users (
+            organization_id, user_id, role, permissions, invitation_status, is_primary, joined_at
+          ) VALUES ($1, $2, $3, $4, $5, $6, NOW())
+          ON CONFLICT (organization_id, user_id) DO UPDATE SET
+            role = $3,
+            permissions = $4,
+            invitation_status = $5,
+            is_primary = $6,
+            joined_at = NOW()
+        `;
+
+        try {
+          console.log('Adding user to organization:', {
+            organization_id: organization.id,
+            user_id: actualUserId,
+            role: 'admin'
+          });
+
+          await pool.query(addOrgMemberQuery, [
+            organization.id,
+            actualUserId,
+            'admin',
+            JSON.stringify(['*']), // Full permissions
+            'active',  // invitation_status
+            true       // is_primary (this is the primary admin)
+          ]);
+
+          console.log('User successfully added to organization');
+        } catch (orgUserError) {
+          console.error('Error adding user to organization:', orgUserError);
+          console.error('Organization ID:', organization.id);
+          console.error('User ID:', actualUserId);
+          throw orgUserError;
+        }
+      }
+
+      // Send welcome email with credentials
+      try {
+        const emailData = {
+          to: userEmail,
+          tenantName: req.body.name,
+          tenantType: req.body.type,
+          organizationName: organization.name,
+          firstName: firstName,
+          lastName: lastName,
+          email: userEmail,
+          password: defaultPassword,
+          loginUrl: req.body.type === 'enterprise' || req.body.type === 'holding_company'
+            ? 'http://localhost:3007/login'  // Enterprise Wallet
+            : 'http://localhost:3003/login', // Consumer Wallet
+          supportEmail: 'support@monay.com'
+        };
+
+        // Send email asynchronously (don't wait for it to complete)
+        emailService.userSignup(emailData).catch(err => {
+          console.error('Failed to send welcome email:', err);
+          // Don't fail the request if email fails
+        });
+      } catch (emailError) {
+        console.error('Email service error:', emailError);
+        // Continue - email failure shouldn't break tenant creation
+      }
 
       res.status(201).json({
         tenant,
-        message: 'Tenant created successfully',
+        organization: {
+          id: organization.id,
+          name: organization.name,
+          type: organization.type
+        },
+        user: {
+          id: userResult.rows[0].id,
+          email: userResult.rows[0].email,
+          firstName: firstName,
+          lastName: lastName,
+          defaultPassword: defaultPassword, // Send default password in response (only on creation)
+          message: 'Credentials have been sent to the email address provided'
+        },
+        message: 'Tenant, organization, and admin user created successfully',
         api_key: tenant.vault_key // Only returned on creation
       });
 

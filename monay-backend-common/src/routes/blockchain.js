@@ -1,6 +1,13 @@
 import { Router } from 'express';
 import HttpStatus from 'http-status';
-import auth from '../middleware-app/auth-middleware.js';
+import authenticateToken from '../middleware-app/auth-middleware.js';
+import { Pool } from 'pg';
+import { v4 as uuidv4 } from 'uuid';
+
+const pool = new Pool({
+  connectionString: process.env.DATABASE_URL || 'postgresql://alisaberi:@localhost:5432/monay',
+  ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false
+});
 
 const router = Router();
 
@@ -167,6 +174,114 @@ router.get('/health', async (req, res) => {
     res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
       success: false,
       error: error.message
+    });
+  }
+});
+
+// Create blockchain transfer (Enterprise Wallet → Treasury)
+router.post('/transfer', authenticateToken, async (req, res) => {
+  try {
+    const {
+      to_address,
+      value,
+      token_symbol,
+      network,
+      memo,
+      speed,
+      recipient_name,
+      recipient_type
+    } = req.body;
+
+    // Validate required fields
+    if (!to_address || !value || !token_symbol) {
+      return res.status(HttpStatus.BAD_REQUEST).json({
+        success: false,
+        error: 'Missing required fields: to_address, value, token_symbol'
+      });
+    }
+
+    // Get user from auth middleware
+    const userId = req.user?.id || req.user?.userId;
+    if (!userId) {
+      return res.status(HttpStatus.UNAUTHORIZED).json({
+        success: false,
+        error: 'User authentication required'
+      });
+    }
+
+    // Generate transaction hash (mock - in production would come from blockchain)
+    const transactionHash = `0x${Math.random().toString(16).substring(2, 66).padEnd(64, '0')}`;
+    const transactionId = uuidv4();
+
+    // Determine from_address (Enterprise Wallet address)
+    // In production, fetch from user's wallet record
+    const from_address = '0xEnterpriseWallet' + userId.substring(0, 30);
+
+    // Insert into blockchain_transactions table
+    // Note: Using 'chain' column (not 'network') and 'user_id' to match schema
+    const query = `
+      INSERT INTO blockchain_transactions (
+        id,
+        user_id,
+        from_address,
+        to_address,
+        value,
+        token_symbol,
+        transaction_hash,
+        status,
+        chain,
+        metadata,
+        created_at
+      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, NOW())
+      RETURNING *
+    `;
+
+    const metadata = {
+      memo,
+      speed,
+      recipient_name,
+      recipient_type,
+      initiated_by: userId,
+      source: 'enterprise_wallet'
+    };
+
+    const values = [
+      transactionId,
+      userId,
+      from_address,
+      to_address,
+      value.toString(),
+      token_symbol,
+      transactionHash,
+      'completed', // Auto-complete for now, in production would be 'pending'
+      network || 'base',
+      JSON.stringify(metadata)
+    ];
+
+    const result = await pool.query(query, values);
+    const transaction = result.rows[0];
+
+    res.status(HttpStatus.CREATED).json({
+      success: true,
+      message: 'Transfer initiated successfully',
+      transaction: {
+        id: transaction.id,
+        transaction_hash: transaction.transaction_hash,
+        from_address: transaction.from_address,
+        to_address: transaction.to_address,
+        value: transaction.value,
+        token_symbol: transaction.token_symbol,
+        status: transaction.status,
+        chain: transaction.chain,
+        created_at: transaction.created_at
+      }
+    });
+  } catch (error) {
+    console.error('Blockchain transfer error:', error);
+    res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
+      success: false,
+      error: 'Failed to process blockchain transfer',
+      details: error.message
     });
   }
 });

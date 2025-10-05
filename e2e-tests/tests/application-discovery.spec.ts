@@ -24,7 +24,7 @@ const APPS = {
     url: 'http://localhost:3002',
     credentials: {
       email: 'admin@monay.com',
-      password: 'Admin@123',
+      password: 'SecureAdmin123',
       mpin: '123456'
     }
   },

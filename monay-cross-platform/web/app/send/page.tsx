@@ -99,12 +99,27 @@ export default function SendMoneyPage() {
 
   const fetchBalance = async () => {
     try {
-      const response = await apiClient.getWalletBalance();
+      // Try to get all balances first (doesn't require wallet ID)
+      const response = await apiClient.getAllWalletBalances();
       if (response.success && response.data) {
-        setCurrentBalance((response.data as any).availableBalance || 0);
+        // Get the first wallet's balance or default wallet
+        const wallets = (response.data as any).wallets || [];
+        const defaultWallet = wallets.find((w: any) => w.isDefault) || wallets[0];
+        if (defaultWallet) {
+          setCurrentBalance(defaultWallet.availableBalance || defaultWallet.balance || 0);
+        }
       }
     } catch (error) {
       console.error('Error fetching balance:', error);
+      // If that fails, try without wallet ID (backend should use auth token)
+      try {
+        const fallbackResponse = await apiClient.getWalletBalance();
+        if (fallbackResponse.success && fallbackResponse.data) {
+          setCurrentBalance((fallbackResponse.data as any).availableBalance || (fallbackResponse.data as any).balance || 0);
+        }
+      } catch (fallbackError) {
+        console.error('Fallback balance fetch failed:', fallbackError);
+      }
     }
   };
 

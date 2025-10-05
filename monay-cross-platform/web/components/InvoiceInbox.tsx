@@ -724,7 +724,7 @@ export default function InvoiceInbox() {
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: 20 }}
               transition={{ delay: index * 0.05 }}
-              className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-4 hover:shadow-md transition-shadow"
+              className="relative bg-white dark:bg-gray-800 rounded-xl shadow-sm p-4 hover:shadow-md transition-shadow hover:z-10"
             >
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-4">

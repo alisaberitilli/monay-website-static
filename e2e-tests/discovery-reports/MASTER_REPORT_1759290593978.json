@@ -1,0 +1,51 @@
+{
+  "timestamp": 1759290593978,
+  "applications": [
+    {
+      "name": "Admin Portal",
+      "completion": 100,
+      "features_found": 8,
+      "features_missing": 0,
+      "missing_features": []
+    },
+    {
+      "name": "Enterprise Wallet",
+      "completion": 48,
+      "features_found": 14,
+      "features_missing": 15,
+      "missing_features": [
+        "NAVIGATION → Profile",
+        "NAVIGATION → Settings",
+        "NAVIGATION → Help/Support",
+        "NAVIGATION → Notifications",
+        "ENTERPRISE_FEATURES → Token Management",
+        "ENTERPRISE_FEATURES → Transaction History",
+        "ENTERPRISE_FEATURES → Mint Tokens",
+        "ENTERPRISE_FEATURES → Burn Tokens",
+        "ENTERPRISE_FEATURES → Transfer/Send",
+        "ENTERPRISE_FEATURES → Reports",
+        "CRUD_OPERATIONS → View/Read Operations",
+        "CRUD_OPERATIONS → Edit/Update Operations",
+        "CRUD_OPERATIONS → Delete Operations",
+        "CRUD_OPERATIONS → Save Operations",
+        "CRUD_OPERATIONS → Cancel Operations"
+      ]
+    },
+    {
+      "name": "Consumer Wallet",
+      "completion": 100,
+      "features_found": 8,
+      "features_missing": 0,
+      "missing_features": []
+    }
+  ],
+  "overall_summary": {
+    "total_features_across_apps": 45,
+    "features_implemented": 30,
+    "features_missing": 15,
+    "average_completion": 83
+  },
+  "recommendations": [
+    "🟡 MEDIUM: Implement navigation menu in Enterprise Wallet"
+  ]
+}

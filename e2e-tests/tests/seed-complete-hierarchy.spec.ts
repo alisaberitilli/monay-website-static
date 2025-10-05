@@ -3,7 +3,7 @@ import { test, expect } from '@playwright/test';
 // Configuration
 const ADMIN_URL = 'http://localhost:3002';
 const ADMIN_EMAIL = 'admin@monay.com';
-const ADMIN_PASSWORD = 'Admin@123';  // Correct password
+const ADMIN_PASSWORD = 'SecureAdmin123';  // Correct password
 
 // Test data configuration
 const INDUSTRIES = [

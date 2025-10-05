@@ -2,14 +2,12 @@ import express from 'express';
 import { v4 as uuidv4 } from 'uuid';
 import authenticateToken from '../middleware-app/auth-middleware.js';
 import db from '../models/index.js';
-const { User, Transaction, Wallet, Notification, sequelize } = db;
 import pkg from 'sequelize';
 const { Op } = pkg;
 import utility from '../services/utility.js';
 import p2pTransferService from '../services/p2p-transfer-service.js';
 import { body, param, query, validationResult } from 'express-validator';
-import logger from '../services/logger.js';
-import models from '../models/index.js';
+import { errorLogger } from '../services/logger.js';
 
 const router = express.Router();
 
@@ -23,44 +21,48 @@ router.post('/search', authenticateToken, async (req, res) => {
     const { query, type } = req.body;
     const userId = req.user.id;
 
-    if (!query) {
-      return res.status(400).json({ success: false, error: 'Query is required' });
-    }
-
     let whereClause = {};
 
-    // Search based on type
-    if (type === 'phone') {
-      whereClause.mobile = query;
-    } else if (type === 'email') {
-      whereClause.email = query.toLowerCase();
-    } else if (type === 'username') {
-      whereClause.username = query.toLowerCase();
-    } else {
-      // Search in all fields
+    // If no query provided, return all consumer users (excluding current user)
+    if (!query || query.trim() === '') {
       whereClause = {
-        [Op.or]: [
-          { mobile: { [Op.like]: `%${query}%` } },
-          { email: { [Op.like]: `%${query.toLowerCase()}%` } },
-          { username: { [Op.like]: `%${query.toLowerCase()}%` } },
-          { firstName: { [Op.like]: `%${query}%` } },
-          { lastName: { [Op.like]: `%${query}%` } }
-        ]
+        id: { [Op.ne]: userId }
       };
+    } else {
+      // Search based on type
+      if (type === 'phone') {
+        whereClause.mobile = query;
+      } else if (type === 'email') {
+        whereClause.email = query.toLowerCase();
+      } else if (type === 'username') {
+        whereClause.username = query.toLowerCase();
+      } else {
+        // Search in all fields
+        whereClause = {
+          [Op.or]: [
+            { mobile: { [Op.like]: `%${query}%` } },
+            { email: { [Op.like]: `%${query.toLowerCase()}%` } },
+            { username: { [Op.like]: `%${query.toLowerCase()}%` } },
+            { firstName: { [Op.like]: `%${query}%` } },
+            { lastName: { [Op.like]: `%${query}%` } }
+          ]
+        };
+      }
+
+      // Exclude current user from results
+      whereClause.id = { [Op.ne]: userId };
     }
 
-    // Exclude current user from results
-    whereClause.id = { [Op.ne]: userId };
-
-    const users = await models.User.findAll({
+    const users = await db.User.findAll({
       where: whereClause,
       attributes: ['id', 'firstName', 'lastName', 'email', 'mobile', 'username', 'profileImage'],
-      limit: 10
+      limit: query && query.trim() !== '' ? 10 : 50, // Show more users when returning all
+      order: [['firstName', 'ASC'], ['lastName', 'ASC']] // Alphabetical order
     });
 
     const results = users.map(user => ({
       id: user.id,
-      name: `${user.firstName} ${user.lastName}`,
+      name: `${user.firstName || ''} ${user.lastName || ''}`.trim() || user.email || user.mobile || 'Unknown User',
       identifier: user.email || user.mobile || user.username,
       type: user.email ? 'email' : user.mobile ? 'phone' : 'username',
       avatar: user.profileImage,
@@ -93,7 +95,7 @@ router.get('/recent-contacts', authenticateToken, async (req, res) => {
     const userId = req.user.id;
 
     // Get recent unique recipients
-    const recentTransactions = await Transaction.findAll({
+    const recentTransactions = await db.Transaction.findAll({
       where: {
         senderId: userId,
         type: { [Op.in]: ['transfer', 'payment'] }
@@ -101,7 +103,7 @@ router.get('/recent-contacts', authenticateToken, async (req, res) => {
       attributes: ['receiverId', 'createdAt'],
       include: [
         {
-          model: User,
+          model: db.User,
           as: 'receiver',
           attributes: ['id', 'firstName', 'lastName', 'email', 'mobile', 'username', 'profileImage']
         }
@@ -177,7 +179,7 @@ router.post('/validate',
         data: validation
       });
     } catch (error) {
-      logger.error('Error validating recipient:', error);
+      errorLogger.error('Error validating recipient:', error);
       res.status(500).json({
         success: false,
         error: {
@@ -246,7 +248,7 @@ router.post('/send',
         data: result
       });
     } catch (error) {
-      logger.error('Error creating transfer:', error);
+      errorLogger.error('Error creating transfer:', error);
       res.status(500).json({
         success: false,
         error: {
@@ -287,7 +289,7 @@ router.get('/status/:transferId',
         data: status
       });
     } catch (error) {
-      logger.error('Error getting transfer status:', error);
+      errorLogger.error('Error getting transfer status:', error);
       res.status(500).json({
         success: false,
         error: {
@@ -324,7 +326,7 @@ router.post('/cancel/:transferId',
         data: result
       });
     } catch (error) {
-      logger.error('Error cancelling transfer:', error);
+      errorLogger.error('Error cancelling transfer:', error);
       res.status(500).json({
         success: false,
         error: {
@@ -361,7 +363,7 @@ router.post('/retry/:transferId',
         data: result
       });
     } catch (error) {
-      logger.error('Error retrying transfer:', error);
+      errorLogger.error('Error retrying transfer:', error);
       res.status(500).json({
         success: false,
         error: {
@@ -412,7 +414,7 @@ router.get('/history',
         data: history
       });
     } catch (error) {
-      logger.error('Error getting transfer history:', error);
+      errorLogger.error('Error getting transfer history:', error);
       res.status(500).json({
         success: false,
         error: {
@@ -426,161 +428,87 @@ router.get('/history',
 
 /**
  * @route POST /api/p2p-transfer/initiate
- * @desc Initiate a P2P transfer (legacy endpoint - redirects to /send)
- * @access Private
- * @deprecated Use /api/p2p-transfer/send instead
- */
-router.post('/initiate', authenticateToken, async (req, res) => {
-  // Redirect to new endpoint
-  req.url = '/send';
-  router.handle(req, res);
-});
-
-// Keep the original search endpoint as is
-/**
- * @route POST /api/p2p-transfer/search
- * @desc Search for users by phone, email, or username
+ * @desc Initiate a P2P transfer (legacy endpoint - maps to /send)
  * @access Private
  */
-router.post('/search', authenticateToken, async (req, res) => {
-
-  try {
-    const { query, type } = req.body;
-    const userId = req.user.id;
-
-    if (!query) {
-      return res.status(400).json({ success: false, error: 'Query is required' });
+router.post('/initiate',
+  authenticateToken,
+  [
+    body('recipientId').optional().isString(),
+    body('recipientIdentifier').notEmpty().withMessage('Recipient identifier is required'),
+    body('amount').isFloat({ min: 0.01 }).withMessage('Amount must be greater than 0'),
+    body('note').optional().isString().isLength({ max: 500 }),
+    body('currency').optional().isString(),
+    body('transferMethod').optional().isString(),
+    body('schedule').optional().isString(),
+    body('scheduleDate').optional().isString()
+  ],
+  async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ success: false, errors: errors.array() });
     }
 
-    let whereClause = {};
+    try {
+      const senderId = req.user.id;
+      const {
+        recipientId,
+        recipientIdentifier,
+        amount,
+        note,
+        currency = 'USD',
+        transferMethod = 'instant',
+        schedule,
+        scheduleDate
+      } = req.body;
 
-    // Search based on type
-    if (type === 'phone') {
-      whereClause.mobile = query;
-    } else if (type === 'email') {
-      whereClause.email = query.toLowerCase();
-    } else if (type === 'username') {
-      whereClause.username = query.toLowerCase();
-    } else {
-      // Search in all fields
-      whereClause = {
-        [Op.or]: [
-          { mobile: { [Op.like]: `%${query}%` } },
-          { email: { [Op.like]: `%${query.toLowerCase()}%` } },
-          { username: { [Op.like]: `%${query.toLowerCase()}%` } },
-          { firstName: { [Op.like]: `%${query}%` } },
-          { lastName: { [Op.like]: `%${query}%` } }
-        ]
-      };
-    }
+      // Use recipientIdentifier or recipientId
+      const targetRecipient = recipientIdentifier || recipientId;
 
-    // Exclude current user from results
-    whereClause.id = { [Op.ne]: userId };
-
-    const users = await models.User.findAll({
-      where: whereClause,
-      attributes: ['id', 'firstName', 'lastName', 'email', 'mobile', 'username', 'profileImage'],
-      limit: 10
-    });
-
-    const results = users.map(user => ({
-      id: user.id,
-      name: `${user.firstName} ${user.lastName}`,
-      identifier: user.email || user.mobile || user.username,
-      type: user.email ? 'email' : user.mobile ? 'phone' : 'username',
-      avatar: user.profileImage,
-      isMonayUser: true
-    }));
-
-    res.json({
-      success: true,
-      data: results
-    });
-  } catch (error) {
-    console.error('Error searching users:', error);
-    res.status(500).json({
-      success: false,
-      error: {
-        code: 'SERVER_ERROR',
-        message: 'Failed to search users'
+      if (!targetRecipient) {
+        return res.status(400).json({
+          success: false,
+          error: 'Recipient identifier is required'
+        });
       }
-    });
+
+      // First validate the recipient
+      const recipientData = await p2pTransferService.validateRecipient(targetRecipient);
+
+      if (!recipientData.isValid && recipientData.isMonayUser) {
+        return res.status(400).json({ success: false, error: 'Invalid recipient' });
+      }
+
+      // Create the transfer
+      const result = await p2pTransferService.createTransfer(
+        senderId,
+        recipientData,
+        parseFloat(amount),
+        {
+          note,
+          category: 'personal',
+          transferMethod,
+          scheduledDate: scheduleDate
+        }
+      );
+
+      res.json({
+        success: true,
+        data: result
+      });
+    } catch (error) {
+      errorLogger.error('Error creating transfer:', error);
+      res.status(500).json({
+        success: false,
+        error: {
+          code: 'TRANSFER_ERROR',
+          message: error.message || 'Failed to create transfer'
+        }
+      });
+    }
   }
-});
+);
 
-// Keep the original recent-contacts endpoint
-/**
- * @route GET /api/p2p-transfer/recent-contacts
- * @desc Get recent transfer contacts
- * @access Private
- */
-router.get('/recent-contacts', authenticateToken, async (req, res) => {
-  try {
-    const userId = req.user.id;
-
-    // Get recent unique recipients from new p2p_transfers table
-    const recentTransfers = await sequelize.query(
-      `SELECT DISTINCT ON (recipient_user_id)
-        recipient_user_id,
-        recipient_identifier,
-        MAX(created_at) as last_transfer
-       FROM p2p_transfers
-       WHERE sender_user_id = :userId
-       AND recipient_user_id IS NOT NULL
-       AND status = 'completed'
-       GROUP BY recipient_user_id, recipient_identifier
-       ORDER BY recipient_user_id, last_transfer DESC
-       LIMIT 10`,
-      {
-        replacements: { userId },
-        type: sequelize.QueryTypes.SELECT
-      }
-    );
-
-    // Get user details for recipients
-    const recipientIds = recentTransfers.map(t => t.recipient_user_id).filter(Boolean);
-
-    if (recipientIds.length === 0) {
-      return res.json({ success: true, data: { transfers: [] } });
-    }
-
-    const users = await models.User.findAll({
-      where: { id: { [Op.in]: recipientIds } },
-      attributes: ['id', 'firstName', 'lastName', 'email', 'mobile', 'username', 'profileImage']
-    });
-
-    const userMap = new Map(users.map(u => [u.id, u]));
-
-    const contacts = recentTransfers.map(transfer => {
-      const user = userMap.get(transfer.recipient_user_id);
-      if (!user) return null;
-
-      return {
-        id: user.id,
-        name: `${user.firstName} ${user.lastName}`,
-        identifier: user.email || user.mobile || user.username,
-        type: user.email ? 'email' : user.mobile ? 'phone' : 'username',
-        avatar: user.profileImage,
-        isMonayUser: true,
-        lastTransaction: transfer.last_transfer
-      };
-    }).filter(Boolean);
-
-    res.json({
-      success: true,
-      data: contacts
-    });
-  } catch (error) {
-    console.error('Error fetching recent contacts:', error);
-    res.status(500).json({
-      success: false,
-      error: {
-        code: 'SERVER_ERROR',
-        message: 'Failed to fetch recent contacts'
-      }
-    });
-  }
-});
 
 /**
  * @route GET /api/p2p-transfer/frequent
@@ -730,9 +658,9 @@ router.post('/request', authenticateToken, async (req, res) => {
     // Find payer
     let payer = null;
     if (payerId) {
-      payer = await models.User.findByPk(payerId);
+      payer = await db.User.findByPk(payerId);
     } else if (payerIdentifier) {
-      payer = await models.User.findOne({
+      payer = await db.User.findOne({
         where: {
           [Op.or]: [
             { email: payerIdentifier.toLowerCase() },
@@ -760,7 +688,7 @@ router.post('/request', authenticateToken, async (req, res) => {
     });
 
     // Create notification for payer
-    await Notification.create({
+    await db.Notification.create({
       id: uuidv4(),
       userId: payer.id,
       type: 'payment_request',

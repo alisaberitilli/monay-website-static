@@ -80,6 +80,8 @@ export default function OrganizationsPage() {
   const [selectedOrg, setSelectedOrg] = useState<Organization | null>(null)
   const [isDetailsDialogOpen, setIsDetailsDialogOpen] = useState(false)
   const [loading, setLoading] = useState(true)
+  const [isEditMode, setIsEditMode] = useState(false)
+  const [editingOrgId, setEditingOrgId] = useState<string | null>(null)
 
   // Form state for creating new organization
   const [newOrgData, setNewOrgData] = useState({
@@ -216,8 +218,12 @@ export default function OrganizationsPage() {
         per_transaction_max: parseInt(newOrgData.perTransactionMax)
       }
 
-      const response = await fetch('http://localhost:3001/api/organizations', {
-        method: 'POST',
+      const url = isEditMode
+        ? `http://localhost:3001/api/organizations/${editingOrgId}`
+        : 'http://localhost:3001/api/organizations'
+
+      const response = await fetch(url, {
+        method: isEditMode ? 'PUT' : 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json',
@@ -229,25 +235,10 @@ export default function OrganizationsPage() {
       const result = await response.json()
 
       if (response.ok && result.success) {
-        toast.success(`Organization "${newOrgData.name}" created successfully!`)
+        toast.success(`Organization "${newOrgData.name}" ${isEditMode ? 'updated' : 'created'} successfully!`)
 
         // Reset form
-        setNewOrgData({
-          name: '',
-          type: '',
-          industry: '',
-          description: '',
-          primaryContact: '',
-          email: '',
-          phone: '',
-          address: '',
-          website: '',
-          taxId: '',
-          dailyLimit: '100000',
-          monthlyLimit: '1000000',
-          perTransactionMax: '50000'
-        })
-
+        resetForm()
         setIsCreateDialogOpen(false)
 
         // Refresh the organizations list
@@ -305,6 +296,48 @@ export default function OrganizationsPage() {
   const handleViewDetails = (org: Organization) => {
     setSelectedOrg(org)
     setIsDetailsDialogOpen(true)
+  }
+
+  const handleEditOrganization = (org: Organization) => {
+    // Pre-populate form with existing organization data
+    setNewOrgData({
+      name: org.name,
+      type: org.type as OrganizationType,
+      industry: org.industry,
+      description: org.description || '',
+      primaryContact: org.primaryContact || '',
+      email: org.email,
+      phone: org.phone || '',
+      address: org.address || '',
+      website: org.website || '',
+      taxId: org.taxId || '',
+      dailyLimit: org.limits.dailyTransaction.toString(),
+      monthlyLimit: org.limits.monthlyTransaction.toString(),
+      perTransactionMax: org.limits.perTransactionMax.toString()
+    })
+    setEditingOrgId(org.id)
+    setIsEditMode(true)
+    setIsCreateDialogOpen(true)
+  }
+
+  const resetForm = () => {
+    setNewOrgData({
+      name: '',
+      type: '',
+      industry: '',
+      description: '',
+      primaryContact: '',
+      email: '',
+      phone: '',
+      address: '',
+      website: '',
+      taxId: '',
+      dailyLimit: '100000',
+      monthlyLimit: '1000000',
+      perTransactionMax: '50000'
+    })
+    setIsEditMode(false)
+    setEditingOrgId(null)
   }
 
   const getStatusColor = (status: string) => {
@@ -448,18 +481,26 @@ export default function OrganizationsPage() {
           </Select>
         </div>
 
-        <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
+        <Dialog open={isCreateDialogOpen} onOpenChange={(open) => {
+          setIsCreateDialogOpen(open)
+          if (!open) {
+            resetForm()
+          }
+        }}>
           <DialogTrigger asChild>
-            <Button>
+            <Button onClick={() => {
+              resetForm()
+              setIsCreateDialogOpen(true)
+            }}>
               <Plus className="h-4 w-4 mr-2" />
               Create Organization
             </Button>
           </DialogTrigger>
           <DialogContent className="sm:max-w-[700px] max-h-[90vh] overflow-y-auto">
             <DialogHeader>
-              <DialogTitle>Create New Organization</DialogTitle>
+              <DialogTitle>{isEditMode ? 'Edit Organization' : 'Create New Organization'}</DialogTitle>
               <DialogDescription>
-                Add a new organization to your enterprise network
+                {isEditMode ? 'Update organization details' : 'Add a new organization to your enterprise network'}
               </DialogDescription>
             </DialogHeader>
             <form onSubmit={handleCreateOrganization} role="form" aria-label="Create new organization form">
@@ -528,6 +569,7 @@ export default function OrganizationsPage() {
                         value={newOrgData.industry}
                         onValueChange={(value) => setNewOrgData({...newOrgData, industry: value})}
                         required
+                        disabled={false}
                       >
                         <SelectTrigger
                           id="org-industry"
@@ -535,6 +577,7 @@ export default function OrganizationsPage() {
                           aria-label="Organization industry"
                           className="w-full"
                           tabIndex={3}
+                          disabled={false}
                         >
                           <SelectValue placeholder="Select industry" />
                         </SelectTrigger>
@@ -765,32 +808,18 @@ export default function OrganizationsPage() {
                 <Button
                   type="button"
                   variant="outline"
-                  aria-label="Cancel creating organization"
+                  aria-label={isEditMode ? "Cancel editing organization" : "Cancel creating organization"}
                   onClick={() => {
-                  setIsCreateDialogOpen(false)
-                  setNewOrgData({
-                    name: '',
-                    type: '',
-                    industry: '',
-                    description: '',
-                    primaryContact: '',
-                    email: '',
-                    phone: '',
-                    address: '',
-                    website: '',
-                    taxId: '',
-                    dailyLimit: '100000',
-                    monthlyLimit: '1000000',
-                    perTransactionMax: '50000'
-                  })
-                }}>
+                    setIsCreateDialogOpen(false)
+                    resetForm()
+                  }}>
                   Cancel
                 </Button>
                 <Button
                   type="submit"
-                  aria-label="Create new organization"
+                  aria-label={isEditMode ? "Update organization" : "Create new organization"}
                 >
-                  Create Organization
+                  {isEditMode ? 'Update Organization' : 'Create Organization'}
                 </Button>
               </DialogFooter>
             </form>
@@ -880,10 +909,38 @@ export default function OrganizationsPage() {
                           <Eye className="h-4 w-4 mr-2" />
                           View Details
                         </DropdownMenuItem>
-                        <DropdownMenuItem onClick={(e) => {
+                        <DropdownMenuItem onClick={async (e) => {
                           e.stopPropagation()
-                          // Open Enterprise Wallet login in new tab
-                          window.open('http://localhost:3007/auth/login', '_blank')
+
+                          try {
+                            // Generate dev login token for this organization user
+                            const token = localStorage.getItem('authToken')
+                            const response = await fetch('http://localhost:3001/api/auth/dev-login-token', {
+                              method: 'POST',
+                              headers: {
+                                'Authorization': `Bearer ${token}`,
+                                'Content-Type': 'application/json'
+                              },
+                              body: JSON.stringify({
+                                email: 'enterprise@monay.com', // Default enterprise test user
+                                organizationId: org.id
+                              })
+                            })
+
+                            const result = await response.json()
+
+                            if (result.success && result.data.token) {
+                              // Open Enterprise Wallet with auto-login token
+                              const loginUrl = `http://localhost:3007/auth/login?token=${encodeURIComponent(result.data.token)}&org=${encodeURIComponent(org.id)}`
+                              window.open(loginUrl, '_blank')
+                              toast.success(`Opening Enterprise Wallet as ${org.name}`)
+                            } else {
+                              toast.error(result.message || 'Failed to generate login token')
+                            }
+                          } catch (error) {
+                            console.error('Dev login error:', error)
+                            toast.error('Failed to generate dev login token')
+                          }
                         }}>
                           <LogIn className="h-4 w-4 mr-2" />
                           Test in Enterprise Wallet
@@ -913,7 +970,7 @@ Organization: ${org.name}`;
                         </DropdownMenuItem>
                         <DropdownMenuItem onClick={(e) => {
                           e.stopPropagation()
-                          toast.success('Edit mode activated')
+                          handleEditOrganization(org)
                         }}>
                           <Edit className="h-4 w-4 mr-2" />
                           Edit

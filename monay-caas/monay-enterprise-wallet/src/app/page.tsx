@@ -12,13 +12,44 @@ export default function HomePage() {
   const [isAuthenticated, setIsAuthenticated] = useState(false)
 
   useEffect(() => {
-    // Check if user is authenticated
-    const token = localStorage.getItem('auth_token')
-    if (token) {
-      setIsAuthenticated(true)
-      // Redirect authenticated users to dashboard
-      router.push('/dashboard')
+    const checkAuth = async () => {
+      // Check if user is authenticated
+      const token = localStorage.getItem('auth_token') || localStorage.getItem('authToken')
+
+      if (!token) {
+        setIsAuthenticated(false)
+        return
+      }
+
+      // Validate token with backend before redirecting
+      try {
+        const response = await fetch('http://localhost:3001/api/auth/me', {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
+        })
+
+        if (response.ok) {
+          setIsAuthenticated(true)
+          // Redirect authenticated users to dashboard
+          router.push('/dashboard')
+        } else {
+          // Token is invalid or expired - clear it
+          console.log('Token invalid, clearing localStorage')
+          localStorage.removeItem('auth_token')
+          localStorage.removeItem('authToken')
+          localStorage.removeItem('user')
+          setIsAuthenticated(false)
+        }
+      } catch (error) {
+        console.error('Auth check failed:', error)
+        // On error, assume not authenticated
+        setIsAuthenticated(false)
+      }
     }
+
+    checkAuth()
   }, [router])
 
   if (isAuthenticated) {

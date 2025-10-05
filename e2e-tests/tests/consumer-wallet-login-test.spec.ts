@@ -34,20 +34,46 @@ test.describe('Consumer Wallet Login Test', () => {
     await page.goto(`${CONSUMER_WALLET_URL}/auth/register-with-account-type`);
     await page.waitForLoadState('networkidle');
 
-    // Select Personal Account
+    // Select Personal/Individual Account
     console.log('   🎯 Selecting Personal Account...');
-    const personalButton = page.locator('button:has-text("Get Started")').first();
-    if (await personalButton.isVisible({ timeout: 5000 })) {
-      await personalButton.click();
-      console.log('   ✅ Personal account selected');
 
-      // Wait for navigation and form to appear
-      await page.waitForLoadState('networkidle');
-      await page.waitForTimeout(3000);
+    // More specific selector - target the Individual/Personal account card
+    const accountTypeSelectors = [
+      // Target the card containing "Personal Account" text, then find its button
+      'div:has-text("Personal Account") button:has-text("Get Started")',
+      // Alternative: target by checking for Individual account features
+      'div:has-text("Personal wallet") button:has-text("Get Started")',
+      // Fallback to first button if specific targeting fails
+      'button:has-text("Get Started")'
+    ];
 
-      // Check if we're on the registration form page
-      const currentUrl = page.url();
-      console.log(`   📍 After selection URL: ${currentUrl}`);
+    let accountSelected = false;
+    for (const selector of accountTypeSelectors) {
+      try {
+        const button = page.locator(selector).first();
+        if (await button.isVisible({ timeout: 5000 })) {
+          await button.click();
+          console.log(`   ✅ Personal account selected using: ${selector}`);
+          accountSelected = true;
+
+          // Wait for navigation and form to appear
+          await page.waitForLoadState('networkidle');
+          await page.waitForTimeout(3000);
+
+          // Check if we're on the registration form page
+          const currentUrl = page.url();
+          console.log(`   📍 After selection URL: ${currentUrl}`);
+          break;
+        }
+      } catch (error) {
+        console.log(`   ⚠️ Could not select with: ${selector}`);
+        continue;
+      }
+    }
+
+    if (!accountSelected) {
+      console.log('   ❌ Failed to select account type');
+      throw new Error('Could not select Personal account type');
     }
 
     // Look for registration form elements before filling
@@ -79,10 +105,12 @@ test.describe('Consumer Wallet Login Test', () => {
       await page.waitForTimeout(500);
 
       // Try multiple selectors for mobile field
+      // NOTE: Registration form uses name="mobileNumber"
       const mobileSelectors = [
+        'input[name="mobileNumber"]',
         'input[name="mobile"]',
         'input[name="phone"]',
-        'input[name="mobileNumber"]',
+        'input[type="tel"]',
         'input[placeholder*="555"]',
         'input[placeholder*="phone"]',
         'input[placeholder*="mobile"]'
@@ -242,22 +270,23 @@ test.describe('Consumer Wallet Login Test', () => {
 
     console.log('   📧 Entering login credentials...');
 
-    // Find and fill email field
-    const emailSelectors = [
-      'input[name="email"]',
-      'input[type="email"]',
-      'input[placeholder*="email"]',
-      'input[id*="email"]'
+    // Find and fill mobile number field (Login page uses type="tel" with no name attribute)
+    const mobileLoginSelectors = [
+      'input[type="tel"]',
+      'input[name="mobile"]',
+      'input[name="mobileNumber"]',
+      'input[placeholder*="mobile"]',
+      'input[placeholder*="phone"]'
     ];
 
-    let emailFilled = false;
-    for (const selector of emailSelectors) {
+    let mobileFilled = false;
+    for (const selector of mobileLoginSelectors) {
       try {
-        const emailElement = page.locator(selector).first();
-        if (await emailElement.isVisible({ timeout: 2000 })) {
-          await emailElement.fill(testUser.email);
-          console.log(`   ✅ Email filled: ${selector}`);
-          emailFilled = true;
+        const mobileElement = page.locator(selector).first();
+        if (await mobileElement.isVisible({ timeout: 2000 })) {
+          await mobileElement.fill(testUser.mobile);
+          console.log(`   ✅ Mobile filled: ${selector}`);
+          mobileFilled = true;
           break;
         }
       } catch (error) {
@@ -265,8 +294,8 @@ test.describe('Consumer Wallet Login Test', () => {
       }
     }
 
-    if (!emailFilled) {
-      console.log('   ❌ Could not find email field');
+    if (!mobileFilled) {
+      console.log('   ❌ Could not find mobile field');
     }
 
     // Find and fill password field
@@ -299,7 +328,9 @@ test.describe('Consumer Wallet Login Test', () => {
     // Submit login form
     console.log('   🔑 Attempting login...');
     const loginSubmitSelectors = [
+      'button[type="submit"]:has-text("Sign in")',  // More specific - the actual button text
       'button[type="submit"]',
+      'button:has-text("Sign in")',
       'button:has-text("Login")',
       'button:has-text("Sign In")',
       'button:has-text("Log In")',

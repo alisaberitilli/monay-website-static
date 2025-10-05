@@ -65,6 +65,7 @@ test.describe('Consumer Wallet Registration Flow', () => {
         'input[id*="email"]'
       ],
       mobile: [
+        'input[name="mobileNumber"]',  // Updated field name
         'input[name="mobile"]',
         'input[name="phone"]',
         'input[type="tel"]',
@@ -120,10 +121,19 @@ test.describe('Consumer Wallet Registration Flow', () => {
       }
     }
 
-    // Step 3: Look for and handle account type selection
+    // Step 3: Look for and handle account type selection (Two-step flow)
     console.log('3️⃣ Selecting account type...');
 
+    // The registration page now has a two-step flow:
+    // Step 1: Choose account type (Individual/Business/Enterprise)
+    // Step 2: Fill registration form
+
     const accountTypeSelectors = [
+      // Target the Personal Account card specifically
+      'div:has-text("Personal Account") button:has-text("Get Started")',
+      'div:has-text("Personal wallet") button:has-text("Get Started")',
+      // Fallback options
+      'button:has-text("Get Started")',
       'input[type="radio"][value="personal"]',
       'button:has-text("Personal")',
       'label:has-text("Personal")',
@@ -135,10 +145,14 @@ test.describe('Consumer Wallet Registration Flow', () => {
     for (const selector of accountTypeSelectors) {
       try {
         const element = page.locator(selector).first();
-        if (await element.isVisible({ timeout: 2000 })) {
+        if (await element.isVisible({ timeout: 3000 })) {
           await element.click();
           console.log(`   ✅ Selected personal account type: ${selector}`);
           accountTypeSelected = true;
+
+          // Wait for the form to appear after selection
+          await page.waitForLoadState('networkidle');
+          await page.waitForTimeout(2000);
           break;
         }
       } catch (error) {

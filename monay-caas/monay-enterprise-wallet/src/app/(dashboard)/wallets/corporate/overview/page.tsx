@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -68,6 +69,7 @@ interface CorporateTransaction {
 }
 
 export default function CorporateOverviewPage() {
+  const router = useRouter();
   const [corporateWallets, setCorporateWallets] = useState<CorporateWallet[]>([
     {
       id: 'corp-001',
@@ -238,6 +240,11 @@ export default function CorporateOverviewPage() {
     }
   };
 
+  const handleCreateWallet = () => {
+    // Navigate to wallet creation page
+    router.push('/wallets/corporate/create');
+  };
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -254,6 +261,7 @@ export default function CorporateOverviewPage() {
           <Button
             size="sm"
             className="bg-orange-400 hover:bg-orange-500 text-white border-orange-400 hover:border-orange-500"
+            onClick={handleCreateWallet}
           >
             <Plus className="w-4 h-4 mr-2" />
             Create Wallet
@@ -393,6 +401,8 @@ export default function CorporateOverviewPage() {
                         size="sm"
                         variant="outline"
                         className="border-orange-300 text-orange-600 hover:bg-orange-50 hover:text-orange-700"
+                        onClick={() => router.push(`/wallets/corporate/${wallet.id}`)}
+                        title="View wallet details"
                       >
                         <Eye className="w-4 h-4" />
                       </Button>
@@ -400,12 +410,16 @@ export default function CorporateOverviewPage() {
                         size="sm"
                         variant="outline"
                         className="border-orange-300 text-orange-600 hover:bg-orange-50 hover:text-orange-700"
+                        onClick={() => router.push('/wallets/corporate/settings')}
+                        title="Wallet settings"
                       >
                         <Settings className="w-4 h-4" />
                       </Button>
                       <Button
                         size="sm"
                         className="bg-orange-400 hover:bg-orange-500 text-white border-orange-400 hover:border-orange-500"
+                        onClick={() => router.push('/payments/send')}
+                        title="Send payment"
                       >
                         <Send className="w-4 h-4" />
                       </Button>

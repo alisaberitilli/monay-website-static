@@ -314,6 +314,35 @@ router.put('/:id', verifyToken, async (req, res) => {
     const { id } = req.params;
     const updates = req.body;
 
+    // Handle transaction limits from frontend format
+    if (updates.dailyLimit || updates.monthlyLimit || updates.perTransactionMax) {
+      updates.consumer_limits = {
+        daily_transaction_limit: parseInt(updates.dailyLimit) || 10000,
+        monthly_transaction_limit: parseInt(updates.monthlyLimit) || 100000,
+        per_transaction_max: parseInt(updates.perTransactionMax) || 5000,
+        max_cards: 5,
+        max_users: 10
+      };
+      delete updates.dailyLimit;
+      delete updates.monthlyLimit;
+      delete updates.perTransactionMax;
+    }
+
+    // Map frontend field names to database column names
+    const fieldMapping = {
+      'address': 'address_line1',
+      'phone': 'phone',
+      'taxId': 'tax_id'
+    };
+
+    // Apply field mapping
+    Object.keys(fieldMapping).forEach(frontendField => {
+      if (updates[frontendField] !== undefined) {
+        updates[fieldMapping[frontendField]] = updates[frontendField];
+        delete updates[frontendField];
+      }
+    });
+
     // Build dynamic update query
     const updateFields = [];
     const params = [];
@@ -321,8 +350,8 @@ router.put('/:id', verifyToken, async (req, res) => {
 
     const allowedFields = [
       'name', 'type', 'industry', 'description', 'email', 'phone',
-      'address', 'website', 'tax_id', 'status', 'feature_tier',
-      'consumer_limits', 'compliance_settings'
+      'address_line1', 'website', 'tax_id', 'status', 'feature_tier',
+      'consumer_limits', 'compliance_settings', 'primaryContact'
     ];
 
     for (const field of allowedFields) {

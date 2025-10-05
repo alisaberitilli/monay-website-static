@@ -1,12 +1,22 @@
 'use client';
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
 import {
   Briefcase,
   Plus,
@@ -54,6 +64,16 @@ interface DepartmentWallet {
 }
 
 export default function DepartmentListPage() {
+  const router = useRouter();
+  const [isAddDepartmentOpen, setIsAddDepartmentOpen] = useState(false);
+  const [newDepartment, setNewDepartment] = useState({
+    department: '',
+    walletName: '',
+    monthlyBudget: '',
+    manager: '',
+    employees: ''
+  });
+
   const [departments, setDepartments] = useState<DepartmentWallet[]>([
     {
       id: 'dept-001',
@@ -272,6 +292,55 @@ export default function DepartmentListPage() {
     return 'text-green-600';
   };
 
+  const handleAddDepartment = () => {
+    // Generate a random wallet address for demo
+    const randomAddress = '0x' + Array.from({ length: 40 }, () =>
+      Math.floor(Math.random() * 16).toString(16)
+    ).join('');
+
+    const newDept: DepartmentWallet = {
+      id: `dept-${String(departments.length + 1).padStart(3, '0')}`,
+      department: newDepartment.department,
+      walletName: newDepartment.walletName,
+      address: randomAddress,
+      balance: {
+        total: 0,
+        allocated: 0,
+        available: 0
+      },
+      monthlyBudget: parseFloat(newDepartment.monthlyBudget) || 0,
+      spent: 0,
+      employees: parseInt(newDepartment.employees) || 0,
+      status: 'active',
+      manager: newDepartment.manager,
+      lastActivity: new Date(),
+      transactionCount: 0,
+      compliance: {
+        status: 'compliant',
+        lastReview: new Date()
+      }
+    };
+
+    setDepartments([...departments, newDept]);
+    setIsAddDepartmentOpen(false);
+
+    // Reset form
+    setNewDepartment({
+      department: '',
+      walletName: '',
+      monthlyBudget: '',
+      manager: '',
+      employees: ''
+    });
+  };
+
+  const handleInputChange = (field: string, value: string) => {
+    setNewDepartment(prev => ({
+      ...prev,
+      [field]: value
+    }));
+  };
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -288,6 +357,7 @@ export default function DepartmentListPage() {
           <Button
             size="sm"
             className="bg-orange-400 hover:bg-orange-500 text-white border-orange-400 hover:border-orange-500"
+            onClick={() => setIsAddDepartmentOpen(true)}
           >
             <Plus className="w-4 h-4 mr-2" />
             Add Department
@@ -485,6 +555,8 @@ export default function DepartmentListPage() {
                         size="sm"
                         variant="outline"
                         className="border-orange-300 text-orange-600 hover:bg-orange-50 hover:text-orange-700"
+                        onClick={() => router.push(`/wallets/departments/${dept.id}`)}
+                        title="View department details"
                       >
                         <Eye className="w-4 h-4" />
                       </Button>
@@ -492,12 +564,16 @@ export default function DepartmentListPage() {
                         size="sm"
                         variant="outline"
                         className="border-orange-300 text-orange-600 hover:bg-orange-50 hover:text-orange-700"
+                        onClick={() => router.push(`/wallets/departments/${dept.id}/settings`)}
+                        title="Department settings"
                       >
                         <Settings className="w-4 h-4" />
                       </Button>
                       <Button
                         size="sm"
                         className="bg-orange-400 hover:bg-orange-500 text-white border-orange-400 hover:border-orange-500"
+                        onClick={() => router.push(`/wallets/departments/${dept.id}/edit`)}
+                        title="Edit department"
                       >
                         <Edit className="w-4 h-4" />
                       </Button>
@@ -509,6 +585,98 @@ export default function DepartmentListPage() {
           </Table>
         </CardContent>
       </Card>
+
+      {/* Add Department Dialog */}
+      <Dialog open={isAddDepartmentOpen} onOpenChange={setIsAddDepartmentOpen}>
+        <DialogContent className="sm:max-w-[600px]">
+          <DialogHeader>
+            <DialogTitle>Add New Department Wallet</DialogTitle>
+            <DialogDescription>
+              Create a new department wallet with budget allocation and team management.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="grid gap-4 py-4">
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="department">Department Name *</Label>
+                <Input
+                  id="department"
+                  placeholder="e.g., Sales"
+                  value={newDepartment.department}
+                  onChange={(e) => handleInputChange('department', e.target.value)}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="walletName">Wallet Name *</Label>
+                <Input
+                  id="walletName"
+                  placeholder="e.g., Sales Operations"
+                  value={newDepartment.walletName}
+                  onChange={(e) => handleInputChange('walletName', e.target.value)}
+                />
+              </div>
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="monthlyBudget">Monthly Budget (USD) *</Label>
+                <Input
+                  id="monthlyBudget"
+                  type="number"
+                  placeholder="e.g., 100000"
+                  value={newDepartment.monthlyBudget}
+                  onChange={(e) => handleInputChange('monthlyBudget', e.target.value)}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="employees">Number of Employees *</Label>
+                <Input
+                  id="employees"
+                  type="number"
+                  placeholder="e.g., 10"
+                  value={newDepartment.employees}
+                  onChange={(e) => handleInputChange('employees', e.target.value)}
+                />
+              </div>
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="manager">Department Manager *</Label>
+              <Input
+                id="manager"
+                placeholder="e.g., John Smith"
+                value={newDepartment.manager}
+                onChange={(e) => handleInputChange('manager', e.target.value)}
+              />
+            </div>
+            <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg">
+              <p className="text-sm text-blue-800">
+                <strong>Note:</strong> A new blockchain wallet will be automatically created for this department with multi-signature security and spending controls.
+              </p>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => setIsAddDepartmentOpen(false)}
+            >
+              Cancel
+            </Button>
+            <Button
+              className="bg-orange-400 hover:bg-orange-500 text-white"
+              onClick={handleAddDepartment}
+              disabled={
+                !newDepartment.department ||
+                !newDepartment.walletName ||
+                !newDepartment.monthlyBudget ||
+                !newDepartment.manager ||
+                !newDepartment.employees
+              }
+            >
+              <Plus className="w-4 h-4 mr-2" />
+              Create Department Wallet
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

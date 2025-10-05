@@ -1,11 +1,13 @@
 'use client'
 
+import DashboardLayout from '@/components/DashboardLayout'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 
 export default function RewardsPage() {
   return (
-    <div className="container mx-auto p-6">
+    <DashboardLayout>
+      <div className="container mx-auto p-6">
       <Card>
         <CardHeader>
           <CardTitle>Rewards</CardTitle>
@@ -18,6 +20,7 @@ export default function RewardsPage() {
           </div>
         </CardContent>
       </Card>
-    </div>
+      </div>
+    </DashboardLayout>
   )
 }

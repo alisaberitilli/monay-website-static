@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import DashboardLayout from '@/components/DashboardLayout';
 import {
   Wallet,
   Heart,
@@ -151,6 +152,7 @@ export default function HSAFSAWalletPage() {
   ];
 
   return (
+    <DashboardLayout>
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-teal-50">
       <div className="max-w-7xl mx-auto px-4 py-8">
         {/* Header */}
@@ -455,5 +457,6 @@ export default function HSAFSAWalletPage() {
         )}
       </div>
     </div>
+    </DashboardLayout>
   );
 }

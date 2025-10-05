@@ -294,6 +294,69 @@ class SuperAdminService {
     });
   }
 
+  async lockUser(userId: string) {
+    return await this.authenticatedRequest('/api/super-admin/users/lock', {
+      method: 'POST',
+      data: { userId },
+    });
+  }
+
+  async unlockUser(userId: string) {
+    return await this.authenticatedRequest('/api/super-admin/users/unlock', {
+      method: 'POST',
+      data: { userId },
+    });
+  }
+
+  async resetUserPassword(userId: string, newPassword: string) {
+    return await this.authenticatedRequest('/api/super-admin/users/reset-password', {
+      method: 'POST',
+      data: { userId, newPassword },
+    });
+  }
+
+  async sendPasswordResetEmail(email: string) {
+    return await this.authenticatedRequest('/api/super-admin/users/send-reset-link', {
+      method: 'POST',
+      data: { email },
+    });
+  }
+
+  async verifyUserEmail(userId: string) {
+    return await this.authenticatedRequest('/api/super-admin/users/verify-email', {
+      method: 'POST',
+      data: { userId },
+    });
+  }
+
+  async verifyUserPhone(userId: string) {
+    return await this.authenticatedRequest('/api/super-admin/users/verify-phone', {
+      method: 'POST',
+      data: { userId },
+    });
+  }
+
+  async updateUserKYC(userId: string, status: string) {
+    return await this.authenticatedRequest('/api/super-admin/users/update-kyc', {
+      method: 'POST',
+      data: { userId, status },
+    });
+  }
+
+  async deleteUser(userId: string) {
+    return await this.authenticatedRequest('/api/super-admin/users/delete', {
+      method: 'DELETE',
+      data: { userId },
+    });
+  }
+
+  async updateUser(userId: string, data: any) {
+    return await this.authenticatedRequest(`/api/super-admin/users/${userId}`, {
+      method: 'PUT',
+      data,
+    });
+  }
+
   // ===========================================
   // TRANSACTION MONITORING
   // ===========================================

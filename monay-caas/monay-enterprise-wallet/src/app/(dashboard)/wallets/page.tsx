@@ -281,6 +281,279 @@ export default function WalletsPage() {
 
   return (
     <div className="space-y-6">
+      {/* Wallet Details Modal */}
+      {selectedWallet && (
+        <Dialog open={!!selectedWallet} onOpenChange={() => setSelectedWallet(null)}>
+          <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle className="flex items-center gap-3">
+                <Wallet className="h-6 w-6 text-blue-600" />
+                {selectedWallet.name}
+              </DialogTitle>
+              <DialogDescription>
+                Wallet details and configuration
+              </DialogDescription>
+            </DialogHeader>
+
+            <div className="space-y-6 py-4">
+              {/* Wallet Info */}
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label className="text-xs text-gray-500">Wallet Address</Label>
+                  <div className="flex items-center gap-2 bg-gray-50 p-3 rounded-lg">
+                    <code className="text-sm flex-1 break-all">{selectedWallet.address}</code>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => handleCopyAddress(selectedWallet.address)}
+                    >
+                      <Copy className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <Label className="text-xs text-gray-500">Network</Label>
+                  <div className="bg-gray-50 p-3 rounded-lg">
+                    <Badge variant="secondary">{selectedWallet.network}</Badge>
+                  </div>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-3 gap-4">
+                <div className="space-y-2">
+                  <Label className="text-xs text-gray-500">Type</Label>
+                  <div className="bg-gray-50 p-3 rounded-lg">
+                    <Badge variant="secondary">{selectedWallet.type}</Badge>
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <Label className="text-xs text-gray-500">Rail</Label>
+                  <div className="bg-gray-50 p-3 rounded-lg">
+                    <Badge className={cn(getRailColor(selectedWallet.rail))}>{selectedWallet.rail}</Badge>
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <Label className="text-xs text-gray-500">Status</Label>
+                  <div className="bg-gray-50 p-3 rounded-lg">
+                    <Badge className={getStatusColor(selectedWallet.status)}>{selectedWallet.status}</Badge>
+                  </div>
+                </div>
+              </div>
+
+              {/* Balance Info */}
+              <Card className="bg-gradient-to-br from-blue-50 to-purple-50">
+                <CardContent className="p-4">
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <p className="text-xs text-gray-600">Total Balance</p>
+                      <p className="text-2xl font-bold mt-1">${selectedWallet.balance.usd.toLocaleString()}</p>
+                    </div>
+                    <div>
+                      <p className="text-xs text-gray-600">Tokens</p>
+                      <div className="mt-2 space-y-1">
+                        {selectedWallet.balance.tokens.map((token, idx) => (
+                          <div key={idx} className="flex justify-between text-sm">
+                            <span className="font-medium">{token.symbol}</span>
+                            <span>{token.balance.toLocaleString()}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Business Rules Section */}
+              <div className="border-t pt-4">
+                <div className="flex items-center justify-between mb-4">
+                  <div>
+                    <h3 className="font-semibold flex items-center gap-2">
+                      <Shield className="h-5 w-5 text-blue-600" />
+                      Business Rules & Policies
+                    </h3>
+                    <p className="text-sm text-gray-500">Configure compliance and transaction rules for this wallet</p>
+                  </div>
+                  <Button
+                    size="sm"
+                    className="bg-blue-600 hover:bg-blue-700"
+                    onClick={() => {
+                      toast.success('Opening business rules configuration...')
+                      // Navigate to business rules page with wallet context
+                    }}
+                  >
+                    <Plus className="h-4 w-4 mr-2" />
+                    Add Rule
+                  </Button>
+                </div>
+
+                {/* Active Rules */}
+                <div className="space-y-3">
+                  <div className="bg-green-50 border border-green-200 rounded-lg p-3">
+                    <div className="flex items-start justify-between">
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2">
+                          <CheckCircle className="h-4 w-4 text-green-600" />
+                          <span className="font-medium text-sm">Daily Transaction Limit</span>
+                        </div>
+                        <p className="text-xs text-gray-600 mt-1 ml-6">Maximum $50,000 per day</p>
+                      </div>
+                      <Badge className="bg-green-100 text-green-700">Active</Badge>
+                    </div>
+                  </div>
+
+                  <div className="bg-green-50 border border-green-200 rounded-lg p-3">
+                    <div className="flex items-start justify-between">
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2">
+                          <CheckCircle className="h-4 w-4 text-green-600" />
+                          <span className="font-medium text-sm">AML Screening Required</span>
+                        </div>
+                        <p className="text-xs text-gray-600 mt-1 ml-6">Transactions over $10,000 require AML check</p>
+                      </div>
+                      <Badge className="bg-green-100 text-green-700">Active</Badge>
+                    </div>
+                  </div>
+
+                  <div className="bg-green-50 border border-green-200 rounded-lg p-3">
+                    <div className="flex items-start justify-between">
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2">
+                          <CheckCircle className="h-4 w-4 text-green-600" />
+                          <span className="font-medium text-sm">KYC Verification</span>
+                        </div>
+                        <p className="text-xs text-gray-600 mt-1 ml-6">All recipients must be KYC verified</p>
+                      </div>
+                      <Badge className="bg-green-100 text-green-700">Active</Badge>
+                    </div>
+                  </div>
+
+                  <Button
+                    variant="outline"
+                    className="w-full"
+                    onClick={() => {
+                      toast.info('Navigating to business rules configuration...')
+                      // Would navigate to /business-rules with wallet filter
+                    }}
+                  >
+                    <Settings className="h-4 w-4 mr-2" />
+                    Configure All Business Rules
+                  </Button>
+                </div>
+              </div>
+
+              {/* Features */}
+              <div className="border-t pt-4">
+                <h3 className="font-semibold mb-3">Enabled Features</h3>
+                <div className="flex flex-wrap gap-2">
+                  {selectedWallet.features.map((feature, idx) => (
+                    <Badge key={idx} variant="outline" className="bg-blue-50 text-blue-700 border-blue-200">
+                      {feature}
+                    </Badge>
+                  ))}
+                </div>
+              </div>
+
+              {/* Compliance */}
+              <div className="border-t pt-4">
+                <h3 className="font-semibold mb-3">Compliance Status</h3>
+                <div className="grid grid-cols-3 gap-4">
+                  <div className="bg-gray-50 p-3 rounded-lg">
+                    <p className="text-xs text-gray-600">KYC Status</p>
+                    <div className="flex items-center gap-2 mt-1">
+                      <CheckCircle className="h-4 w-4 text-green-600" />
+                      <span className="text-sm font-medium">{selectedWallet.compliance.kycStatus}</span>
+                    </div>
+                  </div>
+                  <div className="bg-gray-50 p-3 rounded-lg">
+                    <p className="text-xs text-gray-600">AML Risk</p>
+                    <div className="flex items-center gap-2 mt-1">
+                      <AlertCircle className={cn(
+                        "h-4 w-4",
+                        selectedWallet.compliance.amlRisk === 'low' ? 'text-green-600' :
+                        selectedWallet.compliance.amlRisk === 'medium' ? 'text-orange-600' : 'text-red-600'
+                      )} />
+                      <span className="text-sm font-medium">{selectedWallet.compliance.amlRisk}</span>
+                    </div>
+                  </div>
+                  <div className="bg-gray-50 p-3 rounded-lg">
+                    <p className="text-xs text-gray-600">Sanctions Check</p>
+                    <div className="flex items-center gap-2 mt-1">
+                      <CheckCircle className="h-4 w-4 text-green-600" />
+                      <span className="text-sm font-medium">{selectedWallet.compliance.sanctionsCheck}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Activity Stats */}
+              <div className="border-t pt-4">
+                <h3 className="font-semibold mb-3">Activity</h3>
+                <div className="grid grid-cols-4 gap-4">
+                  <div className="bg-gray-50 p-3 rounded-lg">
+                    <p className="text-xs text-gray-600">Created</p>
+                    <p className="text-sm font-medium mt-1">{selectedWallet.created}</p>
+                  </div>
+                  <div className="bg-gray-50 p-3 rounded-lg">
+                    <p className="text-xs text-gray-600">Last Activity</p>
+                    <p className="text-sm font-medium mt-1">{selectedWallet.lastActivity}</p>
+                  </div>
+                  <div className="bg-gray-50 p-3 rounded-lg">
+                    <p className="text-xs text-gray-600">Daily Volume</p>
+                    <p className="text-sm font-medium mt-1">${selectedWallet.dailyVolume.toLocaleString()}</p>
+                  </div>
+                  <div className="bg-gray-50 p-3 rounded-lg">
+                    <p className="text-xs text-gray-600">Transactions</p>
+                    <p className="text-sm font-medium mt-1">{selectedWallet.transactionCount}</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Actions */}
+              <div className="border-t pt-4">
+                <div className="grid grid-cols-2 gap-3">
+                  <Button
+                    variant="outline"
+                    onClick={() => {
+                      window.open(`https://sepolia.basescan.org/address/${selectedWallet.address}`, '_blank')
+                    }}
+                  >
+                    <ExternalLink className="h-4 w-4 mr-2" />
+                    View on Explorer
+                  </Button>
+                  <Button
+                    variant="outline"
+                    onClick={() => toast.info('Opening wallet settings...')}
+                  >
+                    <Settings className="h-4 w-4 mr-2" />
+                    Wallet Settings
+                  </Button>
+                  <Button
+                    variant="outline"
+                    onClick={() => toast.info('Generating QR code...')}
+                  >
+                    <QrCode className="h-4 w-4 mr-2" />
+                    Show QR Code
+                  </Button>
+                  <Button
+                    variant="outline"
+                    onClick={() => toast.success('Wallet details exported')}
+                  >
+                    <Download className="h-4 w-4 mr-2" />
+                    Export Details
+                  </Button>
+                </div>
+              </div>
+            </div>
+
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setSelectedWallet(null)}>
+                Close
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+      )}
+
       {/* Header */}
       <div className="flex justify-between items-start">
         <div>

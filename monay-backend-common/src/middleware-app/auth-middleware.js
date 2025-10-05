@@ -4,20 +4,57 @@ import models from '../models/index.js';
 import { extractTenantContext } from './tenant-middleware.js';
 
 const authenticateToken = async (req, res, next) => {
-    // Development bypass for admin dashboard
+    // Development bypass for admin dashboard - generates proper JWT token
     if (process.env.NODE_ENV === 'development' && req.headers['x-admin-bypass'] === 'true') {
-        // Set a default admin user for development
-        req.user = {
-            id: 'user-cd06a4f0-b5fd-4c33-b0a2-79a518d62567',
-            email: 'test@monay.com',
-            isAdmin: false,
-            userType: 'user',
-            role: 'basic_consumer',
-            permissions: {},
-            tenant_id: null,
-            current_tenant_id: null
-        };
-        return next();
+        try {
+            // Get the admin user from database dynamically
+            const adminUser = await models.User.findOne({
+                where: { email: 'admin@monay.com' }
+            });
+
+            if (adminUser) {
+                // Create a proper JWT token for the admin user (same as production login)
+                const tokenPayload = {
+                    id: adminUser.id,
+                    userId: adminUser.id,
+                    email: adminUser.email,
+                    role: adminUser.role || 'platform_admin',
+                    userType: 'admin',
+                    isAdmin: true,
+                    tenant_id: adminUser.tenant_id,
+                    iat: Math.floor(Date.now() / 1000),
+                    exp: Math.floor(Date.now() / 1000) + (24 * 60 * 60) // 24 hours
+                };
+
+                // Generate JWT token using the same secret as production
+                const token = jwt.sign(tokenPayload, config.jwtSecret);
+
+                // Set the Authorization header so frontend can access the token
+                req.headers.authorization = `Bearer ${token}`;
+
+                // Also set req.user for immediate use
+                req.user = {
+                    ...tokenPayload,
+                    permissions: {},
+                    current_tenant_id: adminUser.current_tenant_id
+                };
+
+                console.log('Development bypass: Generated JWT token for admin user:', adminUser.email);
+                return next();
+            } else {
+                console.error('Admin user not found in database for bypass');
+                return res.status(401).json({
+                    success: false,
+                    error: 'Admin user not found for development bypass'
+                });
+            }
+        } catch (error) {
+            console.error('Error in development bypass:', error);
+            return res.status(500).json({
+                success: false,
+                error: 'Development bypass failed'
+            });
+        }
     }
 
     const authHeader = req.headers['authorization'];
@@ -51,21 +88,35 @@ const authenticateToken = async (req, res, next) => {
 
         // Set user object with all necessary properties
         const isAdmin = user.email === 'admin@monay.com' || user.role === 'admin' || user.role === 'platform_admin' || decoded.role === 'platform_admin';
+
+        // Determine the correct role - prioritize decoded.role from JWT
+        const userRole = decoded.role || user.role || (isAdmin ? 'platform_admin' : 'user');
+
+        // Determine userType - for admins, always set to 'admin' for backward compatibility
+        const userType = isAdmin ? 'admin' : (decoded.userType || user.userType || 'user');
+
         req.user = {
             ...decoded,
             id: user.id,
             email: user.email,
             isAdmin: isAdmin,
-            userType: isAdmin ? 'admin' : (decoded.userType || user.userType || 'user'),
+            userType: userType,
             tenant_id: user.tenant_id || decoded.tenant_id,
             current_tenant_id: user.current_tenant_id || decoded.tenant_id,
             organization_id: decoded.organization_id,
-            role: decoded.role || user.role,
+            role: userRole,  // Ensure role is always set
             permissions: decoded.permissions || {},
             organization: decoded.organization,
             tenant: decoded.tenant,
             loginType: decoded.loginType
         };
+
+        console.log('Auth middleware - User authenticated:', {
+            email: req.user.email,
+            role: req.user.role,
+            userType: req.user.userType,
+            isAdmin: req.user.isAdmin
+        });
 
         // Extract tenant context for authenticated user
         await extractTenantContext(req, res, () => {});

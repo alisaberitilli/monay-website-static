@@ -35,7 +35,15 @@ const JWT_SECRET = process.env.JWT_SECRET || 'monay-secret-key-2025';
 
 // Health check
 app.get('/api/health', (req, res) => {
-  res.json({ status: 'ok', service: 'monay-backend', port });
+  res.setHeader('Content-Type', 'application/json');
+  res.send(JSON.stringify({
+    status: 'ok',
+    service: 'monay-backend',
+    port,
+    timestamp: new Date().toISOString(),
+    uptime: process.uptime(),
+    environment: process.env.NODE_ENV || 'development'
+  }, null, 2));
 });
 
 // Organizations endpoints

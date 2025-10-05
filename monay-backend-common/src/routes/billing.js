@@ -1,6 +1,7 @@
 import express from 'express';
 const router = express.Router();
 import { Pool } from 'pg';
+import { body, param, query, validationResult } from 'express-validator';
 import { authenticateToken } from '../middleware-app/platform-admin-auth.js';
 import tenantIsolation from '../middleware-core/tenant-isolation.js';
 import BillingCalculationService from '../services/billing-calculation.js';
@@ -13,6 +14,22 @@ const pool = new Pool({
 });
 
 const billingService = new BillingCalculationService(pool);
+
+/**
+ * Validation middleware
+ */
+const validateRequest = (req, res, next) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({
+      success: false,
+      data: [],
+      error: errors.array(),
+      message: 'Validation failed'
+    });
+  }
+  next();
+};
 
 // Apply authentication and tenant isolation to all routes
 router.use(authenticateToken);
@@ -100,6 +117,10 @@ router.get('/current',
  * @access  Private
  */
 router.get('/history',
+  [
+    query('limit').optional().isInt({ min: 1, max: 100 }).withMessage('limit must be between 1 and 100')
+  ],
+  validateRequest,
   async (req, res) => {
     try {
       const { limit } = req.query;
@@ -191,6 +212,11 @@ router.get('/usage',
  * @access  Private/Internal
  */
 router.post('/track-operation',
+  [
+    body('operation_type').isString().notEmpty().withMessage('operation_type is required'),
+    body('metadata').optional().isObject().withMessage('metadata must be an object')
+  ],
+  validateRequest,
   async (req, res) => {
     try {
       const { operation_type, metadata } = req.body;
@@ -268,6 +294,11 @@ router.get('/payment-methods',
  * @access  Private
  */
 router.put('/payment-method',
+  [
+    body('payment_method').isString().notEmpty().withMessage('payment_method is required'),
+    body('previous_method').optional().isString().withMessage('previous_method must be a string')
+  ],
+  validateRequest,
   async (req, res) => {
     try {
       const { payment_method } = req.body;
@@ -303,6 +334,10 @@ router.put('/payment-method',
  * @access  Private
  */
 router.get('/invoice/:month',
+  [
+    param('month').isString().matches(/^\d{4}-\d{2}$/).withMessage('month must be in YYYY-MM format')
+  ],
+  validateRequest,
   async (req, res) => {
     try {
       const { month } = req.params;
@@ -381,6 +416,13 @@ router.get('/invoice/:month',
  * @access  Private
  */
 router.post('/payment',
+  [
+    body('billing_history_id').optional().isUUID().withMessage('billing_history_id must be a valid UUID'),
+    body('amount_cents').isInt({ min: 1 }).withMessage('amount_cents must be a positive integer'),
+    body('payment_method').isString().notEmpty().withMessage('payment_method is required'),
+    body('blockchain_txn_hash').optional().isString().withMessage('blockchain_txn_hash must be a string')
+  ],
+  validateRequest,
   async (req, res) => {
     try {
       const {
@@ -514,6 +556,10 @@ router.get('/tiers',
  * @access  Private
  */
 router.post('/upgrade-tier',
+  [
+    body('new_tier').isString().notEmpty().withMessage('new_tier is required')
+  ],
+  validateRequest,
   async (req, res) => {
     try {
       const { new_tier } = req.body;

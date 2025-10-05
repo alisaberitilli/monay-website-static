@@ -848,6 +848,8 @@ export default function InvoicesPage() {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.3 }}
+                  className="relative"
+                  style={{ zIndex: openDropdown === invoice.id ? 40 : 1 }}
                 >
                   <Card className="hover:shadow-lg transition-shadow">
                     <CardContent className="p-6">
@@ -964,7 +966,7 @@ export default function InvoicesPage() {
                               </Button>
 
                               {openDropdown === invoice.id && (
-                                <div className="absolute right-0 top-full mt-1 w-48 bg-white border rounded-lg shadow-lg z-10">
+                                <div className="absolute right-0 top-full mt-1 w-48 bg-white border rounded-lg shadow-lg z-50">
                                   <div className="py-1">
                                     <button
                                       className="w-full text-left px-3 py-2 text-sm hover:bg-gray-100 flex items-center gap-2"

@@ -34,8 +34,19 @@ export default function RegisterPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
+    console.log('🚀 Registration form submitted');
+
+    // Validate passwords match
     if (formData.password !== formData.confirmPassword) {
       toast.error('Passwords do not match');
+      console.error('❌ Password mismatch');
+      return;
+    }
+
+    // Validate password strength
+    if (formData.password.length < 8) {
+      toast.error('Password must be at least 8 characters long');
+      console.error('❌ Password too short');
       return;
     }
 
@@ -52,38 +63,60 @@ export default function RegisterPage() {
         organizationId: formData.organizationId || ''
       };
       localStorage.setItem('enterpriseRegistrationData', JSON.stringify(registrationDataForKYC));
-      console.log('Saved registration data for KYC:', registrationDataForKYC);
+      console.log('💾 Saved registration data for KYC:', registrationDataForKYC);
+
+      const requestBody = {
+        firstName: formData.firstName,
+        lastName: formData.lastName,
+        email: formData.email,
+        phone_number: formData.phoneNumber,
+        password: formData.password,
+        confirmPassword: formData.confirmPassword,
+        organizationName: formData.organizationName,
+        organizationId: formData.organizationId || undefined, // Send as undefined if empty
+        deviceType: 'WEB',
+        userType: 'enterprise',
+        accountType: 'enterprise'
+      };
+
+      console.log('📤 Sending registration request:', { ...requestBody, password: '***', confirmPassword: '***' });
 
       const response = await fetch('http://localhost:3001/api/auth/register/organization', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          firstName: formData.firstName,
-          lastName: formData.lastName,
-          email: formData.email,
-          phone_number: formData.phoneNumber,
-          password: formData.password,
-          confirmPassword: formData.confirmPassword,
-          organizationName: formData.organizationName,
-          organizationId: formData.organizationId || '', // Send as optional string for now
-          deviceType: 'WEB',
-          userType: 'enterprise',
-          accountType: 'enterprise'
-        })
+        body: JSON.stringify(requestBody)
       });
 
-      const result = await response.json();
+      console.log('📥 Response status:', response.status);
 
-      if (result.success) {
-        toast.success('Account created successfully! Please verify your email.');
-        router.push('/auth/verify');
+      const result = await response.json();
+      console.log('📥 Response data:', result);
+
+      if (response.ok && result.success) {
+        toast.success('Account created successfully! Redirecting to login...');
+        console.log('✅ Registration successful');
+
+        // Store auth token if provided
+        if (result.data?.token) {
+          localStorage.setItem('auth_token', result.data.token);
+          localStorage.setItem('user', JSON.stringify(result.data.user));
+          console.log('✅ Auth token stored');
+        }
+
+        // Redirect to login or dashboard
+        setTimeout(() => {
+          router.push('/auth/login');
+        }, 1500);
       } else {
-        toast.error(result.error || 'Failed to create account');
+        const errorMessage = result.error || result.message || 'Failed to create account';
+        toast.error(errorMessage);
+        console.error('❌ Registration failed:', errorMessage);
       }
     } catch (error: any) {
-      toast.error('Registration failed. Please try again.');
+      console.error('❌ Registration error:', error);
+      toast.error('Registration failed. Please check your connection and try again.');
     } finally {
       setIsLoading(false);
     }
@@ -174,16 +207,20 @@ export default function RegisterPage() {
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="organizationId">Organization ID</Label>
+                <Label htmlFor="organizationId">
+                  Organization ID <span className="text-gray-400 text-xs">(Optional)</span>
+                </Label>
                 <Input
                   id="organizationId"
                   name="organizationId"
-                  placeholder="12345678"
-                  required
+                  placeholder="Leave blank for new organization"
                   value={formData.organizationId}
                   onChange={handleChange}
                   disabled={isLoading}
                 />
+                <p className="text-xs text-gray-500 mt-1">
+                  Only enter if joining an existing organization
+                </p>
               </div>
             </div>
 

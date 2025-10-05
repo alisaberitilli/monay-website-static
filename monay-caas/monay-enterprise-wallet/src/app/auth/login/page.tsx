@@ -35,38 +35,150 @@ export default function LoginPage() {
   // Form state
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [rememberMe, setRememberMe] = useState(false)
 
-  const handleLogin = async (e: React.FormEvent) => {
+  // Auto-login with magic token (dev/QA only)
+  React.useEffect(() => {
+    const autoLogin = async () => {
+      // Check if there's a magic token in the URL
+      const urlParams = new URLSearchParams(window.location.search)
+      const token = urlParams.get('token')
+      const orgId = urlParams.get('org')
+
+      if (token) {
+        console.log('🔓 Auto-login with magic token detected')
+        setIsLoading(true)
+
+        try {
+          // Store the token and redirect to dashboard
+          localStorage.setItem('auth_token', token)
+
+          // Optionally fetch user details
+          const response = await fetch('http://localhost:3001/api/auth/me', {
+            headers: {
+              'Authorization': `Bearer ${token}`,
+              'Content-Type': 'application/json'
+            }
+          })
+
+          if (response.ok) {
+            const result = await response.json()
+            if (result.success && result.data) {
+              localStorage.setItem('user', JSON.stringify(result.data))
+              console.log('✅ Auto-login successful:', result.data.email)
+
+              // Clear URL parameters and redirect
+              window.history.replaceState({}, document.title, '/auth/login')
+              router.push('/dashboard')
+            } else {
+              setError('Invalid magic token')
+              setIsLoading(false)
+            }
+          } else {
+            setError('Failed to verify magic token')
+            setIsLoading(false)
+          }
+        } catch (err) {
+          console.error('Auto-login error:', err)
+          setError('Auto-login failed')
+          setIsLoading(false)
+        }
+      }
+    }
+
+    autoLogin()
+  }, [router])
+
+  const handleLogin = (e: React.FormEvent) => {
     e.preventDefault()
+    e.stopPropagation()
+
     setIsLoading(true)
     setError('')
 
-    try {
-      const response = await fetch('http://localhost:3001/api/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ email, password }),
-      })
-
-      const result = await response.json()
-
-      if (result.success) {
-        // Store token in localStorage (in production, use secure cookie)
-        localStorage.setItem('auth_token', result.data.token)
-        localStorage.setItem('user', JSON.stringify(result.data.user))
-
-        // Redirect to dashboard
-        router.push('/dashboard')
-      } else {
-        setError(result.error || 'Invalid credentials')
-      }
-    } catch (err) {
-      setError('Failed to connect to authentication service')
-    } finally {
-      setIsLoading(false)
+    // Prepare the request body
+    const requestBody = {
+      email: email.trim(),
+      password: password
     }
+
+    console.log('=== Frontend Login Attempt ===')
+    console.log('Email:', requestBody.email)
+    console.log('Password length:', requestBody.password?.length)
+    console.log('Request body:', requestBody)
+
+    const bodyString = JSON.stringify(requestBody)
+    console.log('Stringified body:', bodyString)
+    console.log('Body string length:', bodyString.length)
+
+    // Use XMLHttpRequest as a workaround for Safari fetch issue
+    const xhr = new XMLHttpRequest()
+    xhr.open('POST', 'http://localhost:3001/api/login', true)
+    xhr.setRequestHeader('Content-Type', 'application/json')
+    xhr.setRequestHeader('Accept', 'application/json')
+    xhr.withCredentials = true
+
+    xhr.onload = function() {
+      console.log('XHR Response status:', xhr.status)
+      console.log('XHR Response text:', xhr.responseText)
+
+      setIsLoading(false)
+
+      try {
+        const result = JSON.parse(xhr.responseText)
+        console.log('Response data:', result)
+
+        if (result.success) {
+          // Store token in localStorage
+          console.log('🔑 Saving token to localStorage...')
+          localStorage.setItem('auth_token', result.data.token)
+          localStorage.setItem('user', JSON.stringify(result.data.user))
+
+          // VERIFY token was saved immediately
+          const savedToken = localStorage.getItem('auth_token')
+          console.log('✅ Token verification after save:', savedToken ? 'SUCCESS - Token exists' : '❌ FAILED - Token not found')
+          console.log('📝 Saved token (first 50 chars):', savedToken?.substring(0, 50))
+
+          // Store "Remember Me" preference
+          if (rememberMe) {
+            localStorage.setItem('rememberMe', 'true')
+            // In production: backend would issue a long-lived refresh token (90 days)
+            console.log('Remember Me enabled - session will persist across browser restarts')
+          } else {
+            localStorage.removeItem('rememberMe')
+            // In production: backend would issue short-lived access token only (30 min)
+            console.log('Remember Me disabled - session will end when browser closes')
+          }
+
+          // Add small delay to ensure localStorage write completes
+          console.log('⏳ Waiting 100ms for localStorage sync before navigation...')
+          setTimeout(() => {
+            console.log('🚀 Navigating to dashboard...')
+            router.push('/dashboard')
+          }, 100)
+        } else {
+          setError(result.message || result.error || 'Invalid credentials')
+        }
+      } catch (err) {
+        console.error('JSON parse error:', err)
+        setError('Invalid response from server')
+      }
+    }
+
+    xhr.onerror = function() {
+      console.error('XHR error')
+      setIsLoading(false)
+      setError('Failed to connect to authentication service')
+    }
+
+    xhr.ontimeout = function() {
+      console.error('XHR timeout')
+      setIsLoading(false)
+      setError('Request timeout')
+    }
+
+    console.log('Sending XHR request with body:', bodyString)
+    xhr.send(bodyString)
   }
 
   const handleFederalLogin = async (provider: 'login.gov' | 'id.me') => {
@@ -191,9 +303,16 @@ export default function LoginPage() {
                   </div>
 
                   <div className="flex items-center justify-between">
-                    <label className="flex items-center">
-                      <input type="checkbox" className="mr-2" />
-                      <span className="text-sm text-gray-600">Remember me</span>
+                    <label className="flex items-center cursor-pointer">
+                      <input
+                        type="checkbox"
+                        className="mr-2 h-4 w-4 rounded border-gray-300"
+                        checked={rememberMe}
+                        onChange={(e) => setRememberMe(e.target.checked)}
+                      />
+                      <span className="text-sm text-gray-600">
+                        Remember me for 90 days
+                      </span>
                     </label>
                     <Link href="/auth/forgot-password" className="text-sm text-blue-600 hover:underline">
                       Forgot password?

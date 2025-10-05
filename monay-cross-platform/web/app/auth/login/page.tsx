@@ -212,6 +212,40 @@ export default function LoginPage() {
 
             {/* Demo Credentials */}
             <div className="mt-8 space-y-4">
+              {/* Test Account (Demo) - New verified account */}
+              <div className="p-4 bg-green-50 border border-green-200 rounded-2xl">
+                <div className="flex items-start space-x-3">
+                  <div className="flex-shrink-0">
+                    <Shield className="h-5 w-5 text-green-600" />
+                  </div>
+                  <div className="flex-1">
+                    <h4 className="text-sm font-semibold text-green-900 mb-1">Test Account (Demo)</h4>
+                    <p className="text-xs text-green-700 mb-2">Verified demo account with working authentication:</p>
+                    <div className="space-y-1 text-xs font-mono">
+                      <p className="text-green-800">Phone: +15552223333</p>
+                      <p className="text-green-800">Password: password123</p>
+                    </div>
+                    <p className="text-xs text-green-700 mt-2 italic">
+                      ✅ Mobile verified • MPIN set • Ready to use
+                    </p>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setMobileNumber('+15552223333');
+                        setPassword('password123');
+                        // Clear mock flag to use real backend
+                        if (typeof window !== 'undefined') {
+                          sessionStorage.removeItem('use_mock_login');
+                        }
+                      }}
+                      className="mt-3 px-3 py-1.5 bg-green-600 hover:bg-green-700 text-white text-xs font-medium rounded-lg transition-colors"
+                    >
+                      Use Demo Credentials
+                    </button>
+                  </div>
+                </div>
+              </div>
+
               {/* Mock Test Account */}
               <div className="p-4 bg-amber-50 border border-amber-200 rounded-2xl">
                 <div className="flex items-start space-x-3">

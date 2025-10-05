@@ -279,7 +279,7 @@ export default {
       let user = await models.User.findOne({
         where: {
           email: email,
-          role: { [Op.in]: ['platform_admin', 'compliance_officer', 'treasury_manager', 'support_agent'] },
+          role: { [Op.in]: ['platform_admin', 'compliance_officer', 'treasury_manager', 'support_agent', 'enterprise_admin'] },
           isDeleted: false
         },
         // UserRole not in current database schema
@@ -308,7 +308,23 @@ export default {
       });
       if (user) {
         if (user.isActive && !user.isBlocked) {
-          const isPasswordMatch = await this.compareUserPassword(password, user.password);
+          // Environment-based authentication for development
+          let isPasswordMatch = false;
+          if (process.env.NODE_ENV === 'development' &&
+              email === process.env.ADMIN_EMAIL &&
+              password === process.env.ADMIN_PASSWORD) {
+            console.log('Development authentication: Using environment variables for admin login');
+            isPasswordMatch = true;
+          } else if (process.env.NODE_ENV === 'development' &&
+                     email === process.env.DEFAULT_USER_EMAIL &&
+                     password === process.env.DEFAULT_USER_PASSWORD) {
+            console.log('Development authentication: Using environment variables for default user login');
+            isPasswordMatch = true;
+          } else {
+            // Production authentication - always verify against database hash
+            isPasswordMatch = await this.compareUserPassword(password, user.password);
+          }
+
           if (isPasswordMatch) {
             const { password, ...userData } = user.get();
             // Add userId field for frontend compatibility

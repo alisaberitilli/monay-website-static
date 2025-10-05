@@ -43,7 +43,7 @@ import {
 import { motion } from 'framer-motion';
 import { AreaChart, DonutChart } from '@tremor/react';
 import { superAdminService } from '@/services/super-admin.service';
-import { useToast } from '@/components/ui/use-toast';
+import toast from 'react-hot-toast';
 import {
   Dialog,
   DialogContent,
@@ -57,14 +57,18 @@ import { Textarea } from '@/components/ui/textarea';
 
 interface CircleWallet {
   id: string;
-  userId: string;
-  userEmail: string;
-  walletId: string;
-  address: string;
+  walletAddress: string;
+  walletType: string;
+  status: 'active' | 'inactive' | 'frozen' | 'pending';
   balance: number;
-  status: 'active' | 'frozen' | 'pending';
   createdAt: string;
-  lastActivity: string;
+  updatedAt: string;
+  user: {
+    id: string;
+    email: string;
+    firstName: string;
+    lastName: string;
+  } | null;
 }
 
 interface CircleMetrics {
@@ -87,7 +91,6 @@ export default function CircleManagementPage() {
   const [showUnfreezeModal, setShowUnfreezeModal] = useState(false);
   const [freezeReason, setFreezeReason] = useState('');
   const [processingAction, setProcessingAction] = useState(false);
-  const { toast } = useToast();
 
   useEffect(() => {
     loadCircleData();
@@ -121,8 +124,8 @@ export default function CircleManagementPage() {
 
     setProcessingAction(true);
     try {
-      await superAdminService.freezeCircleWallet(selectedWallet.walletId, freezeReason);
-      toast.success(`Wallet ${selectedWallet.walletId} has been frozen`);
+      await superAdminService.freezeCircleWallet(selectedWallet.id, freezeReason);
+      toast.success(`Wallet ${selectedWallet.id} has been frozen`);
       setShowFreezeModal(false);
       setFreezeReason('');
       await loadCircleData();
@@ -139,8 +142,8 @@ export default function CircleManagementPage() {
 
     setProcessingAction(true);
     try {
-      await superAdminService.unfreezeCircleWallet(selectedWallet.walletId);
-      toast.success(`Wallet ${selectedWallet.walletId} has been unfrozen`);
+      await superAdminService.unfreezeCircleWallet(selectedWallet.id);
+      toast.success(`Wallet ${selectedWallet.id} has been unfrozen`);
       setShowUnfreezeModal(false);
       await loadCircleData();
     } catch (error) {
@@ -153,8 +156,10 @@ export default function CircleManagementPage() {
 
 
   const filteredWallets = wallets.filter(wallet => {
-    const matchesSearch = wallet.userEmail.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                          wallet.walletId.toLowerCase().includes(searchTerm.toLowerCase());
+    const userEmail = wallet.user?.email || '';
+    const walletId = wallet.id || '';
+    const matchesSearch = userEmail.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                          walletId.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesFilter = filterStatus === 'all' || wallet.status === filterStatus;
     return matchesSearch && matchesFilter;
   });
@@ -381,7 +386,7 @@ export default function CircleManagementPage() {
                     <SelectContent>
                       <SelectItem value="all">All</SelectItem>
                       <SelectItem value="active">Active</SelectItem>
-                      <SelectItem value="frozen">Frozen</SelectItem>
+                      <SelectItem value="inactive">Inactive</SelectItem>
                       <SelectItem value="pending">Pending</SelectItem>
                     </SelectContent>
                   </Select>
@@ -405,22 +410,22 @@ export default function CircleManagementPage() {
                     <TableRow key={wallet.id}>
                       <TableCell>
                         <div>
-                          <p className="font-medium">{wallet.userEmail}</p>
-                          <p className="text-xs text-gray-500">{wallet.userId}</p>
+                          <p className="font-medium">{wallet.user?.email || 'Unknown User'}</p>
+                          <p className="text-xs text-gray-500">{wallet.user?.id || 'N/A'}</p>
                         </div>
                       </TableCell>
                       <TableCell className="font-mono text-sm">
-                        {wallet.walletId.substring(0, 8)}...
+                        {wallet.id.substring(0, 8)}...
                       </TableCell>
                       <TableCell className="font-bold">
-                        ${wallet.balance.toLocaleString()}
+                        ${wallet.balance?.toLocaleString() || '0'}
                       </TableCell>
                       <TableCell>
                         <Badge
                           variant={
                             wallet.status === 'active'
                               ? 'success'
-                              : wallet.status === 'frozen'
+                              : wallet.status === 'inactive'
                               ? 'destructive'
                               : 'warning'
                           }
@@ -451,7 +456,7 @@ export default function CircleManagementPage() {
                             >
                               <Lock className="w-4 h-4 text-red-600" />
                             </Button>
-                          ) : (
+                          ) : wallet.status === 'inactive' ? (
                             <Button
                               size="sm"
                               variant="ghost"
@@ -462,7 +467,7 @@ export default function CircleManagementPage() {
                             >
                               <Unlock className="w-4 h-4 text-green-600" />
                             </Button>
-                          )}
+                          ) : null}
                         </div>
                       </TableCell>
                     </TableRow>
@@ -505,7 +510,7 @@ export default function CircleManagementPage() {
             <DialogTitle>Freeze Circle Wallet</DialogTitle>
             <DialogDescription>
               This will temporarily freeze the wallet. The wallet status will be UPDATED (not deleted).
-              User: {selectedWallet?.userEmail}
+              User: {selectedWallet?.user?.email || 'Unknown User'}
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4">
@@ -555,7 +560,7 @@ export default function CircleManagementPage() {
             <DialogTitle>Unfreeze Circle Wallet</DialogTitle>
             <DialogDescription>
               This will unfreeze the wallet and restore normal operations.
-              User: {selectedWallet?.userEmail}
+              User: {selectedWallet?.user?.email || 'Unknown User'}
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4">
@@ -567,13 +572,13 @@ export default function CircleManagementPage() {
             </div>
             <div>
               <p className="text-sm text-gray-600">
-                <strong>Wallet ID:</strong> {selectedWallet?.walletId}
+                <strong>Wallet ID:</strong> {selectedWallet?.id}
               </p>
               <p className="text-sm text-gray-600">
-                <strong>Current Balance:</strong> ${selectedWallet?.balance.toLocaleString()}
+                <strong>Current Balance:</strong> ${selectedWallet?.balance?.toLocaleString() || '0'}
               </p>
               <p className="text-sm text-gray-600">
-                <strong>Last Activity:</strong> {selectedWallet?.lastActivity}
+                <strong>Last Activity:</strong> {selectedWallet?.updatedAt ? new Date(selectedWallet.updatedAt).toLocaleString() : 'N/A'}
               </p>
             </div>
           </div>

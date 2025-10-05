@@ -432,7 +432,6 @@ export default function MonitoringPage() {
                     categories={["tps"]}
                     colors={["blue"]}
                     showAnimation={false}
-                    showLegend={false}
                     showTooltip={true}
                     showGridLines={true}
                     curveType="monotone"
@@ -458,7 +457,6 @@ export default function MonitoringPage() {
                     categories={["volume"]}
                     colors={["green"]}
                     showAnimation={false}
-                    showLegend={false}
                     valueFormatter={(value) => `$${value.toLocaleString()}`}
                   />
                 </div>
@@ -483,7 +481,6 @@ export default function MonitoringPage() {
                   categories={["latency"]}
                   colors={["purple"]}
                   showAnimation={false}
-                  showLegend={false}
                   showTooltip={true}
                 />
               </div>

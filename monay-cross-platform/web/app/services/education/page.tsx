@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import DashboardLayout from '@/components/DashboardLayout';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -160,6 +161,7 @@ export default function EducationPage() {
   };
 
   return (
+    <DashboardLayout>
     <div className="min-h-screen bg-gradient-to-br from-indigo-50 to-purple-100 p-4">
       <div className="max-w-7xl mx-auto space-y-6">
         {/* Header */}
@@ -515,5 +517,6 @@ export default function EducationPage() {
         </Card>
       </div>
     </div>
+    </DashboardLayout>
   );
 }

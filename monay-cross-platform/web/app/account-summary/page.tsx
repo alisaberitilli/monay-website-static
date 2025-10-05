@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import DashboardLayout from '@/components/DashboardLayout'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -362,6 +363,7 @@ export default function ConsumerAccountSummary() {
     : 0
 
   return (
+    <DashboardLayout>
     <div className="container mx-auto p-6 space-y-6">
       {/* Header */}
       <div className="flex justify-between items-center">
@@ -1071,5 +1073,6 @@ export default function ConsumerAccountSummary() {
         </TabsContent>
       </Tabs>
     </div>
+    </DashboardLayout>
   )
 }

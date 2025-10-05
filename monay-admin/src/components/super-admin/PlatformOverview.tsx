@@ -384,7 +384,6 @@ export default function PlatformOverview() {
               colors={["blue"]}
               valueFormatter={(value) => `$${value.toLocaleString()}`}
               showAnimation={true}
-              showLegend={false}
               curveType="monotone"
             />
           </div>

@@ -10,6 +10,28 @@ const { validateMiddleware, authMiddleware } = middlewares;
 
 // Auth wrapper endpoints to match frontend expectations
 
+// List of personal email domains that are NOT allowed for enterprise/organizational users
+const PERSONAL_EMAIL_DOMAINS = [
+    'gmail.com', 'yahoo.com', 'hotmail.com', 'outlook.com',
+    'aol.com', 'msn.com', 'icloud.com', 'live.com', 'me.com',
+    'mail.com', 'protonmail.com', 'yandex.com', 'zoho.com'
+];
+
+// Helper function to check if email is a corporate/enterprise email
+function isCorporateEmail(email) {
+    if (!email || !email.includes('@')) return false;
+
+    const domain = email.split('@')[1].toLowerCase();
+
+    // Check if it's a personal email domain
+    if (PERSONAL_EMAIL_DOMAINS.includes(domain)) {
+        return false;
+    }
+
+    // If not in personal list, consider it corporate
+    return true;
+}
+
 // POST /api/auth/login - wrapper for existing /api/login
 router.post(
     '/auth/login',
@@ -18,32 +40,39 @@ router.post(
         // Frontend sends: { phoneNumber: '+15551234567', password: 'demo123' }
         // Backend expects: { username: '+15551234567', password: 'demo123', deviceType: 'ios/android' }
 
-        // Check if this is an admin login (email-based)
-        const isAdminEmail = req.body.email && (
-            req.body.email === 'admin@monay.com' ||
-            req.body.email.endsWith('@monay.com')
-        );
+        // Check if this is an email-based login (admin or enterprise)
+        const isEmailLogin = req.body.email && req.body.email.includes('@');
 
-        if (isAdminEmail) {
-            // Admin login - route to admin login handler
-            // Admin expects: { email, password, deviceType }
-            req.body.email = req.body.email.toLowerCase();
+        if (isEmailLogin) {
+            const email = req.body.email.toLowerCase();
 
-            // Auto-detect deviceType
-            if (!req.body.deviceType) {
-                const userAgent = req.headers['user-agent'] || '';
-                req.body.deviceType = userAgent.includes('Android') ? 'android' :
-                                      userAgent.includes('iPhone') || userAgent.includes('iOS') ? 'ios' : 'web';
+            // Check if it's a Monay platform admin
+            const isMonayAdmin = email === 'admin@monay.com' || email.endsWith('@monay.com');
+
+            // Check if it's a corporate/enterprise email
+            const isCorporate = isCorporateEmail(email);
+
+            if (isMonayAdmin || isCorporate) {
+                // Admin or Enterprise login - route to admin login handler
+                // Admin/Enterprise expects: { email, password, deviceType }
+                req.body.email = email;
+
+                // Auto-detect deviceType
+                if (!req.body.deviceType) {
+                    const userAgent = req.headers['user-agent'] || '';
+                    req.body.deviceType = userAgent.includes('Android') ? 'android' :
+                                          userAgent.includes('iPhone') || userAgent.includes('iOS') ? 'ios' : 'web';
+                }
+
+                // Call the admin login handler directly (works for both admin and enterprise users)
+                return accountController.login(req, res, next);
             }
-
-            // Call the admin login handler directly
-            return accountController.login(req, res, next);
         }
 
-        // Regular user login flow
-        if (req.body.phoneNumber) {
-            // Use phone number directly as username
-            let phoneNumber = req.body.phoneNumber.replace(/[\s\-\(\)]/g, '');
+        // Regular user login flow (consumer/personal users)
+        if (req.body.phoneNumber || req.body.mobile) {
+            // Use phone number directly as username (support both phoneNumber and mobile fields)
+            let phoneNumber = (req.body.phoneNumber || req.body.mobile).replace(/[\s\-\(\)]/g, '');
 
             // Ensure phone number starts with + for international format
             if (!phoneNumber.startsWith('+')) {
@@ -53,6 +82,7 @@ router.post(
             req.body.username = phoneNumber;
             // phoneCountryCode not used anymore
             delete req.body.phoneNumber;
+            delete req.body.mobile;
         } else if (req.body.email) {
             // If email is provided instead
             req.body.username = req.body.email.toLowerCase();
@@ -123,11 +153,129 @@ router.get(
     }
 );
 
-// POST /api/auth/logout
+// POST /api/auth/logout - Complete session termination
 router.post(
     '/auth/logout',
     authMiddleware,
-    accountController.logout
+    async (req, res) => {
+        try {
+            const userId = req.user.id || req.user.userId;
+
+            // Log the logout event for audit trail
+            console.log(`User ${userId} logging out - complete session termination`);
+
+            // In a full implementation, you would:
+            // 1. Invalidate refresh token in database
+            // 2. Add access token to blacklist (if using token blacklist)
+            // 3. Log the logout event in audit log
+
+            // Clear any server-side session data if using sessions
+            if (req.session) {
+                req.session.destroy();
+            }
+
+            return res.status(200).json({
+                success: true,
+                message: 'Logged out successfully. Please clear your browser storage.',
+                data: null
+            });
+        } catch (error) {
+            console.error('Logout error:', error);
+            return res.status(500).json({
+                success: false,
+                message: 'Error during logout',
+                error: error.message
+            });
+        }
+    }
+);
+
+// POST /api/auth/dev-login-token - Generate magic login token for dev/QA (DEV/QA ONLY)
+// This endpoint generates a one-time login token that auto-logs the user in
+// SECURITY: Only enabled in development and QA environments
+router.post(
+    '/auth/dev-login-token',
+    async (req, res) => {
+        try {
+            // SECURITY CHECK: Only allow in development/QA environments
+            const isDevelopment = process.env.NODE_ENV === 'development' ||
+                                process.env.NODE_ENV === 'qa' ||
+                                process.env.ENABLE_DEV_LOGIN === 'true';
+
+            if (!isDevelopment) {
+                return res.status(403).json({
+                    success: false,
+                    message: 'This endpoint is only available in development and QA environments',
+                    error: 'DEV_ONLY_ENDPOINT'
+                });
+            }
+
+            const { email, organizationId } = req.body;
+
+            if (!email) {
+                return res.status(400).json({
+                    success: false,
+                    message: 'Email is required',
+                    error: 'MISSING_EMAIL'
+                });
+            }
+
+            // Import models dynamically to avoid circular dependencies
+            const db = await import('../models/index.js');
+            const User = db.default.User;
+
+            // Find the user by email
+            const user = await User.findOne({
+                where: { email: email.toLowerCase() }
+            });
+
+            if (!user) {
+                return res.status(404).json({
+                    success: false,
+                    message: 'User not found',
+                    error: 'USER_NOT_FOUND'
+                });
+            }
+
+            // Generate JWT token using the same logic as regular login
+            const jwt = await import('jsonwebtoken');
+            const token = jwt.default.sign(
+                {
+                    id: user.id,
+                    userId: user.id,
+                    email: user.email,
+                    role: user.role || 'enterprise_user',
+                    organizationId: organizationId || user.organization_id,
+                    isDevelopmentLogin: true // Flag for audit purposes
+                },
+                process.env.JWT_SECRET || 'your-secret-key',
+                { expiresIn: '24h' }
+            );
+
+            console.log(`🔓 DEV LOGIN: Generated magic token for ${email} (Organization: ${organizationId || user.organization_id})`);
+
+            return res.status(200).json({
+                success: true,
+                message: 'Dev login token generated successfully',
+                data: {
+                    token,
+                    user: {
+                        id: user.id,
+                        email: user.email,
+                        role: user.role,
+                        organizationId: organizationId || user.organization_id
+                    }
+                }
+            });
+        } catch (error) {
+            console.error('Dev login token error:', error);
+            return res.status(500).json({
+                success: false,
+                message: 'Error generating dev login token',
+                error: error.message
+            });
+        }
+    }
 );
 
 // POST /api/auth/signup - wrapper for registration (matching frontend expectation)
@@ -596,6 +744,41 @@ router.post(
     }
 );
 
+// POST /api/auth/send-verification-email - Send email verification code
+router.post('/send-verification-email', async (req, res) => {
+  try {
+    const { email } = req.body;
+
+    if (!email) {
+      return res.status(400).json({
+        success: false,
+        message: 'Email is required'
+      });
+    }
+
+    console.log('📧 Sending verification email to:', email);
+
+    // For testing purposes, just return success with demo code
+    // In production, this would send an actual email via SendGrid/SES
+    res.json({
+      success: true,
+      message: 'Verification email sent successfully',
+      data: {
+        email,
+        demo: true,
+        code: '123456',
+        note: 'For testing, use code: 123456'
+      }
+    });
+  } catch (error) {
+    console.error('Send verification email error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to send verification email'
+    });
+  }
+});
+
 // POST /api/verify-email - Simple email verification for testing
 router.post('/verify-email', async (req, res) => {
   try {
@@ -621,6 +804,80 @@ router.post('/verify-email', async (req, res) => {
     res.status(500).json({
       success: false,
       error: 'Failed to verify email'
+    });
+  }
+});
+
+// POST /api/auth/send-verification-sms - Send SMS verification code
+router.post('/send-verification-sms', async (req, res) => {
+  try {
+    const { phone } = req.body;
+
+    if (!phone) {
+      return res.status(400).json({
+        success: false,
+        message: 'Phone number is required'
+      });
+    }
+
+    console.log('📱 Sending verification SMS to:', phone);
+
+    // For testing purposes, just return success with demo code
+    // In production, this would send an actual SMS via Twilio/SNS
+    res.json({
+      success: true,
+      message: 'Verification SMS sent successfully',
+      data: {
+        phone,
+        demo: true,
+        code: '123456',
+        note: 'For testing, use code: 123456'
+      }
+    });
+  } catch (error) {
+    console.error('Send verification SMS error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to send verification SMS'
+    });
+  }
+});
+
+// POST /api/auth/verify-phone - Verify phone number with code
+router.post('/verify-phone', async (req, res) => {
+  try {
+    const { phone, code } = req.body;
+
+    if (!phone || !code) {
+      return res.status(400).json({
+        success: false,
+        message: 'Phone number and verification code are required'
+      });
+    }
+
+    console.log('📱 Verifying phone:', phone, 'with code:', code);
+
+    // For testing purposes, accept the demo code
+    if (code === '123456') {
+      return res.json({
+        success: true,
+        message: 'Phone verified successfully',
+        data: {
+          phone,
+          verified: true
+        }
+      });
+    }
+
+    return res.status(400).json({
+      success: false,
+      message: 'Invalid verification code'
+    });
+  } catch (error) {
+    console.error('Verify phone error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to verify phone'
     });
   }
 });

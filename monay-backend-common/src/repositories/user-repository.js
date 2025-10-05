@@ -809,6 +809,9 @@ export default {
   */
   async getUserList(req) {
     try {
+      console.log('getUserList - req.user:', req.user);
+      console.log('getUserList - req.query:', req.query);
+
       const queryData = req.query;
       const headerValues = req.headers;
       const sortFields = ['id', 'name', 'email', 'phoneNumber', 'accountNumber', 'kycStatus', 'companyName', 'taxId', 'chamberOfCommerce', 'created_at', 'updated_at'];
@@ -816,15 +819,14 @@ export default {
       let fullNameWhere = {};
       let where = { is_deleted: false };
 
-      if (queryData.userType) {
-        where.role = queryData.userType
-      } else {
-        where.role = { [Op.ne]: 'admin' };
+      // Super Admin sees ALL users by default
+      // Only filter if a specific userType is requested
+      if (queryData.userType && queryData.userType !== 'allUser') {
+        where.user_type = queryData.userType;
       }
-      if (queryData.userType === 'allUser') {
-        delete where.role;
-        where.role = { [Op.in]: ['basic_consumer', 'verified_consumer', 'premium_consumer', 'secondary_user'] };
-      }
+      // Don't show platform admins in the user list (they have separate admin management)
+      // But show all other user types: consumer, enterprise, business, individual
+      // Comment out the restrictive role filter to allow all user types
       if (queryData.name) {
         fullNameWhere =
           Sequelize.where(Sequelize.fn("concat", Sequelize.col("first_name"), ' ', Sequelize.col("last_name")), {
@@ -901,8 +903,10 @@ export default {
         limit: parseInt(queryData.limit || 10),
         offset: parseInt(queryData.offset || 0)
       });
+      console.log('getUserList - Found users:', result.count);
       return result;
     } catch (error) {
+      console.error('getUserList - Error:', error);
       throw Error(error);
     }
   },

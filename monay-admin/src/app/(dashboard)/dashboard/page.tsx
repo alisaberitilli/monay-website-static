@@ -255,7 +255,6 @@ export default function DashboardPage() {
                     valueFormatter={(value) => `$${value.toLocaleString()}`}
                     showAnimation={true}
                     showGridLines={false}
-                    showLegend={false}
                     curveType="monotone"
                   />
                 </div>
@@ -290,7 +289,6 @@ export default function DashboardPage() {
                     valueFormatter={(value) => `${value}%`}
                     showAnimation={true}
                     showGridLines={false}
-                    showLegend={false}
                   />
                 </div>
               </CardContent>

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import DashboardLayout from '@/components/DashboardLayout';
 import { 
   CreditCard, 
@@ -90,8 +90,17 @@ export default function PaymentMethodsPage() {
   const [showDetails, setShowDetails] = useState(false);
   const [showAddMethod, setShowAddMethod] = useState(false);
   const [activeTab, setActiveTab] = useState<'all' | 'cards' | 'banks' | 'upi' | 'wallets'>('all');
+  const [addMethodType, setAddMethodType] = useState<'card' | 'bank' | 'upi' | 'wallet' | null>(null);
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [toast, setToast] = useState<{message: string; type: 'success' | 'error' | 'info'} | null>(null);
 
-  const paymentMethods: AllPaymentMethods[] = [
+  const showToast = (message: string, type: 'success' | 'error' | 'info' = 'success') => {
+    setToast({ message, type });
+    setTimeout(() => setToast(null), 3000);
+  };
+
+  const [paymentMethods, setPaymentMethods] = useState<AllPaymentMethods[]>([
     // Cards
     {
       id: '1',
@@ -212,7 +221,12 @@ export default function PaymentMethodsPage() {
       status: 'active',
       isDefault: false
     } as DigitalWallet,
-  ];
+  ]);
+
+  // Debug: Log payment methods changes
+  useEffect(() => {
+    console.log('Payment methods updated:', paymentMethods.length, 'methods');
+  }, [paymentMethods]);
 
   const recentTransactions: Transaction[] = [
     { id: '1', merchant: 'Starbucks', amount: -12.50, date: 'Today, 9:30 AM', category: 'Food', icon: Coffee, paymentMethodId: '1' },
@@ -346,7 +360,114 @@ export default function PaymentMethodsPage() {
   };
 
   const handleMethodAction = (action: 'freeze' | 'unfreeze' | 'delete', methodId: string) => {
-    console.log(`${action} method ${methodId}`);
+    if (action === 'delete') {
+      setShowDeleteConfirm(true);
+    } else if (action === 'freeze') {
+      setPaymentMethods(methods =>
+        methods.map(m =>
+          m.id === methodId ? { ...m, status: 'frozen' as const } : m
+        )
+      );
+      showToast('Payment method frozen successfully', 'info');
+    } else if (action === 'unfreeze') {
+      setPaymentMethods(methods =>
+        methods.map(m =>
+          m.id === methodId ? { ...m, status: 'active' as const } : m
+        )
+      );
+      showToast('Payment method activated successfully', 'success');
+    }
+  };
+
+  const handleDeleteMethod = () => {
+    if (!selectedMethod) return;
+
+    const methodName = selectedMethod.displayName;
+    setPaymentMethods(methods =>
+      methods.filter(m => m.id !== selectedMethod.id)
+    );
+    setShowDeleteConfirm(false);
+    setSelectedMethod(null);
+    showToast(`${methodName} removed successfully`, 'success');
+  };
+
+  const handleSetDefault = (methodId: string) => {
+    const method = paymentMethods.find(m => m.id === methodId);
+    setPaymentMethods(methods =>
+      methods.map(m => ({
+        ...m,
+        isDefault: m.id === methodId
+      }))
+    );
+    showToast(`${method?.displayName} set as default`, 'success');
+  };
+
+  const handleAddCard = (cardData: any) => {
+    console.log('Adding card:', cardData);
+    const newCard: Card = {
+      id: Date.now().toString(),
+      type: 'card',
+      name: cardData.name || 'New Card',
+      displayName: `${cardData.cardType === 'virtual' ? 'Virtual' : 'Physical'} Card`,
+      number: `${cardData.cardNumber.slice(0, 4)} •••• •••• ${cardData.cardNumber.slice(-4)}`,
+      balance: 0,
+      cardType: cardData.cardType || 'virtual',
+      status: 'active',
+      expiryDate: cardData.expiryDate,
+      cvv: '***',
+      gradient: cardData.cardType === 'virtual' ? 'from-cyan-600 to-blue-600' : 'from-indigo-600 to-purple-600',
+      isDefault: false
+    };
+    console.log('New card created:', newCard);
+    setPaymentMethods(prevMethods => {
+      const updated = [...prevMethods, newCard];
+      console.log('Updated methods:', updated.length);
+      return updated;
+    });
+    setShowAddMethod(false);
+    setAddMethodType(null);
+    showToast(`${newCard.displayName} added successfully!`, 'success');
+
+    // Force tab to show cards
+    setActiveTab('cards');
+  };
+
+  const handleAddBank = (bankData: any) => {
+    const newBank: BankAccount = {
+      id: Date.now().toString(),
+      type: 'bank',
+      name: bankData.accountName,
+      displayName: bankData.bankName,
+      bankName: bankData.bankName,
+      accountType: bankData.accountType,
+      accountNumber: `****${bankData.accountNumber.slice(-4)}`,
+      routingNumber: bankData.routingNumber,
+      status: 'active',
+      isDefault: false,
+      details: {}
+    };
+    setPaymentMethods(methods => [...methods, newBank]);
+    setShowAddMethod(false);
+    setAddMethodType(null);
+    showToast('Bank account added successfully!', 'success');
+  };
+
+  const handleAddWallet = (walletData: any) => {
+    const newWallet: DigitalWallet = {
+      id: Date.now().toString(),
+      type: 'digital_wallet',
+      name: walletData.provider,
+      displayName: walletData.provider.replace('_', ' ').replace(/\b\w/g, (l: string) => l.toUpperCase()),
+      provider: walletData.provider,
+      email: walletData.email,
+      phone: walletData.phone,
+      status: 'active',
+      isDefault: false
+    };
+    setPaymentMethods(methods => [...methods, newWallet]);
+    setShowAddMethod(false);
+    setAddMethodType(null);
+    showToast(`${newWallet.displayName} connected successfully!`, 'success');
   };
 
   const renderMethodCard = (method: AllPaymentMethods) => {
@@ -592,9 +713,13 @@ export default function PaymentMethodsPage() {
                     </span>
                   </button>
                   
-                  <button className="flex flex-col items-center p-4 bg-gray-50 hover:bg-purple-50 rounded-2xl transition-all group">
-                    <Edit3 className="h-6 w-6 text-gray-600 group-hover:text-purple-600 mb-2" />
-                    <span className="text-sm text-gray-700">Edit</span>
+                  <button
+                    onClick={() => handleSetDefault(selectedMethod.id)}
+                    className="flex flex-col items-center p-4 bg-gray-50 hover:bg-purple-50 rounded-2xl transition-all group"
+                    disabled={selectedMethod.isDefault}
+                  >
+                    <Check className="h-6 w-6 text-gray-600 group-hover:text-purple-600 mb-2" />
+                    <span className="text-sm text-gray-700">Set Default</span>
                   </button>
                   
                   <button 
@@ -728,23 +853,32 @@ export default function PaymentMethodsPage() {
             <div className="bg-white rounded-3xl p-6">
               <h3 className="text-lg font-semibold text-gray-900 mb-4">Quick Add</h3>
               <div className="space-y-3">
-                <button className="w-full flex items-center justify-between p-4 bg-gray-50 hover:bg-purple-50 rounded-2xl transition-all group">
+                <button
+                  onClick={() => { setShowAddMethod(true); setAddMethodType('card'); }}
+                  className="w-full flex items-center justify-between p-4 bg-gray-50 hover:bg-purple-50 rounded-2xl transition-all group"
+                >
                   <div className="flex items-center space-x-3">
                     <CreditCard className="h-5 w-5 text-gray-600 group-hover:text-purple-600" />
                     <span className="font-medium text-gray-700 group-hover:text-purple-700">Add Card</span>
                   </div>
                   <ArrowRight className="h-4 w-4 text-gray-400 group-hover:text-purple-600" />
                 </button>
-                
-                <button className="w-full flex items-center justify-between p-4 bg-gray-50 hover:bg-purple-50 rounded-2xl transition-all group">
+
+                <button
+                  onClick={() => { setShowAddMethod(true); setAddMethodType('bank'); }}
+                  className="w-full flex items-center justify-between p-4 bg-gray-50 hover:bg-purple-50 rounded-2xl transition-all group"
+                >
                   <div className="flex items-center space-x-3">
                     <Building2 className="h-5 w-5 text-gray-600 group-hover:text-purple-600" />
                     <span className="font-medium text-gray-700 group-hover:text-purple-700">Add Bank Account</span>
                   </div>
                   <ArrowRight className="h-4 w-4 text-gray-400 group-hover:text-purple-600" />
                 </button>
-                
-                <button className="w-full flex items-center justify-between p-4 bg-gray-50 hover:bg-purple-50 rounded-2xl transition-all group">
+
+                <button
+                  onClick={() => { setShowAddMethod(true); setAddMethodType('upi'); }}
+                  className="w-full flex items-center justify-between p-4 bg-gray-50 hover:bg-purple-50 rounded-2xl transition-all group"
+                >
                   <div className="flex items-center space-x-3">
                     <Smartphone className="h-5 w-5 text-gray-600 group-hover:text-purple-600" />
                     <span className="font-medium text-gray-700 group-hover:text-purple-700">Add UPI</span>
@@ -756,28 +890,40 @@ export default function PaymentMethodsPage() {
                 <div className="pt-2 border-t border-gray-200">
                   <p className="text-xs text-gray-500 mb-3 uppercase tracking-wider">Popular Wallets</p>
                   <div className="grid grid-cols-2 gap-2">
-                    <button className="flex items-center space-x-2 p-3 bg-gray-50 hover:bg-purple-50 rounded-xl transition-all group">
+                    <button
+                      onClick={() => handleAddWallet({ provider: 'apple_pay' })}
+                      className="flex items-center space-x-2 p-3 bg-gray-50 hover:bg-purple-50 rounded-xl transition-all group"
+                    >
                       <div className="w-6 h-6 flex items-center justify-center">
                         {renderWalletLogo('apple_pay', false)}
                       </div>
                       <span className="text-sm font-medium text-gray-700 group-hover:text-purple-700">Apple Pay</span>
                     </button>
-                    
-                    <button className="flex items-center space-x-2 p-3 bg-gray-50 hover:bg-purple-50 rounded-xl transition-all group">
+
+                    <button
+                      onClick={() => handleAddWallet({ provider: 'google_pay', email: 'user@gmail.com' })}
+                      className="flex items-center space-x-2 p-3 bg-gray-50 hover:bg-purple-50 rounded-xl transition-all group"
+                    >
                       <div className="w-6 h-6 flex items-center justify-center">
                         {renderWalletLogo('google_pay', false)}
                       </div>
                       <span className="text-sm font-medium text-gray-700 group-hover:text-purple-700">Google Pay</span>
                     </button>
-                    
-                    <button className="flex items-center space-x-2 p-3 bg-gray-50 hover:bg-purple-50 rounded-xl transition-all group">
+
+                    <button
+                      onClick={() => handleAddWallet({ provider: 'paypal', email: 'user@example.com' })}
+                      className="flex items-center space-x-2 p-3 bg-gray-50 hover:bg-purple-50 rounded-xl transition-all group"
+                    >
                       <div className="w-6 h-6 flex items-center justify-center">
                         {renderWalletLogo('paypal', false)}
                       </div>
                       <span className="text-sm font-medium text-gray-700 group-hover:text-purple-700">PayPal</span>
                     </button>
-                    
-                    <button className="flex items-center space-x-2 p-3 bg-gray-50 hover:bg-purple-50 rounded-xl transition-all group">
+
+                    <button
+                      onClick={() => handleAddWallet({ provider: 'venmo', phone: '+1234567890' })}
+                      className="flex items-center space-x-2 p-3 bg-gray-50 hover:bg-purple-50 rounded-xl transition-all group"
+                    >
                       <div className="w-6 h-6 flex items-center justify-center">
                         {renderWalletLogo('venmo', false)}
                       </div>
@@ -816,7 +962,420 @@ export default function PaymentMethodsPage() {
             </div>
           </div>
         </div>
+
+        {/* Add Payment Method Modal */}
+        {showAddMethod && (
+          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+            <div className="bg-white rounded-3xl max-w-lg w-full p-8 relative">
+              <button
+                onClick={() => { setShowAddMethod(false); setAddMethodType(null); }}
+                className="absolute top-4 right-4 text-gray-400 hover:text-gray-600"
+              >
+                <X className="h-6 w-6" />
+              </button>
+
+              <h2 className="text-2xl font-bold text-gray-900 mb-6">
+                Add {addMethodType === 'card' ? 'Card' : addMethodType === 'bank' ? 'Bank Account' : 'UPI'}
+              </h2>
+
+              {addMethodType === 'card' && <AddCardForm onSubmit={handleAddCard} onCancel={() => setShowAddMethod(false)} />}
+              {addMethodType === 'bank' && <AddBankForm onSubmit={handleAddBank} onCancel={() => setShowAddMethod(false)} />}
+              {addMethodType === 'upi' && <AddUPIForm onSubmit={(data) => {
+                const upiAccount: UPIAccount = {
+                  id: Date.now().toString(),
+                  type: 'upi',
+                  name: 'UPI Account',
+                  displayName: data.upiId,
+                  upiId: data.upiId,
+                  linkedBank: data.linkedBank || 'Bank',
+                  status: 'active',
+                  isDefault: false
+                };
+                setPaymentMethods(methods => [...methods, upiAccount]);
+                setShowAddMethod(false);
+                setAddMethodType(null);
+                showToast('UPI account added successfully!', 'success');
+              }} onCancel={() => setShowAddMethod(false)} />}
+            </div>
+          </div>
+        )}
+
+        {/* Toast Notification */}
+        {toast && (
+          <div className="fixed top-4 right-4 z-[60] transition-all duration-300 ease-in-out" style={{
+            animation: 'slideInRight 0.3s ease-out'
+          }}>
+            <style jsx>{`
+              @keyframes slideInRight {
+                from {
+                  transform: translateX(400px);
+                  opacity: 0;
+                }
+                to {
+                  transform: translateX(0);
+                  opacity: 1;
+                }
+              }
+            `}</style>
+            <div className={`rounded-xl shadow-2xl p-4 pr-12 flex items-center space-x-3 min-w-[320px] ${
+              toast.type === 'success' ? 'bg-green-600 text-white' :
+              toast.type === 'error' ? 'bg-red-600 text-white' :
+              'bg-blue-600 text-white'
+            }`}>
+              {toast.type === 'success' && <Check className="h-5 w-5 flex-shrink-0" />}
+              {toast.type === 'error' && <X className="h-5 w-5 flex-shrink-0" />}
+              {toast.type === 'info' && <Lock className="h-5 w-5 flex-shrink-0" />}
+              <span className="font-medium">{toast.message}</span>
+              <button
+                onClick={() => setToast(null)}
+                className="absolute top-2 right-2 text-white/80 hover:text-white"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* Delete Confirmation Modal */}
+        {showDeleteConfirm && selectedMethod && (
+          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+            <div className="bg-white rounded-3xl max-w-md w-full p-8">
+              <div className="flex items-center justify-center mb-4">
+                <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center">
+                  <Trash2 className="h-8 w-8 text-red-600" />
+                </div>
+              </div>
+              <h3 className="text-xl font-bold text-gray-900 text-center mb-2">Remove Payment Method?</h3>
+              <p className="text-gray-600 text-center mb-6">
+                Are you sure you want to remove <strong>{selectedMethod.displayName}</strong>? This action cannot be undone.
+              </p>
+              <div className="flex gap-3">
+                <button
+                  onClick={() => setShowDeleteConfirm(false)}
+                  className="flex-1 px-4 py-3 border border-gray-300 text-gray-700 rounded-xl font-medium hover:bg-gray-50 transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleDeleteMethod}
+                  className="flex-1 px-4 py-3 bg-red-600 text-white rounded-xl font-medium hover:bg-red-700 transition-colors"
+                >
+                  Remove
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </DashboardLayout>
+  );
+}
+
+// Add Card Form Component
+function AddCardForm({ onSubmit, onCancel }: { onSubmit: (data: any) => void; onCancel: () => void }) {
+  const [formData, setFormData] = useState({
+    cardNumber: '',
+    expiryDate: '',
+    cvv: '',
+    name: '',
+    cardType: 'virtual' as 'virtual' | 'physical'
+  });
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    onSubmit(formData);
+  };
+
+  const formatCardNumber = (value: string) => {
+    const v = value.replace(/\s+/g, '').replace(/[^0-9]/gi, '');
+    const matches = v.match(/\d{4,16}/g);
+    const match = (matches && matches[0]) || '';
+    const parts = [];
+    for (let i = 0, len = match.length; i < len; i += 4) {
+      parts.push(match.substring(i, i + 4));
+    }
+    if (parts.length) {
+      return parts.join(' ');
+    } else {
+      return value;
+    }
+  };
+
+  const formatExpiryDate = (value: string) => {
+    const v = value.replace(/\s+/g, '').replace(/[^0-9]/gi, '');
+    if (v.length >= 2) {
+      return `${v.substring(0, 2)}/${v.substring(2, 4)}`;
+    }
+    return v;
+  };
+
+  const handleCardNumberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const formatted = formatCardNumber(e.target.value);
+    setFormData({ ...formData, cardNumber: formatted });
+  };
+
+  const handleExpiryChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const formatted = formatExpiryDate(e.target.value);
+    setFormData({ ...formData, expiryDate: formatted });
+  };
+
+  return (
+    <form onSubmit={handleSubmit} className="space-y-4">
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-2">Card Number</label>
+        <input
+          type="text"
+          placeholder="4532 1234 5678 9012"
+          value={formData.cardNumber}
+          onChange={handleCardNumberChange}
+          className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent font-mono"
+          required
+          maxLength={19}
+        />
+        <p className="text-xs text-gray-500 mt-1">Enter 16-digit card number</p>
+      </div>
+      <div className="grid grid-cols-2 gap-4">
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">Expiry Date</label>
+          <input
+            type="text"
+            placeholder="MM/YY"
+            value={formData.expiryDate}
+            onChange={handleExpiryChange}
+            className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent font-mono"
+            required
+            maxLength={5}
+          />
+          <p className="text-xs text-gray-500 mt-1">Format: MM/YY</p>
+        </div>
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">CVV</label>
+          <input
+            type="password"
+            placeholder="123"
+            value={formData.cvv}
+            onChange={(e) => {
+              const value = e.target.value.replace(/[^0-9]/g, '');
+              setFormData({ ...formData, cvv: value });
+            }}
+            className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent font-mono"
+            required
+            maxLength={4}
+            minLength={3}
+          />
+          <p className="text-xs text-gray-500 mt-1">3-4 digits on back</p>
+        </div>
+      </div>
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-2">Card Holder Name</label>
+        <input
+          type="text"
+          placeholder="Ali Saberi"
+          value={formData.name}
+          onChange={(e) => setFormData({ ...formData, name: e.target.value.toUpperCase() })}
+          className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent uppercase"
+          required
+          pattern="[A-Za-z\s]+"
+        />
+        <p className="text-xs text-gray-500 mt-1">Name as it appears on card</p>
+      </div>
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-2">Card Type</label>
+        <div className="flex gap-3">
+          <button
+            type="button"
+            onClick={() => setFormData({ ...formData, cardType: 'virtual' })}
+            className={`flex-1 px-4 py-3 rounded-xl border-2 transition-all ${
+              formData.cardType === 'virtual' ? 'border-purple-500 bg-purple-50' : 'border-gray-200'
+            }`}
+          >
+            Virtual
+          </button>
+          <button
+            type="button"
+            onClick={() => setFormData({ ...formData, cardType: 'physical' })}
+            className={`flex-1 px-4 py-3 rounded-xl border-2 transition-all ${
+              formData.cardType === 'physical' ? 'border-purple-500 bg-purple-50' : 'border-gray-200'
+            }`}
+          >
+            Physical
+          </button>
+        </div>
+      </div>
+      <div className="flex gap-3 pt-4">
+        <button
+          type="button"
+          onClick={onCancel}
+          className="flex-1 px-4 py-3 border border-gray-300 text-gray-700 rounded-xl font-medium hover:bg-gray-50 transition-colors"
+        >
+          Cancel
+        </button>
+        <button
+          type="submit"
+          className="flex-1 px-4 py-3 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-xl font-medium hover:shadow-lg transition-all"
+        >
+          Add Card
+        </button>
+      </div>
+    </form>
+  );
+}
+
+// Add Bank Form Component
+function AddBankForm({ onSubmit, onCancel }: { onSubmit: (data: any) => void; onCancel: () => void }) {
+  const [formData, setFormData] = useState({
+    bankName: '',
+    accountName: '',
+    accountNumber: '',
+    routingNumber: '',
+    accountType: 'checking' as 'checking' | 'savings'
+  });
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    onSubmit(formData);
+  };
+
+  return (
+    <form onSubmit={handleSubmit} className="space-y-4">
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-2">Bank Name</label>
+        <input
+          type="text"
+          placeholder="Chase Bank"
+          value={formData.bankName}
+          onChange={(e) => setFormData({ ...formData, bankName: e.target.value })}
+          className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+          required
+        />
+      </div>
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-2">Account Name</label>
+        <input
+          type="text"
+          placeholder="Ali Saberi"
+          value={formData.accountName}
+          onChange={(e) => setFormData({ ...formData, accountName: e.target.value })}
+          className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+          required
+        />
+      </div>
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-2">Account Number</label>
+        <input
+          type="text"
+          placeholder="1234567890"
+          value={formData.accountNumber}
+          onChange={(e) => setFormData({ ...formData, accountNumber: e.target.value })}
+          className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+          required
+        />
+      </div>
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-2">Routing Number</label>
+        <input
+          type="text"
+          placeholder="021000021"
+          value={formData.routingNumber}
+          onChange={(e) => setFormData({ ...formData, routingNumber: e.target.value })}
+          className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+          required
+          maxLength={9}
+        />
+      </div>
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-2">Account Type</label>
+        <div className="flex gap-3">
+          <button
+            type="button"
+            onClick={() => setFormData({ ...formData, accountType: 'checking' })}
+            className={`flex-1 px-4 py-3 rounded-xl border-2 transition-all ${
+              formData.accountType === 'checking' ? 'border-purple-500 bg-purple-50' : 'border-gray-200'
+            }`}
+          >
+            Checking
+          </button>
+          <button
+            type="button"
+            onClick={() => setFormData({ ...formData, accountType: 'savings' })}
+            className={`flex-1 px-4 py-3 rounded-xl border-2 transition-all ${
+              formData.accountType === 'savings' ? 'border-purple-500 bg-purple-50' : 'border-gray-200'
+            }`}
+          >
+            Savings
+          </button>
+        </div>
+      </div>
+      <div className="flex gap-3 pt-4">
+        <button
+          type="button"
+          onClick={onCancel}
+          className="flex-1 px-4 py-3 border border-gray-300 text-gray-700 rounded-xl font-medium hover:bg-gray-50 transition-colors"
+        >
+          Cancel
+        </button>
+        <button
+          type="submit"
+          className="flex-1 px-4 py-3 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-xl font-medium hover:shadow-lg transition-all"
+        >
+          Add Bank Account
+        </button>
+      </div>
+    </form>
+  );
+}
+
+// Add UPI Form Component
+function AddUPIForm({ onSubmit, onCancel }: { onSubmit: (data: any) => void; onCancel: () => void }) {
+  const [formData, setFormData] = useState({
+    upiId: '',
+    linkedBank: ''
+  });
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    onSubmit(formData);
+  };
+
+  return (
+    <form onSubmit={handleSubmit} className="space-y-4">
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-2">UPI ID</label>
+        <input
+          type="text"
+          placeholder="yourname@paytm"
+          value={formData.upiId}
+          onChange={(e) => setFormData({ ...formData, upiId: e.target.value })}
+          className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+          required
+        />
+      </div>
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-2">Linked Bank</label>
+        <input
+          type="text"
+          placeholder="HDFC Bank"
+          value={formData.linkedBank}
+          onChange={(e) => setFormData({ ...formData, linkedBank: e.target.value })}
+          className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+          required
+        />
+      </div>
+      <div className="flex gap-3 pt-4">
+        <button
+          type="button"
+          onClick={onCancel}
+          className="flex-1 px-4 py-3 border border-gray-300 text-gray-700 rounded-xl font-medium hover:bg-gray-50 transition-colors"
+        >
+          Cancel
+        </button>
+        <button
+          type="submit"
+          className="flex-1 px-4 py-3 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-xl font-medium hover:shadow-lg transition-all"
+        >
+          Add UPI Account
+        </button>
+      </div>
+    </form>
   );
 }

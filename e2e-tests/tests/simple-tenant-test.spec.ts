@@ -3,7 +3,7 @@ import { test, expect } from '@playwright/test';
 // Test configuration
 const ADMIN_URL = 'http://localhost:3002';
 const ADMIN_EMAIL = 'admin@monay.com';
-const ADMIN_PASSWORD = 'Admin@123';
+const ADMIN_PASSWORD = 'SecureAdmin123';
 
 test.describe('Monay Admin - Tenant Creation', () => {
   test('Login and Create Tenant Organization', async ({ page }) => {

@@ -21,7 +21,9 @@ import {
   PieChart,
   ArrowUpRight,
   ArrowDownLeft,
-  MoreVertical
+  MoreVertical,
+  ChevronLeft,
+  ChevronRight
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import apiClient from '@/lib/api-client';
@@ -39,23 +41,33 @@ interface Transaction {
   icon?: string;
 }
 
+interface Card {
+  id: string;
+  type: 'debit' | 'credit' | 'virtual';
+  cardNumber: string;
+  expiryDate: string;
+  holderName: string;
+  balance?: number;
+  creditLimit?: number;
+  isActive: boolean;
+  gradient: string;
+}
+
 export default function DashboardPage() {
   const router = useRouter();
   const { user } = useAuth();
   const [showBalance, setShowBalance] = useState(true);
   const [balance, setBalance] = useState(12450.75);
   const [isLoadingBalance, setIsLoadingBalance] = useState(true);
-  
-  // Fetch real balance on component mount
-  useEffect(() => {
-    fetchBalance();
-  }, []);
+  const [currentCardIndex, setCurrentCardIndex] = useState(0);
 
   const fetchBalance = async () => {
     try {
       const response = await apiClient.getBalance();
       if (response.success && response.data) {
-        setBalance(response.data.balance || response.data.available || 0);
+        // Handle both API formats - totalWalletAmount from our backend or balance/available
+        const balanceValue = response.data.totalWalletAmount || response.data.balance || response.data.available || 0;
+        setBalance(parseFloat(balanceValue));
       }
     } catch (error) {
       console.error('Error fetching balance:', error);
@@ -63,6 +75,32 @@ export default function DashboardPage() {
       setIsLoadingBalance(false);
     }
   };
+
+  // Fetch real balance on component mount
+  useEffect(() => {
+    fetchBalance();
+  }, []);
+
+  // Refresh balance when page becomes visible (user returns from another page)
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'visible') {
+        fetchBalance();
+      }
+    };
+
+    const handleFocus = () => {
+      fetchBalance();
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    window.addEventListener('focus', handleFocus);
+
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+      window.removeEventListener('focus', handleFocus);
+    };
+  }, []);
   
   // Clear all mock data - start with actual zeros
   const monthlyIncome = 0;
@@ -71,6 +109,51 @@ export default function DashboardPage() {
   
   // No mock transactions - start with empty transaction list
   const recentTransactions: Transaction[] = [];
+
+  // Mock cards data - should be fetched from API
+  const cards: Card[] = [
+    {
+      id: '1',
+      type: 'debit',
+      cardNumber: '4532 1234 5678 9012',
+      expiryDate: '12/26',
+      holderName: user?.firstName && user?.lastName ? `${user.firstName} ${user.lastName}` : 'John Doe',
+      balance: balance, // Use the same balance from API
+      isActive: true,
+      gradient: 'from-purple-600 to-pink-600',
+    },
+    {
+      id: '2',
+      type: 'credit',
+      cardNumber: '5678 9012 3456 7890',
+      expiryDate: '09/27',
+      holderName: user?.firstName && user?.lastName ? `${user.firstName} ${user.lastName}` : 'John Doe',
+      creditLimit: 5000,
+      balance: 1250.45,
+      isActive: true,
+      gradient: 'from-blue-600 to-purple-700',
+    },
+    {
+      id: '3',
+      type: 'virtual',
+      cardNumber: '9012 3456 7890 1234',
+      expiryDate: '03/25',
+      holderName: user?.firstName && user?.lastName ? `${user.firstName} ${user.lastName}` : 'John Doe',
+      balance: 500.00,
+      isActive: false,
+      gradient: 'from-cyan-500 to-blue-500',
+    },
+  ];
+
+  const currentCard = cards[currentCardIndex];
+
+  const nextCard = () => {
+    setCurrentCardIndex((prev) => (prev + 1) % cards.length);
+  };
+
+  const prevCard = () => {
+    setCurrentCardIndex((prev) => (prev - 1 + cards.length) % cards.length);
+  };
 
   const quickActions = [
     { name: 'Send', icon: Send, gradient: 'from-blue-500 to-cyan-500', path: '/transfer' },
@@ -114,7 +197,13 @@ export default function DashboardPage() {
                 <p className="text-white/80 text-sm font-medium mb-2">Total Balance</p>
                 <div className="flex items-center space-x-4">
                   <h2 className="text-5xl font-bold">
-                    {showBalance ? `$${balance.toLocaleString('en-US', { minimumFractionDigits: 2 })}` : '•••••••'}
+                    {isLoadingBalance ? (
+                      <span className="animate-pulse">Loading...</span>
+                    ) : showBalance ? (
+                      `$${balance.toLocaleString('en-US', { minimumFractionDigits: 2 })}`
+                    ) : (
+                      '•••••••'
+                    )}
                   </h2>
                   <button
                     onClick={() => setShowBalance(!showBalance)}
@@ -123,7 +212,7 @@ export default function DashboardPage() {
                     {showBalance ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
                   </button>
                 </div>
-                {showBalance && (
+                {showBalance && !isLoadingBalance && (
                   <p className="text-white/70 text-sm mt-2">
                     <span className="text-green-300">↑ 12.5%</span> from last month
                   </p>
@@ -304,29 +393,86 @@ export default function DashboardPage() {
             <div className="bg-white rounded-3xl p-6">
               <div className="flex items-center justify-between mb-4">
                 <h3 className="text-lg font-semibold text-gray-900">My Cards</h3>
-                <button className="text-gray-400 hover:text-gray-600">
-                  <MoreVertical className="h-5 w-5" />
+                <button
+                  onClick={() => router.push('/dashboard/cards')}
+                  className="text-purple-600 text-sm font-medium hover:text-purple-700"
+                >
+                  View All
                 </button>
               </div>
-              
-              <div className="bg-gradient-to-br from-purple-600 to-pink-600 rounded-2xl p-6 text-white">
-                <div className="flex justify-between items-start mb-8">
-                  <div>
-                    <p className="text-xs text-white/80 mb-1">Balance</p>
-                    <p className="text-2xl font-bold">$2,547.83</p>
+
+              {/* Card Carousel */}
+              <div className="relative">
+                <div className={`bg-gradient-to-br ${currentCard.gradient} rounded-2xl p-6 text-white transition-all duration-300`}>
+                  <div className="flex justify-between items-start mb-8">
+                    <div>
+                      <div className="flex items-center space-x-2 mb-1">
+                        <p className="text-xs text-white/80 capitalize">{currentCard.type} Card</p>
+                        <div className={`w-2 h-2 rounded-full ${currentCard.isActive ? 'bg-green-400' : 'bg-yellow-400'}`}></div>
+                      </div>
+                      <p className="text-2xl font-bold">
+                        {currentCard.type === 'credit'
+                          ? `$${((currentCard.creditLimit || 0) - (currentCard.balance || 0)).toFixed(2)}`
+                          : `$${currentCard.balance?.toFixed(2)}`
+                        }
+                      </p>
+                      <p className="text-xs text-white/70 mt-1">
+                        {currentCard.type === 'credit' ? 'Available Credit' : 'Balance'}
+                      </p>
+                    </div>
+                    <div className="w-12 h-8 bg-white/20 rounded flex items-center justify-center">
+                      <CreditCard className="h-5 w-5" />
+                    </div>
                   </div>
-                  <div className="w-12 h-8 bg-white/20 rounded flex items-center justify-center">
-                    <CreditCard className="h-5 w-5" />
+                  <div className="font-mono text-sm mb-4">
+                    {currentCard.cardNumber.replace(/\d(?=\d{4})/g, '•')}
+                  </div>
+                  <div className="flex justify-between text-xs">
+                    <span>{currentCard.holderName}</span>
+                    <span>{currentCard.expiryDate}</span>
                   </div>
                 </div>
-                <div className="font-mono text-sm mb-4">•••• •••• •••• 4532</div>
-                <div className="flex justify-between text-xs">
-                  <span>John Doe</span>
-                  <span>12/26</span>
-                </div>
+
+                {/* Navigation Arrows */}
+                {cards.length > 1 && (
+                  <>
+                    <button
+                      onClick={prevCard}
+                      className="absolute left-2 top-1/2 -translate-y-1/2 w-8 h-8 bg-white/90 hover:bg-white rounded-full flex items-center justify-center shadow-lg transition-all"
+                    >
+                      <ChevronLeft className="h-5 w-5 text-gray-700" />
+                    </button>
+                    <button
+                      onClick={nextCard}
+                      className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 bg-white/90 hover:bg-white rounded-full flex items-center justify-center shadow-lg transition-all"
+                    >
+                      <ChevronRight className="h-5 w-5 text-gray-700" />
+                    </button>
+                  </>
+                )}
               </div>
-              
-              <button className="w-full mt-4 py-3 border-2 border-dashed border-gray-300 rounded-2xl text-gray-600 hover:border-purple-600 hover:text-purple-600 transition-colors">
+
+              {/* Card Indicator Dots */}
+              {cards.length > 1 && (
+                <div className="flex justify-center space-x-2 mt-4">
+                  {cards.map((_, index) => (
+                    <button
+                      key={index}
+                      onClick={() => setCurrentCardIndex(index)}
+                      className={`w-2 h-2 rounded-full transition-all ${
+                        index === currentCardIndex
+                          ? 'bg-purple-600 w-6'
+                          : 'bg-gray-300 hover:bg-gray-400'
+                      }`}
+                    />
+                  ))}
+                </div>
+              )}
+
+              <button
+                onClick={() => router.push('/dashboard/cards')}
+                className="w-full mt-4 py-3 border-2 border-dashed border-gray-300 rounded-2xl text-gray-600 hover:border-purple-600 hover:text-purple-600 transition-colors"
+              >
                 + Add New Card
               </button>
             </div>

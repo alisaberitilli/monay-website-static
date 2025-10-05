@@ -23,6 +23,12 @@ router.get('/status-classic', (req, res) => {
     res.sendFile(statusPath);
 });
 
+// Serve the API Viewer at /api-viewer
+router.get('/api-viewer', (req, res) => {
+    const viewerPath = path.join(__dirname, '../public/api-viewer.html');
+    res.sendFile(viewerPath);
+});
+
 // API endpoint for live status data
 router.get('/api/status', async (req, res) => {
     const uptime = process.uptime();
@@ -187,7 +193,13 @@ router.get('/api/status', async (req, res) => {
         }
     };
     
-    return successResponse(req, res, status, 'Status retrieved successfully');
+    // Format JSON with 2-space indentation for better readability
+    res.setHeader('Content-Type', 'application/json');
+    return res.send(JSON.stringify({
+        success: true,
+        message: 'Status retrieved successfully',
+        data: status
+    }, null, 2));
 });
 
 // Endpoint to start an application (development only)

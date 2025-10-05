@@ -1,5 +1,6 @@
 'use client'
 
+import DashboardLayout from '@/components/DashboardLayout'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { useRouter } from 'next/navigation'
@@ -116,7 +117,8 @@ export default function ServicesPage() {
   }
 
   return (
-    <div className="container mx-auto p-6 max-w-7xl">
+    <DashboardLayout>
+      <div className="container mx-auto p-6 max-w-7xl">
       <div className="mb-8">
         <h1 className="text-3xl font-bold mb-2">Super App Services</h1>
         <p className="text-gray-600">
@@ -208,6 +210,7 @@ export default function ServicesPage() {
           </div>
         </CardContent>
       </Card>
-    </div>
+      </div>
+    </DashboardLayout>
   )
 }

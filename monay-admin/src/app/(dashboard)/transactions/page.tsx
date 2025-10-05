@@ -586,7 +586,6 @@ export default function TransactionsPage() {
                 showAnimation={true}
                 showLabel={true}
                 showTooltip={true}
-                showLegend={true}
                 label="$10,200"
               />
             </div>

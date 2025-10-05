@@ -40,10 +40,11 @@ export default function KYCVerificationPage() {
     businessLicense: null as File | null
   });
 
-  // Get registration data (in real app, this would come from auth context or localStorage)
+  // Get registration data and pre-fill address from onboarding
   useEffect(() => {
     // Try to get data from localStorage first (from actual registration)
     const savedRegistrationData = localStorage.getItem('enterpriseRegistrationData');
+    const savedOnboardingData = localStorage.getItem('onboarding_form_data'); // Match onboarding page key
 
     if (savedRegistrationData) {
       try {
@@ -65,6 +66,44 @@ export default function KYCVerificationPage() {
       };
       setRegistrationData(mockRegistrationData);
       console.log('Using demo registration data:', mockRegistrationData);
+    }
+
+    // Pre-fill address from onboarding if available
+    if (savedOnboardingData) {
+      try {
+        const onboardingData = JSON.parse(savedOnboardingData);
+        console.log('Loading address from onboarding data:', onboardingData);
+
+        // Pre-fill business address from onboarding
+        if (onboardingData.addressLine1 || onboardingData.city) {
+          setBusinessInfo({
+            businessName: onboardingData.orgName || '',
+            businessType: onboardingData.businessType || 'Corporation',
+            ein: '',
+            businessAddress: onboardingData.addressLine1 || '',
+            businessCity: onboardingData.city || '',
+            businessState: onboardingData.state || '',
+            businessZipCode: onboardingData.postalCode || ''
+          });
+          console.log('✅ Pre-filled business address from onboarding');
+        }
+
+        // Pre-fill personal address (same as business address initially, user can update)
+        if (onboardingData.addressLine1 || onboardingData.city) {
+          setPersonalInfo({
+            dateOfBirth: '',
+            ssn: '',
+            address: onboardingData.addressLine1 || '',
+            city: onboardingData.city || '',
+            state: onboardingData.state || '',
+            zipCode: onboardingData.postalCode || '',
+            country: onboardingData.country || 'US'
+          });
+          console.log('✅ Pre-filled personal address from onboarding');
+        }
+      } catch (error) {
+        console.error('Error parsing saved onboarding data:', error);
+      }
     }
   }, []);
 
@@ -207,6 +246,18 @@ export default function KYCVerificationPage() {
         {step === 'personal' && (
           <form onSubmit={handlePersonalInfoSubmit}>
             <CardContent className="space-y-4">
+              {/* Address Pre-filled Banner */}
+              {(personalInfo.address || personalInfo.city) && (
+                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                  <div className="flex items-center">
+                    <CheckCircle2 className="h-5 w-5 text-blue-600 mr-2" />
+                    <span className="font-semibold text-blue-800">Address Pre-filled from Onboarding</span>
+                  </div>
+                  <p className="text-sm text-blue-700 mt-1">
+                    Your address has been automatically filled from your previous registration. You can review and update it below if needed.
+                  </p>
+                </div>
+              )}
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="dateOfBirth">Date of Birth</Label>
@@ -243,7 +294,7 @@ export default function KYCVerificationPage() {
                   onChange={handlePersonalInfoChange}
                 />
               </div>
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-3 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="city">City</Label>
                   <Input
@@ -267,6 +318,18 @@ export default function KYCVerificationPage() {
                     onChange={handlePersonalInfoChange}
                   />
                 </div>
+                <div className="space-y-2">
+                  <Label htmlFor="zipCode">ZIP Code</Label>
+                  <Input
+                    id="zipCode"
+                    name="zipCode"
+                    placeholder="94102"
+                    maxLength={5}
+                    required
+                    value={personalInfo.zipCode}
+                    onChange={handlePersonalInfoChange}
+                  />
+                </div>
               </div>
             </CardContent>
             <div className="px-6 pb-6">
@@ -280,8 +343,21 @@ export default function KYCVerificationPage() {
         {step === 'business' && (
           <form onSubmit={handleBusinessInfoSubmit}>
             <CardContent className="space-y-4">
+              {/* Business Address Pre-filled Banner */}
+              {(businessInfo.businessAddress || businessInfo.businessCity) && (
+                <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+                  <div className="flex items-center">
+                    <CheckCircle2 className="h-5 w-5 text-green-600 mr-2" />
+                    <span className="font-semibold text-green-800">Business Information Pre-filled</span>
+                  </div>
+                  <p className="text-sm text-green-700 mt-1">
+                    Your business name and address have been automatically filled from onboarding. You can review and update them below.
+                  </p>
+                </div>
+              )}
+
               {/* Copy Registration Data Banner */}
-              {registrationData && !dataCopied && (
+              {registrationData && !dataCopied && !(businessInfo.businessAddress || businessInfo.businessCity) && (
                 <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 space-y-3">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center">
@@ -355,6 +431,43 @@ export default function KYCVerificationPage() {
                   value={businessInfo.businessAddress}
                   onChange={handleBusinessInfoChange}
                 />
+              </div>
+              <div className="grid grid-cols-3 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="businessCity">City</Label>
+                  <Input
+                    id="businessCity"
+                    name="businessCity"
+                    placeholder="San Francisco"
+                    required
+                    value={businessInfo.businessCity}
+                    onChange={handleBusinessInfoChange}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="businessState">State</Label>
+                  <Input
+                    id="businessState"
+                    name="businessState"
+                    placeholder="CA"
+                    maxLength={2}
+                    required
+                    value={businessInfo.businessState}
+                    onChange={handleBusinessInfoChange}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="businessZipCode">ZIP Code</Label>
+                  <Input
+                    id="businessZipCode"
+                    name="businessZipCode"
+                    placeholder="94102"
+                    maxLength={5}
+                    required
+                    value={businessInfo.businessZipCode}
+                    onChange={handleBusinessInfoChange}
+                  />
+                </div>
               </div>
             </CardContent>
             <div className="px-6 pb-6 space-y-4">

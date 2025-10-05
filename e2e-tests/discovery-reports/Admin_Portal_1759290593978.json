@@ -1,0 +1,95 @@
+{
+  "app": "Admin Portal",
+  "timestamp": 1759290593978,
+  "features": {
+    "AUTH_FLOW": {
+      "signup": {
+        "name": "Sign Up Page",
+        "exists": true,
+        "selectors_found": [
+          "a[href*=\"signup\"]",
+          "button:has-text(\"Sign Up\")",
+          "text=Create Account"
+        ],
+        "selectors_missing": []
+      },
+      "signin": {
+        "name": "Sign In Page",
+        "exists": true,
+        "selectors_found": [
+          "button:has-text(\"Sign In\")",
+          "text=Login"
+        ],
+        "selectors_missing": [
+          "a[href*=\"login\"]"
+        ]
+      },
+      "register": {
+        "name": "Registration Form",
+        "exists": true,
+        "selectors_found": [
+          "form",
+          "input[name=\"email\"]",
+          "input[name=\"password\"]"
+        ],
+        "selectors_missing": []
+      },
+      "verify": {
+        "name": "Email/Phone Verification",
+        "exists": true,
+        "selectors_found": [
+          "input[name=\"otp\"]",
+          "text=Verify",
+          "text=Verification"
+        ],
+        "selectors_missing": []
+      },
+      "onboard": {
+        "name": "Onboarding Flow",
+        "exists": true,
+        "selectors_found": [
+          "text=Welcome",
+          "text=Get Started",
+          "button:has-text(\"Continue\")"
+        ],
+        "selectors_missing": []
+      },
+      "mpin": {
+        "name": "MPIN Setup",
+        "exists": true,
+        "selectors_found": [
+          "input[name=\"mpin\"]",
+          "text=Set PIN",
+          "text=Create PIN"
+        ],
+        "selectors_missing": []
+      },
+      "kyc": {
+        "name": "KYC Verification",
+        "exists": true,
+        "selectors_found": [
+          "text=Identity",
+          "text=Verification",
+          "button:has-text(\"Verify Identity\")"
+        ],
+        "selectors_missing": []
+      },
+      "logout": {
+        "name": "Logout",
+        "exists": true,
+        "selectors_found": [
+          "button:has-text(\"Logout\")",
+          "a[href*=\"logout\"]",
+          "text=Sign Out"
+        ],
+        "selectors_missing": []
+      }
+    }
+  },
+  "summary": {
+    "total_features": 8,
+    "features_found": 8,
+    "features_missing": 0,
+    "completion_percentage": 100
+  }
+}

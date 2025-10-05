@@ -1,5 +1,6 @@
 'use client';
 
+import DashboardLayout from '@/components/DashboardLayout';
 import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -117,6 +118,7 @@ export default function RidesharePage() {
   };
 
   return (
+    <DashboardLayout>
     <div className="min-h-screen bg-gradient-to-br from-green-50 to-emerald-100 p-4">
       <div className="max-w-4xl mx-auto space-y-6">
         {/* Header */}
@@ -381,5 +383,6 @@ export default function RidesharePage() {
         </Card>
       </div>
     </div>
+    </DashboardLayout>
   );
 }

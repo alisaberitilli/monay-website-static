@@ -1,10 +1,12 @@
 'use client'
 
+import DashboardLayout from '@/components/DashboardLayout'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 
 export default function SchedulePaymentPage() {
   return (
+    <DashboardLayout>
     <div className="container mx-auto p-6">
       <Card>
         <CardHeader>
@@ -19,5 +21,6 @@ export default function SchedulePaymentPage() {
         </CardContent>
       </Card>
     </div>
+    </DashboardLayout>
   )
 }

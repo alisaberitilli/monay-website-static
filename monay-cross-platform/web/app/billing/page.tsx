@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import DashboardLayout from '@/components/DashboardLayout';
 import FamilyGroupIndicator from '@/components/FamilyGroupIndicator';
 import SimpleBilling from '@/components/SimpleBilling';
 import { ArrowLeft } from 'lucide-react';
@@ -11,8 +12,9 @@ export default function BillingPage() {
   const router = useRouter();
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-purple-50">
-      <div className="max-w-2xl mx-auto p-4 sm:p-6">
+    <DashboardLayout>
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-purple-50">
+        <div className="max-w-2xl mx-auto p-4 sm:p-6">
         {/* Header */}
         <div className="mb-6">
           <Button
@@ -52,7 +54,8 @@ export default function BillingPage() {
             </p>
           </div>
         </div>
+        </div>
       </div>
-    </div>
+    </DashboardLayout>
   );
 }

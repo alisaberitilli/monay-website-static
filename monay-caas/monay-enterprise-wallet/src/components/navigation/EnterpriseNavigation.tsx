@@ -231,10 +231,39 @@ export default function EnterpriseNavigation() {
     setIsMobileMenuOpen(false)
   }
 
-  const handleLogout = () => {
-    localStorage.removeItem('authToken')
-    localStorage.removeItem('organizationType')
-    router.push('/login')
+  const handleLogout = async () => {
+    try {
+      // Call backend logout endpoint to invalidate server-side session
+      const authToken = localStorage.getItem('auth_token') || localStorage.getItem('authToken')
+
+      if (authToken) {
+        await fetch('http://localhost:3001/api/auth/logout', {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${authToken}`,
+            'Content-Type': 'application/json'
+          }
+        }).catch(err => {
+          console.log('Logout API call failed, clearing local data anyway:', err)
+        })
+      }
+    } catch (error) {
+      console.error('Logout error:', error)
+    } finally {
+      // ALWAYS clear ALL authentication data - complete session termination
+      // This ensures logout works even if backend call fails
+      localStorage.removeItem('auth_token')  // Primary token key
+      localStorage.removeItem('authToken')   // Legacy token key
+      localStorage.removeItem('user')        // User profile data
+      localStorage.removeItem('organizationType')  // Organization context
+      localStorage.removeItem('rememberMe')  // Remember me preference
+
+      // Clear session storage as well
+      sessionStorage.clear()
+
+      // Redirect to login page
+      router.push('/auth/login')
+    }
   }
 
   return (

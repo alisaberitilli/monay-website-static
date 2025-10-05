@@ -31,23 +31,73 @@ export default function TransferModal({ isOpen, onClose }: TransferModalProps) {
 
   const handleSubmit = async () => {
     setIsProcessing(true)
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 3000))
-    toast.success('Transfer initiated successfully!')
-    setIsProcessing(false)
-    onClose()
-    // Reset form
-    setFormData({
-      recipientType: 'wallet',
-      recipient: '',
-      recipientName: '',
-      amount: '',
-      currency: 'USDM',
-      network: 'base',
-      memo: '',
-      speed: 'standard'
-    })
-    setStep(1)
+
+    try {
+      // Get auth token
+      const authToken = localStorage.getItem('auth_token') || localStorage.getItem('authToken')
+      console.log('🔑 Auth Token Check:', authToken ? 'Found' : 'Missing')
+
+      if (!authToken) {
+        toast.error('Please log in to Enterprise Wallet first')
+        setIsProcessing(false)
+        return
+      }
+
+      console.log('📤 Sending transfer request:', {
+        to_address: formData.recipient,
+        value: formData.amount,
+        token_symbol: formData.currency,
+        network: formData.network
+      })
+
+      // Call backend API to create blockchain transaction
+      const response = await fetch('http://localhost:3001/api/blockchain/transfer', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${authToken}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          to_address: formData.recipient,
+          value: formData.amount,
+          token_symbol: formData.currency,
+          network: formData.network,
+          memo: formData.memo,
+          speed: formData.speed,
+          recipient_name: formData.recipientName,
+          recipient_type: formData.recipientType
+        })
+      })
+
+      console.log('📥 Response status:', response.status)
+      const data = await response.json()
+      console.log('📥 Response data:', data)
+
+      if (response.ok && data.success) {
+        toast.success(`✅ Transfer successful! TX: ${data.transaction?.transaction_hash?.slice(0, 10)}...`)
+      } else {
+        console.error('❌ Transfer failed:', data)
+        toast.error(data.error || 'Transfer failed')
+      }
+    } catch (error) {
+      console.error('❌ Transfer error:', error)
+      toast.error('Failed to process transfer: ' + error.message)
+    } finally {
+      setIsProcessing(false)
+      onClose()
+      // Reset form
+      setFormData({
+        recipientType: 'wallet',
+        recipient: '',
+        recipientName: '',
+        amount: '',
+        currency: 'USDM',
+        network: 'base',
+        memo: '',
+        speed: 'standard'
+      })
+      setStep(1)
+    }
   }
 
   const estimateFee = () => {

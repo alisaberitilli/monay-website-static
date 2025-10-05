@@ -1,5 +1,6 @@
 'use client';
 
+import DashboardLayout from '@/components/DashboardLayout';
 import { UnifiedPaymentGateway, PaymentConfig } from '@monay/shared-ui';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
@@ -45,8 +46,9 @@ export default function DepositsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
-      <div className="max-w-2xl mx-auto px-4">
+    <DashboardLayout>
+      <div className="min-h-screen bg-gray-50 py-8">
+        <div className="max-w-2xl mx-auto px-4">
         <h1 className="text-3xl font-bold mb-8">Add Money to Your Wallet</h1>
 
         {notification && (
@@ -66,7 +68,8 @@ export default function DepositsPage() {
           onError={handleError}
           theme="light"
         />
+        </div>
       </div>
-    </div>
+    </DashboardLayout>
   );
 }

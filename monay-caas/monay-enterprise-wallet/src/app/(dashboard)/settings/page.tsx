@@ -1,8 +1,7 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import TenantSelector from '@/components/TenantSelector';
 
 export default function SettingsPage() {
   const router = useRouter();
@@ -14,7 +13,7 @@ export default function SettingsPage() {
     { id: 'security', label: 'Security', icon: '🔒' },
     { id: 'api', label: 'API Keys', icon: '🔑' },
     { id: 'notifications', label: 'Notifications', icon: '🔔' },
-    { id: 'compliance', label: 'Compliance', icon: '📋' },
+    { id: 'compliance', label: 'Compliance & KYC', icon: '📋' },
   ];
 
   const handleBillingClick = () => {
@@ -26,12 +25,9 @@ export default function SettingsPage() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
         <div className="mb-8">
-          <div className="flex items-center justify-between">
-            <h1 className="text-3xl font-bold text-gray-900">Settings</h1>
-            <TenantSelector />
-          </div>
+          <h1 className="text-3xl font-bold text-gray-900">Settings & Profile</h1>
           <p className="mt-2 text-gray-600">
-            Manage your organization, tenant configuration, and platform settings
+            Manage your organization, profile, KYC verification, and platform settings
           </p>
         </div>
 
@@ -377,26 +373,333 @@ function NotificationSettings() {
 }
 
 function ComplianceSettings() {
+  const [kycStatus, setKycStatus] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+  const [uploading, setUploading] = useState(false);
+
+  useEffect(() => {
+    fetchKycStatus();
+  }, []);
+
+  const fetchKycStatus = async () => {
+    try {
+      const authToken = localStorage.getItem('auth_token');
+      if (!authToken) {
+        console.error('No auth token found');
+        setLoading(false);
+        return;
+      }
+
+      const response = await fetch('http://localhost:3001/api/onboarding/status', {
+        headers: {
+          'Authorization': `Bearer ${authToken}`,
+          'Content-Type': 'application/json'
+        }
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setKycStatus(data);
+      } else {
+        console.error('Failed to fetch KYC status:', response.statusText);
+      }
+    } catch (error) {
+      console.error('Error fetching KYC status:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleKycUpload = async (files: FileList | null) => {
+    if (!files || files.length === 0) return;
+
+    setUploading(true);
+    try {
+      const authToken = localStorage.getItem('auth_token');
+      const formData = new FormData();
+
+      // Add KYC documents
+      Array.from(files).forEach((file, index) => {
+        formData.append(`document_${index}`, file);
+      });
+
+      const response = await fetch('http://localhost:3001/api/customer-verification/kyc/submit', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${authToken}`
+        },
+        body: formData
+      });
+
+      if (response.ok) {
+        alert('KYC documents uploaded successfully! Your submission is under review.');
+        fetchKycStatus(); // Refresh status
+      } else {
+        const error = await response.json();
+        alert(`Failed to upload KYC documents: ${error.error || 'Unknown error'}`);
+      }
+    } catch (error) {
+      console.error('Error uploading KYC documents:', error);
+      alert('An error occurred while uploading KYC documents. Please try again.');
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center py-12">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
+      </div>
+    );
+  }
+
+  const isKycVerified = kycStatus?.verificationStatus?.kyc || false;
+  const isEmailVerified = kycStatus?.verificationStatus?.email || false;
+  const isMobileVerified = kycStatus?.verificationStatus?.mobile || false;
+
   return (
     <div>
-      <h2 className="text-xl font-semibold mb-4">Compliance & Regulatory</h2>
-      <div className="space-y-4">
-        <div>
-          <h3 className="font-medium mb-2">KYC/AML Status</h3>
-          <p className="text-gray-600 mb-2">Your organization is fully compliant.</p>
-          <div className="flex gap-2">
-            <span className="px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm">
-              ✓ KYC Verified
-            </span>
-            <span className="px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm">
-              ✓ AML Compliant
-            </span>
+      <h2 className="text-xl font-semibold mb-4">Compliance & KYC Verification</h2>
+      <div className="space-y-6">
+        {/* Verification Status Overview */}
+        <div className="border rounded-lg p-6 bg-gray-50">
+          <h3 className="font-medium mb-4">Verification Status</h3>
+          <div className="space-y-3">
+            <div className="flex items-center justify-between">
+              <span className="text-sm text-gray-700">Email Verification</span>
+              {isEmailVerified ? (
+                <span className="px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm">
+                  ✓ Verified
+                </span>
+              ) : (
+                <span className="px-3 py-1 bg-yellow-100 text-yellow-800 rounded-full text-sm">
+                  ⚠ Pending
+                </span>
+              )}
+            </div>
+            <div className="flex items-center justify-between">
+              <span className="text-sm text-gray-700">Mobile Verification</span>
+              {isMobileVerified ? (
+                <span className="px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm">
+                  ✓ Verified
+                </span>
+              ) : (
+                <span className="px-3 py-1 bg-yellow-100 text-yellow-800 rounded-full text-sm">
+                  ⚠ Pending
+                </span>
+              )}
+            </div>
+            <div className="flex items-center justify-between">
+              <span className="text-sm text-gray-700">KYC/KYB Verification</span>
+              {isKycVerified ? (
+                <span className="px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm">
+                  ✓ Verified
+                </span>
+              ) : (
+                <span className="px-3 py-1 bg-red-100 text-red-800 rounded-full text-sm">
+                  ✗ Not Verified
+                </span>
+              )}
+            </div>
           </div>
         </div>
+
+        {/* KYC Upload Section - Comprehensive */}
+        {!isKycVerified && (
+          <div className="space-y-6">
+            {/* Business Documents */}
+            <div className="border rounded-lg p-6">
+              <div className="flex items-center gap-2 mb-3">
+                <svg className="h-5 w-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                </svg>
+                <h3 className="font-semibold">Business Documents</h3>
+              </div>
+              <p className="text-gray-600 mb-4 text-sm">
+                Upload your business registration and incorporation documents
+              </p>
+              <div className="space-y-3">
+                <div className="border-2 border-dashed border-gray-300 rounded-lg p-4 hover:border-blue-400 transition-colors">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="font-medium text-sm">Articles of Incorporation</p>
+                      <p className="text-xs text-gray-500">Required • PDF, JPG, PNG (Max 10MB)</p>
+                    </div>
+                    <label className="cursor-pointer">
+                      <input type="file" accept=".pdf,.jpg,.jpeg,.png" className="hidden" onChange={(e) => handleKycUpload(e.target.files)} disabled={uploading} />
+                      <button type="button" className="px-3 py-1.5 bg-blue-50 text-blue-600 rounded-md hover:bg-blue-100 text-sm font-medium">
+                        Choose File
+                      </button>
+                    </label>
+                  </div>
+                </div>
+                <div className="border-2 border-dashed border-gray-300 rounded-lg p-4 hover:border-blue-400 transition-colors">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="font-medium text-sm">Business License</p>
+                      <p className="text-xs text-gray-500">Required • PDF, JPG, PNG (Max 10MB)</p>
+                    </div>
+                    <label className="cursor-pointer">
+                      <input type="file" accept=".pdf,.jpg,.jpeg,.png" className="hidden" onChange={(e) => handleKycUpload(e.target.files)} disabled={uploading} />
+                      <button type="button" className="px-3 py-1.5 bg-blue-50 text-blue-600 rounded-md hover:bg-blue-100 text-sm font-medium">
+                        Choose File
+                      </button>
+                    </label>
+                  </div>
+                </div>
+                <div className="border-2 border-dashed border-gray-300 rounded-lg p-4 hover:border-blue-400 transition-colors">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="font-medium text-sm">Bank Statement</p>
+                      <p className="text-xs text-gray-500">Optional • PDF, JPG, PNG (Max 10MB)</p>
+                    </div>
+                    <label className="cursor-pointer">
+                      <input type="file" accept=".pdf,.jpg,.jpeg,.png" className="hidden" onChange={(e) => handleKycUpload(e.target.files)} disabled={uploading} />
+                      <button type="button" className="px-3 py-1.5 bg-gray-100 text-gray-600 rounded-md hover:bg-gray-200 text-sm font-medium">
+                        Choose File
+                      </button>
+                    </label>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Tax Information */}
+            <div className="border rounded-lg p-6">
+              <div className="flex items-center gap-2 mb-3">
+                <svg className="h-5 w-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <h3 className="font-semibold">Tax Information</h3>
+              </div>
+              <p className="text-gray-600 mb-4 text-sm">
+                Provide your EIN and tax registration details for compliance
+              </p>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    EIN (Employer Identification Number) *
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="12-3456789"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    State Registration Number
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="Optional"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  />
+                </div>
+              </div>
+              <div className="mt-4 p-3 bg-blue-50 rounded-lg">
+                <div className="flex gap-2">
+                  <svg className="h-5 w-5 text-blue-600 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  <p className="text-sm text-blue-800">
+                    Your EIN is encrypted and securely stored. It's only used for tax reporting and compliance purposes.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Identity Verification */}
+            <div className="border rounded-lg p-6">
+              <div className="flex items-center gap-2 mb-3">
+                <svg className="h-5 w-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V8a2 2 0 00-2-2h-5m-4 0V5a2 2 0 114 0v1m-4 0a2 2 0 104 0m-5 8a2 2 0 100-4 2 2 0 000 4zm0 0c1.306 0 2.417.835 2.83 2M9 14a3.001 3.001 0 00-2.83 2M15 11h3m-3 4h2" />
+                </svg>
+                <h3 className="font-semibold">Personal Identification</h3>
+              </div>
+              <p className="text-gray-600 mb-4 text-sm">
+                Upload a government-issued ID for the primary business owner/representative
+              </p>
+              <div className="space-y-3">
+                <div className="border-2 border-dashed border-gray-300 rounded-lg p-4 hover:border-purple-400 transition-colors">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="font-medium text-sm">Driver's License or Passport</p>
+                      <p className="text-xs text-gray-500">Required • PDF, JPG, PNG (Max 10MB)</p>
+                    </div>
+                    <label className="cursor-pointer">
+                      <input type="file" accept=".pdf,.jpg,.jpeg,.png" className="hidden" onChange={(e) => handleKycUpload(e.target.files)} disabled={uploading} />
+                      <button type="button" className="px-3 py-1.5 bg-purple-50 text-purple-600 rounded-md hover:bg-purple-100 text-sm font-medium">
+                        Choose File
+                      </button>
+                    </label>
+                  </div>
+                </div>
+                <div className="border-2 border-dashed border-gray-300 rounded-lg p-4 hover:border-purple-400 transition-colors">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="font-medium text-sm">Proof of Address</p>
+                      <p className="text-xs text-gray-500">Optional • Utility bill or bank statement</p>
+                    </div>
+                    <label className="cursor-pointer">
+                      <input type="file" accept=".pdf,.jpg,.jpeg,.png" className="hidden" onChange={(e) => handleKycUpload(e.target.files)} disabled={uploading} />
+                      <button type="button" className="px-3 py-1.5 bg-gray-100 text-gray-600 rounded-md hover:bg-gray-200 text-sm font-medium">
+                        Choose File
+                      </button>
+                    </label>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Upload Status */}
+            {uploading && (
+              <div className="border rounded-lg p-4 bg-blue-50">
+                <div className="flex items-center gap-3">
+                  <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-blue-600"></div>
+                  <div>
+                    <p className="text-sm font-medium text-blue-900">Uploading documents...</p>
+                    <p className="text-xs text-blue-700">Please wait while we process your submission</p>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Submit Button */}
+            <div className="flex justify-end">
+              <button
+                className="px-6 py-2.5 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-md hover:from-blue-700 hover:to-purple-700 font-medium shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                disabled={uploading}
+              >
+                Submit for Verification
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* Compliance Documents */}
         <div>
           <h3 className="font-medium mb-2">Compliance Documents</h3>
-          <button className="px-4 py-2 bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200">
-            Download Compliance Report
+          <p className="text-gray-600 mb-3 text-sm">
+            Download official compliance reports and verification certificates.
+          </p>
+          <button
+            className="px-4 py-2 bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200"
+            disabled={!isKycVerified}
+          >
+            {isKycVerified ? 'Download Compliance Report' : 'Complete KYC First'}
+          </button>
+        </div>
+
+        {/* Help & Support */}
+        <div className="border-t pt-4">
+          <h3 className="font-medium mb-2 text-sm">Need Help?</h3>
+          <p className="text-xs text-gray-600 mb-2">
+            If you have questions about KYC verification or compliance requirements, contact our support team.
+          </p>
+          <button className="text-sm text-blue-600 hover:text-blue-800">
+            Contact Support →
           </button>
         </div>
       </div>

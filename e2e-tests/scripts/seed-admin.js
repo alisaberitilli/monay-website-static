@@ -2,11 +2,16 @@
 
 /**
  * Seed Script for Admin User
- * Ensures admin@monay.com exists with password Admin@123
+ * Uses environment variables for secure credential management
  */
 
 import bcrypt from 'bcrypt';
 import pg from 'pg';
+import dotenv from 'dotenv';
+
+// Load environment variables
+dotenv.config();
+
 const { Client } = pg;
 
 // Database configuration
@@ -18,10 +23,10 @@ const DB_CONFIG = {
   password: process.env.DB_PASSWORD || '',
 };
 
-// Admin user configuration
+// Admin user configuration from environment variables
 const ADMIN_USER = {
-  email: 'admin@monay.com',
-  password: 'Admin@123',
+  email: process.env.ADMIN_EMAIL || 'admin@monay.com',
+  password: process.env.ADMIN_PASSWORD || 'SecureAdmin123!@#',
   firstName: 'Admin',
   lastName: 'Monay',
   role: 'platform_admin',

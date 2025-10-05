@@ -60,11 +60,278 @@ export default function OnboardingPage() {
   const [formData, setFormData] = useState<Partial<EnterpriseOnboarding | ConsumerOnboarding>>({})
   const [errors, setErrors] = useState<Record<string, string>>({})
   const [loading, setLoading] = useState(false)
+  const [userData, setUserData] = useState<any>(null)
+  const [organizationData, setOrganizationData] = useState<any>(null)
+  const [initializing, setInitializing] = useState(true)
+  const [selectedOrgType, setSelectedOrgType] = useState<OrganizationType>('enterprise')
+
+  // Form field states for pre-population
+  const [orgName, setOrgName] = useState('')
+  const [legalName, setLegalName] = useState('')
+  const [website, setWebsite] = useState('')
+  const [addressLine1, setAddressLine1] = useState('')
+  const [addressLine2, setAddressLine2] = useState('')
+  const [city, setCity] = useState('')
+  const [state, setState] = useState('')
+  const [postalCode, setPostalCode] = useState('')
+  const [country, setCountry] = useState('US')
+  const [contactFirstName, setContactFirstName] = useState('')
+  const [contactLastName, setContactLastName] = useState('')
+  const [contactEmail, setContactEmail] = useState('')
+  const [contactPhone, setContactPhone] = useState('')
+  const [showSaveIndicator, setShowSaveIndicator] = useState(false)
+
+  // File upload states
+  const [articlesOfIncorporation, setArticlesOfIncorporation] = useState<File | null>(null)
+  const [businessLicense, setBusinessLicense] = useState<File | null>(null)
+  const [bankStatement, setBankStatement] = useState<File | null>(null)
+  const [idDocument, setIdDocument] = useState<File | null>(null)
+  const [proofOfAddress, setProofOfAddress] = useState<File | null>(null)
+
+  // Load saved form data from localStorage on mount
+  useEffect(() => {
+    const savedFormData = localStorage.getItem('onboarding_form_data')
+    if (savedFormData) {
+      try {
+        const parsed = JSON.parse(savedFormData)
+        console.log('📋 Restoring saved onboarding data:', parsed)
+
+        // Restore all form fields
+        if (parsed.orgName) setOrgName(parsed.orgName)
+        if (parsed.legalName) setLegalName(parsed.legalName)
+        if (parsed.website) setWebsite(parsed.website)
+        if (parsed.addressLine1) setAddressLine1(parsed.addressLine1)
+        if (parsed.addressLine2) setAddressLine2(parsed.addressLine2)
+        if (parsed.city) setCity(parsed.city)
+        if (parsed.state) setState(parsed.state)
+        if (parsed.postalCode) setPostalCode(parsed.postalCode)
+        if (parsed.country) setCountry(parsed.country)
+        if (parsed.contactFirstName) setContactFirstName(parsed.contactFirstName)
+        if (parsed.contactLastName) setContactLastName(parsed.contactLastName)
+        if (parsed.contactEmail) setContactEmail(parsed.contactEmail)
+        if (parsed.contactPhone) setContactPhone(parsed.contactPhone)
+        if (parsed.currentStep) setCurrentStep(parsed.currentStep)
+        if (parsed.completedSteps) setCompletedSteps(parsed.completedSteps)
+      } catch (error) {
+        console.error('Failed to restore saved form data:', error)
+      }
+    }
+  }, [])
+
+  // Fetch existing user and organization data on mount
+  useEffect(() => {
+    // This is the Enterprise Wallet app, so always set account type to enterprise
+    setAccountType('enterprise')
+    fetchExistingData()
+  }, [])
+
+  // Auto-save form data to localStorage whenever any field changes
+  useEffect(() => {
+    const formData = {
+      orgName,
+      legalName,
+      website,
+      addressLine1,
+      addressLine2,
+      city,
+      state,
+      postalCode,
+      country,
+      contactFirstName,
+      contactLastName,
+      contactEmail,
+      contactPhone,
+      currentStep,
+      completedSteps,
+      lastSaved: new Date().toISOString()
+    }
+
+    localStorage.setItem('onboarding_form_data', JSON.stringify(formData))
+    console.log('💾 Auto-saved onboarding data')
+
+    // Show save indicator briefly
+    setShowSaveIndicator(true)
+    const timer = setTimeout(() => setShowSaveIndicator(false), 2000)
+    return () => clearTimeout(timer)
+  }, [
+    orgName, legalName, website, addressLine1, addressLine2,
+    city, state, postalCode, country, contactFirstName,
+    contactLastName, contactEmail, contactPhone, currentStep, completedSteps
+  ])
+
+  // Populate form fields when organizationData or userData changes
+  // Only populate if fields are currently empty to avoid overwriting user input
+  useEffect(() => {
+    // Check if we have saved data - if yes, don't overwrite with API data
+    const savedFormData = localStorage.getItem('onboarding_form_data')
+    const hasSavedData = savedFormData && savedFormData !== 'undefined' && savedFormData !== 'null'
+
+    if (hasSavedData) {
+      console.log('⏭️ Skipping API data population - using saved localStorage data instead')
+      return
+    }
+
+    // Only populate from API if no saved data exists
+    if (organizationData) {
+      console.log('📥 Populating form from organization data:', organizationData)
+      setOrgName(organizationData.name || '')
+      setLegalName(organizationData.legalName || organizationData.legal_name || '')
+      setWebsite(organizationData.website || '')
+      setAddressLine1(organizationData.addressLine1 || organizationData.address_line1 || '')
+      setAddressLine2(organizationData.addressLine2 || organizationData.address_line2 || '')
+      setCity(organizationData.city || '')
+      setState(organizationData.state || '')
+      setPostalCode(organizationData.postalCode || organizationData.postal_code || '')
+      setCountry(organizationData.country || 'US')
+      setContactEmail(organizationData.email || '')
+      setContactPhone(organizationData.phone || '')
+    }
+
+    if (userData) {
+      console.log('📥 Populating form from user data:', userData)
+      setContactFirstName(userData.firstName || userData.first_name || '')
+      setContactLastName(userData.lastName || userData.last_name || '')
+      // Override with user email/phone if organization doesn't have them
+      if (!contactEmail) setContactEmail(userData.email || '')
+      if (!contactPhone) setContactPhone(userData.phoneNumber || userData.phone_number || '')
+    }
+  }, [organizationData, userData])
+
+  const fetchExistingData = async () => {
+    try {
+      const authToken = localStorage.getItem('auth_token') || localStorage.getItem('authToken')
+      const storedUser = localStorage.getItem('user')
+
+      if (!authToken) {
+        console.error('No auth token found')
+        setInitializing(false)
+        return
+      }
+
+      // Get user data from localStorage first
+      if (storedUser && storedUser !== 'undefined' && storedUser !== 'null') {
+        try {
+          const user = JSON.parse(storedUser)
+          setUserData(user)
+          console.log('Loaded user from localStorage:', user)
+        } catch (error) {
+          console.error('Failed to parse stored user data:', error)
+          localStorage.removeItem('user')
+        }
+      }
+
+      // Fetch fresh user data from API
+      const userResponse = await fetch('http://localhost:3001/api/user/profile', {
+        headers: {
+          'Authorization': `Bearer ${authToken}`,
+          'Content-Type': 'application/json'
+        }
+      })
+
+      if (userResponse.ok) {
+        const userApiData = await userResponse.json()
+        console.log('Fetched user data from API:', userApiData)
+        setUserData(userApiData.data || userApiData)
+      }
+
+      // Fetch organization data if user has organizationId
+      if (storedUser && storedUser !== 'undefined' && storedUser !== 'null') {
+        try {
+          const user = JSON.parse(storedUser)
+          const orgId = user.organizationId || user.primaryOrganizationId || user.primary_organization_id
+          const tenantId = user.tenantId || user.tenant_id
+          console.log('Looking for organization ID:', orgId, 'tenant ID:', tenantId, 'from user:', user)
+
+        if (orgId) {
+          const orgResponse = await fetch(`http://localhost:3001/api/organizations/${orgId}`, {
+            headers: {
+              'Authorization': `Bearer ${authToken}`,
+              'Content-Type': 'application/json'
+            }
+          })
+
+          if (orgResponse.ok) {
+            const orgData = await orgResponse.json()
+            console.log('Fetched organization data:', orgData)
+            setOrganizationData(orgData.data || orgData)
+          } else {
+            console.error('Failed to fetch organization:', orgResponse.status)
+          }
+        }
+
+        // Also fetch tenant data if available - tenant may have the organization info
+        if (tenantId && !orgId) {
+          console.log('🔍 No organization found, trying to fetch tenant data for tenant ID:', tenantId)
+          const tenantResponse = await fetch(`http://localhost:3001/api/tenants/${tenantId}`, {
+            headers: {
+              'Authorization': `Bearer ${authToken}`,
+              'Content-Type': 'application/json'
+            }
+          })
+
+          if (tenantResponse.ok) {
+            const tenantData = await tenantResponse.json()
+            console.log('✅ Fetched tenant data:', tenantData)
+            // Map tenant data to organization format
+            const tenant = tenantData.data || tenantData
+            setOrganizationData({
+              name: tenant.name,
+              email: tenant.email || tenant.metadata?.contact_email,
+              phone: tenant.phone || tenant.metadata?.phone,
+              address_line1: tenant.address_line1,
+              address_line2: tenant.address_line2,
+              city: tenant.city,
+              state: tenant.state,
+              postal_code: tenant.postal_code,
+              country: tenant.country,
+              website: tenant.website || tenant.metadata?.website,
+              description: tenant.description || tenant.metadata?.description
+            })
+          } else {
+            console.error('Failed to fetch tenant:', tenantResponse.status)
+          }
+        } else if (!orgId) {
+          console.log('No organization ID or tenant ID found in user data')
+        }
+        } catch (error) {
+          console.error('Failed to parse stored user data for organization lookup:', error)
+        }
+      }
+
+      // Fetch onboarding status to determine current step
+      const onboardingResponse = await fetch('http://localhost:3001/api/onboarding/status', {
+        headers: {
+          'Authorization': `Bearer ${authToken}`,
+          'Content-Type': 'application/json'
+        }
+      })
+
+      if (onboardingResponse.ok) {
+        const onboardingStatus = await onboardingResponse.json()
+        console.log('Onboarding status:', onboardingStatus)
+
+        // Determine which step to show based on verification status
+        if (!onboardingStatus.verificationStatus?.email) {
+          setCurrentStep('user-profile')
+        } else if (!onboardingStatus.verificationStatus?.mobile) {
+          setCurrentStep('user-profile')
+        } else if (!onboardingStatus.verificationStatus?.kyc) {
+          setCurrentStep('verification')
+        } else {
+          setCurrentStep('complete')
+        }
+      }
+
+    } catch (error) {
+      console.error('Error fetching existing data:', error)
+    } finally {
+      setInitializing(false)
+    }
+  }
 
   // Get steps based on account type
   const getSteps = (): OnboardingStep[] => {
-    if (!accountType) return ['welcome', 'account-type']
-
+    // For Enterprise Wallet app, include account-type for informational purposes
     if (accountType === 'enterprise') {
       return [
         'welcome',
@@ -77,7 +344,7 @@ export default function OnboardingPage() {
         'terms',
         'complete'
       ]
-    } else {
+    } else if (accountType === 'consumer') {
       return [
         'welcome',
         'account-type',
@@ -88,6 +355,9 @@ export default function OnboardingPage() {
         'terms',
         'complete'
       ]
+    } else {
+      // Fallback - should not reach here since we set accountType on mount
+      return ['welcome', 'account-type']
     }
   }
 
@@ -157,15 +427,199 @@ export default function OnboardingPage() {
   const handleComplete = async () => {
     setLoading(true)
     try {
-      // Submit onboarding data
-      // await submitOnboarding(formData)
+      const authToken = localStorage.getItem('auth_token') || localStorage.getItem('authToken')
+      if (authToken) {
+        await fetch('http://localhost:3001/api/onboarding/complete', {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${authToken}`,
+            'Content-Type': 'application/json'
+          }
+        })
+      }
+
+      // Clear saved form data on completion
+      localStorage.removeItem('onboarding_form_data')
+      console.log('🗑️ Cleared saved onboarding data')
 
       // Redirect to dashboard
       router.push('/dashboard')
     } catch (error) {
       console.error('Onboarding error:', error)
+      router.push('/dashboard')
     } finally {
       setLoading(false)
+    }
+  }
+
+  const handleSkip = async () => {
+    setLoading(true)
+    try {
+      // CRITICAL: Set flag FIRST before any async operations
+      // This ensures the flag is set even if API call fails
+      localStorage.setItem('onboarding_skipped', 'true')
+      console.log('Skip flag set - redirecting to dashboard')
+
+      const authToken = localStorage.getItem('auth_token') || localStorage.getItem('authToken')
+      if (authToken) {
+        // Make API call in background (don't wait for it)
+        fetch('http://localhost:3001/api/onboarding/skip', {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${authToken}`,
+            'Content-Type': 'application/json'
+          }
+        }).then(response => {
+          if (response.ok) {
+            console.log('Onboarding skipped successfully in database')
+          } else {
+            console.error('Failed to skip onboarding in database:', response.status)
+          }
+        }).catch(error => {
+          console.error('Error calling skip API:', error)
+        })
+      }
+
+      // Redirect immediately
+      router.push('/dashboard')
+    } catch (error) {
+      console.error('Error skipping onboarding:', error)
+      router.push('/dashboard')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const handleEmailVerification = async () => {
+    try {
+      setLoading(true)
+      setErrors({})
+      const authToken = localStorage.getItem('auth_token') || localStorage.getItem('authToken')
+      const emailInput = document.getElementById('email') as HTMLInputElement
+      const email = emailInput?.value || userData?.email
+
+      if (!email) {
+        setErrors({ email: 'Email address is required' })
+        setLoading(false)
+        return
+      }
+
+      console.log('📧 Sending verification email to:', email)
+
+      const response = await fetch('http://localhost:3001/api/auth/send-verification-email', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${authToken}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ email })
+      })
+
+      const result = await response.json()
+      console.log('Email verification response:', result)
+
+      if (result.success) {
+        // Show success message with the demo code
+        setErrors({
+          email_success: `✅ Verification email sent! For testing, use code: ${result.data?.code || '123456'}`
+        })
+
+        // Auto-mark as verified after showing message (for testing)
+        setTimeout(() => {
+          if (userData) {
+            setUserData({ ...userData, isEmailVerified: true, email_verified: true })
+          }
+          fetchExistingData()
+        }, 2000)
+      } else {
+        setErrors({ email: result.message || 'Failed to send verification email' })
+      }
+    } catch (error) {
+      console.error('Email verification error:', error)
+      setErrors({ email: 'Failed to send verification email. Please try again.' })
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const handlePhoneVerification = async () => {
+    try {
+      setLoading(true)
+      setErrors({})
+      const authToken = localStorage.getItem('auth_token') || localStorage.getItem('authToken')
+      const phoneInput = document.getElementById('phone') as HTMLInputElement
+      const phone = phoneInput?.value || userData?.phoneNumber || userData?.phone_number
+
+      if (!phone) {
+        setErrors({ phone: 'Phone number is required' })
+        setLoading(false)
+        return
+      }
+
+      console.log('📱 Sending verification SMS to:', phone)
+
+      const response = await fetch('http://localhost:3001/api/auth/send-verification-sms', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${authToken}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ phone })
+      })
+
+      const result = await response.json()
+      console.log('SMS verification response:', result)
+
+      if (result.success) {
+        // Show success message with the demo code
+        setErrors({
+          phone_success: `✅ Verification SMS sent! For testing, use code: ${result.data?.code || '123456'}`
+        })
+
+        // Auto-mark as verified after showing message (for testing)
+        setTimeout(() => {
+          if (userData) {
+            setUserData({ ...userData, isMobileVerified: true, mobile_verified: true })
+          }
+          fetchExistingData()
+        }, 2000)
+      } else {
+        setErrors({ phone: result.message || 'Failed to send verification SMS' })
+      }
+    } catch (error) {
+      console.error('Phone verification error:', error)
+      setErrors({ phone: 'Failed to send verification SMS. Please try again.' })
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  // File upload handlers
+  const handleFileUpload = (file: File | null, setter: React.Dispatch<React.SetStateAction<File | null>>, type: string) => {
+    if (file) {
+      // Validate file size (max 5MB)
+      if (file.size > 5 * 1024 * 1024) {
+        setErrors({ [type]: 'File size must be less than 5MB' })
+        return
+      }
+
+      // Validate file type
+      const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'application/pdf']
+      if (!allowedTypes.includes(file.type)) {
+        setErrors({ [type]: 'File must be JPG, PNG, or PDF' })
+        return
+      }
+
+      setter(file)
+      console.log(`📎 File selected for ${type}:`, file.name)
+      setErrors({ ...errors, [type]: undefined })
+    }
+  }
+
+  const triggerFileInput = (inputId: string) => {
+    const input = document.getElementById(inputId) as HTMLInputElement
+    if (input) {
+      input.click()
     }
   }
 
@@ -213,96 +667,70 @@ export default function OnboardingPage() {
         return (
           <div className="space-y-6">
             <div className="text-center">
-              <h2 className="text-2xl font-bold mb-2">Choose Your Account Type</h2>
-              <p className="text-gray-600">Select the option that best describes your needs</p>
+              <h2 className="text-2xl font-bold mb-2">Enterprise Account Setup</h2>
+              <p className="text-gray-600">You're setting up an enterprise account with advanced business features</p>
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <Card
-                className={`cursor-pointer transition-all ${
-                  accountType === 'enterprise'
-                    ? 'ring-2 ring-blue-500 shadow-lg'
-                    : 'hover:shadow-md'
-                }`}
-                onClick={() => setAccountType('enterprise')}
-              >
+
+            <Alert className="bg-blue-50 border-blue-200">
+              <AlertCircle className="h-4 w-4 text-blue-600" />
+              <AlertDescription className="text-blue-800">
+                This is the Monay Enterprise Wallet designed specifically for businesses and organizations.
+              </AlertDescription>
+            </Alert>
+
+            <div className="max-w-2xl mx-auto">
+              <Card className="ring-2 ring-blue-500 shadow-lg">
                 <CardHeader>
                   <div className="flex items-center justify-between">
                     <Building className="h-8 w-8 text-blue-500" />
-                    {accountType === 'enterprise' && (
-                      <CheckCircle className="h-5 w-5 text-blue-500" />
-                    )}
+                    <CheckCircle className="h-6 w-6 text-blue-500" />
                   </div>
-                  <CardTitle>Enterprise Account</CardTitle>
-                  <CardDescription>For businesses and organizations</CardDescription>
+                  <CardTitle className="text-xl">Enterprise Account</CardTitle>
+                  <CardDescription>Comprehensive solution for businesses and organizations</CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <ul className="space-y-2 text-sm">
-                    <li className="flex items-center gap-2">
-                      <CheckCircle className="h-4 w-4 text-green-500" />
-                      Multi-user access with roles
-                    </li>
-                    <li className="flex items-center gap-2">
-                      <CheckCircle className="h-4 w-4 text-green-500" />
-                      Bulk payments & payroll
-                    </li>
-                    <li className="flex items-center gap-2">
-                      <CheckCircle className="h-4 w-4 text-green-500" />
-                      Treasury management
-                    </li>
-                    <li className="flex items-center gap-2">
-                      <CheckCircle className="h-4 w-4 text-green-500" />
-                      API access & integrations
-                    </li>
-                  </ul>
-                </CardContent>
-              </Card>
-
-              <Card
-                className={`cursor-pointer transition-all ${
-                  accountType === 'consumer'
-                    ? 'ring-2 ring-purple-500 shadow-lg'
-                    : 'hover:shadow-md'
-                }`}
-                onClick={() => setAccountType('consumer')}
-              >
-                <CardHeader>
-                  <div className="flex items-center justify-between">
-                    <User className="h-8 w-8 text-purple-500" />
-                    {accountType === 'consumer' && (
-                      <CheckCircle className="h-5 w-5 text-purple-500" />
-                    )}
+                  <div className="space-y-4">
+                    <p className="text-sm text-gray-600 mb-4">
+                      Your enterprise account includes all the tools you need to manage business payments,
+                      treasury operations, and team access:
+                    </p>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                      <div className="flex items-center gap-2">
+                        <CheckCircle className="h-4 w-4 text-green-500 flex-shrink-0" />
+                        <span className="text-sm">Multi-user access with roles</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <CheckCircle className="h-4 w-4 text-green-500 flex-shrink-0" />
+                        <span className="text-sm">Bulk payments & payroll</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <CheckCircle className="h-4 w-4 text-green-500 flex-shrink-0" />
+                        <span className="text-sm">Treasury management</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <CheckCircle className="h-4 w-4 text-green-500 flex-shrink-0" />
+                        <span className="text-sm">API access & integrations</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <CheckCircle className="h-4 w-4 text-green-500 flex-shrink-0" />
+                        <span className="text-sm">Compliance & reporting tools</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <CheckCircle className="h-4 w-4 text-green-500 flex-shrink-0" />
+                        <span className="text-sm">Dedicated support</span>
+                      </div>
+                    </div>
+                    <div className="mt-6 p-4 bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg border border-blue-100">
+                      <p className="text-sm font-medium text-blue-900 mb-1">What's Next?</p>
+                      <p className="text-xs text-blue-700">
+                        We'll guide you through setting up your organization, verifying your business,
+                        and configuring your payment infrastructure.
+                      </p>
+                    </div>
                   </div>
-                  <CardTitle>Personal Account</CardTitle>
-                  <CardDescription>For individuals and freelancers</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <ul className="space-y-2 text-sm">
-                    <li className="flex items-center gap-2">
-                      <CheckCircle className="h-4 w-4 text-green-500" />
-                      Personal wallet & cards
-                    </li>
-                    <li className="flex items-center gap-2">
-                      <CheckCircle className="h-4 w-4 text-green-500" />
-                      P2P payments
-                    </li>
-                    <li className="flex items-center gap-2">
-                      <CheckCircle className="h-4 w-4 text-green-500" />
-                      Bill pay & subscriptions
-                    </li>
-                    <li className="flex items-center gap-2">
-                      <CheckCircle className="h-4 w-4 text-green-500" />
-                      Crypto trading
-                    </li>
-                  </ul>
                 </CardContent>
               </Card>
             </div>
-            {errors.accountType && (
-              <Alert variant="destructive">
-                <AlertCircle className="h-4 w-4" />
-                <AlertDescription>{errors.accountType}</AlertDescription>
-              </Alert>
-            )}
           </div>
         )
 
@@ -311,7 +739,9 @@ export default function OnboardingPage() {
           <div className="space-y-6">
             <div className="text-center">
               <h2 className="text-2xl font-bold mb-2">Organization Information</h2>
-              <p className="text-gray-600">Tell us about your company</p>
+              <p className="text-gray-600">
+                {organizationData ? 'Review and update your company information' : 'Tell us about your company'}
+              </p>
             </div>
 
             <div className="space-y-4">
@@ -321,27 +751,35 @@ export default function OnboardingPage() {
                   <Input
                     id="orgName"
                     placeholder="Acme Corporation"
-                    onChange={(e) => setFormData({
-                      ...formData,
-                      organization: {
-                        ...((formData as EnterpriseOnboarding).organization || {}),
-                        name: e.target.value
-                      }
-                    })}
+                    value={orgName}
+                    onChange={(e) => {
+                      setOrgName(e.target.value)
+                      setFormData({
+                        ...formData,
+                        organization: {
+                          ...((formData as EnterpriseOnboarding).organization || {}),
+                          name: e.target.value
+                        }
+                      })
+                    }}
                   />
                 </div>
                 <div>
-                  <Label htmlFor="legalName">Legal Name</Label>
+                  <Label htmlFor="legalName">Legal Name *</Label>
                   <Input
                     id="legalName"
                     placeholder="Acme Corporation Inc."
-                    onChange={(e) => setFormData({
-                      ...formData,
-                      organization: {
-                        ...((formData as EnterpriseOnboarding).organization || {}),
-                        legalName: e.target.value
-                      }
-                    })}
+                    value={legalName}
+                    onChange={(e) => {
+                      setLegalName(e.target.value)
+                      setFormData({
+                        ...formData,
+                        organization: {
+                          ...((formData as EnterpriseOnboarding).organization || {}),
+                          legalName: e.target.value
+                        }
+                      })
+                    }}
                   />
                 </div>
               </div>
@@ -352,19 +790,29 @@ export default function OnboardingPage() {
                   {(['enterprise', 'government', 'financial-institution', 'healthcare', 'education'] as OrganizationType[]).map(type => (
                     <Card
                       key={type}
-                      className="cursor-pointer hover:shadow-md transition-shadow"
-                      onClick={() => setFormData({
-                        ...formData,
-                        organization: {
-                          ...((formData as EnterpriseOnboarding).organization || {}),
-                          type: type
-                        }
-                      })}
+                      className={`cursor-pointer hover:shadow-md transition-all ${
+                        selectedOrgType === type
+                          ? 'ring-2 ring-blue-500 bg-blue-50'
+                          : 'hover:border-blue-300'
+                      }`}
+                      onClick={() => {
+                        setSelectedOrgType(type)
+                        setFormData({
+                          ...formData,
+                          organization: {
+                            ...((formData as EnterpriseOnboarding).organization || {}),
+                            type: type
+                          }
+                        })
+                      }}
                     >
                       <CardContent className="p-3 text-center">
                         <p className="text-sm font-medium">
                           {type.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase())}
                         </p>
+                        {selectedOrgType === type && (
+                          <CheckCircle className="h-4 w-4 text-blue-600 mx-auto mt-1" />
+                        )}
                       </CardContent>
                     </Card>
                   ))}
@@ -373,11 +821,95 @@ export default function OnboardingPage() {
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <Label htmlFor="industry">Industry</Label>
-                  <Input
+                  <Label htmlFor="industry">Industry *</Label>
+                  <select
                     id="industry"
-                    placeholder="Technology"
-                  />
+                    className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    defaultValue={organizationData?.industry || ''}
+                    onChange={(e) => setFormData({
+                      ...formData,
+                      organization: {
+                        ...((formData as EnterpriseOnboarding).organization || {}),
+                        industry: e.target.value
+                      }
+                    })}
+                  >
+                    <option value="">Select Industry</option>
+                    <optgroup label="Financial Services">
+                      <option value="banking">Banking & Financial Institutions</option>
+                      <option value="payments">Payment Processing & Fintech</option>
+                      <option value="insurance">Insurance Services</option>
+                      <option value="investment">Investment & Asset Management</option>
+                      <option value="credit-unions">Credit Unions & Community Banks</option>
+                    </optgroup>
+                    <optgroup label="Healthcare">
+                      <option value="hospitals">Hospitals & Medical Centers</option>
+                      <option value="pharmacies">Pharmacies & Drug Stores</option>
+                      <option value="medical-practices">Medical & Dental Practices</option>
+                      <option value="healthcare-services">Healthcare Services & Labs</option>
+                    </optgroup>
+                    <optgroup label="Government & Public Sector">
+                      <option value="federal-government">Federal Government Agencies</option>
+                      <option value="state-government">State & Local Government</option>
+                      <option value="municipalities">Municipalities & Public Services</option>
+                      <option value="education-public">Public Education Institutions</option>
+                    </optgroup>
+                    <optgroup label="Education">
+                      <option value="universities">Universities & Colleges</option>
+                      <option value="k12-schools">K-12 Schools & Districts</option>
+                      <option value="training">Training & Professional Development</option>
+                      <option value="education-services">Educational Services</option>
+                    </optgroup>
+                    <optgroup label="Retail & E-Commerce">
+                      <option value="retail-stores">Retail Stores & Shops</option>
+                      <option value="ecommerce">E-Commerce & Online Marketplaces</option>
+                      <option value="grocery">Grocery & Supermarkets</option>
+                      <option value="specialty-retail">Specialty Retail</option>
+                    </optgroup>
+                    <optgroup label="Hospitality & Travel">
+                      <option value="hotels">Hotels & Lodging</option>
+                      <option value="restaurants">Restaurants & Food Services</option>
+                      <option value="travel">Travel & Tourism Services</option>
+                      <option value="entertainment">Entertainment & Recreation</option>
+                    </optgroup>
+                    <optgroup label="Transportation">
+                      <option value="logistics">Logistics & Freight</option>
+                      <option value="passenger-transport">Passenger Transportation</option>
+                      <option value="delivery">Delivery & Courier Services</option>
+                      <option value="automotive">Automotive Services</option>
+                    </optgroup>
+                    <optgroup label="Technology">
+                      <option value="software">Software & SaaS</option>
+                      <option value="it-services">IT Services & Consulting</option>
+                      <option value="telecommunications">Telecommunications</option>
+                      <option value="tech-hardware">Technology Hardware</option>
+                    </optgroup>
+                    <optgroup label="Professional Services">
+                      <option value="legal">Legal Services</option>
+                      <option value="accounting">Accounting & Tax Services</option>
+                      <option value="consulting">Consulting Services</option>
+                      <option value="real-estate">Real Estate Services</option>
+                    </optgroup>
+                    <optgroup label="Manufacturing & Wholesale">
+                      <option value="manufacturing">Manufacturing</option>
+                      <option value="wholesale">Wholesale & Distribution</option>
+                      <option value="industrial">Industrial Services</option>
+                      <option value="construction">Construction & Contractors</option>
+                    </optgroup>
+                    <optgroup label="Non-Profit & Social Services">
+                      <option value="charities">Charities & Non-Profits</option>
+                      <option value="religious">Religious Organizations</option>
+                      <option value="social-services">Social Services</option>
+                      <option value="community">Community Organizations</option>
+                    </optgroup>
+                    <optgroup label="Other Services">
+                      <option value="utilities">Utilities & Energy</option>
+                      <option value="agriculture">Agriculture & Farming</option>
+                      <option value="media">Media & Publishing</option>
+                      <option value="other">Other Business Services</option>
+                    </optgroup>
+                  </select>
+                  <p className="text-xs text-gray-500 mt-1">Used for MCC coding and compliance</p>
                 </div>
                 <div>
                   <Label htmlFor="website">Website</Label>
@@ -385,6 +917,17 @@ export default function OnboardingPage() {
                     id="website"
                     type="url"
                     placeholder="https://example.com"
+                    value={website}
+                    onChange={(e) => {
+                      setWebsite(e.target.value)
+                      setFormData({
+                        ...formData,
+                        organization: {
+                          ...((formData as EnterpriseOnboarding).organization || {}),
+                          website: e.target.value
+                        }
+                      })
+                    }}
                   />
                 </div>
               </div>
@@ -392,11 +935,93 @@ export default function OnboardingPage() {
               <div>
                 <h3 className="font-semibold mb-3">Business Address</h3>
                 <div className="space-y-3">
-                  <Input placeholder="Street Address" />
-                  <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-                    <Input placeholder="City" />
-                    <Input placeholder="State" />
-                    <Input placeholder="ZIP Code" />
+                  <Input
+                    placeholder="Street Address Line 1"
+                    value={addressLine1}
+                    onChange={(e) => {
+                      setAddressLine1(e.target.value)
+                      setFormData({
+                        ...formData,
+                        organization: {
+                          ...((formData as EnterpriseOnboarding).organization || {}),
+                          addressLine1: e.target.value
+                        }
+                      })
+                    }}
+                  />
+                  <Input
+                    placeholder="Street Address Line 2 (Optional)"
+                    value={addressLine2}
+                    onChange={(e) => {
+                      setAddressLine2(e.target.value)
+                      setFormData({
+                        ...formData,
+                        organization: {
+                          ...((formData as EnterpriseOnboarding).organization || {}),
+                          addressLine2: e.target.value
+                        }
+                      })
+                    }}
+                  />
+                  <div className="grid grid-cols-2 gap-3">
+                    <Input
+                      placeholder="City"
+                      value={city}
+                      onChange={(e) => {
+                        setCity(e.target.value)
+                        setFormData({
+                          ...formData,
+                          organization: {
+                            ...((formData as EnterpriseOnboarding).organization || {}),
+                            city: e.target.value
+                          }
+                        })
+                      }}
+                    />
+                    <Input
+                      placeholder="State/Province"
+                      value={state}
+                      onChange={(e) => {
+                        setState(e.target.value)
+                        setFormData({
+                          ...formData,
+                          organization: {
+                            ...((formData as EnterpriseOnboarding).organization || {}),
+                            state: e.target.value
+                          }
+                        })
+                      }}
+                    />
+                  </div>
+                  <div className="grid grid-cols-2 gap-3">
+                    <Input
+                      placeholder="ZIP/Postal Code"
+                      value={postalCode}
+                      onChange={(e) => {
+                        setPostalCode(e.target.value)
+                        setFormData({
+                          ...formData,
+                          organization: {
+                            ...((formData as EnterpriseOnboarding).organization || {}),
+                            postalCode: e.target.value
+                          }
+                        })
+                      }}
+                    />
+                    <Input
+                      placeholder="Country (e.g., US)"
+                      value={country}
+                      onChange={(e) => {
+                        setCountry(e.target.value)
+                        setFormData({
+                          ...formData,
+                          organization: {
+                            ...((formData as EnterpriseOnboarding).organization || {}),
+                            country: e.target.value
+                          }
+                        })
+                      }}
+                    />
                   </div>
                 </div>
               </div>
@@ -404,10 +1029,64 @@ export default function OnboardingPage() {
               <div>
                 <h3 className="font-semibold mb-3">Primary Contact</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                  <Input placeholder="First Name" />
-                  <Input placeholder="Last Name" />
-                  <Input type="email" placeholder="Email" />
-                  <Input type="tel" placeholder="Phone" />
+                  <Input
+                    placeholder="First Name"
+                    value={contactFirstName}
+                    onChange={(e) => {
+                      setContactFirstName(e.target.value)
+                      setFormData({
+                        ...formData,
+                        organization: {
+                          ...((formData as EnterpriseOnboarding).organization || {}),
+                          contactFirstName: e.target.value
+                        }
+                      })
+                    }}
+                  />
+                  <Input
+                    placeholder="Last Name"
+                    value={contactLastName}
+                    onChange={(e) => {
+                      setContactLastName(e.target.value)
+                      setFormData({
+                        ...formData,
+                        organization: {
+                          ...((formData as EnterpriseOnboarding).organization || {}),
+                          contactLastName: e.target.value
+                        }
+                      })
+                    }}
+                  />
+                  <Input
+                    type="email"
+                    placeholder="Email"
+                    value={contactEmail}
+                    onChange={(e) => {
+                      setContactEmail(e.target.value)
+                      setFormData({
+                        ...formData,
+                        organization: {
+                          ...((formData as EnterpriseOnboarding).organization || {}),
+                          email: e.target.value
+                        }
+                      })
+                    }}
+                  />
+                  <Input
+                    type="tel"
+                    placeholder="Phone"
+                    value={contactPhone}
+                    onChange={(e) => {
+                      setContactPhone(e.target.value)
+                      setFormData({
+                        ...formData,
+                        organization: {
+                          ...((formData as EnterpriseOnboarding).organization || {}),
+                          phone: e.target.value
+                        }
+                      })
+                    }}
+                  />
                 </div>
               </div>
             </div>
@@ -419,18 +1098,28 @@ export default function OnboardingPage() {
           <div className="space-y-6">
             <div className="text-center">
               <h2 className="text-2xl font-bold mb-2">Your Profile</h2>
-              <p className="text-gray-600">Set up your personal information</p>
+              <p className="text-gray-600">
+                {userData ? 'Review and complete your personal information' : 'Set up your personal information'}
+              </p>
             </div>
 
             <div className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <Label htmlFor="firstName">First Name *</Label>
-                  <Input id="firstName" placeholder="John" />
+                  <Input
+                    id="firstName"
+                    placeholder="John"
+                    defaultValue={userData?.firstName || userData?.first_name || ''}
+                  />
                 </div>
                 <div>
                   <Label htmlFor="lastName">Last Name *</Label>
-                  <Input id="lastName" placeholder="Doe" />
+                  <Input
+                    id="lastName"
+                    placeholder="Doe"
+                    defaultValue={userData?.lastName || userData?.last_name || ''}
+                  />
                 </div>
               </div>
 
@@ -438,16 +1127,71 @@ export default function OnboardingPage() {
                 <div>
                   <Label htmlFor="email">Email Address *</Label>
                   <div className="flex gap-2">
-                    <Input id="email" type="email" placeholder="john@example.com" className="flex-1" />
-                    <Button variant="outline" size="sm">Verify</Button>
+                    <Input
+                      id="email"
+                      type="email"
+                      placeholder="john@example.com"
+                      className="flex-1"
+                      defaultValue={userData?.email || ''}
+                      disabled={!!userData?.email}
+                    />
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={handleEmailVerification}
+                      disabled={loading || userData?.isEmailVerified || userData?.email_verified}
+                    >
+                      {userData?.isEmailVerified || userData?.email_verified ? '✓ Verified' : 'Verify'}
+                    </Button>
                   </div>
+                  {errors.email && (
+                    <p className="text-sm text-red-500 mt-1">{errors.email}</p>
+                  )}
+                  {errors.email_success && (
+                    <div className="mt-2 p-3 bg-green-50 border border-green-200 rounded-lg">
+                      <p className="text-sm text-green-800 font-medium flex items-center gap-2">
+                        <CheckCircle className="h-4 w-4" />
+                        {errors.email_success}
+                      </p>
+                      <p className="text-xs text-green-700 mt-1">
+                        🔧 DEV MODE: OTP code shown on-screen (no email sent)
+                      </p>
+                    </div>
+                  )}
                 </div>
                 <div>
                   <Label htmlFor="phone">Phone Number *</Label>
                   <div className="flex gap-2">
-                    <Input id="phone" type="tel" placeholder="+1 (555) 123-4567" className="flex-1" />
-                    <Button variant="outline" size="sm">Verify</Button>
+                    <Input
+                      id="phone"
+                      type="tel"
+                      placeholder="+1 (555) 123-4567"
+                      className="flex-1"
+                      defaultValue={userData?.phoneNumber || userData?.phone_number || ''}
+                    />
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={handlePhoneVerification}
+                      disabled={loading || userData?.isMobileVerified || userData?.mobile_verified}
+                    >
+                      {userData?.isMobileVerified || userData?.mobile_verified ? '✓ Verified' : 'Verify'}
+                    </Button>
                   </div>
+                  {errors.phone && (
+                    <p className="text-sm text-red-500 mt-1">{errors.phone}</p>
+                  )}
+                  {errors.phone_success && (
+                    <div className="mt-2 p-3 bg-green-50 border border-green-200 rounded-lg">
+                      <p className="text-sm text-green-800 font-medium flex items-center gap-2">
+                        <CheckCircle className="h-4 w-4" />
+                        {errors.phone_success}
+                      </p>
+                      <p className="text-xs text-green-700 mt-1">
+                        🔧 DEV MODE: OTP code shown on-screen (no SMS sent)
+                      </p>
+                    </div>
+                  )}
                 </div>
               </div>
 
@@ -498,26 +1242,88 @@ export default function OnboardingPage() {
                     </CardHeader>
                     <CardContent>
                       <div className="space-y-3">
-                        <div className="border-2 border-dashed rounded-lg p-6 text-center">
-                          <Upload className="h-8 w-8 mx-auto mb-2 text-gray-400" />
+                        {/* Articles of Incorporation */}
+                        <div className={`border-2 border-dashed rounded-lg p-6 text-center ${articlesOfIncorporation ? 'border-green-500 bg-green-50' : 'border-gray-300'}`}>
+                          <Upload className={`h-8 w-8 mx-auto mb-2 ${articlesOfIncorporation ? 'text-green-500' : 'text-gray-400'}`} />
                           <p className="text-sm text-gray-600">Articles of Incorporation</p>
-                          <Button variant="outline" size="sm" className="mt-2">
-                            Choose File
+                          {articlesOfIncorporation && (
+                            <p className="text-xs text-green-600 mt-1">✓ {articlesOfIncorporation.name}</p>
+                          )}
+                          <input
+                            id="articles-of-incorporation-input"
+                            type="file"
+                            accept="image/*,.pdf"
+                            className="hidden"
+                            onChange={(e) => handleFileUpload(e.target.files?.[0] || null, setArticlesOfIncorporation, 'articles')}
+                          />
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className="mt-2"
+                            onClick={() => triggerFileInput('articles-of-incorporation-input')}
+                            type="button"
+                          >
+                            {articlesOfIncorporation ? 'Change File' : 'Choose File'}
                           </Button>
+                          {errors.articles && (
+                            <p className="text-xs text-red-500 mt-1">{errors.articles}</p>
+                          )}
                         </div>
-                        <div className="border-2 border-dashed rounded-lg p-6 text-center">
-                          <Upload className="h-8 w-8 mx-auto mb-2 text-gray-400" />
+
+                        {/* Business License */}
+                        <div className={`border-2 border-dashed rounded-lg p-6 text-center ${businessLicense ? 'border-green-500 bg-green-50' : 'border-gray-300'}`}>
+                          <Upload className={`h-8 w-8 mx-auto mb-2 ${businessLicense ? 'text-green-500' : 'text-gray-400'}`} />
                           <p className="text-sm text-gray-600">Business License</p>
-                          <Button variant="outline" size="sm" className="mt-2">
-                            Choose File
+                          {businessLicense && (
+                            <p className="text-xs text-green-600 mt-1">✓ {businessLicense.name}</p>
+                          )}
+                          <input
+                            id="business-license-input"
+                            type="file"
+                            accept="image/*,.pdf"
+                            className="hidden"
+                            onChange={(e) => handleFileUpload(e.target.files?.[0] || null, setBusinessLicense, 'license')}
+                          />
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className="mt-2"
+                            onClick={() => triggerFileInput('business-license-input')}
+                            type="button"
+                          >
+                            {businessLicense ? 'Change File' : 'Choose File'}
                           </Button>
+                          {errors.license && (
+                            <p className="text-xs text-red-500 mt-1">{errors.license}</p>
+                          )}
                         </div>
-                        <div className="border-2 border-dashed rounded-lg p-6 text-center">
-                          <Upload className="h-8 w-8 mx-auto mb-2 text-gray-400" />
+
+                        {/* Bank Statement */}
+                        <div className={`border-2 border-dashed rounded-lg p-6 text-center ${bankStatement ? 'border-green-500 bg-green-50' : 'border-gray-300'}`}>
+                          <Upload className={`h-8 w-8 mx-auto mb-2 ${bankStatement ? 'text-green-500' : 'text-gray-400'}`} />
                           <p className="text-sm text-gray-600">Bank Statement (Optional)</p>
-                          <Button variant="outline" size="sm" className="mt-2">
-                            Choose File
+                          {bankStatement && (
+                            <p className="text-xs text-green-600 mt-1">✓ {bankStatement.name}</p>
+                          )}
+                          <input
+                            id="bank-statement-input"
+                            type="file"
+                            accept="image/*,.pdf"
+                            className="hidden"
+                            onChange={(e) => handleFileUpload(e.target.files?.[0] || null, setBankStatement, 'statement')}
+                          />
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className="mt-2"
+                            onClick={() => triggerFileInput('bank-statement-input')}
+                            type="button"
+                          >
+                            {bankStatement ? 'Change File' : 'Choose File'}
                           </Button>
+                          {errors.statement && (
+                            <p className="text-xs text-red-500 mt-1">{errors.statement}</p>
+                          )}
                         </div>
                       </div>
                     </CardContent>
@@ -551,19 +1357,60 @@ export default function OnboardingPage() {
                     </CardHeader>
                     <CardContent>
                       <div className="space-y-3">
-                        <div className="border-2 border-dashed rounded-lg p-6 text-center">
-                          <Upload className="h-8 w-8 mx-auto mb-2 text-gray-400" />
+                        {/* ID Document */}
+                        <div className={`border-2 border-dashed rounded-lg p-6 text-center ${idDocument ? 'border-green-500 bg-green-50' : 'border-gray-300'}`}>
+                          <Upload className={`h-8 w-8 mx-auto mb-2 ${idDocument ? 'text-green-500' : 'text-gray-400'}`} />
                           <p className="text-sm text-gray-600">Driver's License or Passport</p>
-                          <Button variant="outline" size="sm" className="mt-2">
-                            Choose File
+                          {idDocument && (
+                            <p className="text-xs text-green-600 mt-1">✓ {idDocument.name}</p>
+                          )}
+                          <input
+                            id="id-document-input"
+                            type="file"
+                            accept="image/*,.pdf"
+                            className="hidden"
+                            onChange={(e) => handleFileUpload(e.target.files?.[0] || null, setIdDocument, 'id')}
+                          />
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className="mt-2"
+                            onClick={() => triggerFileInput('id-document-input')}
+                            type="button"
+                          >
+                            {idDocument ? 'Change File' : 'Choose File'}
                           </Button>
+                          {errors.id && (
+                            <p className="text-xs text-red-500 mt-1">{errors.id}</p>
+                          )}
                         </div>
-                        <div className="border-2 border-dashed rounded-lg p-6 text-center">
-                          <Upload className="h-8 w-8 mx-auto mb-2 text-gray-400" />
+
+                        {/* Proof of Address */}
+                        <div className={`border-2 border-dashed rounded-lg p-6 text-center ${proofOfAddress ? 'border-green-500 bg-green-50' : 'border-gray-300'}`}>
+                          <Upload className={`h-8 w-8 mx-auto mb-2 ${proofOfAddress ? 'text-green-500' : 'text-gray-400'}`} />
                           <p className="text-sm text-gray-600">Proof of Address (Optional)</p>
-                          <Button variant="outline" size="sm" className="mt-2">
-                            Choose File
+                          {proofOfAddress && (
+                            <p className="text-xs text-green-600 mt-1">✓ {proofOfAddress.name}</p>
+                          )}
+                          <input
+                            id="proof-of-address-input"
+                            type="file"
+                            accept="image/*,.pdf"
+                            className="hidden"
+                            onChange={(e) => handleFileUpload(e.target.files?.[0] || null, setProofOfAddress, 'address')}
+                          />
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className="mt-2"
+                            onClick={() => triggerFileInput('proof-of-address-input')}
+                            type="button"
+                          >
+                            {proofOfAddress ? 'Change File' : 'Choose File'}
                           </Button>
+                          {errors.address && (
+                            <p className="text-xs text-red-500 mt-1">{errors.address}</p>
+                          )}
                         </div>
                       </div>
                     </CardContent>
@@ -991,6 +1838,18 @@ export default function OnboardingPage() {
     }
   }
 
+  // Show loading state while fetching data
+  if (initializing) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading your information...</p>
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
       <div className="container max-w-4xl mx-auto px-4 py-8">
@@ -998,11 +1857,30 @@ export default function OnboardingPage() {
         <div className="mb-8">
           <div className="flex items-center justify-between mb-4">
             <h1 className="text-2xl font-bold">Account Setup</h1>
-            <span className="text-sm text-gray-500">
-              Step {currentStepIndex + 1} of {steps.length}
-            </span>
+            <div className="flex items-center gap-3">
+              {showSaveIndicator && (
+                <span className="text-xs text-green-600 flex items-center gap-1 animate-pulse">
+                  <CheckCircle className="h-3 w-3" />
+                  Saved
+                </span>
+              )}
+              {accountType ? (
+                <span className="text-sm text-gray-500">
+                  Step {currentStepIndex + 1} of {steps.length}
+                </span>
+              ) : (
+                <span className="text-sm text-gray-500">
+                  Getting Started
+                </span>
+              )}
+            </div>
           </div>
           <Progress value={progress} className="h-2" />
+          {accountType && (
+            <p className="text-xs text-gray-500 mt-2">
+              {accountType === 'enterprise' ? 'Enterprise Account Setup' : 'Personal Account Setup'}
+            </p>
+          )}
         </div>
 
         {/* Step Indicators */}
@@ -1058,26 +1936,48 @@ export default function OnboardingPage() {
 
         {/* Navigation Buttons */}
         {currentStep !== 'complete' && (
-          <div className="flex justify-between mt-6">
-            <Button
-              variant="outline"
-              onClick={handleBack}
-              disabled={currentStepIndex === 0}
-            >
-              <ChevronLeft className="h-4 w-4 mr-2" />
-              Back
-            </Button>
+          <div className="mt-6">
+            <div className="flex justify-between items-center">
+              <Button
+                variant="outline"
+                onClick={handleBack}
+                disabled={currentStepIndex === 0}
+              >
+                <ChevronLeft className="h-4 w-4 mr-2" />
+                Back
+              </Button>
 
-            {currentStepIndex === steps.length - 2 ? (
-              <Button variant="gradient" onClick={handleNext}>
-                Complete Setup
-                <CheckCircle className="h-4 w-4 ml-2" />
-              </Button>
-            ) : (
-              <Button variant="gradient" onClick={handleNext}>
-                Continue
-                <ChevronRight className="h-4 w-4 ml-2" />
-              </Button>
+              <div className="flex gap-3">
+                {currentStep !== 'welcome' && currentStep !== 'terms' && (
+                  <Button
+                    variant="ghost"
+                    onClick={handleSkip}
+                    disabled={loading}
+                    className="text-gray-600 hover:text-gray-900"
+                  >
+                    Skip for Now
+                  </Button>
+                )}
+
+                {currentStepIndex === steps.length - 2 ? (
+                  <Button variant="gradient" onClick={handleNext} disabled={loading}>
+                    {loading ? 'Completing...' : 'Complete Setup'}
+                    <CheckCircle className="h-4 w-4 ml-2" />
+                  </Button>
+                ) : (
+                  <Button variant="gradient" onClick={handleNext} disabled={loading}>
+                    Continue
+                    <ChevronRight className="h-4 w-4 ml-2" />
+                  </Button>
+                )}
+              </div>
+            </div>
+
+            {/* Skip Notice */}
+            {currentStep !== 'welcome' && currentStep !== 'terms' && (
+              <p className="text-center text-xs text-gray-500 mt-3">
+                You can complete this step later from your Settings page
+              </p>
             )}
           </div>
         )}

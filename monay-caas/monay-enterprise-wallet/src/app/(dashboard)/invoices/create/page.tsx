@@ -37,135 +37,23 @@ import type {
 
 interface CompanyContact {
   id: string
-  type: 'organization' | 'consumer'
+  type: 'organization' | 'individual'
   name: string
   email: string
-  address?: string
-  taxId?: string
+  address?: string | null
+  taxId?: string | null
   organizationId?: string
-  phone?: string
-  website?: string
+  phone?: string | null
+  website?: string | null
   contactPerson?: string
   isVerified: boolean
   isMonayTenant: boolean // Whether they have a Monay account
-  kybStatus?: 'none' | 'pending' | 'approved' | 'rejected' // KYB status for organizations
-  kycStatus?: 'none' | 'pending' | 'approved' | 'rejected' // KYC status for consumers
+  kybStatus?: 'not_started' | 'pending' | 'approved' | 'rejected' // KYB status for organizations
+  kycStatus?: 'not_started' | 'pending' | 'approved' | 'rejected' // KYC status for consumers
   lastUsed?: string
+  tenantId?: string | null
+  uniqueCode?: string | null
 }
-
-// Mock database of organizations and consumer contacts
-const mockCompanyDatabase: CompanyContact[] = [
-  // Organizations
-  {
-    id: 'org-1',
-    type: 'organization',
-    name: 'Acme Corporation',
-    email: 'billing@acme-corp.com',
-    address: '123 Business Ave, New York, NY 10001',
-    taxId: '12-3456789',
-    phone: '+1 (555) 123-4567',
-    website: 'acme-corp.com',
-    contactPerson: 'John Smith',
-    isVerified: true,
-    isMonayTenant: true,
-    kybStatus: 'approved',
-    lastUsed: '2024-01-25'
-  },
-  {
-    id: 'org-2',
-    type: 'organization',
-    name: 'TechFlow Solutions LLC',
-    email: 'accounts@techflow.io',
-    address: '456 Innovation Dr, San Francisco, CA 94105',
-    taxId: '98-7654321',
-    phone: '+1 (555) 987-6543',
-    website: 'techflow.io',
-    contactPerson: 'Sarah Johnson',
-    isVerified: true,
-    isMonayTenant: true,
-    kybStatus: 'approved',
-    lastUsed: '2024-01-28'
-  },
-  {
-    id: 'org-3',
-    type: 'organization',
-    name: 'Global Enterprises Inc',
-    email: 'finance@globalent.com',
-    address: '789 Corporate Blvd, Chicago, IL 60601',
-    taxId: '45-6789012',
-    phone: '+1 (555) 456-7890',
-    website: 'globalent.com',
-    contactPerson: 'Michael Brown',
-    isVerified: true,
-    isMonayTenant: false, // External organization
-    kybStatus: 'none',
-    lastUsed: '2024-01-20'
-  },
-  {
-    id: 'org-4',
-    type: 'organization',
-    name: 'StartupLabs Co',
-    email: 'team@startuplabs.co',
-    address: '321 Startup St, Austin, TX 73301',
-    taxId: '67-8901234',
-    phone: '+1 (555) 321-0987',
-    website: 'startuplabs.co',
-    contactPerson: 'Emily Davis',
-    isVerified: false,
-    isMonayTenant: false, // External organization
-    kybStatus: 'none',
-    lastUsed: '2024-01-15'
-  },
-  // Consumer contacts
-  {
-    id: 'user-1',
-    type: 'consumer',
-    name: 'Alice Thompson',
-    email: 'alice.thompson@email.com',
-    address: '456 Residential Ln, Portland, OR 97201',
-    phone: '+1 (555) 234-5678',
-    isVerified: true,
-    isMonayTenant: true,
-    kycStatus: 'approved',
-    lastUsed: '2024-01-29'
-  },
-  {
-    id: 'user-2',
-    type: 'consumer',
-    name: 'Robert Martinez',
-    email: 'rob.martinez@gmail.com',
-    address: '789 Home Ave, Denver, CO 80202',
-    phone: '+1 (555) 345-6789',
-    isVerified: true,
-    isMonayTenant: true,
-    kycStatus: 'approved',
-    lastUsed: '2024-01-26'
-  },
-  {
-    id: 'user-3',
-    type: 'consumer',
-    name: 'Jessica Chen',
-    email: 'jess.chen@outlook.com',
-    address: '147 Personal St, Seattle, WA 98101',
-    phone: '+1 (555) 147-2580',
-    isVerified: false,
-    isMonayTenant: false, // External contact
-    kycStatus: 'none',
-    lastUsed: '2024-01-22'
-  },
-  {
-    id: 'user-4',
-    type: 'consumer',
-    name: 'David Lee',
-    email: 'd.lee@yahoo.com',
-    address: '258 Individual Dr, Miami, FL 33101',
-    phone: '+1 (555) 258-3691',
-    isVerified: true,
-    isMonayTenant: false, // External contact
-    kycStatus: 'none',
-    lastUsed: '2024-01-18'
-  }
-]
 
 export default function CreateInvoicePage() {
   const router = useRouter()
@@ -185,7 +73,14 @@ export default function CreateInvoicePage() {
   const [companySearch, setCompanySearch] = useState('')
   const [showCompanyDropdown, setShowCompanyDropdown] = useState(false)
   const [filteredCompanies, setFilteredCompanies] = useState<CompanyContact[]>([])
+  const [allCompanies, setAllCompanies] = useState<CompanyContact[]>([])
   const [isManualEntry, setIsManualEntry] = useState(false)
+  const [loadingContacts, setLoadingContacts] = useState(false)
+
+  // Filter states
+  const [filterType, setFilterType] = useState<'all' | 'organization' | 'individual'>('all')
+  const [filterTenantStatus, setFilterTenantStatus] = useState<'all' | 'monay_tenant' | 'external'>('all')
+  const [filterVerified, setFilterVerified] = useState<'all' | 'verified' | 'unverified' | 'pending'>('all')
   const [lineItems, setLineItems] = useState<Omit<InvoiceLineItem, 'id'>[]>([
     { description: '', quantity: 1, unitPrice: 0, amount: 0 }
   ])
@@ -218,6 +113,65 @@ export default function CreateInvoicePage() {
   })
   const [creatingContact, setCreatingContact] = useState(false)
 
+  // Fetch contacts from API
+  useEffect(() => {
+    const fetchContacts = async () => {
+      setLoadingContacts(true)
+      try {
+        const token = localStorage.getItem('authToken')
+        const params = new URLSearchParams({
+          type: filterType,
+          tenant_status: filterTenantStatus,
+          verified: filterVerified,
+          search: companySearch
+        })
+
+        const response = await fetch(`http://localhost:3001/api/contacts?${params}`, {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json',
+            'x-admin-bypass': 'true'
+          }
+        })
+
+        if (response.ok) {
+          const result = await response.json()
+          if (result.success && result.data) {
+            const contacts: CompanyContact[] = result.data.map((contact: any) => ({
+              id: contact.id,
+              type: contact.type === 'individual' ? 'individual' : 'organization',
+              name: contact.name,
+              email: contact.email,
+              address: contact.address,
+              taxId: contact.taxId,
+              phone: contact.phone,
+              website: contact.website,
+              isVerified: contact.verified,
+              isMonayTenant: contact.isMonayTenant,
+              kybStatus: contact.kybStatus || 'not_started',
+              kycStatus: contact.kycStatus || 'not_started',
+              lastUsed: contact.lastUsed,
+              tenantId: contact.tenantId,
+              uniqueCode: contact.uniqueCode
+            }))
+            setAllCompanies(contacts)
+            setFilteredCompanies(contacts.slice(0, 8)) // Show first 8 results
+          }
+        } else {
+          console.error('Failed to fetch contacts:', response.status)
+          toast.error('Failed to load contacts')
+        }
+      } catch (error) {
+        console.error('Error fetching contacts:', error)
+        toast.error('Error loading contacts')
+      } finally {
+        setLoadingContacts(false)
+      }
+    }
+
+    fetchContacts()
+  }, [filterType, filterTenantStatus, filterVerified, companySearch])
+
   // Calculate default due date (30 days from today)
   useEffect(() => {
     const date = new Date()
@@ -236,25 +190,6 @@ export default function CreateInvoicePage() {
     }
   }, [currency])
 
-  // Company search filtering
-  useEffect(() => {
-    if (companySearch.trim() === '') {
-      setFilteredCompanies(mockCompanyDatabase.slice(0, 5)) // Show recent 5 by default
-    } else {
-      const filtered = mockCompanyDatabase.filter(company =>
-        company.name.toLowerCase().includes(companySearch.toLowerCase()) ||
-        company.email.toLowerCase().includes(companySearch.toLowerCase()) ||
-        (company.contactPerson && company.contactPerson.toLowerCase().includes(companySearch.toLowerCase()))
-      ).sort((a, b) => {
-        // Sort by: verified first, then by last used date
-        if (a.isVerified !== b.isVerified) {
-          return a.isVerified ? -1 : 1
-        }
-        return (b.lastUsed || '').localeCompare(a.lastUsed || '')
-      }).slice(0, 8)
-      setFilteredCompanies(filtered)
-    }
-  }, [companySearch])
 
   // Click outside to close dropdown
   useEffect(() => {
@@ -302,6 +237,12 @@ export default function CreateInvoicePage() {
     setIsManualEntry(true)
   }
 
+  const handleEditSelectedCompany = () => {
+    // Enable editing without clearing the data
+    setIsManualEntry(true)
+    setShowCompanyDropdown(false)
+  }
+
   const handleNewContactClick = () => {
     setShowNewContactModal(true)
     setShowCompanyDropdown(false)
@@ -321,42 +262,89 @@ export default function CreateInvoicePage() {
   }
 
   const handleCreateNewContact = async () => {
-    if (!newContactForm.name || !newContactForm.email) {
-      toast.error('Name and email are required')
+    if (!newContactForm.email) {
+      toast.error('Email is required')
+      return
+    }
+
+    if (newContactType === 'organization' && !newContactForm.name) {
+      toast.error('Organization name is required')
       return
     }
 
     setCreatingContact(true)
 
     try {
-      // Create new contact object
-      const newContact: CompanyContact = {
-        id: `new-${Date.now()}`,
+      const token = localStorage.getItem('authToken')
+
+      // Prepare contact data based on type
+      const contactData: any = {
         type: newContactType,
-        name: newContactForm.name,
         email: newContactForm.email,
-        address: newContactForm.address || undefined,
-        taxId: newContactForm.taxId || undefined,
-        phone: newContactForm.phone || undefined,
-        website: newContactForm.website || undefined,
-        contactPerson: newContactForm.contactPerson || undefined,
-        isVerified: false,
-        isMonayTenant: false, // New contacts are external by default
-        kybStatus: 'none',
-        kycStatus: 'none'
+        phone: newContactForm.phone || null,
+        address: newContactForm.address || null
       }
 
-      // Add to mock database (in real app, this would be an API call)
-      mockCompanyDatabase.unshift(newContact)
+      if (newContactType === 'organization') {
+        contactData.name = newContactForm.name
+        contactData.taxId = newContactForm.taxId || null
+        contactData.website = newContactForm.website || null
+        contactData.contactPerson = newContactForm.contactPerson || null
+      } else {
+        // For individuals, split name into firstName and lastName
+        const nameParts = newContactForm.name.trim().split(' ')
+        contactData.firstName = nameParts[0] || ''
+        contactData.lastName = nameParts.slice(1).join(' ') || nameParts[0] || ''
+      }
 
-      // Auto-select the new contact
-      handleCompanySelect(newContact)
+      const response = await fetch('http://localhost:3001/api/contacts', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+          'x-admin-bypass': 'true'
+        },
+        body: JSON.stringify(contactData)
+      })
 
-      // Close modal and reset form
-      setShowNewContactModal(false)
-      resetNewContactForm()
+      const result = await response.json()
 
-      toast.success(`New ${newContactType} contact created successfully`)
+      if (response.ok && result.success) {
+        // Create CompanyContact object from API response
+        const newContact: CompanyContact = {
+          id: result.data.id,
+          type: newContactType,
+          name: newContactType === 'organization'
+            ? result.data.name
+            : `${result.data.first_name} ${result.data.last_name}`,
+          email: result.data.email,
+          address: result.data.address_line1 || result.data.address || null,
+          taxId: result.data.tax_id || null,
+          phone: result.data.phone || result.data.mobile || null,
+          website: result.data.website || null,
+          isVerified: false,
+          isMonayTenant: false, // New contacts are external by default
+          kybStatus: 'not_started',
+          kycStatus: 'not_started',
+          tenantId: null,
+          uniqueCode: result.data.org_id || result.data.unique_code || null
+        }
+
+        // Add to local state
+        setAllCompanies(prev => [newContact, ...prev])
+        setFilteredCompanies(prev => [newContact, ...prev].slice(0, 8))
+
+        // Auto-select the new contact
+        handleCompanySelect(newContact)
+
+        // Close modal and reset form
+        setShowNewContactModal(false)
+        resetNewContactForm()
+
+        toast.success(`${newContactType === 'organization' ? 'Organization' : 'Individual'} created successfully`)
+      } else {
+        toast.error(result.message || 'Failed to create contact')
+      }
     } catch (error) {
       toast.error('Failed to create new contact')
       console.error('Error creating contact:', error)
@@ -625,6 +613,65 @@ export default function CreateInvoicePage() {
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
+          {/* Filter Controls */}
+          <div className="flex flex-wrap gap-2 items-center pb-2 border-b border-gray-200">
+            <Label className="text-sm font-medium text-gray-700">Filters:</Label>
+            <select
+              value={filterType}
+              onChange={(e) => setFilterType(e.target.value as any)}
+              className="px-3 py-1.5 text-sm border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            >
+              <option value="all">All Types</option>
+              <option value="organization">🏢 Organizations</option>
+              <option value="individual">👤 Individuals</option>
+            </select>
+
+            <select
+              value={filterTenantStatus}
+              onChange={(e) => setFilterTenantStatus(e.target.value as any)}
+              className="px-3 py-1.5 text-sm border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            >
+              <option value="all">All Status</option>
+              <option value="monay_tenant">💼 Monay Tenants</option>
+              <option value="external">🌐 External Contacts</option>
+            </select>
+
+            <select
+              value={filterVerified}
+              onChange={(e) => setFilterVerified(e.target.value as any)}
+              className="px-3 py-1.5 text-sm border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            >
+              <option value="all">All Verification</option>
+              <option value="verified">✅ Verified</option>
+              <option value="pending">⏳ Pending</option>
+              <option value="unverified">❌ Unverified</option>
+            </select>
+
+            {(filterType !== 'all' || filterTenantStatus !== 'all' || filterVerified !== 'all') && (
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                onClick={() => {
+                  setFilterType('all')
+                  setFilterTenantStatus('all')
+                  setFilterVerified('all')
+                }}
+                className="text-xs text-gray-600 hover:text-gray-900"
+              >
+                <X className="h-3 w-3 mr-1" />
+                Clear Filters
+              </Button>
+            )}
+
+            {loadingContacts && (
+              <span className="text-xs text-gray-500 flex items-center gap-1">
+                <div className="animate-spin h-3 w-3 border-2 border-gray-400 border-t-transparent rounded-full"></div>
+                Loading...
+              </span>
+            )}
+          </div>
+
           {/* Company Search */}
           <div className="relative" ref={dropdownRef}>
             <Label htmlFor="companySearch">Company/Contact Search</Label>
@@ -692,9 +739,9 @@ export default function CreateInvoicePage() {
                                 <User className="h-4 w-4 text-green-500" />
                               )}
                               <span className="font-medium text-gray-900">{company.name}</span>
-                              {company.isVerified && (
-                                <Badge className="bg-green-100 text-green-800 text-xs">Verified</Badge>
-                              )}
+                              <Badge variant="secondary" className="text-xs">
+                                {company.type === 'organization' ? '🏢 Org' : '👤 Individual'}
+                              </Badge>
                               {company.isMonayTenant ? (
                                 <Badge className="bg-blue-100 text-blue-800 text-xs">
                                   <Wallet className="h-3 w-3 mr-1" />
@@ -704,6 +751,9 @@ export default function CreateInvoicePage() {
                                 <Badge variant="outline" className="text-xs text-gray-600">
                                   External
                                 </Badge>
+                              )}
+                              {company.isVerified && (
+                                <Badge className="bg-green-100 text-green-800 text-xs">✓ Verified</Badge>
                               )}
                             </div>
                             <p className="text-sm text-gray-600 mt-1">{company.email}</p>
@@ -836,7 +886,7 @@ export default function CreateInvoicePage() {
                   type="button"
                   variant="outline"
                   size="sm"
-                  onClick={handleManualEntry}
+                  onClick={handleEditSelectedCompany}
                 >
                   Edit Details
                 </Button>

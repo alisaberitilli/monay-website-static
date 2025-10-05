@@ -38,10 +38,14 @@ test.describe('Consumer Wallet Complete Registration Flow', () => {
       fullPage: true
     });
 
-    // Step 2: Select Personal Account
+    // Step 2: Select Personal Account (Updated for new three-option layout)
     console.log('2️⃣ Selecting Personal Account...');
 
     const personalAccountSelectors = [
+      // More specific targeting for Personal Account card
+      'div:has-text("Personal Account") button:has-text("Get Started")',
+      'div:has-text("Personal wallet") button:has-text("Get Started")',
+      // Fallback options
       'button:has-text("Get Started")',
       '.personal-account button',
       '[data-testid="personal-account"] button',
@@ -58,7 +62,8 @@ test.describe('Consumer Wallet Complete Registration Flow', () => {
           console.log(`   ✅ Clicked: ${selector}`);
           accountTypeSelected = true;
 
-          // Wait for navigation or modal
+          // Wait for navigation or modal (form should appear)
+          await page.waitForLoadState('networkidle');
           await page.waitForTimeout(2000);
           break;
         }
@@ -135,7 +140,7 @@ test.describe('Consumer Wallet Complete Registration Flow', () => {
         { field: 'firstName', selectors: ['input[name="firstName"]', 'input[placeholder*="First"]', '#firstName'], value: testUser.firstName },
         { field: 'lastName', selectors: ['input[name="lastName"]', 'input[placeholder*="Last"]', '#lastName'], value: testUser.lastName },
         { field: 'email', selectors: ['input[name="email"]', 'input[type="email"]', '#email'], value: testUser.email },
-        { field: 'mobile', selectors: ['input[name="mobile"]', 'input[name="phone"]', 'input[type="tel"]', '#mobile', '#phone'], value: testUser.mobile },
+        { field: 'mobile', selectors: ['input[name="mobileNumber"]', 'input[name="mobile"]', 'input[name="phone"]', 'input[type="tel"]', '#mobile', '#phone'], value: testUser.mobile },
         { field: 'password', selectors: ['input[name="password"]', 'input[type="password"]', '#password'], value: testUser.password },
         { field: 'confirmPassword', selectors: ['input[name="confirmPassword"]', 'input[name="confirm_password"]', 'input[name="passwordConfirm"]', '#confirmPassword'], value: testUser.confirmPassword }
       ];
