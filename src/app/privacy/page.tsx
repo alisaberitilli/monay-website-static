@@ -47,7 +47,7 @@ export default function PrivacyPolicy() {
               1. Introduction and Scope
             </h2>
             <p className={`${isDarkMode ? 'text-gray-300' : 'text-gray-700'} mb-4`}>
-              Utilli, LLC (dba Tilli) ("Monay," "we," "us," or "our") operates a comprehensive financial services platform including Monay ID (identity services), Monay CaaS (Coin-as-a-Service), and Monay WaaS (Wallet-as-a-Service). This Privacy Policy applies to all personal information collected through our services, including our dual-rail blockchain infrastructure (Base EVM L2 and Solana).
+              Monay Pay, Inc. ("Monay," "we," "us," or "our") operates a comprehensive financial services platform including Monay ID (identity services), Monay CaaS (Coin-as-a-Service), and Monay WaaS (Wallet-as-a-Service). This Privacy Policy applies to all personal information collected through our services, including our dual-rail blockchain infrastructure (Base EVM L2 and Solana).
             </p>
             <p className={`${isDarkMode ? 'text-gray-300' : 'text-gray-700'} mb-4`}>
               By using our services, you acknowledge that you have read and understood this Privacy Policy. If you do not agree with our practices, please do not use our services.
@@ -423,7 +423,7 @@ export default function PrivacyPolicy() {
               For privacy-related questions, requests, or complaints:
             </p>
             <div className={`${isDarkMode ? 'bg-gray-800' : 'bg-gray-100'} p-4 rounded mb-4`}>
-              <p className={`${isDarkMode ? 'text-gray-300' : 'text-gray-700'} font-semibold`}>Utilli, LLC (dba Tilli)</p>
+              <p className={`${isDarkMode ? 'text-gray-300' : 'text-gray-700'} font-semibold`}>Monay Pay, Inc.</p>
               <p className={`${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>Data Protection Officer</p>
               <p className={`${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>Email: Contact Privacy Team via our contact form</p>
               <p className={`${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>Email (GDPR): Contact Data Protection Officer</p>

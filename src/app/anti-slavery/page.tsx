@@ -47,7 +47,7 @@ export default function AntiSlavery() {
               1. Policy Statement and Purpose
             </h2>
             <p className={`${isDarkMode ? 'text-gray-300' : 'text-gray-700'} mb-4`}>
-              Utilli, LLC (dba Tilli) operating as Monay ("Company," "we," "us," or "our") is committed to preventing acts of modern slavery, human trafficking, forced labor, and child labor from occurring within our business operations, supply chain, and financial services platform. As a financial technology company operating in the blockchain and digital payment space, we recognize our responsibility to combat financial crimes that facilitate human trafficking and modern slavery.
+              Monay Pay, Inc. operating as Monay ("Company," "we," "us," or "our") is committed to preventing acts of modern slavery, human trafficking, forced labor, and child labor from occurring within our business operations, supply chain, and financial services platform. As a financial technology company operating in the blockchain and digital payment space, we recognize our responsibility to combat financial crimes that facilitate human trafficking and modern slavery.
             </p>
             <p className={`${isDarkMode ? 'text-gray-300' : 'text-gray-700'} mb-4`}>
               This policy demonstrates our commitment to:
@@ -562,7 +562,7 @@ export default function AntiSlavery() {
             </h2>
             <div className={`${isDarkMode ? 'bg-gray-800' : 'bg-gray-100'} p-4 rounded`}>
               <p className={`${isDarkMode ? 'text-gray-300' : 'text-gray-700'} font-semibold`}>Anti-Trafficking Compliance</p>
-              <p className={`${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>Utilli, LLC (dba Tilli)</p>
+              <p className={`${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>Monay Pay, Inc.</p>
               <p className={`${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>1997 Annapolis Exchange Parkway, Suite 300</p>
               <p className={`${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>Annapolis, MD 21401</p>
               <p className={`${isDarkMode ? 'text-gray-300' : 'text-gray-700'} mt-2`}>

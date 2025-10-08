@@ -26,7 +26,7 @@ export default function Footer({ isDarkMode }: FooterProps) {
               Revolutionizing financial infrastructure with dual-rail blockchain technology.
             </p>
             <p className={`text-xs ${isDarkMode ? 'text-gray-500' : 'text-gray-500'}`}>
-              © {currentYear} Utilli, LLC (dba Tilli). All rights reserved.
+              © {currentYear} Monay Pay, Inc.. All rights reserved.
             </p>
           </div>
 
@@ -158,7 +158,7 @@ export default function Footer({ isDarkMode }: FooterProps) {
         <div className={`mt-8 pt-8 border-t ${isDarkMode ? 'border-gray-800' : 'border-gray-200'}`}>
           <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
             <div className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>
-              Monay is a product of Utilli, LLC (dba Tilli)
+              Monay is a product of Monay Pay, Inc.
             </div>
             <div className="flex space-x-6">
               <a href="/contact?dept=Support" className={`text-sm ${isDarkMode ? 'text-gray-400 hover:text-blue-400' : 'text-gray-600 hover:text-blue-600'} transition-colors`}>

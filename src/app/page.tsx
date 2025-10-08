@@ -277,7 +277,7 @@ export default function Home() {
         time: selectedTime,
         duration: 30, // 30 minutes
         meetingLink,
-        organizer: "ali@tilli.pro",
+        organizer: "ali@monay.com",
         subject: `Monay Platform Demo - ${schedulingData.company}`,
         attendees: [schedulingData.email],
         notes: schedulingData.notes
@@ -1934,7 +1934,7 @@ export default function Home() {
                   </svg>
                 </button>
               </div>
-              <p className={`mt-2 ${isDarkMode ? 'text-gray-300' : 'text-gray-800'}`}>Book a personalized demo of the Monay platform with Ali from Tilli.pro</p>
+              <p className={`mt-2 ${isDarkMode ? 'text-gray-300' : 'text-gray-800'}`}>Book a personalized demo of the Monay platform with Ali from Monay</p>
             </div>
 
             <form onSubmit={handleScheduleAppointment} className="p-6">

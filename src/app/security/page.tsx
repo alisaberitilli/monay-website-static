@@ -91,9 +91,9 @@ export default function SecurityCompliancePage() {
           <div className="max-w-6xl mx-auto space-y-12">
             {/* Legacy Platform */}
             <div>
-              <h2 className="text-3xl font-bold mb-2">Legacy Platform (Tilli / Monay Wallet)</h2>
+              <h2 className="text-3xl font-bold mb-2">Legacy Monay Wallet Platform</h2>
               <p className={`mb-6 ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>
-                Under Tilli, our legacy Monay Wallet holds the following certifications:
+                Under our legacy platform, our legacy Monay Wallet holds the following certifications:
               </p>
               <div className="grid md:grid-cols-3 gap-6">
                 {legacyCertifications.map((cert) => (
@@ -113,7 +113,7 @@ export default function SecurityCompliancePage() {
               </div>
               <div className={`mt-6 p-4 rounded-lg ${isDarkMode ? 'bg-blue-900/20' : 'bg-blue-50'} border ${isDarkMode ? 'border-blue-800' : 'border-blue-200'}`}>
                 <p className={`text-sm ${isDarkMode ? 'text-blue-200' : 'text-blue-800'}`}>
-                  <strong>Note:</strong> These certifications apply only to the legacy Monay Wallet under Tilli. 
+                  <strong>Note:</strong> These certifications apply only to the legacy Monay Wallet under our legacy platform. 
                   They do not automatically apply to the new platform components.
                 </p>
               </div>
@@ -278,7 +278,7 @@ export default function SecurityCompliancePage() {
               <div className={`p-6 rounded-xl ${isDarkMode ? 'bg-gray-800' : 'bg-white'} shadow-lg`}>
                 <h3 className="text-xl font-semibold mb-3">Do the legacy certifications apply to the new platform?</h3>
                 <p className={`${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>
-                  <strong>No.</strong> The PCI-DSS, ISO 27001, and SOC 2 certifications held under Tilli for the 
+                  <strong>No.</strong> The PCI-DSS, ISO 27001, and SOC 2 certifications held under our legacy platform for the 
                   legacy Monay Wallet do not automatically apply to the new platform components (Monay ID, CaaS, WaaS).
                 </p>
               </div>

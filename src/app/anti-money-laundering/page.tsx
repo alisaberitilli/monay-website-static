@@ -47,7 +47,7 @@ export default function AntiMoneyLaundering() {
               1. Policy Statement and Commitment
             </h2>
             <p className={`${isDarkMode ? 'text-gray-300' : 'text-gray-700'} mb-4`}>
-              Utilli, LLC (dba Tilli) operating as Monay ("Company," "we," "us," or "our") is committed to the highest standards of Anti-Money Laundering (AML) compliance, Counter-Terrorist Financing (CTF), and sanctions compliance. This comprehensive policy establishes our framework for preventing, detecting, and reporting money laundering, terrorist financing, and sanctions violations across all our services including:
+              Monay Pay, Inc. operating as Monay ("Company," "we," "us," or "our") is committed to the highest standards of Anti-Money Laundering (AML) compliance, Counter-Terrorist Financing (CTF), and sanctions compliance. This comprehensive policy establishes our framework for preventing, detecting, and reporting money laundering, terrorist financing, and sanctions violations across all our services including:
             </p>
             <ul className={`list-disc pl-6 ${isDarkMode ? 'text-gray-300' : 'text-gray-700'} mb-4`}>
               <li>Monay ID - Identity and authentication services</li>
@@ -585,7 +585,7 @@ export default function AntiMoneyLaundering() {
             </h2>
             <div className={`${isDarkMode ? 'bg-gray-800' : 'bg-gray-100'} p-4 rounded`}>
               <p className={`${isDarkMode ? 'text-gray-300' : 'text-gray-700'} font-semibold`}>AML Compliance Department</p>
-              <p className={`${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>Utilli, LLC (dba Tilli)</p>
+              <p className={`${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>Monay Pay, Inc.</p>
               <p className={`${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>1997 Annapolis Exchange Parkway, Suite 300</p>
               <p className={`${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>Annapolis, MD 21401</p>
               <p className={`${isDarkMode ? 'text-gray-300' : 'text-gray-700'} mt-2`}><a href="/contact?dept=Compliance">Contact Compliance</a></p>

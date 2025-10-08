@@ -40,7 +40,7 @@ export default function TermsOfServicePage() {
             
             <div className={`prose ${isDarkMode ? 'prose-invert' : ''} max-w-none`}>
               <p className={`mb-6 ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>
-                These Terms of Service ("Terms") govern your use of the Monay platform and services provided by Utilli, LLC (dba Tilli) ("Company", "we", "us", or "our"), including but not limited to Monay ID (identity and authentication services), Monay CaaS (Coin-as-a-Service), and Monay WaaS (Wallet-as-a-Service). By accessing or using our services, you acknowledge that you have read, understood, and agree to be bound by these Terms, our Privacy Policy, Anti-Money Laundering Policy, and all applicable laws and regulations.
+                These Terms of Service ("Terms") govern your use of the Monay platform and services provided by Monay Pay, Inc. ("Company", "we", "us", or "our"), including but not limited to Monay ID (identity and authentication services), Monay CaaS (Coin-as-a-Service), and Monay WaaS (Wallet-as-a-Service). By accessing or using our services, you acknowledge that you have read, understood, and agree to be bound by these Terms, our Privacy Policy, Anti-Money Laundering Policy, and all applicable laws and regulations.
               </p>
 
               <div className={`p-4 ${isDarkMode ? 'bg-blue-900/20 border-blue-500' : 'bg-blue-50 border-blue-200'} border-l-4 rounded mb-6`}>
@@ -213,7 +213,7 @@ export default function TermsOfServicePage() {
               
               <h2 className={`text-2xl font-bold mt-8 mb-4 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>9. Intellectual Property</h2>
               <p className={`mb-4 ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>
-                All content, features, and functionality of the Monay platform, including but not limited to text, graphics, logos, icons, images, audio clips, digital downloads, data compilations, and software, are the exclusive property of Utilli, LLC or its licensors and are protected by international copyright, trademark, patent, trade secret, and other intellectual property laws.
+                All content, features, and functionality of the Monay platform, including but not limited to text, graphics, logos, icons, images, audio clips, digital downloads, data compilations, and software, are the exclusive property of Monay Pay, Inc. or its licensors and are protected by international copyright, trademark, patent, trade secret, and other intellectual property laws.
               </p>
 
               <h2 className={`text-2xl font-bold mt-8 mb-4 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>10. Data Privacy and Security</h2>
@@ -251,12 +251,12 @@ export default function TermsOfServicePage() {
 
               <h2 className={`text-2xl font-bold mt-8 mb-4 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>13. Limitation of Liability</h2>
               <p className={`mb-4 ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>
-                TO THE MAXIMUM EXTENT PERMITTED BY LAW, UTILLI, LLC SHALL NOT BE LIABLE FOR ANY INDIRECT, INCIDENTAL, SPECIAL, CONSEQUENTIAL, OR PUNITIVE DAMAGES, OR ANY LOSS OF PROFITS OR REVENUES, WHETHER INCURRED DIRECTLY OR INDIRECTLY, OR ANY LOSS OF DATA, USE, GOODWILL, OR OTHER INTANGIBLE LOSSES.
+                TO THE MAXIMUM EXTENT PERMITTED BY LAW, MONAY PAY, INC. SHALL NOT BE LIABLE FOR ANY INDIRECT, INCIDENTAL, SPECIAL, CONSEQUENTIAL, OR PUNITIVE DAMAGES, OR ANY LOSS OF PROFITS OR REVENUES, WHETHER INCURRED DIRECTLY OR INDIRECTLY, OR ANY LOSS OF DATA, USE, GOODWILL, OR OTHER INTANGIBLE LOSSES.
               </p>
 
               <h2 className={`text-2xl font-bold mt-8 mb-4 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>14. Indemnification</h2>
               <p className={`mb-4 ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>
-                You agree to indemnify, defend, and hold harmless Utilli, LLC, its officers, directors, employees, agents, and affiliates from and against any claims, liabilities, damages, losses, and expenses, including reasonable attorney's fees, arising out of or in any way connected with your access to or use of the services.
+                You agree to indemnify, defend, and hold harmless Monay Pay, Inc., its officers, directors, employees, agents, and affiliates from and against any claims, liabilities, damages, losses, and expenses, including reasonable attorney's fees, arising out of or in any way connected with your access to or use of the services.
               </p>
 
               <h2 className={`text-2xl font-bold mt-8 mb-4 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>15. Account Termination and Suspension</h2>
@@ -310,7 +310,7 @@ export default function TermsOfServicePage() {
               
               <h2 className={`text-2xl font-bold mt-8 mb-4 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>22. Entire Agreement</h2>
               <p className={`mb-4 ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>
-                These Terms, together with our Privacy Policy, Anti-Money Laundering Policy, and any other policies referenced herein, constitute the entire agreement between you and Utilli, LLC regarding the use of the Monay platform and supersede all prior agreements and understandings.
+                These Terms, together with our Privacy Policy, Anti-Money Laundering Policy, and any other policies referenced herein, constitute the entire agreement between you and Monay Pay, Inc. regarding the use of the Monay platform and supersede all prior agreements and understandings.
               </p>
               
               <h2 className={`text-2xl font-bold mt-8 mb-4 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>23. Contact Information</h2>
@@ -318,7 +318,7 @@ export default function TermsOfServicePage() {
                 If you have any questions about these Terms, please contact us at:
               </p>
               <div className={`pl-6 mb-4 ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>
-                <p><strong>Utilli, LLC (dba Tilli)</strong></p>
+                <p><strong>Monay Pay, Inc.</strong></p>
                 <p><a href="/contact?dept=Legal">Contact Legal Team</a></p>
                 <p>Compliance Inquiries: <a href="/contact?dept=Compliance">Contact Compliance</a></p>
                 <p>Privacy Officer: <a href="/contact?dept=Privacy">Contact Privacy Officer</a></p>
