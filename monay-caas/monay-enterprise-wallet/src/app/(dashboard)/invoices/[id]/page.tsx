@@ -16,64 +16,60 @@ import {
 import toast from 'react-hot-toast'
 import type { InvoiceSummary } from '@/types/invoice'
 
-// Mock data - same as invoices page
-const mockInvoices: InvoiceSummary[] = [
-  // Pending Inbound (Payable)
-  {
-    id: '1',
-    invoiceNumber: 'INV-2025-001',
-    direction: 'inbound',
-    status: 'pending',
-    companyName: 'Acme Corporation',
-    amount: 15600,
-    currency: 'USDC',
-    dueDate: new Date('2025-10-15'),
-    hasEphemeralWallet: true,
-    walletStatus: 'active',
-    paymentProgress: 0
-  },
-  {
-    id: '2',
-    invoiceNumber: 'INV-2025-002',
-    direction: 'inbound',
-    status: 'pending',
-    companyName: 'Digital Solutions LLC',
-    amount: 25000,
-    currency: 'USDC',
-    dueDate: new Date('2025-10-20'),
-    hasEphemeralWallet: true,
-    walletStatus: 'active',
-    paymentProgress: 0
-  },
-  {
-    id: '12',
-    invoiceNumber: 'INV-2025-012',
-    direction: 'inbound',
-    status: 'overdue',
-    companyName: 'StartUp Ventures',
-    amount: 8900,
-    currency: 'USDT',
-    dueDate: new Date('2025-09-01'),
-    hasEphemeralWallet: true,
-    walletStatus: 'expired',
-    paymentProgress: 0
-  }
-]
+// Interface for invoice from localStorage
+interface StoredInvoice {
+  id: string
+  invoiceNumber: string
+  recipientName: string
+  recipientEmail: string
+  amount: number
+  currency: string
+  dueDate: string
+  description: string
+  items: any[]
+  subtotal: number
+  tax: number
+  total: number
+  status: string
+  createdAt: string
+  createEphemeralWallet?: boolean
+  walletMode?: string
+  walletTTL?: number
+  walletId?: string
+  direction?: 'inbound' | 'outbound'
+  recipientAddress?: string
+  recipientCity?: string
+  recipientCountry?: string
+  recipientZip?: string
+}
 
 export default function InvoiceDetailPage() {
   const router = useRouter()
   const params = useParams()
   const invoiceId = params?.id as string
 
-  const [invoice, setInvoice] = useState<InvoiceSummary | null>(null)
+  const [invoice, setInvoice] = useState<StoredInvoice | null>(null)
   const [loading, setLoading] = useState(true)
   const [paying, setPaying] = useState(false)
 
   useEffect(() => {
-    // Find invoice by ID
-    const foundInvoice = mockInvoices.find(inv => inv.id === invoiceId)
-    setInvoice(foundInvoice || null)
-    setLoading(false)
+    // Fetch invoice from localStorage
+    try {
+      const storedInvoices = localStorage.getItem('invoices')
+      if (storedInvoices) {
+        const invoices: StoredInvoice[] = JSON.parse(storedInvoices)
+        // Find invoice by ID (invoice ID format is like INV-1759816506607)
+        const foundInvoice = invoices.find(inv => inv.id === invoiceId || inv.invoiceNumber === invoiceId)
+        setInvoice(foundInvoice || null)
+      } else {
+        setInvoice(null)
+      }
+    } catch (error) {
+      console.error('Error fetching invoice:', error)
+      setInvoice(null)
+    } finally {
+      setLoading(false)
+    }
   }, [invoiceId])
 
   const getStatusBadge = (status: string) => {
@@ -81,6 +77,8 @@ export default function InvoiceDetailPage() {
       pending: { color: 'bg-yellow-100 text-yellow-800', icon: Clock },
       paid: { color: 'bg-green-100 text-green-800', icon: CheckCircle },
       overdue: { color: 'bg-red-100 text-red-800', icon: AlertCircle },
+      draft: { color: 'bg-gray-100 text-gray-800', icon: FileText },
+      sent: { color: 'bg-blue-100 text-blue-800', icon: Send },
     }
 
     const config = statusConfig[status as keyof typeof statusConfig] || statusConfig.pending
@@ -112,10 +110,20 @@ export default function InvoiceDetailPage() {
       // Simulate payment process
       await new Promise(resolve => setTimeout(resolve, 2000))
 
-      // Update invoice status
-      setInvoice(prev => prev ? { ...prev, status: 'paid', paymentProgress: 100 } : null)
+      // Update invoice status in localStorage
+      const storedInvoices = localStorage.getItem('invoices')
+      if (storedInvoices) {
+        const invoices: StoredInvoice[] = JSON.parse(storedInvoices)
+        const updatedInvoices = invoices.map(inv =>
+          inv.id === invoice.id ? { ...inv, status: 'paid' } : inv
+        )
+        localStorage.setItem('invoices', JSON.stringify(updatedInvoices))
+      }
 
-      toast.success(`Payment of ${formatCurrency(invoice.amount, invoice.currency)} sent successfully!`)
+      // Update local state
+      setInvoice(prev => prev ? { ...prev, status: 'paid' } : null)
+
+      toast.success(`Payment of ${formatCurrency(invoice.total || invoice.amount, invoice.currency)} sent successfully!`)
     } catch (error) {
       toast.error('Payment failed. Please try again.')
     } finally {
@@ -157,7 +165,7 @@ export default function InvoiceDetailPage() {
     )
   }
 
-  const isPayable = invoice.direction === 'inbound' && ['pending', 'overdue'].includes(invoice.status)
+  const isPayable = invoice.direction !== 'outbound' && ['pending', 'overdue', 'draft'].includes(invoice.status)
 
   return (
     <div className="space-y-6">
@@ -169,9 +177,9 @@ export default function InvoiceDetailPage() {
             Back
           </Button>
           <div>
-            <h1 className="text-2xl font-bold">{invoice.invoiceNumber}</h1>
+            <h1 className="text-2xl font-bold">{invoice.invoiceNumber || invoice.id}</h1>
             <p className="text-gray-600">
-              {invoice.direction === 'inbound' ? 'Inbound Invoice' : 'Outbound Invoice'}
+              {invoice.direction === 'outbound' ? 'Outbound Invoice' : 'Invoice to Pay'}
             </p>
           </div>
         </div>
@@ -215,19 +223,19 @@ export default function InvoiceDetailPage() {
               <div className="grid grid-cols-2 gap-6">
                 <div>
                   <label className="text-sm font-medium text-gray-500">Invoice Number</label>
-                  <p className="text-lg font-semibold">{invoice.invoiceNumber}</p>
+                  <p className="text-lg font-semibold">{invoice.invoiceNumber || invoice.id}</p>
                 </div>
                 <div>
-                  <label className="text-sm font-medium text-gray-500">Amount</label>
+                  <label className="text-sm font-medium text-gray-500">Total Amount</label>
                   <p className="text-2xl font-bold text-green-600">
-                    {formatCurrency(invoice.amount, invoice.currency)}
+                    {formatCurrency(invoice.total || invoice.amount, invoice.currency)}
                   </p>
                 </div>
                 <div>
                   <label className="text-sm font-medium text-gray-500">Due Date</label>
                   <p className="flex items-center gap-2">
                     <Calendar className="h-4 w-4 text-gray-400" />
-                    {invoice.dueDate.toLocaleDateString()}
+                    {new Date(invoice.dueDate).toLocaleDateString()}
                   </p>
                 </div>
                 <div>
@@ -235,6 +243,59 @@ export default function InvoiceDetailPage() {
                   <p className="font-medium">{invoice.currency}</p>
                 </div>
               </div>
+
+              {/* Add description if available */}
+              {invoice.description && (
+                <div>
+                  <label className="text-sm font-medium text-gray-500">Description</label>
+                  <p className="mt-1 text-gray-700">{invoice.description}</p>
+                </div>
+              )}
+
+              {/* Add invoice items if available */}
+              {invoice.items && invoice.items.length > 0 && (
+                <div>
+                  <label className="text-sm font-medium text-gray-500 mb-2 block">Line Items</label>
+                  <div className="border rounded-lg overflow-hidden">
+                    <table className="w-full">
+                      <thead className="bg-gray-50">
+                        <tr>
+                          <th className="px-4 py-2 text-left text-sm font-medium text-gray-700">Description</th>
+                          <th className="px-4 py-2 text-right text-sm font-medium text-gray-700">Quantity</th>
+                          <th className="px-4 py-2 text-right text-sm font-medium text-gray-700">Price</th>
+                          <th className="px-4 py-2 text-right text-sm font-medium text-gray-700">Total</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {invoice.items.map((item: any, index: number) => (
+                          <tr key={index} className="border-t">
+                            <td className="px-4 py-2 text-sm">{item.description}</td>
+                            <td className="px-4 py-2 text-sm text-right">{item.quantity}</td>
+                            <td className="px-4 py-2 text-sm text-right">${item.price}</td>
+                            <td className="px-4 py-2 text-sm text-right font-medium">${item.total}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                      <tfoot className="bg-gray-50">
+                        <tr className="border-t">
+                          <td colSpan={3} className="px-4 py-2 text-sm font-medium text-right">Subtotal:</td>
+                          <td className="px-4 py-2 text-sm font-medium text-right">${invoice.subtotal}</td>
+                        </tr>
+                        {invoice.tax > 0 && (
+                          <tr>
+                            <td colSpan={3} className="px-4 py-2 text-sm font-medium text-right">Tax:</td>
+                            <td className="px-4 py-2 text-sm font-medium text-right">${invoice.tax}</td>
+                          </tr>
+                        )}
+                        <tr className="border-t font-bold">
+                          <td colSpan={3} className="px-4 py-2 text-sm text-right">Total:</td>
+                          <td className="px-4 py-2 text-sm text-right">${invoice.total}</td>
+                        </tr>
+                      </tfoot>
+                    </table>
+                  </div>
+                </div>
+              )}
 
               {invoice.paymentProgress > 0 && (
                 <div>
@@ -253,27 +314,40 @@ export default function InvoiceDetailPage() {
             </CardContent>
           </Card>
 
-          {/* Company Information */}
+          {/* Recipient Information */}
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Building className="h-5 w-5" />
-                {invoice.direction === 'inbound' ? 'From' : 'To'}: {invoice.companyName}
+                Bill To: {invoice.recipientName}
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">
               <div className="flex items-center gap-2">
-                <Building className="h-4 w-4 text-gray-400" />
-                <span className="font-medium">{invoice.companyName}</span>
+                <User className="h-4 w-4 text-gray-400" />
+                <span className="font-medium">{invoice.recipientName}</span>
               </div>
-              <div className="flex items-center gap-2">
-                <Mail className="h-4 w-4 text-gray-400" />
-                <span>billing@{invoice.companyName.toLowerCase().replace(/\s+/g, '')}.com</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <MapPin className="h-4 w-4 text-gray-400" />
-                <span>123 Business Ave, Enterprise City, EC 12345</span>
-              </div>
+              {invoice.recipientEmail && (
+                <div className="flex items-center gap-2">
+                  <Mail className="h-4 w-4 text-gray-400" />
+                  <span>{invoice.recipientEmail}</span>
+                </div>
+              )}
+              {(invoice.recipientAddress || invoice.recipientCity) && (
+                <div className="flex items-center gap-2">
+                  <MapPin className="h-4 w-4 text-gray-400" />
+                  <div>
+                    {invoice.recipientAddress && <p>{invoice.recipientAddress}</p>}
+                    {(invoice.recipientCity || invoice.recipientZip || invoice.recipientCountry) && (
+                      <p>
+                        {[invoice.recipientCity, invoice.recipientZip, invoice.recipientCountry]
+                          .filter(Boolean)
+                          .join(', ')}
+                      </p>
+                    )}
+                  </div>
+                </div>
+              )}
             </CardContent>
           </Card>
         </div>
@@ -281,7 +355,7 @@ export default function InvoiceDetailPage() {
         {/* Sidebar */}
         <div className="space-y-6">
           {/* Payment Information */}
-          {isPayable && invoice.hasEphemeralWallet && (
+          {isPayable && invoice.createEphemeralWallet && (
             <Card className="border-green-200 bg-green-50">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2 text-green-800">
@@ -377,23 +451,22 @@ export default function InvoiceDetailPage() {
               <div className="flex justify-between">
                 <span className="text-sm text-gray-600">Type</span>
                 <span className="text-sm font-medium">
-                  {invoice.direction === 'inbound' ? 'Receivable' : 'Payable'}
+                  {invoice.direction === 'outbound' ? 'Sent' : 'Received'}
                 </span>
               </div>
-              {invoice.hasEphemeralWallet && (
+              {invoice.createEphemeralWallet && (
                 <div className="flex justify-between">
-                  <span className="text-sm text-gray-600">Wallet</span>
-                  <Badge
-                    variant={invoice.walletStatus === 'active' ? 'default' : 'secondary'}
-                    className="text-xs"
-                  >
-                    {invoice.walletStatus}
+                  <span className="text-sm text-gray-600">Wallet Mode</span>
+                  <Badge className="text-xs">
+                    {invoice.walletMode || 'Standard'}
                   </Badge>
                 </div>
               )}
               <div className="flex justify-between">
                 <span className="text-sm text-gray-600">Created</span>
-                <span className="text-sm">Oct 1, 2025</span>
+                <span className="text-sm">
+                  {invoice.createdAt ? new Date(invoice.createdAt).toLocaleDateString() : 'Today'}
+                </span>
               </div>
             </CardContent>
           </Card>

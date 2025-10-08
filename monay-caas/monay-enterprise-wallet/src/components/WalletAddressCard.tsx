@@ -1,12 +1,14 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Copy, Check, QrCode, ExternalLink, Wallet } from 'lucide-react';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Copy, Check, QrCode, ExternalLink, Wallet, Download, X } from 'lucide-react';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
+import QRCode from 'qrcode';
 
 interface WalletAddressCardProps {
   address?: string;
@@ -24,6 +26,9 @@ export default function WalletAddressCard({
   className
 }: WalletAddressCardProps) {
   const [copied, setCopied] = useState(false);
+  const [showQRModal, setShowQRModal] = useState(false);
+  const [qrCodeUrl, setQrCodeUrl] = useState<string>('');
+  const [generatingQR, setGeneratingQR] = useState(false);
 
   const handleCopyAddress = async () => {
     try {
@@ -34,6 +39,49 @@ export default function WalletAddressCard({
     } catch (error) {
       toast.error('Failed to copy address');
     }
+  };
+
+  const generateQRCode = async () => {
+    try {
+      setGeneratingQR(true);
+
+      // Create QR code data with wallet info
+      const qrData = JSON.stringify({
+        address: address,
+        network: network,
+        rail: rail,
+        type: 'wallet'
+      });
+
+      // Generate QR code as data URL
+      const url = await QRCode.toDataURL(qrData, {
+        width: 400,
+        margin: 2,
+        color: {
+          dark: '#000000',
+          light: '#FFFFFF'
+        },
+        errorCorrectionLevel: 'H'
+      });
+
+      setQrCodeUrl(url);
+      setShowQRModal(true);
+    } catch (error) {
+      console.error('Error generating QR code:', error);
+      toast.error('Failed to generate QR code');
+    } finally {
+      setGeneratingQR(false);
+    }
+  };
+
+  const downloadQRCode = () => {
+    if (!qrCodeUrl) return;
+
+    const link = document.createElement('a');
+    link.download = `wallet-${address.slice(0, 8)}.png`;
+    link.href = qrCodeUrl;
+    link.click();
+    toast.success('QR code downloaded!');
   };
 
   const getRailColor = (rail: string) => {
@@ -114,10 +162,11 @@ export default function WalletAddressCard({
             variant="outline"
             size="sm"
             className="flex-1"
-            onClick={() => toast.info('QR Code feature coming soon!')}
+            onClick={generateQRCode}
+            disabled={generatingQR}
           >
             <QrCode className="h-4 w-4 mr-2" />
-            Show QR
+            {generatingQR ? 'Generating...' : 'Show QR'}
           </Button>
           <Button
             variant="outline"
@@ -154,6 +203,86 @@ export default function WalletAddressCard({
           </ol>
         </div>
       </CardContent>
+
+      {/* QR Code Modal */}
+      <Dialog open={showQRModal} onOpenChange={setShowQRModal}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Wallet QR Code</DialogTitle>
+            <DialogDescription>
+              Scan this QR code to receive payments to your wallet
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="flex flex-col items-center space-y-4 py-4">
+            {/* QR Code Image */}
+            {qrCodeUrl && (
+              <div className="bg-white p-4 rounded-lg border-2 border-gray-200">
+                <img
+                  src={qrCodeUrl}
+                  alt="Wallet QR Code"
+                  className="w-64 h-64"
+                />
+              </div>
+            )}
+
+            {/* Wallet Info */}
+            <div className="w-full bg-gray-50 rounded-lg p-3 space-y-2">
+              <div className="flex items-center justify-between text-sm">
+                <span className="text-gray-600">Network:</span>
+                <Badge variant="secondary">{network}</Badge>
+              </div>
+              <div className="flex items-center justify-between text-sm">
+                <span className="text-gray-600">Rail:</span>
+                <Badge className={getRailColor(rail)} variant="outline">
+                  {rail === 'evm' ? 'EVM' : 'Solana'}
+                </Badge>
+              </div>
+              <div className="text-sm">
+                <span className="text-gray-600">Address:</span>
+                <p className="font-mono text-xs mt-1 break-all">{address}</p>
+              </div>
+            </div>
+
+            {/* Action Buttons */}
+            <div className="flex gap-2 w-full">
+              <Button
+                variant="outline"
+                className="flex-1"
+                onClick={downloadQRCode}
+              >
+                <Download className="h-4 w-4 mr-2" />
+                Download
+              </Button>
+              <Button
+                variant="outline"
+                className="flex-1"
+                onClick={handleCopyAddress}
+              >
+                {copied ? (
+                  <>
+                    <Check className="h-4 w-4 mr-2 text-green-600" />
+                    Copied
+                  </>
+                ) : (
+                  <>
+                    <Copy className="h-4 w-4 mr-2" />
+                    Copy Address
+                  </>
+                )}
+              </Button>
+            </div>
+
+            {/* Warning */}
+            <div className="bg-amber-50 border border-amber-200 rounded-lg p-3 w-full">
+              <p className="text-xs text-amber-800">
+                <strong>⚠️ Important:</strong> Only share this QR code with trusted parties.
+                Ensure the sender is using the {network} network.
+              </p>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </Card>
   );
 }

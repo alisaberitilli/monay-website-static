@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { ArrowLeftRight, Globe, DollarSign, Clock, CheckCircle, AlertCircle, TrendingUp } from '@monay/icons';
+import { ArrowLeftRight, Globe, DollarSign, Clock, CheckCircle, AlertCircle, TrendingUp } from 'lucide-react';
 
 interface CrossBorderPayment {
   id: string;

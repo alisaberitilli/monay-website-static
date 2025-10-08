@@ -118,6 +118,16 @@ export default (sequelize, DataTypes) => {
         defaultValue: 0,
         field: 'wallet_balance'  // Map to database column if exists
       },
+      solanaAddress: {
+        type: DataTypes.STRING(44),
+        allowNull: true,
+        field: 'solana_address'  // Consumer rail - Solana blockchain address
+      },
+      baseAddress: {
+        type: DataTypes.STRING(42),
+        allowNull: true,
+        field: 'base_address'  // Enterprise rail - Base L2 (EVM) blockchain address
+      },
       profileImage: {
         type: DataTypes.STRING,
         field: 'profile_image'  // Map to database column

@@ -112,15 +112,23 @@ class ApiClient {
 
   // Wallet methods
   async getBalance() {
-    // Mock balance for demo - the user actually has $2,500 in the database
-    return {
-      success: true,
-      data: {
-        totalWalletAmount: '2500.00',
-        creditWalletAmount: '2500.00',
-        debitWalletAmount: '0.00'
-      }
-    };
+    return this.request('/balance');
+  }
+
+  async getWalletAddresses() {
+    return this.request('/wallet/addresses');
+  }
+
+  async crossRailTransfer(data: {
+    toAddress: string;
+    amount: number;
+    currency?: string;
+    description?: string;
+  }) {
+    return this.request('/wallet/cross-rail-transfer', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
   }
 
   async getTransactions(page = 1, limit = 20) {

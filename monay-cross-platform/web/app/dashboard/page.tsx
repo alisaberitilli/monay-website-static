@@ -23,7 +23,9 @@ import {
   ArrowDownLeft,
   MoreVertical,
   ChevronLeft,
-  ChevronRight
+  ChevronRight,
+  Copy,
+  Check
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import apiClient from '@/lib/api-client';
@@ -60,6 +62,12 @@ export default function DashboardPage() {
   const [balance, setBalance] = useState(12450.75);
   const [isLoadingBalance, setIsLoadingBalance] = useState(true);
   const [currentCardIndex, setCurrentCardIndex] = useState(0);
+  const [copiedAddress, setCopiedAddress] = useState<string | null>(null);
+  const [walletAddresses, setWalletAddresses] = useState({
+    solana: '',
+    ethereum: ''
+  });
+  const [isLoadingAddresses, setIsLoadingAddresses] = useState(true);
 
   const fetchBalance = async () => {
     try {
@@ -76,9 +84,26 @@ export default function DashboardPage() {
     }
   };
 
-  // Fetch real balance on component mount
+  const fetchWalletAddresses = async () => {
+    try {
+      const response = await apiClient.getWalletAddresses();
+      if (response.success && response.data) {
+        setWalletAddresses({
+          solana: response.data.solana || '',
+          ethereum: response.data.base || response.data.ethereum || ''
+        });
+      }
+    } catch (error) {
+      console.error('Error fetching wallet addresses:', error);
+    } finally {
+      setIsLoadingAddresses(false);
+    }
+  };
+
+  // Fetch real balance and addresses on component mount
   useEffect(() => {
     fetchBalance();
+    fetchWalletAddresses();
   }, []);
 
   // Refresh balance when page becomes visible (user returns from another page)
@@ -155,12 +180,26 @@ export default function DashboardPage() {
     setCurrentCardIndex((prev) => (prev - 1 + cards.length) % cards.length);
   };
 
+  const copyAddress = async (address: string, type: string) => {
+    try {
+      await navigator.clipboard.writeText(address);
+      setCopiedAddress(type);
+      setTimeout(() => setCopiedAddress(null), 2000);
+    } catch (err) {
+      console.error('Failed to copy:', err);
+    }
+  };
+
   const quickActions = [
     { name: 'Send', icon: Send, gradient: 'from-blue-500 to-cyan-500', path: '/transfer' },
     { name: 'Request', icon: ArrowDown, gradient: 'from-purple-500 to-pink-500', path: '/request-money' },
     { name: 'Top Up', icon: Plus, gradient: 'from-orange-500 to-red-500', path: '/add-money' },
     { name: 'Bills', icon: FileText, gradient: 'from-green-500 to-emerald-500', path: '/transactions' },
   ];
+
+  const handleCrossRailTransfer = () => {
+    router.push('/cross-rail-transfer');
+  };
 
   return (
     <DashboardLayout>
@@ -254,6 +293,137 @@ export default function DashboardPage() {
               </div>
             </div>
           </div>
+        </div>
+
+        {/* Wallet Addresses Card */}
+        <div className="bg-white rounded-3xl p-6 shadow-sm border border-gray-100">
+          <div className="flex items-center justify-between mb-6">
+            <div className="flex items-center space-x-3">
+              <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-pink-500 rounded-xl flex items-center justify-center">
+                <Wallet className="h-5 w-5 text-white" />
+              </div>
+              <h3 className="text-lg font-semibold text-gray-900">My Wallet Addresses</h3>
+            </div>
+            <button
+              onClick={() => router.push('/wallet-details')}
+              className="text-purple-600 text-sm font-medium hover:text-purple-700"
+            >
+              View Details
+            </button>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+            {/* Solana Address (Consumer Rail) */}
+            <div className="bg-gradient-to-br from-purple-50 to-pink-50 rounded-2xl p-5">
+              <div className="flex items-center justify-between mb-3">
+                <div className="flex items-center space-x-2">
+                  <div className="w-8 h-8 bg-gradient-to-br from-purple-600 to-pink-600 rounded-lg flex items-center justify-center">
+                    <span className="text-white text-xs font-bold">SOL</span>
+                  </div>
+                  <div>
+                    <p className="text-xs font-medium text-gray-600">Solana Network</p>
+                    <p className="text-xs text-gray-500">Consumer Payments</p>
+                  </div>
+                </div>
+                <button
+                  onClick={() => copyAddress(walletAddresses.solana, 'solana')}
+                  className="p-2 hover:bg-white/60 rounded-lg transition-colors"
+                  title="Copy address"
+                >
+                  {copiedAddress === 'solana' ? (
+                    <Check className="h-4 w-4 text-green-600" />
+                  ) : (
+                    <Copy className="h-4 w-4 text-purple-600" />
+                  )}
+                </button>
+              </div>
+              <div className="bg-white/60 rounded-lg p-3">
+                {isLoadingAddresses ? (
+                  <div className="h-6 bg-gray-200 rounded animate-pulse"></div>
+                ) : (
+                  <p className="font-mono text-xs text-gray-700 break-all">
+                    {walletAddresses.solana || 'Generating...'}
+                  </p>
+                )}
+              </div>
+              <div className="flex items-center justify-between mt-3">
+                <span className="text-xs text-gray-500">
+                  {copiedAddress === 'solana' ? '✓ Copied!' : 'Click to copy'}
+                </span>
+                <button
+                  onClick={() => {/* QR code modal */}}
+                  className="flex items-center space-x-1 text-xs text-purple-600 hover:text-purple-700 font-medium"
+                >
+                  <QrCode className="h-3 w-3" />
+                  <span>QR</span>
+                </button>
+              </div>
+            </div>
+
+            {/* Ethereum/Base L2 Address (Enterprise Rail) */}
+            <div className="bg-gradient-to-br from-blue-50 to-cyan-50 rounded-2xl p-5">
+              <div className="flex items-center justify-between mb-3">
+                <div className="flex items-center space-x-2">
+                  <div className="w-8 h-8 bg-gradient-to-br from-blue-600 to-cyan-600 rounded-lg flex items-center justify-center">
+                    <span className="text-white text-xs font-bold">ETH</span>
+                  </div>
+                  <div>
+                    <p className="text-xs font-medium text-gray-600">Base L2 Network</p>
+                    <p className="text-xs text-gray-500">Enterprise Features</p>
+                  </div>
+                </div>
+                <button
+                  onClick={() => copyAddress(walletAddresses.ethereum, 'ethereum')}
+                  className="p-2 hover:bg-white/60 rounded-lg transition-colors"
+                  title="Copy address"
+                >
+                  {copiedAddress === 'ethereum' ? (
+                    <Check className="h-4 w-4 text-green-600" />
+                  ) : (
+                    <Copy className="h-4 w-4 text-blue-600" />
+                  )}
+                </button>
+              </div>
+              <div className="bg-white/60 rounded-lg p-3">
+                {isLoadingAddresses ? (
+                  <div className="h-6 bg-gray-200 rounded animate-pulse"></div>
+                ) : (
+                  <p className="font-mono text-xs text-gray-700 break-all">
+                    {walletAddresses.ethereum || 'Generating...'}
+                  </p>
+                )}
+              </div>
+              <div className="flex items-center justify-between mt-3">
+                <span className="text-xs text-gray-500">
+                  {copiedAddress === 'ethereum' ? '✓ Copied!' : 'Click to copy'}
+                </span>
+                <button
+                  onClick={() => {/* QR code modal */}}
+                  className="flex items-center space-x-1 text-xs text-blue-600 hover:text-blue-700 font-medium"
+                >
+                  <QrCode className="h-3 w-3" />
+                  <span>QR</span>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          {/* Info Banner */}
+          <div className="mt-4 p-3 bg-gray-50 rounded-xl">
+            <p className="text-xs text-gray-600">
+              <span className="font-semibold">Dual-Rail Blockchain:</span> Solana for fast consumer payments, Base L2 for enterprise features. Both addresses belong to the same Monay wallet.
+            </p>
+          </div>
+
+          {/* Cross-Rail Transfer Button */}
+          <button
+            onClick={handleCrossRailTransfer}
+            className="w-full mt-4 py-3 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-xl font-semibold hover:shadow-lg transition-all flex items-center justify-center space-x-2"
+          >
+            <ArrowUp className="h-5 w-5" />
+            <span>Send to Enterprise Wallet (Cross-Rail)</span>
+            <ArrowDown className="h-5 w-5" />
+          </button>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">

@@ -132,7 +132,7 @@ export default function FamilyGroupIndicator() {
               </div>
               <div>
                 <h3 className="font-medium text-gray-900">Individual Account</h3>
-                <p className="text-xs text-gray-600">Upgrade to share with family</p>
+                <p className="text-xs text-gray-600">Share with your team or family</p>
               </div>
             </div>
             <Button
@@ -141,7 +141,7 @@ export default function FamilyGroupIndicator() {
               className="text-blue-600 border-blue-300"
               onClick={() => setShowCreateGroup(true)}
             >
-              Create Family Group
+              Upgrade your Account
               <ChevronRight className="w-4 h-4 ml-1" />
             </Button>
           </div>
@@ -151,9 +151,9 @@ export default function FamilyGroupIndicator() {
         {showCreateGroup && (
           <div className="fixed inset-0 bg-black bg-opacity-75 backdrop-blur-sm flex items-center justify-center z-50 p-4">
             <Card className="p-6 w-full max-w-md bg-white shadow-2xl border-2">
-              <h3 className="text-lg font-semibold mb-2">Create Family Group</h3>
+              <h3 className="text-lg font-semibold mb-2">Upgrade your Account</h3>
               <p className="text-sm text-gray-600 mb-4">
-                Share your account with family members and manage everything in one place.
+                Share your account with others in your organization, or family members and manage everything in one place. Get access to team collaboration, shared expenses, and consolidated billing.
               </p>
               <form
                 onSubmit={(e) => {

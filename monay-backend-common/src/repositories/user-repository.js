@@ -378,6 +378,18 @@ export default {
       bodyData.isMobileVerified = false;
       
       const referralCode = bodyData?.referralCode ?? null;
+
+      // Check if email already exists for a different user
+      if (bodyData.email) {
+        const existingEmailUser = await this.findOne({ email: bodyData.email });
+        if (existingEmailUser) {
+          const mobileToCheck = bodyData.phone_number || bodyData.mobile || bodyData.phoneNumber;
+          if (existingEmailUser.mobile !== mobileToCheck) {
+            throw new Error('An account with this email already exists. Please use a different email or login.');
+          }
+        }
+      }
+
       // Use mobile field directly (includes country code)
       let where = {
         mobile: bodyData.phone_number || bodyData.mobile || bodyData.phoneNumber
@@ -392,7 +404,13 @@ export default {
           bodyData.referralCode = code
         }
 
-        await userData.update(bodyData);
+        // Refetch as a Sequelize model instance so we can use .update()
+        const userModel = await models.User.findOne({ where: { id: userData.id } });
+        if (!userModel) {
+          throw new Error('User not found after initial query');
+        }
+        await userModel.update(bodyData);
+        userData = userModel;
         await accountRepository.generateQrCode(userData.id);
         await accountRepository.generateAccounNumber(userData.id);
 

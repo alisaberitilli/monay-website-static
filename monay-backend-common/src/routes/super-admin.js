@@ -1004,28 +1004,8 @@ async function logAdminAction(adminId, action, details) {
 // Get treasury wallet balances
 router.get('/treasury/wallets', authenticate, requireSuperAdmin, async (req, res) => {
   try {
-    // Query all blockchain transactions to treasury addresses
-    const treasuryAddresses = [
-      '0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb1', // Hot wallet
-      '0x8Ba1f109551bD432803012645Ac136ddd64DBA22', // Cold storage
-      '0x3f5CE5FBFe3E9af3971dD833D26BA9b5C936f0bE', // Fees
-      '0x9f4A8C8EbC7D5F1a3B2E6D4C8A7B5E9F2C1A8D6E'  // Settlement
-    ];
-
-    const query = `
-      SELECT
-        to_address,
-        SUM(CASE WHEN to_address = ANY($1) THEN value::numeric ELSE 0 END) as total_received,
-        SUM(CASE WHEN from_address = ANY($1) THEN value::numeric ELSE 0 END) as total_sent,
-        MAX(created_at) as last_activity
-      FROM blockchain_transactions
-      WHERE (to_address = ANY($1) OR from_address = ANY($1))
-        AND status = 'confirmed'
-      GROUP BY to_address
-    `;
-
-    const result = await pool.query(query, [treasuryAddresses]);
-
+    // Return mock treasury wallet data for now
+    // TODO: Query blockchain_transactions table when it's available
     const wallets = [
       {
         id: 'treasury-hot-001',
@@ -1033,10 +1013,10 @@ router.get('/treasury/wallets', authenticate, requireSuperAdmin, async (req, res
         type: 'hot',
         address: '0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb1',
         network: 'Base Mainnet',
-        balance: result.rows.find(r => r.to_address === '0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb1')?.total_received || 2500000,
+        balance: 2500000,
         currency: 'USDC',
         status: 'active',
-        lastActivity: result.rows.find(r => r.to_address === '0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb1')?.last_activity || new Date(Date.now() - 1000 * 60 * 15).toISOString(),
+        lastActivity: new Date(Date.now() - 1000 * 60 * 15).toISOString(),
         securityLevel: 'high'
       },
       {
@@ -1045,10 +1025,10 @@ router.get('/treasury/wallets', authenticate, requireSuperAdmin, async (req, res
         type: 'cold',
         address: '0x8Ba1f109551bD432803012645Ac136ddd64DBA22',
         network: 'Base Mainnet',
-        balance: result.rows.find(r => r.to_address === '0x8Ba1f109551bD432803012645Ac136ddd64DBA22')?.total_received || 15000000,
+        balance: 15000000,
         currency: 'USDC',
         status: 'active',
-        lastActivity: result.rows.find(r => r.to_address === '0x8Ba1f109551bD432803012645Ac136ddd64DBA22')?.last_activity || new Date(Date.now() - 1000 * 60 * 60 * 24 * 7).toISOString(),
+        lastActivity: new Date(Date.now() - 1000 * 60 * 60 * 24 * 7).toISOString(),
         securityLevel: 'critical'
       },
       {
@@ -1057,10 +1037,10 @@ router.get('/treasury/wallets', authenticate, requireSuperAdmin, async (req, res
         type: 'fees',
         address: '0x3f5CE5FBFe3E9af3971dD833D26BA9b5C936f0bE',
         network: 'Base Mainnet',
-        balance: result.rows.find(r => r.to_address === '0x3f5CE5FBFe3E9af3971dD833D26BA9b5C936f0bE')?.total_received || 458320.50,
+        balance: 458320.50,
         currency: 'USDC',
         status: 'active',
-        lastActivity: result.rows.find(r => r.to_address === '0x3f5CE5FBFe3E9af3971dD833D26BA9b5C936f0bE')?.last_activity || new Date(Date.now() - 1000 * 60 * 5).toISOString(),
+        lastActivity: new Date(Date.now() - 1000 * 60 * 5).toISOString(),
         securityLevel: 'high'
       },
       {
@@ -1069,10 +1049,10 @@ router.get('/treasury/wallets', authenticate, requireSuperAdmin, async (req, res
         type: 'settlement',
         address: '0x9f4A8C8EbC7D5F1a3B2E6D4C8A7B5E9F2C1A8D6E',
         network: 'Base Mainnet',
-        balance: result.rows.find(r => r.to_address === '0x9f4A8C8EbC7D5F1a3B2E6D4C8A7B5E9F2C1A8D6E')?.total_received || 3200000,
+        balance: 3200000,
         currency: 'USDC',
         status: 'active',
-        lastActivity: result.rows.find(r => r.to_address === '0x9f4A8C8EbC7D5F1a3B2E6D4C8A7B5E9F2C1A8D6E')?.last_activity || new Date(Date.now() - 1000 * 60 * 30).toISOString(),
+        lastActivity: new Date(Date.now() - 1000 * 60 * 30).toISOString(),
         securityLevel: 'high'
       }
     ];
@@ -1164,31 +1144,16 @@ router.get('/treasury/transactions', authenticate, requireSuperAdmin, async (req
 // Get revenue metrics
 router.get('/treasury/revenue', authenticate, requireSuperAdmin, async (req, res) => {
   try {
-    const feeWalletAddress = '0x3f5CE5FBFe3E9af3971dD833D26BA9b5C936f0bE';
-
-    const query = `
-      SELECT
-        SUM(CASE WHEN created_at >= NOW() - INTERVAL '1 day' THEN value::numeric ELSE 0 END) as daily,
-        SUM(CASE WHEN created_at >= NOW() - INTERVAL '7 days' THEN value::numeric ELSE 0 END) as weekly,
-        SUM(CASE WHEN created_at >= NOW() - INTERVAL '30 days' THEN value::numeric ELSE 0 END) as monthly,
-        SUM(CASE WHEN created_at >= NOW() - INTERVAL '365 days' THEN value::numeric ELSE 0 END) as yearly,
-        SUM(value::numeric) as transaction_fees
-      FROM blockchain_transactions
-      WHERE to_address = $1
-        AND status = 'confirmed'
-    `;
-
-    const result = await pool.query(query, [feeWalletAddress]);
-    const row = result.rows[0] || {};
-
+    // Return mock revenue metrics for now
+    // TODO: Query blockchain_transactions table when it's available
     const metrics = {
-      daily: parseFloat(row.daily) || 45250.00,
-      weekly: parseFloat(row.weekly) || 285000.00,
-      monthly: parseFloat(row.monthly) || 1250000.00,
-      yearly: parseFloat(row.yearly) || 12500000.00,
-      transactionFees: parseFloat(row.transaction_fees) || 458320.50,
-      subscriptionRevenue: 750000.00, // TODO: Pull from subscriptions table
-      otherRevenue: 41679.50 // TODO: Pull from other revenue sources
+      daily: 45250.00,
+      weekly: 285000.00,
+      monthly: 1250000.00,
+      yearly: 12500000.00,
+      transactionFees: 458320.50,
+      subscriptionRevenue: 750000.00,
+      otherRevenue: 41679.50
     };
 
     res.json({

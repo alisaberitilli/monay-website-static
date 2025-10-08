@@ -8,10 +8,11 @@ import express from 'express';
 import middlewares from '../middleware-app/index.js';
 import walletBalanceService from '../services/wallet-balance-service.js';
 import { body, param, validationResult } from 'express-validator';
-import logger from '../services/logger.js';
+import loggers from '../services/logger.js';
 
 const router = express.Router();
 const { authMiddleware } = middlewares;
+const logger = loggers.infoLogger;
 
 /**
  * Validation middleware

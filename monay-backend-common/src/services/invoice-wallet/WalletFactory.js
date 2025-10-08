@@ -18,12 +18,14 @@ import AIModeSelectorEngine from './AIModeSelectorEngine.js';
 import QuantumCrypto from './QuantumCrypto.js';
 import EphemeralManager from './EphemeralManager.js';
 import blockchainIntegration from './BlockchainIntegration.js';
+import providerOrchestrator from './ProviderOrchestrator.js';
 
 class WalletFactory {
   constructor() {
     this.aiSelector = new AIModeSelectorEngine();
     this.quantumCrypto = new QuantumCrypto();
     this.ephemeralManager = new EphemeralManager();
+    this.providerOrchestrator = providerOrchestrator;
   }
 
   /**
@@ -38,6 +40,14 @@ class WalletFactory {
     try {
       logger.info('Generating Invoice-First wallet', { invoiceId: invoice.id });
 
+      // Step 0: Select optimal provider for this transaction
+      const provider = await this.providerOrchestrator.selectProvider({
+        amount: invoice.amount,
+        type: 'invoice',
+        urgency: options.urgency || 'normal'
+      });
+      logger.info('Provider selected', { provider: provider.provider, invoiceId: invoice.id });
+
       // Step 1: Determine wallet mode using AI
       const mode = await this.selectWalletMode(invoice, options);
 
@@ -47,8 +57,11 @@ class WalletFactory {
       // Step 3: Generate quantum-resistant keys
       const quantumKeys = await this.quantumCrypto.generateKeyPair();
 
-      // Step 4: Create wallet based on mode
+      // Step 4: Create wallet based on mode (with provider information)
       let wallet;
+      options.provider = provider.provider; // Pass provider to wallet creation
+      options.providerConfig = provider.config;
+
       switch (mode) {
         case 'ephemeral':
           wallet = await this.createEphemeralWallet(invoice, addresses, quantumKeys, options);
@@ -154,6 +167,12 @@ class WalletFactory {
       expires_at: expiresAt,
       ttl_seconds: ttlSeconds,
       status: 'active',
+      provider: options.provider || 'tempo',
+      auto_created: true,
+      creation_source: 'invoice',
+      countdown_seconds: ttlSeconds,
+      destruction_scheduled_at: expiresAt,
+      destruction_method: 'ttl_expiry',
       features: {
         selfDestruct: true,
         maxTransactions: 1,
@@ -185,6 +204,9 @@ class WalletFactory {
       expires_at: null, // Never expires
       ttl_seconds: null,
       status: 'active',
+      provider: options.provider || 'tempo',
+      auto_created: true,
+      creation_source: 'invoice',
       features: {
         selfDestruct: false,
         maxTransactions: null, // Unlimited
@@ -216,6 +238,9 @@ class WalletFactory {
       id: uuidv4(),
       invoice_id: invoice.id,
       mode: 'adaptive',
+      provider: options.provider || 'tempo',
+      auto_created: true,
+      creation_source: 'invoice',
       base_address: addresses.base,
       solana_address: addresses.solana,
       quantum_public_key: quantumKeys.publicKey,

@@ -48,6 +48,8 @@ import circleWallets from './circle-wallets.js';  // Circle wallet integration f
 import enterpriseTreasury from './enterprise-treasury.js';  // Enterprise treasury and invoice management
 // import governmentServices from './government-services.js';  // Temporarily disabled - fixing imports
 import aiMlServices from './ai-ml-services.js';
+import providers from './providers.js';  // Provider health and orchestration
+import reserves from './reserves.js';  // Reserve reconciliation and management
 // import superAppServices from './super-app-services.js'; // TEMPORARILY DISABLED due to auth import issue
 import apiTest from './api-test.js';
 import erpConnectors from './erp-connectors.js';
@@ -233,6 +235,8 @@ const register = (app) => {
   app.use('/api/invoice-wallets', invoiceWallets); // Invoice-First wallet routes
   app.use('/api/capital-markets', capitalMarkets); // Capital Markets rule sets
   app.use('/api/circle', circle); // Circle USDC integration for mint/burn operations
+  app.use('/api/v1/providers', providers); // Provider health and orchestration
+  app.use('/api/v1/reserves', reserves); // Reserve reconciliation and management
   app.use('/api/circle-wallets', circleWallets); // Circle wallet integration for consumer dual-wallet
   app.use('/api/enterprise-treasury', enterpriseTreasury); // Enterprise treasury and invoice tokenization on Solana
   // app.use('/api/government', governmentServices); // Government services endpoints - temporarily disabled
