@@ -1,0 +1,620 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Invoice #INV-2025-001 - Acme Corporation</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+            line-height: 1.6;
+        }
+
+        .invoice-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .invoice-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px;
+            position: relative;
+        }
+
+        .invoice-header::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #f093fb 0%, #f5576c 100%);
+        }
+
+        .company-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 30px;
+        }
+
+        .company-logo {
+            font-size: 36px;
+            font-weight: 800;
+            letter-spacing: -1px;
+        }
+
+        .company-details {
+            text-align: right;
+            font-size: 14px;
+            opacity: 0.95;
+        }
+
+        .invoice-title {
+            font-size: 48px;
+            font-weight: 800;
+            margin-bottom: 10px;
+            letter-spacing: -2px;
+        }
+
+        .invoice-number {
+            font-size: 18px;
+            opacity: 0.9;
+        }
+
+        .invoice-body {
+            padding: 40px;
+        }
+
+        .invoice-meta {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            margin-bottom: 40px;
+            padding-bottom: 30px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        .meta-section h3 {
+            color: #667eea;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 12px;
+            font-weight: 700;
+        }
+
+        .meta-section p {
+            color: #333;
+            margin-bottom: 6px;
+            font-size: 15px;
+        }
+
+        .invoice-items {
+            margin-bottom: 30px;
+        }
+
+        .items-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+
+        .items-table thead {
+            background: #f8f9fa;
+        }
+
+        .items-table th {
+            padding: 15px;
+            text-align: left;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #667eea;
+            font-weight: 700;
+            border-bottom: 2px solid #667eea;
+        }
+
+        .items-table th:last-child,
+        .items-table td:last-child {
+            text-align: right;
+        }
+
+        .items-table tbody tr {
+            border-bottom: 1px solid #e9ecef;
+            transition: background 0.2s;
+        }
+
+        .items-table tbody tr:hover {
+            background: #f8f9fa;
+        }
+
+        .items-table td {
+            padding: 15px;
+            color: #333;
+        }
+
+        .item-description {
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .item-details {
+            font-size: 12px;
+            color: #6c757d;
+            margin-top: 4px;
+        }
+
+        .invoice-summary {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+        }
+
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            font-size: 15px;
+        }
+
+        .summary-row.subtotal {
+            color: #6c757d;
+        }
+
+        .summary-row.total {
+            border-top: 2px solid #667eea;
+            margin-top: 10px;
+            padding-top: 15px;
+            font-size: 24px;
+            font-weight: 700;
+            color: #667eea;
+        }
+
+        .payment-section {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 8px;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .payment-section h3 {
+            font-size: 20px;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+
+        .payment-section p {
+            margin-bottom: 20px;
+            opacity: 0.95;
+        }
+
+        .pay-button {
+            display: inline-block;
+            background: white;
+            color: #667eea;
+            padding: 18px 50px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 18px;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            border: none;
+            cursor: pointer;
+        }
+
+        .pay-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+            background: #f8f9fa;
+        }
+
+        .payment-methods {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        .payment-badge {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .invoice-notes {
+            background: #fff9e6;
+            border-left: 4px solid #ffc107;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 4px;
+        }
+
+        .invoice-notes h4 {
+            color: #856404;
+            margin-bottom: 10px;
+            font-size: 14px;
+            font-weight: 700;
+        }
+
+        .invoice-notes p {
+            color: #856404;
+            font-size: 13px;
+        }
+
+        .invoice-footer {
+            background: #f8f9fa;
+            padding: 30px 40px;
+            text-align: center;
+            color: #6c757d;
+            font-size: 13px;
+            border-top: 1px solid #e9ecef;
+        }
+
+        .footer-links {
+            margin-top: 15px;
+        }
+
+        .footer-links a {
+            color: #667eea;
+            text-decoration: none;
+            margin: 0 10px;
+            font-weight: 600;
+        }
+
+        .footer-links a:hover {
+            text-decoration: underline;
+        }
+
+        .status-badge {
+            display: inline-block;
+            background: #ffc107;
+            color: #856404;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .qr-code-section {
+            text-align: center;
+            padding: 20px;
+            background: white;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+
+        .qr-code {
+            width: 150px;
+            height: 150px;
+            background: white;
+            border: 2px solid #667eea;
+            border-radius: 8px;
+            margin: 0 auto 15px;
+            padding: 10px;
+        }
+
+        .qr-code img {
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+
+        @media print {
+            body {
+                background: white;
+                padding: 0;
+            }
+
+            .invoice-container {
+                box-shadow: none;
+            }
+
+            .pay-button {
+                display: none;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .invoice-meta {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .company-info {
+                flex-direction: column;
+                gap: 20px;
+            }
+
+            .company-details {
+                text-align: left;
+            }
+
+            .invoice-title {
+                font-size: 32px;
+            }
+
+            .items-table {
+                font-size: 13px;
+            }
+
+            .items-table th,
+            .items-table td {
+                padding: 10px 5px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="invoice-container">
+        <!-- Header -->
+        <div class="invoice-header">
+            <div class="company-info">
+                <div class="company-logo">ACME</div>
+                <div class="company-details">
+                    <p><strong>Acme Corporation</strong></p>
+                    <p>123 Innovation Drive</p>
+                    <p>San Francisco, CA 94105</p>
+                    <p>Phone: (555) 123-4567</p>
+                    <p>Email: billing@acmecorp.com</p>
+                </div>
+            </div>
+            <div>
+                <div class="invoice-title">INVOICE</div>
+                <div class="invoice-number">
+                    #INV-2025-001
+                    <span class="status-badge" style="margin-left: 15px;">DUE</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Body -->
+        <div class="invoice-body">
+            <!-- Invoice Meta Information -->
+            <div class="invoice-meta">
+                <div class="meta-section">
+                    <h3>Bill To</h3>
+                    <p><strong>John Doe</strong></p>
+                    <p>Account: ACC-123456</p>
+                    <p>456 Customer Lane</p>
+                    <p>Los Angeles, CA 90001</p>
+                    <p>john.doe@email.com</p>
+                </div>
+                <div class="meta-section">
+                    <h3>Invoice Details</h3>
+                    <p><strong>Invoice Number:</strong> INV-2025-001</p>
+                    <p><strong>Invoice Date:</strong> October 6, 2025</p>
+                    <p><strong>Due Date:</strong> November 7, 2025</p>
+                    <p><strong>Terms:</strong> Net 30</p>
+                </div>
+            </div>
+
+            <!-- Line Items -->
+            <div class="invoice-items">
+                <table class="items-table">
+                    <thead>
+                        <tr>
+                            <th>Description</th>
+                            <th style="text-align: center;">Qty</th>
+                            <th style="text-align: center;">Unit Price</th>
+                            <th>Amount</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>
+                                <div class="item-description">Professional Services - Q4 2025</div>
+                                <div class="item-details">Consulting and implementation services</div>
+                            </td>
+                            <td style="text-align: center;">1</td>
+                            <td style="text-align: center;">$1,000.00</td>
+                            <td>$1,000.00</td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="item-description">Software License - Annual</div>
+                                <div class="item-details">Enterprise tier subscription (12 months)</div>
+                            </td>
+                            <td style="text-align: center;">1</td>
+                            <td style="text-align: center;">$150.00</td>
+                            <td>$150.00</td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="item-description">Support & Maintenance</div>
+                                <div class="item-details">24/7 premium support package</div>
+                            </td>
+                            <td style="text-align: center;">1</td>
+                            <td style="text-align: center;">$100.00</td>
+                            <td>$100.00</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Summary -->
+            <div class="invoice-summary">
+                <div class="summary-row subtotal">
+                    <span>Subtotal</span>
+                    <span>$1,250.00</span>
+                </div>
+                <div class="summary-row subtotal">
+                    <span>Tax (0%)</span>
+                    <span>$0.00</span>
+                </div>
+                <div class="summary-row total">
+                    <span>Total Amount Due</span>
+                    <span>$1,250.00</span>
+                </div>
+            </div>
+
+            <!-- Payment Section -->
+            <div class="payment-section">
+                <h3>💳 Pay This Invoice</h3>
+                <p>Choose from multiple payment options including cards, digital wallets, and stablecoins</p>
+
+                <a href="http://localhost:3000/pay?accountNumber=ACC-123456&firstName=John&lastName=Doe&amountDue=1250&dueDate=2025-12-31"
+                   class="pay-button">
+                    Pay $1,250.00 Now
+                </a>
+
+                <div class="payment-methods">
+                    <span class="payment-badge">💳 Cards</span>
+                    <span class="payment-badge">🏦 ACH</span>
+                    <span class="payment-badge"> Apple Pay</span>
+                    <span class="payment-badge">🔵 Google Pay</span>
+                    <span class="payment-badge">💎 USDC</span>
+                    <span class="payment-badge">💵 PayPal</span>
+                </div>
+
+                <div class="qr-code-section">
+                    <div class="qr-code" id="qrcode"></div>
+                    <p style="font-size: 12px; color: rgba(255,255,255,0.8);">
+                        Scan with your mobile device to pay instantly
+                    </p>
+                </div>
+            </div>
+
+            <!-- Notes -->
+            <div class="invoice-notes">
+                <h4>📝 Payment Information</h4>
+                <p>
+                    <strong>Payment Methods Accepted:</strong> Credit/Debit Cards, ACH Transfer, Apple Pay, Google Pay,
+                    Venmo, PayPal, and Stablecoins (USDC, USDT, PYUSD).
+                </p>
+                <p style="margin-top: 10px;">
+                    <strong>Terms:</strong> Payment is due within 30 days of invoice date.
+                    A late fee of 1.5% per month will be applied to overdue balances.
+                </p>
+            </div>
+
+            <div class="invoice-notes" style="background: #e7f3ff; border-left-color: #2196F3;">
+                <h4 style="color: #0d47a1;">💼 Create a Monay Wallet</h4>
+                <p style="color: #0d47a1;">
+                    During payment, you can optionally create a Monay Wallet to save payment methods,
+                    track transaction history, and enjoy faster checkouts for future invoices.
+                </p>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="invoice-footer">
+            <p><strong>Acme Corporation</strong> | Tax ID: 12-3456789</p>
+            <p>123 Innovation Drive, San Francisco, CA 94105</p>
+            <p>Phone: (555) 123-4567 | Email: billing@acmecorp.com</p>
+
+            <div class="footer-links">
+                <a href="mailto:billing@acmecorp.com">Contact Support</a>
+                <a href="#" onclick="window.print(); return false;">Print Invoice</a>
+                <a href="http://localhost:3000/pay?accountNumber=ACC-123456&firstName=John&lastName=Doe&amountDue=1250&dueDate=2025-12-31">Pay Online</a>
+            </div>
+
+            <p style="margin-top: 20px; font-size: 11px; color: #adb5bd;">
+                This is a computer-generated invoice. Thank you for your business!
+            </p>
+        </div>
+    </div>
+
+    <!-- QR Code Library - Using QR Server API -->
+    <script>
+        // Wait for DOM to be fully loaded
+        window.addEventListener('DOMContentLoaded', function() {
+            // Generate QR Code using QR Server API
+            const paymentUrl = 'http://localhost:3000/pay?accountNumber=ACC-123456&firstName=John&lastName=Doe&amountDue=1250&dueDate=2025-12-31';
+
+            const qrcodeContainer = document.getElementById('qrcode');
+            if (!qrcodeContainer) {
+                console.error('QR code container not found');
+                return;
+            }
+
+            // Create QR code using QR Server API (api.qrserver.com)
+            const encodedUrl = encodeURIComponent(paymentUrl);
+            const qrSize = 150;
+            const qrImageUrl = `https://api.qrserver.com/v1/create-qr-code/?size=${qrSize}x${qrSize}&data=${encodedUrl}&color=667eea&bgcolor=ffffff`;
+
+            // Create image element
+            const img = document.createElement('img');
+            img.src = qrImageUrl;
+            img.alt = 'QR Code for Payment';
+            img.style.width = '130px';
+            img.style.height = '130px';
+            img.style.display = 'block';
+            img.style.margin = '0 auto';
+
+            img.onerror = function() {
+                console.error('QR Code image failed to load, trying fallback');
+                // Fallback to quickchart.io
+                const fallbackUrl = `https://quickchart.io/qr?text=${encodedUrl}&size=150&dark=667eea&light=ffffff`;
+                const fallbackImg = document.createElement('img');
+                fallbackImg.src = fallbackUrl;
+                fallbackImg.alt = 'QR Code for Payment';
+                fallbackImg.style.width = '130px';
+                fallbackImg.style.height = '130px';
+                fallbackImg.style.display = 'block';
+                fallbackImg.style.margin = '0 auto';
+
+                fallbackImg.onerror = function() {
+                    qrcodeContainer.innerHTML = `
+                        <div style="width: 130px; height: 130px; background: #667eea; color: white; display: flex; flex-direction: column; align-items: center; justify-content: center; border-radius: 8px; margin: 0 auto;">
+                            <svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="3" y="3" width="7" height="7"></rect>
+                                <rect x="14" y="3" width="7" height="7"></rect>
+                                <rect x="14" y="14" width="7" height="7"></rect>
+                                <rect x="3" y="14" width="7" height="7"></rect>
+                            </svg>
+                            <p style="font-size: 10px; margin-top: 8px;">Scan to Pay</p>
+                        </div>
+                    `;
+                };
+
+                fallbackImg.onload = function() {
+                    console.log('QR Code loaded from fallback');
+                };
+
+                qrcodeContainer.innerHTML = '';
+                qrcodeContainer.appendChild(fallbackImg);
+            };
+
+            img.onload = function() {
+                console.log('QR Code generated successfully');
+            };
+
+            // Clear and add image
+            qrcodeContainer.innerHTML = '';
+            qrcodeContainer.appendChild(img);
+
+            // Add click tracking
+            document.querySelectorAll('a').forEach(link => {
+                link.addEventListener('click', function(e) {
+                    if (this.href.includes('/pay?')) {
+                        console.log('Payment link clicked:', this.href);
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>

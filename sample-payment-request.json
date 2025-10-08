@@ -1,0 +1,7 @@
+{
+  "accountNumber": "ACC-123456",
+  "firstName": "John",
+  "lastName": "Doe",
+  "amountDue": 1250.00,
+  "dueDate": "2025-12-31"
+}
