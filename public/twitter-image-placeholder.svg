@@ -1,0 +1,47 @@
+<svg width="1200" height="600" xmlns="http://www.w3.org/2000/svg">
+  <!-- Twitter Card Image for Monay - 1200x600px -->
+  <defs>
+    <linearGradient id="bgGradientTwitter" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0F172A;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#1E293B;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1200" height="600" fill="url(#bgGradientTwitter)"/>
+
+  <!-- Grid Pattern -->
+  <defs>
+    <pattern id="gridTwitter" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#334155" stroke-width="0.5" opacity="0.3"/>
+    </pattern>
+  </defs>
+  <rect width="1200" height="600" fill="url(#gridTwitter)"/>
+
+  <!-- Content Container -->
+  <g transform="translate(80, 180)">
+    <!-- Logo/Brand Mark -->
+    <text x="0" y="0" font-family="Arial, sans-serif" font-size="68" font-weight="bold" fill="#60A5FA">
+      MONAY
+    </text>
+
+    <!-- Tagline -->
+    <text x="0" y="75" font-family="Arial, sans-serif" font-size="34" font-weight="600" fill="#FFFFFF">
+      Enterprise Stablecoin Platform
+    </text>
+
+    <!-- Key Features -->
+    <text x="0" y="135" font-family="Arial, sans-serif" font-size="22" fill="#94A3B8">
+      $250B TAM • GENIUS Act • Pre-Series A
+    </text>
+
+    <!-- Bottom Info -->
+    <text x="0" y="190" font-family="Arial, sans-serif" font-size="19" fill="#64748B">
+      monay.com
+    </text>
+  </g>
+
+  <!-- Accent Elements -->
+  <circle cx="1050" cy="140" r="110" fill="#60A5FA" opacity="0.1"/>
+  <circle cx="1100" cy="480" r="70" fill="#3B82F6" opacity="0.15"/>
+</svg>

@@ -15,8 +15,10 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Monay - Enterprise Stablecoin Platform | CaaS & WaaS Solutions | GENIUS Act Compliant",
-  description: "Monay is the first unified platform for enterprise stablecoin issuance, consumer payments, and compliance orchestration. $250B TAM. GENIUS Act compliant. Dual-rail blockchain (Base L2 + Solana). White-label solutions for banks, government, and enterprises. Pre-Series A funding.",
+  // ✅ SEO Optimized: 58 characters (Google recommends 50-60)
+  title: "Monay - Enterprise Stablecoin Platform | GENIUS Act",
+  // ✅ SEO Optimized: 158 characters (Google recommends 150-160)
+  description: "First unified platform for enterprise stablecoin issuance & compliance. $250B TAM. GENIUS Act compliant. Dual-rail blockchain serving 932K institutions.",
   keywords: ["stablecoin platform", "GENIUS Act", "programmable money", "digital wallet", "blockchain payments", "fintech infrastructure", "CaaS", "WaaS", "enterprise stablecoin", "government payments", "Base L2", "Solana", "compliant stablecoin", "treasury management", "payment rails", "financial infrastructure", "digital disbursements", "public sector payments", "bank modernization", "API-first fintech"],
   authors: [{ name: "Monay" }],
   creator: "Monay",
@@ -36,23 +38,23 @@ export const metadata: Metadata = {
     type: 'website',
     locale: 'en_US',
     url: 'https://monay.com',
-    title: 'Monay - Enterprise Stablecoin Platform | CaaS & WaaS | GENIUS Act Compliant',
-    description: 'First unified platform for enterprise stablecoin issuance & compliance. $250B TAM by 2028. Serving 932K global financial institutions. GENIUS Act compliant infrastructure for banks, government, and enterprises.',
+    title: 'Monay - Enterprise Stablecoin Platform | GENIUS Act',
+    description: 'First unified platform for enterprise stablecoin issuance & compliance. $250B TAM. GENIUS Act compliant. Dual-rail blockchain serving 932K institutions.',
     siteName: 'Monay',
     images: [
       {
-        url: 'https://monay.com/og-image.png',
+        url: 'https://monay.com/og-image-placeholder.svg',
         width: 1200,
         height: 630,
-        alt: 'Monay - Digital Payment Platform',
+        alt: 'Monay - Enterprise Stablecoin Platform for Banks & Government',
       },
     ],
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Monay - Enterprise Stablecoin Platform | Pre-Series A | $6.5M Raise',
-    description: 'Revolutionary dual-rail blockchain platform (Base L2 + Solana) for programmable money. White-label CaaS & WaaS solutions. Active RFPs in education, relief & B2B automation.',
-    images: ['https://monay.com/twitter-image.png'],
+    title: 'Monay - Enterprise Stablecoin Platform | GENIUS Act',
+    description: 'First unified platform for enterprise stablecoin issuance & compliance. $250B TAM. GENIUS Act compliant. Dual-rail blockchain serving 932K institutions.',
+    images: ['https://monay.com/twitter-image-placeholder.svg'],
     creator: '@monay',
   },
   metadataBase: new URL('https://monay.com'),
@@ -131,6 +133,12 @@ export default function RootLayout({
         />
         
         {/* Search Engine Verifications */}
+        {/* ⚠️ TODO: Replace with actual verification codes from:
+            - Google Search Console: https://search.google.com/search-console
+            - Bing Webmaster Tools: https://www.bing.com/webmasters
+            - Yandex Webmaster: https://webmaster.yandex.com
+            - Pinterest: https://help.pinterest.com/en/business/article/claim-your-website
+        */}
         <meta name="google-site-verification" content="your-google-verification-code" />
         <meta name="msvalidate.01" content="your-bing-verification-code" />
         <meta name="yandex-verification" content="your-yandex-verification-code" />

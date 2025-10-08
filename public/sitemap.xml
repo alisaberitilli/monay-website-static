@@ -4,7 +4,7 @@
   <!-- Homepage - Highest Priority -->
   <url>
     <loc>https://monay.com/</loc>
-    <lastmod>2025-02-02</lastmod>
+    <lastmod>2025-10-08</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
     <image:image>
@@ -17,21 +17,21 @@
   <!-- Investor Pages - Highest Priority for Funding -->
   <url>
     <loc>https://monay.com/investors</loc>
-    <lastmod>2025-09-02</lastmod>
+    <lastmod>2025-10-08</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
 
   <url>
     <loc>https://monay.com/genius-act</loc>
-    <lastmod>2025-09-02</lastmod>
+    <lastmod>2025-10-08</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
 
   <url>
     <loc>https://monay.com/government-rfp</loc>
-    <lastmod>2025-09-02</lastmod>
+    <lastmod>2025-10-08</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
@@ -39,21 +39,21 @@
   <!-- Core Pages - High Priority -->
   <url>
     <loc>https://monay.com/why-monay</loc>
-    <lastmod>2025-02-02</lastmod>
+    <lastmod>2025-10-08</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.95</priority>
   </url>
 
   <url>
     <loc>https://monay.com/pricing</loc>
-    <lastmod>2025-02-02</lastmod>
+    <lastmod>2025-10-08</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.95</priority>
   </url>
 
   <url>
     <loc>https://monay.com/developers</loc>
-    <lastmod>2025-02-02</lastmod>
+    <lastmod>2025-10-08</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
@@ -61,21 +61,21 @@
   <!-- Product Pages - High Priority -->
   <url>
     <loc>https://monay.com/products/monay-caas</loc>
-    <lastmod>2025-02-02</lastmod>
+    <lastmod>2025-10-08</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
 
   <url>
     <loc>https://monay.com/products/monay-waas</loc>
-    <lastmod>2025-02-02</lastmod>
+    <lastmod>2025-10-08</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
 
   <url>
     <loc>https://monay.com/products/monay-id</loc>
-    <lastmod>2025-02-02</lastmod>
+    <lastmod>2025-10-08</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
@@ -83,28 +83,28 @@
   <!-- Solution Pages - High Priority for Government -->
   <url>
     <loc>https://monay.com/solutions/government-programs</loc>
-    <lastmod>2025-02-02</lastmod>
+    <lastmod>2025-10-08</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.95</priority>
   </url>
 
   <url>
     <loc>https://monay.com/solutions/banking-fintech</loc>
-    <lastmod>2025-02-02</lastmod>
+    <lastmod>2025-10-08</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
 
   <url>
     <loc>https://monay.com/solutions/cross-border-payments</loc>
-    <lastmod>2025-02-02</lastmod>
+    <lastmod>2025-10-08</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
 
   <url>
     <loc>https://monay.com/solutions/compliance-brf</loc>
-    <lastmod>2025-02-02</lastmod>
+    <lastmod>2025-10-08</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.85</priority>
   </url>
@@ -112,28 +112,28 @@
   <!-- Specialized Landing Pages - High Priority for Target Markets -->
   <url>
     <loc>https://monay.com/enterprise-stablecoin</loc>
-    <lastmod>2025-09-02</lastmod>
+    <lastmod>2025-10-08</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.95</priority>
   </url>
 
   <url>
     <loc>https://monay.com/education-esa</loc>
-    <lastmod>2025-09-02</lastmod>
+    <lastmod>2025-10-08</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.95</priority>
   </url>
 
   <url>
     <loc>https://monay.com/disaster-relief</loc>
-    <lastmod>2025-09-02</lastmod>
+    <lastmod>2025-10-08</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.9</priority>
   </url>
 
   <url>
     <loc>https://monay.com/snap-modernization</loc>
-    <lastmod>2025-09-02</lastmod>
+    <lastmod>2025-10-08</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.9</priority>
   </url>
@@ -141,28 +141,28 @@
   <!-- Signup Pages - Important for Conversion -->
   <url>
     <loc>https://monay.com/signup</loc>
-    <lastmod>2025-02-02</lastmod>
+    <lastmod>2025-10-08</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.9</priority>
   </url>
 
   <url>
     <loc>https://monay.com/signup/monay-caas</loc>
-    <lastmod>2025-02-02</lastmod>
+    <lastmod>2025-10-08</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.85</priority>
   </url>
 
   <url>
     <loc>https://monay.com/signup/monay-waas</loc>
-    <lastmod>2025-02-02</lastmod>
+    <lastmod>2025-10-08</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.85</priority>
   </url>
 
   <url>
     <loc>https://monay.com/signup/monay-id</loc>
-    <lastmod>2025-02-02</lastmod>
+    <lastmod>2025-10-08</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.85</priority>
   </url>
@@ -170,14 +170,14 @@
   <!-- Compliance Pages - Important for Trust -->
   <url>
     <loc>https://monay.com/anti-money-laundering</loc>
-    <lastmod>2025-02-02</lastmod>
+    <lastmod>2025-10-08</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
 
   <url>
     <loc>https://monay.com/anti-slavery</loc>
-    <lastmod>2025-02-02</lastmod>
+    <lastmod>2025-10-08</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.6</priority>
   </url>
@@ -185,14 +185,14 @@
   <!-- Legal Pages -->
   <url>
     <loc>https://monay.com/privacy</loc>
-    <lastmod>2025-02-02</lastmod>
+    <lastmod>2025-10-08</lastmod>
     <changefreq>quarterly</changefreq>
     <priority>0.5</priority>
   </url>
 
   <url>
     <loc>https://monay.com/terms</loc>
-    <lastmod>2025-02-02</lastmod>
+    <lastmod>2025-10-08</lastmod>
     <changefreq>quarterly</changefreq>
     <priority>0.5</priority>
   </url>

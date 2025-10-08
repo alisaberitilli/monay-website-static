@@ -2,9 +2,9 @@ import { Metadata } from 'next';
 
 export const siteConfig = {
   name: 'Monay',
-  description: 'First unified platform for enterprise stablecoin issuance, consumer payments, and compliance orchestration. GENIUS Act compliant.',
+  description: 'First unified platform for enterprise stablecoin issuance & compliance. $250B TAM. GENIUS Act compliant. Dual-rail blockchain serving 932K institutions.',
   url: 'https://www.monay.com',
-  ogImage: 'https://www.monay.com/og-image.png',
+  ogImage: 'https://www.monay.com/og-image-placeholder.svg',
   links: {
     twitter: 'https://twitter.com/monay',
     linkedin: 'https://linkedin.com/company/monay',
@@ -47,7 +47,8 @@ export function generateSEOMetadata({
   path?: string;
   image?: string;
 }): Metadata {
-  const fullTitle = `${title} | Monay - GENIUS Act Compliant Stablecoin Platform`;
+  // ✅ SEO: Keep titles under 60 characters for optimal Google display
+  const fullTitle = title.length > 50 ? title : `${title} | Monay`;
   const url = `${siteConfig.url}${path}`;
   const ogImage = image || siteConfig.ogImage;
 
