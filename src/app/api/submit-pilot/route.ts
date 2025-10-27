@@ -48,7 +48,7 @@ export async function POST(request: NextRequest) {
       
       // TODO: Implement email notification to your team
       // This could be:
-      // - Email to our team
+      // - Email to ali@monay.com
       // - Slack notification
       // - CRM integration
       // - Project management tool integration

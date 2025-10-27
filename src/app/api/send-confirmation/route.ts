@@ -62,7 +62,7 @@ export async function POST(request: NextRequest) {
             <div class="content">
               <h2>Hello ${name},</h2>
               
-              <p>Great news! Your meeting with <strong>Ali from Monay</strong> has been successfully scheduled.</p>
+              <p>Great news! Your meeting with <strong>Ali from Tilli.pro</strong> has been successfully scheduled.</p>
               
               <div class="meeting-details">
                 <h3>📅 Meeting Details</h3>
@@ -97,7 +97,7 @@ export async function POST(request: NextRequest) {
               <p>Looking forward to our meeting!</p>
               
               <p>Best regards,<br>
-              <strong>Ali from Monay</strong><br>
+              <strong>Ali from Tilli.pro</strong><br>
               Monay Platform Specialist</p>
             </div>
             
@@ -114,7 +114,7 @@ Meeting Confirmed: Monay Platform Demo - ${meetingDate}
 
 Hello ${name},
 
-Great news! Your meeting with Ali from Monay has been successfully scheduled.
+Great news! Your meeting with Ali from Tilli.pro has been successfully scheduled.
 
 Meeting Details:
 - Company: ${company}
@@ -142,7 +142,7 @@ If you need to reschedule or have any questions, please reply to this email or c
 Looking forward to our meeting!
 
 Best regards,
-Ali from Monay
+Ali from Tilli.pro
 Monay Platform Specialist
 
 ---

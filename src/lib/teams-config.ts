@@ -27,10 +27,10 @@ export const teamsConfig = {
 
   // Ali's availability settings
   organizer: {
-    email: 'ali@monay.com',
-    name: 'Ali from Monay',
+    email: 'ali@tilli.pro',
+    name: 'Ali from Tilli.pro',
     title: 'Monay Platform Specialist',
-    company: 'Monay',
+    company: 'Tilli.pro',
     timezone: 'UTC',
     // Custom availability rules
     availability: {
@@ -69,8 +69,8 @@ export const teamsConfig = {
   emailTemplates: {
     confirmation: {
       subject: 'Meeting Confirmed: Monay Platform Demo - {date}',
-      from: 'system notification',
-      replyTo: 'ali@monay.com'
+      from: 'noreply@monay.com',
+      replyTo: 'ali@tilli.pro'
     },
     reminder: {
       subject: 'Reminder: Monay Platform Demo Tomorrow',

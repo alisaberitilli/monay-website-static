@@ -475,7 +475,7 @@
                 <h3>💳 Pay This Invoice</h3>
                 <p>Choose from multiple payment options including cards, digital wallets, and stablecoins</p>
 
-                <a href="http://localhost:3000/pay?accountNumber=ACC-123456&firstName=John&lastName=Doe&amountDue=1250&dueDate=2025-12-31"
+                <a href="https://www.monay.com/pay?accountNumber=ACC-123456&firstName=John&lastName=Doe&amountDue=1250&dueDate=2025-12-31"
                    class="pay-button">
                     Pay $1,250.00 Now
                 </a>
@@ -528,7 +528,7 @@
             <div class="footer-links">
                 <a href="mailto:billing@acmecorp.com">Contact Support</a>
                 <a href="#" onclick="window.print(); return false;">Print Invoice</a>
-                <a href="http://localhost:3000/pay?accountNumber=ACC-123456&firstName=John&lastName=Doe&amountDue=1250&dueDate=2025-12-31">Pay Online</a>
+                <a href="https://www.monay.com/pay?accountNumber=ACC-123456&firstName=John&lastName=Doe&amountDue=1250&dueDate=2025-12-31">Pay Online</a>
             </div>
 
             <p style="margin-top: 20px; font-size: 11px; color: #adb5bd;">
@@ -542,7 +542,7 @@
         // Wait for DOM to be fully loaded
         window.addEventListener('DOMContentLoaded', function() {
             // Generate QR Code using QR Server API
-            const paymentUrl = 'http://localhost:3000/pay?accountNumber=ACC-123456&firstName=John&lastName=Doe&amountDue=1250&dueDate=2025-12-31';
+            const paymentUrl = 'https://www.monay.com/pay?accountNumber=ACC-123456&firstName=John&lastName=Doe&amountDue=1250&dueDate=2025-12-31';
 
             const qrcodeContainer = document.getElementById('qrcode');
             if (!qrcodeContainer) {
