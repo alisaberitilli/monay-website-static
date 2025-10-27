@@ -322,7 +322,7 @@ export default function PaymentRequestPage() {
                 onSelectMethod={handlePaymentMethodSelect}
                 selectedMethod={selectedMethod}
                 amount={paymentData.amountDue}
-                onSubmit={() => {}} // Not used in this flow
+                onSubmit={async () => {}} // Not used in this flow
                 walletType="none" // Always show all methods initially
               />
             )}
