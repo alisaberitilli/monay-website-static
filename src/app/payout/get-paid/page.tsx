@@ -267,9 +267,16 @@ function PayoutFlowContent() {
               {/* OTP Input */}
               <input
                 type="text"
+                inputMode="numeric"
                 maxLength={6}
                 value={otp}
                 onChange={(e) => setOtp(e.target.value.replace(/\D/g, ''))}
+                onPaste={(e) => {
+                  e.preventDefault();
+                  const pastedText = e.clipboardData.getData('text');
+                  const digits = pastedText.replace(/\D/g, '').slice(0, 6);
+                  setOtp(digits);
+                }}
                 placeholder="000000"
                 className="w-full text-center text-3xl font-mono font-semibold tracking-[0.5em] bg-slate-50 border-2 border-slate-300 rounded-xl py-4 mb-6 focus:outline-none focus:border-blue-500"
               />
