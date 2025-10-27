@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import PaymentMethodSelector from '@/components/PaymentMethodSelector';
 import PaymentConfirmation from '@/components/PaymentConfirmation';
@@ -34,7 +34,7 @@ export type PaymentMethod =
   | 'usdt'
   | 'pyusd';
 
-export default function PaymentRequestPage() {
+function PaymentRequestContent() {
   const searchParams = useSearchParams();
   const [paymentData, setPaymentData] = useState<PaymentRequestData | null>(null);
   const [selectedMethod, setSelectedMethod] = useState<PaymentMethod | null>(null);
@@ -422,5 +422,20 @@ export default function PaymentRequestPage() {
         </div>
       </footer>
     </div>
+  );
+}
+
+export default function PaymentRequestPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-slate-100 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-slate-600">Loading payment request...</p>
+        </div>
+      </div>
+    }>
+      <PaymentRequestContent />
+    </Suspense>
   );
 }
