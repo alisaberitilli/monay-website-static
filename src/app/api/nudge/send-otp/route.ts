@@ -22,21 +22,8 @@ export async function POST(request: NextRequest) {
 
     // Read API key from environment
     const apiKey = process.env.NUDGE_API_KEY;
-
-    // If API key is not configured, run in demo mode
-    const isDemoMode = !apiKey;
-    if (isDemoMode) {
-      console.log('⚠️  NUDGE_API_KEY not configured - running in demo mode');
-      console.log(`✅ Demo OTP generated: ${otp} for ${email} / ${phone}`);
-
-      return NextResponse.json({
-        success: true,
-        message: 'OTP generated (demo mode - check console)',
-        otp: otp,
-        emailSent: false,
-        smsSent: false,
-        demoMode: true
-      });
+    if (!apiKey) {
+      throw new Error('NUDGE_API_KEY is not configured');
     }
 
     const fullName = `${firstName || ''} ${lastName || ''}`.trim() || 'User';

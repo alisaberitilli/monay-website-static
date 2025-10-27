@@ -53,13 +53,6 @@ function PayoutFlowContent() {
         // Store OTP for verification (in production, verify server-side)
         setSentOtp(data.otp);
         setStep('otp');
-
-        // Show OTP in alert for demo mode
-        if (data.demoMode) {
-          setTimeout(() => {
-            alert(`Demo Mode: Your OTP is ${data.otp}\n\nEnter this code to continue.`);
-          }, 500);
-        }
       } else {
         alert(`Failed to send OTP: ${data.error || 'Unknown error'}`);
       }
@@ -299,10 +292,8 @@ function PayoutFlowContent() {
                 </button>
               </p>
 
-              <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg text-xs text-slate-700">
-                <strong className="text-blue-800">💡 Demo Mode Active</strong>
-                <p className="mt-2">This is a demonstration. The OTP was shown in a popup when you clicked Continue.</p>
-                <p className="mt-1 font-mono font-bold text-lg text-blue-900">OTP: {sentOtp}</p>
+              <div className="mt-6 p-4 bg-green-50 border border-green-200 rounded-lg text-xs text-slate-700">
+                <strong className="text-green-800">✓ OTP Sent!</strong> Check your email ({email}) and phone ({phone}) for the verification code.
               </div>
             </>
           )}
