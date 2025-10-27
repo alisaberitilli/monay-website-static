@@ -10,9 +10,10 @@ function PayoutFlowContent() {
   const [payoutId, setPayoutId] = useState('');
   const [recipient, setRecipient] = useState('');
   const [isConsented, setIsConsented] = useState(false);
-  const [step, setStep] = useState<'consent' | 'otp' | 'methods' | 'success'>('consent');
+  const [step, setStep] = useState<'consent' | 'otp' | 'methods' | 'wallet' | 'success'>('consent');
   const [otp, setOtp] = useState('');
   const [selectedMethod, setSelectedMethod] = useState('');
+  const [selectedToken, setSelectedToken] = useState('');
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
   const [sentOtp, setSentOtp] = useState('');
@@ -106,6 +107,15 @@ function PayoutFlowContent() {
 
   const handleMethodSelect = (method: string) => {
     setSelectedMethod(method);
+    if (method === 'monay-wallet') {
+      setStep('wallet');
+    } else {
+      setStep('success');
+    }
+  };
+
+  const handleTokenSelect = (token: string) => {
+    setSelectedToken(token);
     setStep('success');
   };
 
@@ -326,16 +336,23 @@ function PayoutFlowContent() {
               {/* Payment Methods */}
               <div className="space-y-3 mb-8">
                 {[
+                  { id: 'monay-wallet', name: 'Monay Wallet', icon: '💰', fee: 'Free', time: 'Instant', badge: 'RECOMMENDED' },
                   { id: 'instant', name: 'Instant Bank Transfer', icon: '⚡', fee: 'Free', time: 'Instant' },
                   { id: 'debit', name: 'Debit Card', icon: '💳', fee: '$1.50', time: '30 minutes' },
-                  { id: 'wallet', name: 'Digital Wallet', icon: '📱', fee: 'Free', time: '5 minutes' },
-                  { id: 'usdc', name: 'USDC Stablecoin', icon: '💎', fee: 'Free', time: 'Instant' },
+                  { id: 'wallet', name: 'Digital Wallet (Apple/Google Pay)', icon: '📱', fee: 'Free', time: '5 minutes' },
                 ].map((method) => (
                   <button
                     key={method.id}
                     onClick={() => handleMethodSelect(method.id)}
-                    className="w-full bg-slate-50 hover:bg-slate-100 border-2 border-slate-200 hover:border-blue-500 rounded-xl p-4 transition-all text-left"
+                    className={`w-full hover:bg-slate-100 border-2 hover:border-blue-500 rounded-xl p-4 transition-all text-left relative ${
+                      method.badge ? 'bg-gradient-to-r from-blue-50 to-purple-50 border-blue-300' : 'bg-slate-50 border-slate-200'
+                    }`}
                   >
+                    {method.badge && (
+                      <div className="absolute top-2 right-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white text-xs font-bold px-2 py-1 rounded">
+                        {method.badge}
+                      </div>
+                    )}
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-3">
                         <span className="text-2xl">{method.icon}</span>
@@ -354,6 +371,132 @@ function PayoutFlowContent() {
 
               <p className="text-xs text-center text-slate-500">
                 All payout methods are secure and encrypted
+              </p>
+            </>
+          )}
+
+          {/* Monay Wallet Token Selection Step */}
+          {step === 'wallet' && (
+            <>
+              <div className="text-center mb-10">
+                <h1 className="text-3xl font-light text-slate-800 mb-8 tracking-tight">Monay</h1>
+                <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl mb-8">
+                  <span className="text-4xl">💰</span>
+                </div>
+              </div>
+
+              <h2 className="text-3xl font-semibold text-slate-900 text-center mb-4 tracking-tight">
+                Select token
+              </h2>
+
+              <p className="text-center text-slate-600 mb-8">
+                Choose which stablecoin to receive in your Monay Wallet
+              </p>
+
+              {/* Wallet Balance Card */}
+              <div className="bg-gradient-to-br from-slate-900 to-slate-800 rounded-2xl p-6 mb-6 text-white">
+                <p className="text-sm text-slate-400 mb-1">Total Wallet Balance</p>
+                <p className="text-3xl font-bold mb-4">$12,847.50</p>
+                <div className="grid grid-cols-3 gap-4 text-center">
+                  <div>
+                    <p className="text-xs text-slate-400">USDC</p>
+                    <p className="text-sm font-semibold">$5,200</p>
+                  </div>
+                  <div>
+                    <p className="text-xs text-slate-400">FIUSD</p>
+                    <p className="text-sm font-semibold">$4,500</p>
+                  </div>
+                  <div>
+                    <p className="text-xs text-slate-400">PYUSD</p>
+                    <p className="text-sm font-semibold">$3,147.50</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Token Selection */}
+              <div className="space-y-3 mb-8">
+                {[
+                  {
+                    id: 'usdc',
+                    name: 'USDC',
+                    fullName: 'USD Coin',
+                    icon: '🔵',
+                    balance: '$5,200.00',
+                    network: 'Ethereum',
+                    fee: '$0.01'
+                  },
+                  {
+                    id: 'fiusd',
+                    name: 'FIUSD',
+                    fullName: 'Fiserv USD',
+                    icon: '🟢',
+                    balance: '$4,500.00',
+                    network: 'Stellar',
+                    fee: '$0.01'
+                  },
+                  {
+                    id: 'pyusd',
+                    name: 'PYUSD',
+                    fullName: 'PayPal USD',
+                    icon: '🔷',
+                    balance: '$3,147.50',
+                    network: 'Ethereum',
+                    fee: '$0.01'
+                  },
+                  {
+                    id: 'usdt',
+                    name: 'USDT',
+                    fullName: 'Tether USD',
+                    icon: '🟢',
+                    balance: '$0.00',
+                    network: 'Tron',
+                    fee: '$0.01'
+                  },
+                  {
+                    id: 'eurc',
+                    name: 'EURC',
+                    fullName: 'Euro Coin',
+                    icon: '🟣',
+                    balance: '$0.00',
+                    network: 'Ethereum',
+                    fee: '$0.01'
+                  },
+                ].map((token) => (
+                  <button
+                    key={token.id}
+                    onClick={() => handleTokenSelect(token.id)}
+                    className="w-full bg-slate-50 hover:bg-slate-100 border-2 border-slate-200 hover:border-blue-500 rounded-xl p-4 transition-all text-left"
+                  >
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <span className="text-3xl">{token.icon}</span>
+                        <div>
+                          <div className="flex items-center gap-2">
+                            <p className="font-bold text-slate-900">{token.name}</p>
+                            <span className="text-xs bg-slate-200 text-slate-600 px-2 py-0.5 rounded">
+                              {token.network}
+                            </span>
+                          </div>
+                          <p className="text-sm text-slate-600">{token.fullName}</p>
+                          <p className="text-xs text-slate-500 mt-1">
+                            Balance: {token.balance} • Fee: {token.fee}
+                          </p>
+                        </div>
+                      </div>
+                      <ChevronLeft className="w-5 h-5 text-slate-400 rotate-180" />
+                    </div>
+                  </button>
+                ))}
+              </div>
+
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
+                <p className="text-xs text-slate-700 leading-relaxed">
+                  💡 <strong>New to stablecoins?</strong> These are digital dollars pegged 1:1 to USD. They settle instantly with minimal fees and can be easily converted to cash.
+                </p>
+              </div>
+
+              <p className="text-xs text-center text-slate-500">
+                All tokens are secured in your non-custodial Monay Wallet
               </p>
             </>
           )}
@@ -386,8 +529,17 @@ function PayoutFlowContent() {
                 </div>
                 <div className="flex justify-between text-sm">
                   <span className="text-slate-600">Method</span>
-                  <span className="font-semibold text-slate-900 capitalize">{selectedMethod.replace('-', ' ')}</span>
+                  <span className="font-semibold text-slate-900 capitalize">
+                    {selectedMethod.replace('-', ' ')}
+                    {selectedToken && ` (${selectedToken.toUpperCase()})`}
+                  </span>
                 </div>
+                {selectedToken && (
+                  <div className="flex justify-between text-sm">
+                    <span className="text-slate-600">Token</span>
+                    <span className="font-semibold text-slate-900 uppercase">{selectedToken}</span>
+                  </div>
+                )}
                 <div className="flex justify-between text-sm">
                   <span className="text-slate-600">Status</span>
                   <span className="font-semibold text-green-600">Processing</span>
