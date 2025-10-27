@@ -5,6 +5,7 @@ import { Trash2, Archive, Flag, Mail, RefreshCw, Search, MoreHorizontal, Chevron
 
 export default function InboxDemoPage() {
   const [selectedEmail, setSelectedEmail] = useState<string | null>('payout-ready');
+  const [showEmailList, setShowEmailList] = useState(true);
 
   const emails = [
     {
@@ -77,39 +78,39 @@ export default function InboxDemoPage() {
       </div>
 
       {/* Toolbar */}
-      <div className="flex items-center justify-between bg-[#2d2d2d] px-4 py-2 border-b border-[#3d3d3d]">
-        <div className="flex items-center space-x-4">
-          <button className="flex items-center space-x-2 text-gray-300 hover:text-white transition-colors">
+      <div className="flex items-center justify-between bg-[#2d2d2d] px-2 lg:px-4 py-2 border-b border-[#3d3d3d]">
+        <div className="flex items-center space-x-2 lg:space-x-4">
+          <button className="flex items-center space-x-1 lg:space-x-2 text-gray-300 hover:text-white transition-colors">
             <Trash2 className="w-4 h-4" />
-            <span className="text-sm">Delete</span>
+            <span className="text-sm hidden lg:inline">Delete</span>
           </button>
-          <button className="flex items-center space-x-2 text-gray-300 hover:text-white transition-colors">
+          <button className="flex items-center space-x-1 lg:space-x-2 text-gray-300 hover:text-white transition-colors">
             <Archive className="w-4 h-4" />
-            <span className="text-sm">Archive</span>
+            <span className="text-sm hidden lg:inline">Archive</span>
           </button>
-          <button className="flex items-center space-x-2 text-gray-300 hover:text-white transition-colors">
+          <button className="flex items-center space-x-1 lg:space-x-2 text-gray-300 hover:text-white transition-colors">
             <Flag className="w-4 h-4" />
-            <span className="text-sm">Flag</span>
+            <span className="text-sm hidden lg:inline">Flag</span>
           </button>
-          <button className="flex items-center space-x-2 text-gray-300 hover:text-white transition-colors">
+          <button className="hidden md:flex items-center space-x-2 text-gray-300 hover:text-white transition-colors">
             <Mail className="w-4 h-4" />
-            <span className="text-sm">Mark Unread</span>
+            <span className="text-sm hidden lg:inline">Mark Unread</span>
           </button>
-          <button className="flex items-center space-x-2 text-gray-300 hover:text-white transition-colors">
+          <button className="hidden md:flex items-center space-x-2 text-gray-300 hover:text-white transition-colors">
             <RefreshCw className="w-4 h-4" />
-            <span className="text-sm">Sync</span>
+            <span className="text-sm hidden lg:inline">Sync</span>
           </button>
         </div>
         <div className="flex items-center space-x-2">
-          <span className="text-sm text-blue-400">🔵 Copilot</span>
+          <span className="text-sm text-blue-400 hidden md:inline">🔵 Copilot</span>
           <MoreHorizontal className="w-4 h-4 text-gray-400" />
         </div>
       </div>
 
       {/* Main Content */}
       <div className="flex flex-1 overflow-hidden">
-        {/* Sidebar */}
-        <div className="w-64 bg-[#252525] border-r border-[#3d3d3d] flex flex-col">
+        {/* Sidebar - Hidden on mobile */}
+        <div className="hidden lg:flex w-64 bg-[#252525] border-r border-[#3d3d3d] flex-col">
           <div className="p-4">
             <div className="relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
@@ -146,8 +147,8 @@ export default function InboxDemoPage() {
           </div>
         </div>
 
-        {/* Email List */}
-        <div className="w-80 bg-[#2d2d2d] border-r border-[#3d3d3d] flex flex-col">
+        {/* Email List - Show on mobile only when no email selected */}
+        <div className={`w-full lg:w-80 bg-[#2d2d2d] border-r border-[#3d3d3d] flex flex-col ${selectedEmail ? 'hidden lg:flex' : 'flex'}`}>
           <div className="p-4 border-b border-[#3d3d3d]">
             <h2 className="text-lg font-semibold">Inbox</h2>
             <p className="text-sm text-gray-400">5 messages</p>
@@ -186,15 +187,24 @@ export default function InboxDemoPage() {
           </div>
         </div>
 
-        {/* Email Content */}
-        <div className="flex-1 bg-[#1e1e1e] flex flex-col overflow-hidden">
+        {/* Email Content - Show on mobile when email selected */}
+        <div className={`flex-1 bg-[#1e1e1e] flex flex-col overflow-hidden ${selectedEmail ? 'flex' : 'hidden lg:flex'}`}>
           {currentEmail && currentEmail.id === 'payment-confirmation' ? (
             <>
               {/* Email Header */}
-              <div className="p-6 border-b border-[#3d3d3d]">
+              <div className="p-4 lg:p-6 border-b border-[#3d3d3d]">
                 <div className="flex items-center justify-between mb-4">
-                  <h1 className="text-xl font-semibold">Payment Confirmed - Complete Your KYC</h1>
-                  <div className="flex items-center space-x-4">
+                  <div className="flex items-center gap-2">
+                    {/* Back button - visible on mobile */}
+                    <button
+                      onClick={() => setSelectedEmail(null)}
+                      className="lg:hidden text-gray-400 hover:text-white mr-2"
+                    >
+                      <ChevronLeft className="w-6 h-6" />
+                    </button>
+                    <h1 className="text-lg lg:text-xl font-semibold">Payment Confirmed - Complete Your KYC</h1>
+                  </div>
+                  <div className="hidden lg:flex items-center space-x-4">
                     <button className="text-gray-400 hover:text-white">
                       <ChevronLeft className="w-5 h-5" />
                     </button>
@@ -223,7 +233,7 @@ export default function InboxDemoPage() {
               </div>
 
               {/* Email Body */}
-              <div className="flex-1 overflow-y-auto p-6">
+              <div className="flex-1 overflow-y-auto p-4 lg:p-6">
                 <div className="text-center mb-8">
                   <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-green-500 to-emerald-500 rounded-2xl mb-6">
                     <CheckCircle2 className="w-12 h-12 text-white" />
@@ -339,10 +349,18 @@ export default function InboxDemoPage() {
           ) : currentEmail && currentEmail.id === 'payout-ready' ? (
             <>
               {/* Email Header */}
-              <div className="p-6 border-b border-[#3d3d3d]">
+              <div className="p-4 lg:p-6 border-b border-[#3d3d3d]">
                 <div className="flex items-center justify-between mb-4">
-                  <h1 className="text-xl font-semibold">Your Payout is Ready!</h1>
-                  <div className="flex items-center space-x-4">
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={() => setSelectedEmail(null)}
+                      className="lg:hidden text-gray-400 hover:text-white mr-2"
+                    >
+                      <ChevronLeft className="w-6 h-6" />
+                    </button>
+                    <h1 className="text-lg lg:text-xl font-semibold">Your Payout is Ready!</h1>
+                  </div>
+                  <div className="hidden lg:flex items-center space-x-4">
                     <button className="text-gray-400 hover:text-white">
                       <ChevronLeft className="w-5 h-5" />
                     </button>
@@ -382,7 +400,7 @@ export default function InboxDemoPage() {
               </div>
 
               {/* Email Body */}
-              <div className="flex-1 overflow-y-auto p-6">
+              <div className="flex-1 overflow-y-auto p-4 lg:p-6">
                 {/* Main Message */}
                 <div className="text-center mb-8">
                   <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-green-500 to-emerald-500 rounded-2xl mb-6">
@@ -451,10 +469,18 @@ export default function InboxDemoPage() {
           ) : currentEmail && currentEmail.id === 'payment-request' ? (
             <>
               {/* Email Header */}
-              <div className="p-6 border-b border-[#3d3d3d]">
+              <div className="p-4 lg:p-6 border-b border-[#3d3d3d]">
                 <div className="flex items-center justify-between mb-4">
-                  <h1 className="text-xl font-semibold">Payment Request</h1>
-                  <div className="flex items-center space-x-4">
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={() => setSelectedEmail(null)}
+                      className="lg:hidden text-gray-400 hover:text-white mr-2"
+                    >
+                      <ChevronLeft className="w-6 h-6" />
+                    </button>
+                    <h1 className="text-lg lg:text-xl font-semibold">Payment Request</h1>
+                  </div>
+                  <div className="hidden lg:flex items-center space-x-4">
                     <button className="text-gray-400 hover:text-white">
                       <ChevronLeft className="w-5 h-5" />
                     </button>
@@ -494,7 +520,7 @@ export default function InboxDemoPage() {
               </div>
 
               {/* Email Body */}
-              <div className="flex-1 overflow-y-auto p-6">
+              <div className="flex-1 overflow-y-auto p-4 lg:p-6">
                 {/* External Warning */}
                 <div className="mb-6 p-3 bg-red-900/20 border border-red-700/50 rounded-lg text-xs text-red-200">
                   [External: This email originated from outside of UTILLI. Please only click on links or attachments if you know the sender.]
