@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Trash2, Archive, Flag, Mail, RefreshCw, Search, MoreHorizontal, ChevronLeft, ChevronRight, CheckCircle2 } from '@monay/icons';
+import { Trash2, Archive, Flag, Mail, RefreshCw, Search, MoreHorizontal, ChevronLeft, ChevronRight, CheckCircle2 } from 'lucide-react';
 
 export default function InboxDemoPage() {
   const [selectedEmail, setSelectedEmail] = useState<string | null>('payout-ready');

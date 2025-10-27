@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { useState, useEffect } from "react";
-import { FileText, ShieldCheck, Link, CheckCircle } from "@monay/icons";
+import { FileText, ShieldCheck, Link, CheckCircle } from "lucide-react";
 import AnimatedBackground from "@/components/AnimatedBackground";
 
 export default function Home() {

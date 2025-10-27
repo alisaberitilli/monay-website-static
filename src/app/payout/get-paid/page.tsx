@@ -2,7 +2,7 @@
 
 import { useSearchParams } from 'next/navigation';
 import { useState, useEffect, Suspense } from 'react';
-import { ChevronLeft, CheckCircle2 } from '@monay/icons';
+import { ChevronLeft, CheckCircle2 } from 'lucide-react';
 
 function PayoutFlowContent() {
   const searchParams = useSearchParams();

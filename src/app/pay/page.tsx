@@ -2,7 +2,7 @@
 
 import { useSearchParams } from 'next/navigation';
 import { useState, useEffect, Suspense } from 'react';
-import { CreditCard, Wallet, Building2, Smartphone, CheckCircle2, AlertCircle, ArrowLeft } from '@monay/icons';
+import { CreditCard, Wallet, Building2, Smartphone, CheckCircle2, AlertCircle, ArrowLeft } from 'lucide-react';
 
 interface PaymentDetails {
   accountNumber: string;
